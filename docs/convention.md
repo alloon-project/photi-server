@@ -178,7 +178,7 @@ class RepositoryTest(
 }
 ```
 
-#### Domain
+#### Domain
 
 - 모든 정상 케이스 작성
 - 모든 예외 케이스 작성
