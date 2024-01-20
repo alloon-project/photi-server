@@ -1,14 +1,14 @@
 # Convention
 
-## Table of Contents
+## Table of Contents 📋
 
-1. [Naming & Code](#1-naming--code)
-2. [Test](#2-test)
-3. [Git Message](#3-git-message)
-4. [Branch](#4-branch)
-5. [Etc](#5-etc)
+1. [Naming & Code](#naming--code)
+2. [Test](#test)
+3. [Git Message](#git-message)
+4. [Branch](#branch)
+5. [Etc](#etc)
 
-## 1️⃣ Naming & Code
+## 1️⃣ Naming & Code<a id="naming--code"></a>
 
 ### Service
 
@@ -73,7 +73,7 @@ class Domain(
 }
 ```
 
-## 2️⃣ Test
+## 2️⃣ Test<a id="test"></a>
 
 정상 케이스 아래에 예외 케이스 작성
 
@@ -185,7 +185,7 @@ class DomainTest {
 }
 ```
 
-## 3️⃣ Git Message
+## 3️⃣ Git Message<a id="git-message"></a>
 
 ### Commit Type
 
@@ -208,7 +208,7 @@ class DomainTest {
 git commit -m "[FEAT] 새로운 기능 추가 #1"
 ```
 
-## 4️⃣ Branch
+## 4️⃣ Branch<a id="branch"></a>
 
 ### Strategy
 
@@ -221,6 +221,6 @@ git commit -m "[FEAT] 새로운 기능 추가 #1"
 - feat/1
 - feat/2
 
-## 5️⃣ Etc
+## 5️⃣ Etc<a id="etc"></a>
 
 - Intellij 상에 수직선(visual guide) 내로 코드 작성
