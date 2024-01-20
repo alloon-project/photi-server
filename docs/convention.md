@@ -13,23 +13,25 @@
 ### Service
 
 - 검증 - `validateXXX()`
-- 단건 조회 - `findXXXByXXX()`
-- 다건 조회 - `findAllXXXByXXX()`
+- 단건 조회 - `findXXX()`
+- 다건 조회 - `findPageXXX()`
 - 메소드명과 발생할 수 있는 모든 예외 케이스 주석으로 작성
 
 ```kotlin
 @Service
 @Transactional(readOnly = true)
 class Service(
-	private val repository: Repository,
+	private val repository: Repository,
 ) {
 
 	/**
 	 * 메소드명 |
 	 * 400(ERROR_ONE)
 	 * 409(ERROR_TWO)
+     * @param request 매개변수명
+     * @return 반환객체명
 	 */
-	fun doSomething(request: Request) {
+	fun doSomething(request: Request): Response {
 		if (case1)
 			throw CustomException(ERROR_ONE)
 		if (case2)
@@ -41,27 +43,29 @@ class Service(
 
 ### Repository
 
-- 단건 조회 - `findByXXX()`
-- 다건 조회 - `findAllByXXX()`
+- 단건 조회 - `findXXX()`
+- 다건 조회 - `findPageXXX()`
 
 ### Domain
 
 - setter 사용 금지
-- 값을 가져오는 메소드
-- 상태를 변경하는 메소드
+- 값을 가져오는 메소드 - `val`
+- 상태를 변경하는 메소드 - `fun`
 -  메소드명과 발생할 수 있는 모든 예외 케이스 주석으로 작성
 
 ```kotlin
 class Domain(
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "domain_id")
 	val id: Long? = null,
 ) {
 
 	/**
 	 * 메소드명 |
-	 * 400(ERROR_ONE)
-	 * 409(ERROR_TWO)
+     * 400(ERROR_ONE)
+     * 409(ERROR_TWO)
+     * @param object 매개변수명
 	 */
 	fun doSomething(object: Object) {
 		if (case1)
@@ -95,19 +99,19 @@ class Domain(
 @WebMvcTest(Controller::class)
 @AutoConfigureMockMvc(addFilters = false)
 class ControllerTest(
-	@Autowired private val MockMvc: mockMvc,
+	@Autowired private val mockMvc: MockMvc,
 	@Autowired private val objectMapper: ObjectMapper,
-	@Autowired private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-	@Autowired private val service: Service,
+	@MockBean private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+	@MockBean private val service: Service,
 ) {
 
 	@Test
 	@DisplayName("XXX을 하면 2XX를 반환한다")
-	void givenValid_whenXXX_thenReturn2XX() { }
+	fun givenValid_whenXXX_thenReturn2XX() { }
 
 	@Test
 	@DisplayName("XXX로 XXX을 하면 4XX을 반환한다")
-	void givenXXX_whenXXX_thenThrow4XX() { }
+	fun givenXXX_whenXXX_thenThrow4XX() { }
 }
 ```
 
