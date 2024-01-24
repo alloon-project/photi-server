@@ -6,7 +6,8 @@
 2. [Test](#test)
 3. [Git Message](#git-message)
 4. [Branch](#branch)
-5. [Etc](#etc)
+5. [Versioning](#versioning)
+6. [Etc](#etc)
 
 ## 1️⃣ Naming & Code<a id="naming--code"></a>
 
@@ -81,7 +82,7 @@ class Domain(
 
 정상 케이스 아래에 예외 케이스 작성
 
-#### Controller
+### ControllerTest
 
 - 모든 정상 케이스 작성
 - 모든 예외 케이스 작성
@@ -115,7 +116,7 @@ class ControllerTest(
 }
 ```
 
-#### Service
+### ServiceTest
 
 - 모든 정상 케이스 작성
 - 모든 예외 케이스 작성
@@ -123,7 +124,7 @@ class ControllerTest(
 ##### Example
 
 - 정상
-    - `givenValid_whenRegistger_thenRetrun` - `회원 가입을 하면 정상 작동한다`
+    - `givenValid_whenRegister_thenReturn` - `회원 가입을 하면 정상 작동한다`
 - 예외
     - `givenExistingUsername_whenRegister_thenThrow` - `존재하는 회원 아이디로 회원 가입을 하면 예외가 발생한다`
     - `givenUnequalPasswordAndPaswordReEntered_whenRegister_thenThrow` - `동일하지 않은 비밀번호와 비밀번호 재입력으로 회원 가입을 하면 예외가 발생한다`
@@ -147,7 +148,7 @@ class ServiceTest(
 }
 ```
 
-#### Repository
+### RepositoryTest
 
 - 모든 정상 케이스 작성
 - 데이터베이스와 관련된 예외 케이스만 작성
@@ -178,7 +179,7 @@ class RepositoryTest(
 }
 ```
 
-#### Domain
+### DomainTest
 
 - 모든 정상 케이스 작성
 - 모든 예외 케이스 작성
@@ -225,6 +226,10 @@ git commit -m "[FEAT] 새로운 기능 추가 #1"
 - feat/1
 - feat/2
 
-## 5️⃣ Etc<a id="etc"></a>
+## 5️⃣ Versioning<a id="versioning"></a>
+
+[Semantic Versioning](https://semver.org/lang/ko/)
+
+## 6️⃣ Etc<a id="etc"></a>
 
 - Intellij 상에 수직선(visual guide) 내로 코드 작성
