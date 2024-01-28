@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 @Table(name = "users")
 @Entity
 class User(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -27,8 +28,5 @@ class User(
     val isTemporaryPassword: Boolean = false,
 
     val disabledDate: LocalDate,
-
-    createdAt: LocalDateTime? = null,
-    updatedAt: LocalDateTime? = null,
-    ) : BaseEntity(createdAt, updatedAt) {
+    ) : BaseEntity() {
 }

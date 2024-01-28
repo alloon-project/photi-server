@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 class Contact(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contact_id")
@@ -18,8 +19,5 @@ class Contact(
 
     @Column(nullable = false)
     val isVerified: Boolean = false,
-
-    createdDateTime: LocalDateTime? = null,
-    updatedDateTime: LocalDateTime? = null,
-    ) : BaseEntity(createdDateTime, updatedDateTime) {
+    ) : BaseEntity() {
 }

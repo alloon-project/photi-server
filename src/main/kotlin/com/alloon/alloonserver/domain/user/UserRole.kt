@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 class UserRole(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_role_id")
@@ -18,8 +19,5 @@ class UserRole(
     @Column(nullable = false, length = 6)
     @Enumerated(EnumType.STRING)
     val role: Role,
-
-    createdDateTime: LocalDateTime? = null,
-    updatedDateTime: LocalDateTime? = null,
-    ) : BaseEntity(createdDateTime, updatedDateTime) {
+    ) : BaseEntity() {
 }
