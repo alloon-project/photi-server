@@ -21,10 +21,11 @@ class User(
     val username: String,
     @Column(nullable = false)
     val password: String,
-    @Column(nullable = false)
     val imageUrl: String? = null,
+
     @Column(nullable = false)
     val isTemporaryPassword: Boolean = false,
+
     val disabledDate: LocalDate,
 
     createdAt: LocalDateTime? = null,

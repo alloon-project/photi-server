@@ -15,6 +15,7 @@ class Contact(
     val email: String,
     @Column(nullable = false, length = 6)
     val verificationCode: String,
+
     @Column(nullable = false)
     val isVerified: Boolean = false,
 
