@@ -1,0 +1,30 @@
+package com.alloon.alloonserver.domain.mission
+
+import com.alloon.alloonserver.domain.base.BasePermanentEntity
+import com.alloon.alloonserver.domain.user.User
+import jakarta.persistence.*
+import java.time.LocalDateTime
+
+@Entity
+class MissionMember(
+    @Id
+    @Column(name = "mission_member_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long?,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    val user: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mission_id", nullable = false)
+    val mission: Mission,
+
+    @Column(nullable = false, length = 15)
+    @Enumerated(value = EnumType.STRING)
+    val status: MissionMemberStatus,
+
+    @Column(nullable = false)
+    val isCreator: Boolean,
+) : BasePermanentEntity() {
+}
