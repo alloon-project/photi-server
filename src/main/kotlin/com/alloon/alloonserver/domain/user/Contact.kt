@@ -16,9 +16,9 @@ class Contact(
     @Column(nullable = false, length = 6)
     val verificationCode: String,
     @Column(nullable = false)
-    var isVerified: Boolean = false,
+    val isVerified: Boolean = false,
 
-    createdAt: LocalDateTime? = null,
-    updatedAt: LocalDateTime? = null,
-    ) : BaseEntity(createdAt, updatedAt) {
+    createdDateTime: LocalDateTime? = null,
+    updatedDateTime: LocalDateTime? = null,
+    ) : BaseEntity(createdDateTime, updatedDateTime) {
 }

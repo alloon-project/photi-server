@@ -19,7 +19,7 @@ class UserRole(
     @Enumerated(EnumType.STRING)
     val role: Role,
 
-    createdAt: LocalDateTime? = null,
-    updatedAt: LocalDateTime? = null,
-) : BaseEntity(createdAt, updatedAt) {
+    createdDateTime: LocalDateTime? = null,
+    updatedDateTime: LocalDateTime? = null,
+    ) : BaseEntity(createdDateTime, updatedDateTime) {
 }

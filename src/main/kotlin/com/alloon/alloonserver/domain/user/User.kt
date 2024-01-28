@@ -20,12 +20,12 @@ class User(
     @Column(nullable = false, length = 15)
     val username: String,
     @Column(nullable = false)
-    var password: String,
+    val password: String,
     @Column(nullable = false)
     val imageUrl: String? = null,
     @Column(nullable = false)
     val isTemporaryPassword: Boolean = false,
-    val disabledUntilAt: LocalDate,
+    val disabledDate: LocalDate,
 
     createdAt: LocalDateTime? = null,
     updatedAt: LocalDateTime? = null,

@@ -6,9 +6,10 @@ import java.time.LocalDateTime
 
 @MappedSuperclass
 abstract class BasePermanentEntity(
+
     @Column(nullable = false)
     var isDeleted: Boolean = false,
 
-    createdAt: LocalDateTime,
-    updatedAt: LocalDateTime,
-) : BaseEntity(createdAt, updatedAt)
+    createdDateTime: LocalDateTime? = null,
+    updatedDateTime: LocalDateTime? = null,
+    ) : BaseEntity(createdDateTime, updatedDateTime)
