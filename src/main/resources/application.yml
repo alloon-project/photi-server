@@ -40,3 +40,68 @@ spring:
           starttls:
             enable: true
             require: true
+
+api:
+  name: "Alloon Local"
+  master:
+    id: alloon
+  jwt:
+    secret: ${JWT_SECRET}
+    domain: ${JWT_DOMAIN}
+    time:
+      access: ${JWT_ACCESS}
+      refresh: ${JWT_REFRESH}
+  mail:
+    address: ${MAIN_ADDRESS}
+
+###################
+###### TEST #######
+###################
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/alloon
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            require: true
+
+api:
+  name: "Alloon Local"
+  master:
+    id: alloon
+  jwt:
+    secret: ${JWT_SECRET}
+    domain: ${JWT_DOMAIN}
+    time:
+      access: ${JWT_ACCESS}
+      refresh: ${JWT_REFRESH}
+  mail:
+    address: ${MAIN_ADDRESS}
