@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.constant
+package com.alloon.alloonserver.common.constant
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.OK

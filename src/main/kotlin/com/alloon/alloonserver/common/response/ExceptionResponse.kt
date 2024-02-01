@@ -1,6 +1,6 @@
-package com.alloon.alloonserver.api.dto.common.response
+package com.alloon.alloonserver.common.response
 
-import com.alloon.alloonserver.constant.ExceptionCode
+import com.alloon.alloonserver.common.constant.ExceptionCode
 
 class ExceptionResponse(
     val code: String,

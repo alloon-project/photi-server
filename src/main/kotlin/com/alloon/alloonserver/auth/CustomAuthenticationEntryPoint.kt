@@ -1,9 +1,9 @@
 package com.alloon.alloonserver.auth
 
-import com.alloon.alloonserver.api.dto.common.response.CustomException
-import com.alloon.alloonserver.api.dto.common.response.ExceptionResponse
-import com.alloon.alloonserver.constant.ExceptionCode
-import com.alloon.alloonserver.constant.ExceptionCode.TOKEN_UNAUTHENTICATED
+import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.common.response.ExceptionResponse
+import com.alloon.alloonserver.common.constant.ExceptionCode
+import com.alloon.alloonserver.common.constant.ExceptionCode.TOKEN_UNAUTHENTICATED
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -13,7 +13,6 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
 import java.io.IOException
-import java.io.OutputStream
 
 @Component
 class CustomAuthenticationEntryPoint(

@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.api.dto.common.response
+package com.alloon.alloonserver.common.response
 
 open class DefaultResponse(
     val code: String,
