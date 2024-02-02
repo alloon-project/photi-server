@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.auth
+package com.alloon.alloonserver.config.auth
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

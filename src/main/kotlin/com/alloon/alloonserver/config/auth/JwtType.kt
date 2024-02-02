@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.auth
+package com.alloon.alloonserver.config.auth
 
 enum class JwtType {
     ACCESS,

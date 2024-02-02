@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.auth
+package com.alloon.alloonserver.config.auth
 
 import io.github.nefilim.kjwt.DecodedJWT
 import org.springframework.beans.factory.annotation.Value

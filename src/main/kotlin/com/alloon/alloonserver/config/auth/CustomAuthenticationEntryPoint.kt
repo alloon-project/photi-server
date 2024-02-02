@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.auth
+package com.alloon.alloonserver.config.auth
 
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ExceptionResponse

@@ -1,7 +1,7 @@
 package com.alloon.alloonserver.config
 
-import com.alloon.alloonserver.auth.CustomAuthenticationEntryPoint
-import com.alloon.alloonserver.auth.CustomAuthenticationFilter
+import com.alloon.alloonserver.config.auth.CustomAuthenticationEntryPoint
+import com.alloon.alloonserver.config.auth.CustomAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
