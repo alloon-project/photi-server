@@ -13,7 +13,7 @@ class MissionMember(
     val id: Long?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     val user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
