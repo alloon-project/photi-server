@@ -17,9 +17,13 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+  sql:
+    init:
+      mode: always
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         default_batch_fetch_size: 100
@@ -69,9 +73,13 @@ spring:
     username: sa
     password:
 
+  sql:
+    init:
+      mode: always
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         default_batch_fetch_size: 100
