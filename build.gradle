@@ -78,10 +78,13 @@ tasks.jacocoTestReport {
 		xml.required = true
 	}
 
+	def jooqDomains = ['**/alloon_local/**','**/alloon_test/**']
+
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(
-					dir: it
+					dir: it,
+					excludes: [] + jooqDomains
 			)
 		}))
 	}
@@ -90,6 +93,8 @@ tasks.jacocoTestReport {
 }
 
 tasks.jacocoTestCoverageVerification {
+	def jooqDomains = ['**.alloon_local.**','**.alloon_test.**']
+
 	violationRules {
 
 		rule {
@@ -101,6 +106,7 @@ tasks.jacocoTestCoverageVerification {
 				value = 'COVEREDRATIO'
 //				minimum = 0.90
 			}
+			excludes = [] + jooqDomains
 		}
 	}
 }
