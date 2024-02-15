@@ -105,12 +105,6 @@ tasks.jacocoTestCoverageVerification {
 	}
 }
 
-tasks.named('build') {
-	doFirst {
-		bootRun
-	}
-}
-
 jooq {
 	version = dependencyManagement.importedProperties['jooq.version']
 	edition = JooqEdition.OSS
