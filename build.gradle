@@ -1,7 +1,9 @@
+import nu.studer.gradle.jooq.JooqEdition
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	id 'jacoco'
+	id 'nu.studer.jooq' version '9.0'
 	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
@@ -31,6 +33,7 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jooq'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -42,6 +45,8 @@ dependencies {
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2:'
+
+	jooqGenerator 'com.mysql:mysql-connector-j'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -95,6 +100,37 @@ tasks.jacocoTestCoverageVerification {
 				counter = 'INSTRUCTION'
 				value = 'COVEREDRATIO'
 //				minimum = 0.90
+			}
+		}
+	}
+}
+
+jooq {
+	version = dependencyManagement.importedProperties['jooq.version']
+	edition = JooqEdition.OSS
+	configurations {
+		main {
+			generationTool {
+				logging = org.jooq.meta.jaxb.Logging.WARN
+				jdbc {
+					driver = 'com.mysql.cj.jdbc.Driver'
+					url = System.getenv('DB_URL')
+					user = System.getenv('DB_USERNAME')
+					password = System.getenv('DB_PASSWORD')
+				}
+				generator {
+					name = 'org.jooq.codegen.KotlinGenerator'
+					database {
+						name = 'org.jooq.meta.mysql.MySQLDatabase'
+						includes = 'alloon*.*'
+						excludes = ''
+					}
+					target {
+						packageName = 'com.alloon.allonserver'
+						directory = 'build/generated/jooq/'
+					}
+					strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+				}
 			}
 		}
 	}
