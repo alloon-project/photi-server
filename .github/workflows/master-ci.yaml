@@ -40,7 +40,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         env:
-          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_URL: ${{ secrets.URL }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           JWT_DOMAIN: ${{ secrets.JWT_DOMAIN }}
