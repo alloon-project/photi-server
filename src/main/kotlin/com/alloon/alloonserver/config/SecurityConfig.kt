@@ -28,7 +28,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { it.anyRequest().permitAll() }
             .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling{ it.authenticationEntryPoint(customAuthenticationEntryPoint)}
+            .exceptionHandling{ it.authenticationEntryPoint(customAuthenticationEntryPoint) }
             .build()
     }
 }
