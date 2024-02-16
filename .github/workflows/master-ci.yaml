@@ -30,7 +30,7 @@ jobs:
 
       - name: Set up Database
         run: |
-          mysql -h 127.0.0.1 -u root -p"${{ secrets.DB_PASSWORD }}" ${{ secrets.DB_NAME }} < src/main/resources/schema.sql
+          mysql -h 127.0.0.1 -u root -p"${{ secrets.DB_PASSWORD }}" alloon_test < src/main/resources/schema.sql
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -44,7 +44,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         env:
-          DB_URL: ${{ secrets.DB_URL }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           JWT_DOMAIN: ${{ secrets.JWT_DOMAIN }}

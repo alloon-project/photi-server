@@ -114,13 +114,25 @@ tasks.jacocoTestCoverageVerification {
 jooq {
 	version = dependencyManagement.importedProperties['jooq.version']
 	edition = JooqEdition.OSS
-	configurations {
+
+	def profile = project.hasProperty('profile') ? System.properties['spring.profiles.active'] : 'local'
+	def dbUrl = 'jdbc:mysql://'
+
+	if (profile == 'local') {
+		dbUrl = dbUrl + 'localhost:3306/alloon_local'
+	} else if (profile == 'test') {
+		dbUrl = dbUrl + 'localhost:3306/alloon_test'
+	} else if (profile == 'alpha' || profile == 'release') {
+		dbUrl = dbUrl + System.getenv('DB_HOST') + ':' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME')
+	}
+
+		configurations {
 		main {
 			generationTool {
 				logging = org.jooq.meta.jaxb.Logging.WARN
 				jdbc {
 					driver = 'com.mysql.cj.jdbc.Driver'
-					url = System.getenv('DB_URL')
+					url = dbUrl
 					user = System.getenv('DB_USERNAME')
 					password = System.getenv('DB_PASSWORD')
 				}
