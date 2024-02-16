@@ -1,10 +1,10 @@
 FROM openjdk:17-alpine
 
+ENV TZ=Asia/Seoul
+
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -yq tzdata && \
-    ln -fs /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
+    rm -rf /var/cache/apk/*
 
 ARG JAR_FILE=build/libs/app.jar
 COPY ${JAR_FILE} app.jar
