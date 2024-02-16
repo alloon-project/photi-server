@@ -15,8 +15,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      checks: write
     services:
       mysql:
         image: mysql
@@ -68,7 +66,7 @@ jobs:
           coverage_results_path: build/reports/jacoco/test/jacocoTestReport.xml
           coverage_report_name: Coverage
           coverage_report_title: JaCoCo
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GIT_TOKEN }}
           skip_check_run: false
           publish_only_summary: true
           minimum_coverage: 90
