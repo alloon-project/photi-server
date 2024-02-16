@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjdk:17-oracle
 
 RUN apt-get update && \
     apt-get upgrade -y && \
