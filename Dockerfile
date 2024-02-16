@@ -1,4 +1,4 @@
-FROM oraclejdk:17
+FROM openjdk:17-alphine
 
 RUN apt-get update && \
     apt-get upgrade -y && \
