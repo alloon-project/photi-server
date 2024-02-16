@@ -118,10 +118,8 @@ jooq {
 	def profile = project.hasProperty('profile') ? System.properties['spring.profiles.active'] : 'local'
 	def dbUrl = 'jdbc:mysql://'
 
-	if (profile == 'local') {
+	if (profile == 'local' || profile == 'test') {
 		dbUrl = dbUrl + 'localhost:3306/alloon_local'
-	} else if (profile == 'test') {
-		dbUrl = dbUrl + 'localhost:3306/alloon_test'
 	} else if (profile == 'alpha' || profile == 'release') {
 		dbUrl = dbUrl + System.getenv('DB_HOST') + ':' + System.getenv('DB_PORT') + '/' + System.getenv('DB_NAME')
 	}
