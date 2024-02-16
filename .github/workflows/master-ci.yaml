@@ -12,9 +12,6 @@ on:
       - 'docs/**'
       - 'README.md'
 
-permissions:
-  checks: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
