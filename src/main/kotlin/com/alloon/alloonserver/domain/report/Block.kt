@@ -3,6 +3,7 @@ package com.alloon.alloonserver.domain.report
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
+import java.math.BigInteger
 
 @Entity
 class Block(
@@ -10,7 +11,7 @@ class Block(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "block_id")
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocker_id", nullable = false)

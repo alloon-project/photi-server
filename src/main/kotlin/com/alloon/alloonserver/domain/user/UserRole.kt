@@ -2,6 +2,7 @@ package com.alloon.alloonserver.domain.user
 
 import com.alloon.alloonserver.domain.base.BaseEntity
 import jakarta.persistence.*
+import java.math.BigInteger
 import java.time.LocalDateTime
 
 @Entity
@@ -10,7 +11,7 @@ class UserRole(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_role_id")
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

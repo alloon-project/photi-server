@@ -13,10 +13,8 @@ import java.time.LocalDateTime
 abstract class BaseEntity(
 
     @CreatedDate
-    @Column(nullable = false)
     val createdDateTime: LocalDateTime? = null,
 
     @LastModifiedDate
-    @Column(nullable = false)
     var updatedDateTime: LocalDateTime? = null,
 )

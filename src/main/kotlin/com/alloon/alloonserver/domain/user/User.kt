@@ -2,6 +2,7 @@ package com.alloon.alloonserver.domain.user
 
 import com.alloon.alloonserver.domain.base.BaseEntity
 import jakarta.persistence.*
+import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -12,7 +13,7 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", nullable = false)
@@ -26,7 +27,5 @@ class User(
 
     @Column(nullable = false)
     val isTemporaryPassword: Boolean = false,
-
-    val disabledDate: LocalDate,
     ) : BaseEntity() {
 }

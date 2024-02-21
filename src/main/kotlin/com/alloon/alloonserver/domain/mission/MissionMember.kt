@@ -3,6 +3,7 @@ package com.alloon.alloonserver.domain.mission
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
+import java.math.BigInteger
 import java.time.LocalDateTime
 
 @Entity
@@ -10,11 +11,11 @@ class MissionMember(
     @Id
     @Column(name = "mission_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User,
+    val user: User? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id", nullable = false)

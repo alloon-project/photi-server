@@ -3,6 +3,7 @@ package com.alloon.alloonserver.domain.feed
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.mission.MissionMember
 import jakarta.persistence.*
+import java.math.BigInteger
 
 @Entity
 class FeedLike(
@@ -10,7 +11,7 @@ class FeedLike(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_like_id")
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_member_id", nullable = false)

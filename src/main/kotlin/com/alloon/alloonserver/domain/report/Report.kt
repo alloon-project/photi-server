@@ -4,13 +4,14 @@ import com.alloon.alloonserver.domain.base.BaseEntity
 import com.alloon.alloonserver.domain.mission.Mission
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
+import java.math.BigInteger
 
 @Entity
 class Report(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
-    val id: Long?,
+    val id: BigInteger? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
@@ -18,10 +19,10 @@ class Report(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User,
+    val user: User? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
-    val mission: Mission,
+    val mission: Mission? = null,
 ) : BaseEntity() {
 }
