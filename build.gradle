@@ -17,6 +17,14 @@ version = '0.0.1-SNAPSHOT'
 
 bootJar {
 	archiveFileName = 'app.jar'
+	dependsOn asciidoctor
+	from("${asciidoctor.outputDir}") {
+		into 'static/docs'
+	}
+}
+
+configurations {
+	asciidoctorExt
 }
 
 java {
@@ -48,6 +56,8 @@ dependencies {
 
 	jooqGenerator 'com.mysql:mysql-connector-j'
 
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
@@ -66,8 +76,15 @@ tasks.named('test') {
 	finalizedBy 'jacocoTestReport'
 }
 
+ext.snippetsDir = file('build/generated-snippets')
+
 tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
+	sources {
+		include("**/index.adoc")
+	}
+	baseDirFollowsSourceFile()
 	dependsOn test
 }
 
@@ -143,7 +160,7 @@ jooq {
 					}
 					target {
 						packageName = 'com.alloon.allonserver'
-						directory = 'build/generated/jooq/'
+						directory = 'build/generated-src/jooq/main'
 					}
 					strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
 				}

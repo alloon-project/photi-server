@@ -1,0 +1,9 @@
+[[health-check]]
+=== 헬스 체크
+
+==== HTTP Request
+include::{snippets}/health/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/health/http-response.adoc[]
+include::{snippets}/health/response-fields.adoc[]
