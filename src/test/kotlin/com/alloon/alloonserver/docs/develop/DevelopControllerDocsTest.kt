@@ -1,8 +1,11 @@
-package com.alloon.alloonserver.api.develop
+package com.alloon.alloonserver.docs.develop
 
-import com.alloon.alloonserver.api.RestDocsSupport
+import com.alloon.alloonserver.api.controller.develop.DevelopController
+import com.alloon.alloonserver.api.service.develop.DevelopService
+import com.alloon.alloonserver.docs.RestDocsSupport
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
@@ -11,11 +14,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
-class DevelopControllerTest: RestDocsSupport() {
+class DevelopControllerDocsTest : RestDocsSupport() {
+
+    private val developService = mock(DevelopService::class.java)
 
     @Override
     override fun initController(): Any {
-        return DevelopController()
+        return DevelopController(developService)
     }
 
     @DisplayName("헬스 체크를 하면 200을 반환한다")

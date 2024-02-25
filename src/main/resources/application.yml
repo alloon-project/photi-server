@@ -102,7 +102,7 @@ spring:
             require: true
 
 api:
-  name: "Alloon Local"
+  name: "Alloon Test"
   master:
     id: alloon
   jwt:
