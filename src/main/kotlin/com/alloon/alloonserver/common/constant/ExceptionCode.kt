@@ -12,7 +12,7 @@ enum class ExceptionCode(
      * 400 Bad Request
      */
     // @NotBlank, @NotNull
-    EMAIL_FIELD_REQUIRED(BAD_REQUEST, "이메일은 필수 입력입니다"),
+    EMAIL_FIELD_REQUIRED(BAD_REQUEST, "이메일은 필수 입력입니다."),
 
     // @Size
 

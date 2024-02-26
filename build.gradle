@@ -50,6 +50,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'io.github.nefilim.kjwt:kjwt-core:0.9.0'
+	implementation 'io.sentry:sentry-spring-boot-starter:7.4.0'
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'com.h2database:h2:'
