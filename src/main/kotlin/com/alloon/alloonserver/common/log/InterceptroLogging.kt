@@ -3,18 +3,18 @@ package com.alloon.alloonserver.common.log
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
 import org.springframework.util.StopWatch
 import org.springframework.web.servlet.HandlerInterceptor
 import org.springframework.web.servlet.ModelAndView
 import java.util.*
 
-@Component
 class InterceptorLogging : HandlerInterceptor {
 
     private val log = LoggerFactory.getLogger(this.javaClass)!!
     private val stopWatchThreadLocal: ThreadLocal<StopWatch> = ThreadLocal()
-    val uuidThreadLocal: ThreadLocal<String> = ThreadLocal()
+    private val uuidThreadLocal: ThreadLocal<String> = ThreadLocal()
+
+    val requestId:String = uuidThreadLocal.toString()
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val uuid = UUID.randomUUID().toString()
@@ -51,11 +51,5 @@ class InterceptorLogging : HandlerInterceptor {
 
         uuidThreadLocal.remove()
         stopWatchThreadLocal.remove()
-
-        super.postHandle(request, response, handler, modelAndView)
-    }
-
-    fun getRequestId(): String? {
-        return uuidThreadLocal.get()
     }
 }

@@ -29,7 +29,7 @@ class AspectLogging {
         val parameterNames = method.parameters
         val arguments = jp.args
         val paramLength = minOf(parameterNames.size, arguments.size)
-        val uuid = InterceptorLogging().getRequestId() ?: "SYSTEM"
+        val uuid = InterceptorLogging().requestId ?: "SYSTEM"
 
         val param = StringBuilder()
         for (i in 0 until paramLength) {
@@ -49,7 +49,7 @@ class AspectLogging {
         val signature = jp.signature as MethodSignature
         val className = signature.declaringTypeName
         val methodName = signature.method.name
-        val uuid = InterceptorLogging().getRequestId() ?: "SYSTEM"
+        val uuid = InterceptorLogging().requestId ?: "SYSTEM"
         var res = result.toString()
 
         if (res != null && methodName.contains("resultMasterPasswordScheduler")) {
@@ -66,7 +66,7 @@ class AspectLogging {
         val className = signature.declaringType.simpleName
         val methodName = signature.method.name
         val errorName = ex.exceptionCode.name
-        val uuid = InterceptorLogging().getRequestId() ?: "SYSTEM"
+        val uuid = InterceptorLogging().requestId ?: "SYSTEM"
 
         log.error("========== [{} | ERROR] {} | {} | code={} ==========", uuid, className, methodName, errorName)
 
