@@ -202,7 +202,7 @@ logging:
 
 sentry:
   dsn: ${SENTRY_DSN}
-  environment: dev
+  environment: develop
   traces-sample-rate: 1.0
   logging:
     minimum-event-level: info
