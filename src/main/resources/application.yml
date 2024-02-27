@@ -45,6 +45,23 @@ spring:
             enable: true
             require: true
 
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 50MB
+
+logging:
+  config: classpath:logback/dev-logback.xml
+  file:
+    name: alloon-rolling.log
+
+sentry:
+  dsn:
+  traces-sample-rate: 1.0
+  logging:
+    minimum-event-level: info
+    minimum-breadcrumb-level: info
+
 api:
   name: "Alloon Local"
   master:
@@ -56,7 +73,7 @@ api:
       access: ${JWT_ACCESS}
       refresh: ${JWT_REFRESH}
   mail:
-    address: ${MAIN_ADDRESS}
+    address: ${MAIL_ADDRESS}
 
 ###################
 ###### TEST #######
@@ -101,6 +118,23 @@ spring:
             enable: true
             require: true
 
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 50MB
+
+logging:
+  config: classpath:logback/dev-logback.xml
+  file:
+    name: alloon-rolling.log
+
+sentry:
+  dsn:
+  traces-sample-rate: 1.0
+  logging:
+    minimum-event-level: info
+    minimum-breadcrumb-level: info
+
 api:
   name: "Alloon Test"
   master:
@@ -112,7 +146,7 @@ api:
       access: ${JWT_ACCESS}
       refresh: ${JWT_REFRESH}
   mail:
-    address: ${MAIN_ADDRESS}
+    address: ${MAIL_ADDRESS}
 
 ###################
 ####### DEV #######
@@ -157,6 +191,23 @@ spring:
             enable: true
             require: true
 
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 50MB
+
+logging:
+  config: classpath:logback/prod-logback.xml
+  file.name: alloon-rolling.log
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: dev
+  traces-sample-rate: 1.0
+  logging:
+    minimum-event-level: info
+    minimum-breadcrumb-level: info
+
 api:
   name: "Alloon Dev"
   master:
@@ -168,4 +219,4 @@ api:
       access: ${JWT_ACCESS}
       refresh: ${JWT_REFRESH}
   mail:
-    address: ${MAIN_ADDRESS}
+    address: ${MAIL_ADDRESS}
