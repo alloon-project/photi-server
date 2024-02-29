@@ -10,11 +10,14 @@ import java.util.*
 
 class InterceptorLogging : HandlerInterceptor {
 
-    private val log = LoggerFactory.getLogger(this.javaClass)!!
+    companion object {
+        private val log = LoggerFactory.getLogger(this::class.java)
+    }
+
     private val stopWatchThreadLocal: ThreadLocal<StopWatch> = ThreadLocal()
     private val uuidThreadLocal: ThreadLocal<String> = ThreadLocal()
 
-    val requestId:String = uuidThreadLocal.toString()
+    val requestId:String = uuidThreadLocal.toString().substringAfterLast("@")
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val uuid = UUID.randomUUID().toString()
