@@ -48,6 +48,37 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
             })
     }
 
+    @ExceptionHandler(ConstraintViolationException::class)
+    protected fun handleConstraintViolationException(ex: ConstraintViolationException):
+            ResponseEntity<ExceptionResponse> {
+        var responseCode: String
+        val responseMessage: String
+
+        if (ex.constraintViolations.stream().findFirst().isPresent) {
+            val constraintViolation = ex.constraintViolations.stream()
+                .findFirst()
+                .get()
+            val propertyPathSize = constraintViolation.propertyPath.toString()
+                .split("\\.")
+                .size
+
+            responseCode = constraintViolation.propertyPath.toString()
+                .split("\\.")[propertyPathSize - 1]
+            responseCode = responseCode.replace("[^\\p{Alnum}]+", "_")
+                .replace("(\\p{Lower})(\\p{Upper})", "$1_$2")
+                .uppercase()
+            responseCode = formatIfInnerDto(responseCode)
+            responseMessage = constraintViolation.messageTemplate
+            responseCode += formatResponseCode(responseMessage)
+            responseCode = responseCode.split(".")[responseCode.split(".").size - 1]
+        } else {
+            throw CustomException(SERVER_ERROR)
+        }
+
+        return ResponseEntity.status(BAD_REQUEST)
+            .body(ExceptionResponse(responseCode, responseMessage))
+    }
+
     /**
      * 401 Unauthorized
      */
