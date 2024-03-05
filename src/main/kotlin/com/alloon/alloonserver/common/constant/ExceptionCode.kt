@@ -17,6 +17,7 @@ enum class ExceptionCode(
     // @Size
 
     // @Pattern, @Email
+    EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),
 
     // @Positive, @PositiveOrZero
 

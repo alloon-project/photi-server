@@ -16,9 +16,14 @@ class Contact(
     @Column(nullable = false, unique = true, length = 127)
     val email: String,
     @Column(nullable = false, length = 6)
-    val verificationCode: String,
+    var verificationCode: String,
 
     @Column(nullable = false)
-    val isVerified: Boolean = false,
+    var isVerified: Boolean = false,
     ) : BaseEntity() {
+
+    fun changeVerificationCode(verificationCode: String) {
+        this.verificationCode = verificationCode
+        this.isVerified = false
+    }
 }

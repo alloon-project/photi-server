@@ -1,0 +1,15 @@
+[[send-verification-code]]
+=== 이메일 인증코드 전송
+
+==== HTTP Request
+include::{snippets}/auth/send-verification-code/http-request.adoc[]
+include::{snippets}/auth/send-verification-code/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth/send-verification-code/http-response.adoc[]
+include::{snippets}/auth/send-verification-code/response-fields.adoc[]
+
+==== Excpetion
+====== EMAIL_FILED_REQUIRED
+include::{snippets}/auth/send-verification-code/email-field-required/http-request.adoc[]
+include::{snippets}/auth/send-verification-code/email-field-required/http-response.adoc[]

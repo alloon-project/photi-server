@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @WebMvcTest(DevelopController::class)
 abstract class DevelopControllerTest : WebMvcSupport() {
 
-    @MockBean lateinit var developService: DevelopService
+    @MockBean private lateinit var developService: DevelopService
 
     @DisplayName("헬스 체크를 하면 200을 반환한다")
     @Test

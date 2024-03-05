@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 abstract class BaseEntity(
 
     @CreatedDate
-    val createdDateTime: LocalDateTime? = null,
+    var createdDateTime: LocalDateTime? = null,
 
     @LastModifiedDate
     var updatedDateTime: LocalDateTime? = null,
