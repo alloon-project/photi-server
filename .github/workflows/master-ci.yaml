@@ -14,7 +14,7 @@ jobs:
       mysql:
         image: mysql
         env:
-          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+          MYSQL_DATABASE: alloon_local
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 3306:3306
