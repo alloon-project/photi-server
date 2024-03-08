@@ -2,7 +2,8 @@ package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
-import com.alloon.alloonserver.common.constant.ExceptionCode.EXISTING_EMAIL
+import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
+import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
@@ -23,7 +24,7 @@ class AuthService(
 ) {
 
     /**
-     * 이메일 인증코드 전송 |
+     * 이메일 인증코드 전송
      * @param request 연락처 인증코드 전송 요청
      * @throws EXISTING_EMAIL 409
      * @throws EMAIL_SEND_ERROR 500
@@ -43,5 +44,18 @@ class AuthService(
         }
 
         emailService.sendVerificationEmail(request.email, verificationCode)
+    }
+
+    /**
+     * 이메일 인증코드 검증
+     * @param request 연락처 인증코드 검증 요청
+     * @throws VERIFICATION_CODE_INVALID 400
+     * @throws EMAIL_NOT_FOUND 404
+     */
+    @Transactional
+    fun verifyEmailVerificationCode(@Valid request: ContactServiceVerifyRequest) {
+        val contact = contactRepository.findByEmail(request.email)
+            ?.verify(request.verificationCode)
+            ?: throw CustomException(EMAIL_NOT_FOUND)
     }
 }

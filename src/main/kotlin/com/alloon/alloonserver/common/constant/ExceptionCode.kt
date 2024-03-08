@@ -13,6 +13,7 @@ enum class ExceptionCode(
      */
     // @NotBlank, @NotNull
     EMAIL_FIELD_REQUIRED(BAD_REQUEST, "이메일은 필수 입력입니다."),
+    VERIFICATION_CODE_FIELD_REQUIRED(BAD_REQUEST, "이메일 인증코드는 필수 입력입니다."),
 
     // @Size
     EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자 이하만 가능합니다."),
@@ -25,6 +26,7 @@ enum class ExceptionCode(
     // @Min, @Max
 
     // Custom
+    EMAIL_VERIFICATION_CODE_INVALID(BAD_REQUEST, "이메일 인증코드가 틀렸습니다."),
 
     /**
      * 401 Unauthorized
@@ -43,6 +45,7 @@ enum class ExceptionCode(
      * 404 Not Found
      */
     USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 회원입니다."),
+    EMAIL_NOT_FOUND(NOT_FOUND, "존재하지 않는 이메일입니다."),
 
     /**
      * 405 Method Not Allowed

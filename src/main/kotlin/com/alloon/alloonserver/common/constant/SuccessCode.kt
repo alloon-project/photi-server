@@ -12,7 +12,11 @@ enum class SuccessCode(
     /**
      * Auth Controller
      */
-    VERIFICATION_CODE_SENT(CREATED, "이메일 인증 코드를 보냈습니다."),
+    // 201 Created
+    EMAIL_VERIFICATION_CODE_SENT(CREATED, "이메일 인증코드를 보냈습니다."),
+
+    // 200 OK
+    EMAIL_VERIFICATION_CODE_VERIFIED(OK, "이메일 인증코드가 확인 되었습니다."),
 
     /**
      * Develop Controller

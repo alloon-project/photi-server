@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
+import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
@@ -116,6 +117,37 @@ class AuthServiceTest(
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_EMAIL)
+    }
+
+    @DisplayName("올바른 인증코드로 이메일 인증코드를 검증하면 정상 작동한다")
+    @Test
+    fun givenValid_whenVerifyEmailVerificationCode_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        val request = createValidContactServiceVerifyRequest()
+
+        // when
+        authService.verifyEmailVerificationCode(request)
+
+        // then
+        assertThat(contact.isVerified).isTrue()
+    }
+
+    @DisplayName("존재하지 않는 이메일로 인증코드를 검증하면 예외가 발생한다")
+    @Test
+    fun givenNonExistingEmail_whenVerifyEmailVerificationCode_thenThrow() {
+        // given
+        val request = createValidContactServiceVerifyRequest()
+
+        // when & then
+        assertThatThrownBy { authService.verifyEmailVerificationCode(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EMAIL_NOT_FOUND)
+    }
+
+    private fun createValidContactServiceVerifyRequest(): ContactServiceVerifyRequest {
+        return ContactServiceVerifyRequest("tester@alloon.com", "000000")
     }
 
     private fun createValidContactServiceSendVerificationRequest(): ContactServiceSendVerificationRequest {
