@@ -27,6 +27,8 @@ enum class ExceptionCode(
 
     // Custom
     EMAIL_VERIFICATION_CODE_INVALID(BAD_REQUEST, "이메일 인증코드가 틀렸습니다."),
+    USERNAME_FIELD_REQUIRED(BAD_REQUEST, "아이디는 필수 입력입니다."),
+    USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어와 숫자의 조합으로 입력해 주세요."),
 
     /**
      * 401 Unauthorized
@@ -56,6 +58,8 @@ enum class ExceptionCode(
      * 409 Conflict
      */
     EXISTING_EMAIL(CONFLICT, "이미 사용중인 이메일입니다."),
+    UNAVAILABLE_USERNAME(CONFLICT, "사용 불가능한 아이디입니다."),
+    EXISTING_USERNAME(CONFLICT, "이미 사용중인 아이디입니다."),
 
     /**
      * 413 Payload too large

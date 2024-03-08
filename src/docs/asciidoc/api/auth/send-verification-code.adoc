@@ -11,6 +11,6 @@ include::{snippets}/auth/send-verification-code/response-fields.adoc[]
 
 ==== Exception
 
-====== EMAIL_FILED_REQUIRED
+====== EMAIL_FIELD_REQUIRED
 include::{snippets}/auth/send-verification-code/email-field-required/http-request.adoc[]
 include::{snippets}/auth/send-verification-code/email-field-required/http-response.adoc[]

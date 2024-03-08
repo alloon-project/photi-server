@@ -1,5 +1,5 @@
-[[send-verification-code]]
-=== 이메일 인증코드 전송
+[[verify-email-verification-code]]
+=== 이메일 인증코드 검증
 
 ==== HTTP Request
 include::{snippets}/auth/verify-email-verification-code/http-request.adoc[]
