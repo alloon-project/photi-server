@@ -9,7 +9,8 @@ include::{snippets}/auth/send-verification-code/request-fields.adoc[]
 include::{snippets}/auth/send-verification-code/http-response.adoc[]
 include::{snippets}/auth/send-verification-code/response-fields.adoc[]
 
-==== Excpetion
+==== Exception
+
 ====== EMAIL_FILED_REQUIRED
 include::{snippets}/auth/send-verification-code/email-field-required/http-request.adoc[]
 include::{snippets}/auth/send-verification-code/email-field-required/http-response.adoc[]
