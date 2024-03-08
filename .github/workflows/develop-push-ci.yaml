@@ -1,8 +1,8 @@
-name: Master - CI
+name: Develop Push - CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "develop" ]
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -14,7 +14,7 @@ jobs:
       mysql:
         image: mysql
         env:
-          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+          MYSQL_DATABASE: alloon_local
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 3306:3306
@@ -25,7 +25,7 @@ jobs:
 
       - name: Set up Database
         run: |
-          mysql -h 127.0.0.1 -u root -p"${{ secrets.DB_PASSWORD }}" alloon_test < src/main/resources/schema.sql
+          mysql -h 127.0.0.1 -u root -p"${{ secrets.DB_PASSWORD }}" alloon_local < src/main/resources/schema.sql
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -80,7 +80,7 @@ jobs:
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: gs97ahn/server
-          tags: alloon-prod, alloon-v1.0.0
+          tags: alloon-dev
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
