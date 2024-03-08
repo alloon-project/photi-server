@@ -34,7 +34,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contact")
+            MockMvcRequestBuilders.post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -67,7 +67,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contact")
+            MockMvcRequestBuilders.post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -85,7 +85,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
             )
     }
 
-    @DisplayName("이메일 인증코드 전송을 하면 200을 반환한다")
+    @DisplayName("이메일 인증코드 검증을 하면 200을 반환한다")
     @Test
     fun givenValid_whenVerifyEmailVerificationCode_thenReturn200() {
         // given
@@ -93,7 +93,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contact")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -128,7 +128,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contact")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -157,7 +157,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contact")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())

@@ -31,7 +31,7 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            post("/api/v1/contact")
+            post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -51,7 +51,7 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            post("/api/v1/contact")
+            post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -70,7 +70,7 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contact")
+            patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -90,7 +90,7 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contact")
+            patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -110,7 +110,7 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contact")
+            patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
