@@ -3,15 +3,13 @@ package com.alloon.alloonserver.domain.mission
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
-import java.math.BigInteger
-import java.time.LocalDateTime
 
 @Entity
 class MissionMember(
     @Id
     @Column(name = "mission_member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: BigInteger? = null,
+    val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

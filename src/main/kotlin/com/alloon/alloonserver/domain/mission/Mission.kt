@@ -2,16 +2,14 @@ package com.alloon.alloonserver.domain.mission
 
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import jakarta.persistence.*
-import java.math.BigInteger
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Entity
 class Mission(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mission_id")
-    val id: BigInteger? = null,
+    val id: Long? = null,
 
     @Column(nullable = false, length = 31)
     var missionName: String,
