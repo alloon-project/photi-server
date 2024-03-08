@@ -19,3 +19,7 @@ include::api/develop/health-check.adoc[]
 
 include::api/auth/send-verification-code.adoc[]
 
+include::api/auth/verify-email-verification-code.adoc[]
+
+include::api/auth/validate-username.adoc[]
+
