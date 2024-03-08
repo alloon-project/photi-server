@@ -11,8 +11,8 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class DevelopControllerDocsTest : RestDocsSupport() {
 
@@ -29,11 +29,11 @@ class DevelopControllerDocsTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/v1/health")
-        ).andDo(MockMvcResultHandlers.print())
-            .andExpect(MockMvcResultMatchers.status().isOk)
+        ).andDo(print())
+            .andExpect(status().isOk)
             .andDo(
                 MockMvcRestDocumentation.document(
-                    "health",
+                    "develop/health",
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.responseFields(
                         PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
