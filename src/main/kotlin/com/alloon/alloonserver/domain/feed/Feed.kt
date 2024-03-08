@@ -25,6 +25,6 @@ class Feed(
     val imageUrl: String,
 
     @Column(nullable = false)
-    val likedCnt: Long = 0L,
+    val likedCnt: Int = 0,
 ) : BasePermanentEntity() {
 }
