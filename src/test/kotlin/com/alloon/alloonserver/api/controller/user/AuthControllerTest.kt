@@ -1,65 +1,88 @@
 package com.alloon.alloonserver.api.controller.user
 
-import com.alloon.alloonserver.api.controller.WebMvcSupport
+import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.user.request.ContactSendVerificationRequest
 import com.alloon.alloonserver.api.controller.user.request.ContactVerifyRequest
 import com.alloon.alloonserver.api.service.user.AuthService
-import com.alloon.alloonserver.common.constant.ExceptionCode.EMAIL_FIELD_REQUIRED
-import com.alloon.alloonserver.common.constant.ExceptionCode.VERIFICATION_CODE_FIELD_REQUIRED
-import com.alloon.alloonserver.common.constant.SuccessCode.EMAIL_VERIFICATION_CODE_VERIFIED
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.mockito.Mockito.mock
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.payload.JsonFieldType
+import org.springframework.restdocs.payload.PayloadDocumentation
+import org.springframework.restdocs.request.RequestDocumentation
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(AuthController::class)
-abstract class AuthControllerTest() : WebMvcSupport() {
+class AuthControllerDocsTest : RestDocsSupport() {
 
-    @MockBean private lateinit var authService: AuthService
+    private val authService = mock(AuthService::class.java)
 
-    @DisplayName("이메일 인증코드 전송을 하면 201을 반환한다")
+    @Override
+    override fun initController(): Any {
+        return AuthController(authService)
+    }
+
+    @DisplayName("이메일 인증코드 전송을 하면 200을 반환한다")
     @Test
-    fun givenValid_whenSendVerificationCode_thenReturn201() {
+    fun givenValid_whenSendVerificationCode_thenReturn200() {
         // given
         val request = createValidContactSendVerificationRequest()
 
         // when & then
         mockMvc.perform(
-            post("/api/v1/contacts")
+            MockMvcRequestBuilders.post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.code")
-                .value(EMAIL_VERIFICATION_CODE_VERIFIED.name))
-            .andExpect(jsonPath("$.message")
-                .value(EMAIL_VERIFICATION_CODE_VERIFIED.message))
+            .andExpect(status().isCreated)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/send-verification-code",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
     }
 
     @DisplayName("이메일 미입력시 이메일 인증코드 전송을 하면 400을 반환한다")
     @Test
-    fun givenBlankEmail_whenSendVerificationCode_thenReturn400() {
+    fun givenBlankEmail__whenSendVerificationCode_thenReturn400() {
         // given
         val request = createValidContactSendVerificationRequest()
         request.email = ""
 
         // when & then
         mockMvc.perform(
-            post("/api/v1/contacts")
+            MockMvcRequestBuilders.post("/api/v1/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.code")
-                .value(EMAIL_FIELD_REQUIRED.name))
-            .andExpect(jsonPath("$.message")
-                .value(EMAIL_FIELD_REQUIRED.message))
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/send-verification-code/email-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일")
+                    )
+                )
+            )
     }
 
     @DisplayName("이메일 인증코드 검증을 하면 200을 반환한다")
@@ -70,15 +93,30 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.code")
-                .value(EMAIL_VERIFICATION_CODE_VERIFIED.name))
-            .andExpect(jsonPath("$.message")
-                .value(EMAIL_VERIFICATION_CODE_VERIFIED.message))
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/verify-email-verification-code",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                            .description("인증코드")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
     }
 
     @DisplayName("이메일 미입력시 이메일 인증코드 검증을 하면 400을 반환한다")
@@ -90,18 +128,27 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.code")
-                .value(EMAIL_FIELD_REQUIRED.name))
-            .andExpect(jsonPath("$.message")
-                .value(EMAIL_FIELD_REQUIRED.message))
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/verify-email-verification-code/email-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                            .description("인증코드")
+                    )
+                )
+            )
     }
 
-    @DisplayName("인증코드 미입력시 이메일 인증코드 검증을 하면 400을 반환한다")
+    @DisplayName("이메일 미입력시 이메일 인증코드 검증을 하면 400을 반환한다")
     @Test
     fun givenBlankVerificationCode_whenVerifyEmailVerificationCode_thenReturn400() {
         // given
@@ -110,15 +157,78 @@ abstract class AuthControllerTest() : WebMvcSupport() {
 
         // when & then
         mockMvc.perform(
-            patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.code")
-                .value(VERIFICATION_CODE_FIELD_REQUIRED.name))
-            .andExpect(jsonPath("$.message")
-                .value(VERIFICATION_CODE_FIELD_REQUIRED.message))
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/verify-email-verification-code/verification-code-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                            .description("인증코드")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("아이디 검증을 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenValidateUsername_thenReturn200() {
+        // given
+        val username = "tester"
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/users/username")
+                .queryParam("username", username)
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/validate-username",
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    RequestDocumentation.queryParameters(
+                        RequestDocumentation.parameterWithName("username")
+                            .description("아이디")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("아이디 미입력시 아이디 검증을 하면 400을 반환한다")
+    @Test
+    fun givenBlankUsername_whenValidateUsername_thenReturn200() {
+        // given
+        val username = null
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/users/username")
+                .queryParam("username", username)
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/validate-username/username-field-required",
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    RequestDocumentation.queryParameters(
+                        RequestDocumentation.parameterWithName("username")
+                            .description("아이디")
+                    )
+                )
+            )
     }
 
     private fun createValidContactVerifyRequest(): ContactVerifyRequest {

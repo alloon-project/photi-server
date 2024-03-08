@@ -146,6 +146,47 @@ class AuthServiceTest(
             .isEqualTo(EMAIL_NOT_FOUND)
     }
 
+    @DisplayName("올바른 아이디로 아이디 검증을 하면 정상 작동한다")
+    @Test
+    fun givenValid_whenValidateUsername_thenReturn() {
+        // given
+        val username = "tester"
+
+        // when
+        authService.validateUsername(username)
+
+        // then
+        assertThat(userRepository.existsByUsername(username)).isFalse()
+    }
+
+    @DisplayName("사용 불가능한 아이디로 아이디 검증을 하면 예외가 발생한다")
+    @Test
+    fun givenUnavailableUsername_whenValidateUsername_thenThrow() {
+        // given
+        val username = "alloon"
+
+        // when & then
+        assertThatThrownBy{ authService.validateUsername(username) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(UNAVAILABLE_USERNAME)
+    }
+
+    @DisplayName("존재하는 아이디로 아이디 검증을 하면 예외가 발생한다")
+    @Test
+    fun givenExistingUsername_whenValidateUsername_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+        val user = createAndSaveUser(contact)
+        val username = user.username
+
+        // when & then
+        assertThatThrownBy { authService.validateUsername(username) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EXISTING_USERNAME)
+    }
+
     private fun createValidContactServiceVerifyRequest(): ContactServiceVerifyRequest {
         return ContactServiceVerifyRequest("tester@alloon.com", "000000")
     }

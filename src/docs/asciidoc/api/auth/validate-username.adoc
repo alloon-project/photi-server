@@ -1,0 +1,15 @@
+[[validate-username]]
+=== 아이디 검증
+
+==== HTTP Request
+include::{snippets}/auth/validate-username/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth/validate-username/http-response.adoc[]
+include::{snippets}/auth/validate-username/response-fields.adoc[]
+
+==== Exception
+
+====== USERNAME_FIELD_REQUIRED
+include::{snippets}/auth/validate-username/username-field-required/http-request.adoc[]
+include::{snippets}/auth/validate-username/username-field-required/http-response.adoc[]

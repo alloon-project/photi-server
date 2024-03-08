@@ -1,39 +1,46 @@
 package com.alloon.alloonserver.api.controller.develop
 
-import com.alloon.alloonserver.api.controller.WebMvcSupport
 import com.alloon.alloonserver.api.service.develop.DevelopService
-import com.alloon.alloonserver.common.constant.SuccessCode.SERVER_OK
+import com.alloon.alloonserver.api.controller.RestDocsSupport
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
+import org.mockito.Mockito.mock
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.payload.JsonFieldType
+import org.springframework.restdocs.payload.PayloadDocumentation
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@WebMvcTest(DevelopController::class)
-abstract class DevelopControllerTest : WebMvcSupport() {
+class DevelopControllerDocsTest : RestDocsSupport() {
 
-    @MockBean private lateinit var developService: DevelopService
+    private val developService = mock(DevelopService::class.java)
+
+    @Override
+    override fun initController(): Any {
+        return DevelopController(developService)
+    }
 
     @DisplayName("헬스 체크를 하면 200을 반환한다")
     @Test
-    fun givenValid_whenHealthCheck_thenReturn200() {
-        // given
-        val serverName = "Alloon Test"
-        `when`(developService.getServerName())
-            .thenReturn(serverName)
-
+    fun givenValid_whenHealthCheck_return200() {
         // when & then
         mockMvc.perform(
-            get("/api/v1/health")
+            MockMvcRequestBuilders.get("/api/v1/health")
         ).andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.responseCode")
-                .value(SERVER_OK.name))
-            .andExpect(jsonPath("$.responseMessage")
-                .value(serverName + " " + SERVER_OK.message))
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "develop/health",
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
     }
 }

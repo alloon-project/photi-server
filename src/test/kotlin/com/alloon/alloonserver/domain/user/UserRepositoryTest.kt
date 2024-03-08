@@ -2,6 +2,7 @@ package com.alloon.alloonserver.domain.user
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -26,6 +27,19 @@ class UserRepositoryTest(
 
         // then
         assertThat(result).isTrue()
+    }
+
+    @DisplayName("아이디로 회원 존재 여부 확인이 정상 작동한다")
+    @Test
+    fun givenValid_whenExistsByUsername_thenReturn() {
+        // given
+        val username = "tester"
+
+        // when
+        val result = userRepository.existsByUsername(username)
+
+        // then
+        assertThat(result).isFalse()
     }
 
     private fun createAndSaveContact(): Contact {
