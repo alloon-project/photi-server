@@ -15,6 +15,7 @@ enum class ExceptionCode(
     EMAIL_FIELD_REQUIRED(BAD_REQUEST, "이메일은 필수 입력입니다."),
 
     // @Size
+    EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자 이하만 가능합니다."),
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),

@@ -2,8 +2,7 @@ package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
-import com.alloon.alloonserver.common.constant.ExceptionCode.EMAIL_FORMAT_INVALID
-import com.alloon.alloonserver.common.constant.ExceptionCode.EXISTING_EMAIL
+import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.Contact
@@ -65,9 +64,35 @@ class AuthServiceTest(
         )
     }
 
-    @DisplayName("잘못된 이메일 포맷으로 이메일 인증코드 전송이 정상 작동한다")
+    @DisplayName("이메일 1자 미만으로 이메일 인증코드를 전송하면 예외가 발생한다")
     @Test
-    fun givenFormatEmail_whenSendVerificationCode_thenReturn() {
+    fun givenLessThan1SizeEmail__whenSendVerificationCode_thenThrow() {
+        // given
+        val request = createValidContactServiceSendVerificationRequest()
+        request.email = ""
+
+        // when & then
+        assertThatThrownBy { authService.sendVerificationCode(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .hasMessageContaining(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("이메일 100자 초과인 이메일로 이메일 인증코드를 전송하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan100SizeEmail__whenSendVerificationCode_thenThrow() {
+        // given
+        val request = createValidContactServiceSendVerificationRequest()
+        request.email = "a".repeat(101)
+
+        // when & then
+        assertThatThrownBy { authService.sendVerificationCode(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .hasMessageContaining(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 이메일 포맷으로 이메일 인증코드 전송이 예외가 발생한다")
+    @Test
+    fun givenFormatEmail_whenSendVerificationCode_thenThrow() {
         // given
         val request = createValidContactServiceSendVerificationRequest()
         request.email = "tester"
