@@ -143,27 +143,31 @@ jooq {
 	}
 
 		configurations {
-		main {
-			generationTool {
-				logging = org.jooq.meta.jaxb.Logging.WARN
-				jdbc {
-					driver = 'com.mysql.cj.jdbc.Driver'
-					url = dbUrl
-					user = System.getenv('DB_USERNAME')
-					password = System.getenv('DB_PASSWORD')
-				}
-				generator {
-					name = 'org.jooq.codegen.KotlinGenerator'
-					database {
-						name = 'org.jooq.meta.mysql.MySQLDatabase'
-						includes = 'alloon*.*'
-						excludes = ''
+			main {
+				generationTool {
+					logging = org.jooq.meta.jaxb.Logging.WARN
+					jdbc {
+						driver = 'com.mysql.cj.jdbc.Driver'
+						url = dbUrl
+						user = System.getenv('DB_USERNAME')
+						password = System.getenv('DB_PASSWORD')
 					}
-					target {
-						packageName = 'com.alloon.allonserver'
-						directory = 'build/generated-src/jooq/main'
-					}
-					strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+					generator {
+						name = 'org.jooq.codegen.KotlinGenerator'
+						database {
+							name = 'org.jooq.meta.mysql.MySQLDatabase'
+							includes = 'alloon*.*'
+							excludes = ''
+							unsignedTypes = false
+						}
+						generate {
+							kotlinNotNullRecordAttributes = true
+						}
+						target {
+							packageName = 'com.alloon.allonserver'
+							directory = 'build/generated-src/jooq/main'
+						}
+						strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
 				}
 			}
 		}

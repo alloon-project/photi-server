@@ -24,6 +24,9 @@ spring:
     init:
       mode: always
 
+  jooq:
+    sql-dialect: mysql
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -100,6 +103,9 @@ spring:
     init:
       mode: always
 
+  jooq:
+    sql-dialect: mysql
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -172,6 +178,9 @@ spring:
   sql:
     init:
       mode: ${SQL_INIT_MODE}
+
+  jooq:
+    sql-dialect: mysql
 
   jpa:
     hibernate:
