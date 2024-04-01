@@ -8,7 +8,7 @@ class MissionHashtag(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mission_hashtag_id")
+    @Column(name = "mission_hashtag_id", nullable = false)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)

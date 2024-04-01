@@ -3,10 +3,15 @@ package com.alloon.alloonserver.api.controller.user
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.user.request.ContactSendVerificationRequest
 import com.alloon.alloonserver.api.controller.user.request.ContactVerifyRequest
+import com.alloon.alloonserver.api.controller.user.request.UserRegisterRequest
 import com.alloon.alloonserver.api.service.user.AuthService
+import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
+import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
+import com.alloon.alloonserver.config.auth.JwtProvider
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
@@ -20,10 +25,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class AuthControllerDocsTest : RestDocsSupport() {
 
     private val authService = mock(AuthService::class.java)
+    private val jwtProvider = mock(JwtProvider::class.java)
 
     @Override
     override fun initController(): Any {
-        return AuthController(authService)
+        return AuthController(authService, jwtProvider)
     }
 
     @DisplayName("이메일 인증코드 전송을 하면 200을 반환한다")
@@ -229,6 +235,256 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     )
                 )
             )
+    }
+
+    @DisplayName("회원 가입을 하면 201을 반환한다")
+    @Test
+    fun givenValid_whenRegister_thenReturn201() {
+        // given
+        val request = createValidUserRegisterRequest()
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isCreated)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지"),
+                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                            .description("데이터"),
+                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                            .description("회원 식별자"),
+                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                            .description("회원 아이디"),
+                    )
+                )
+            )
+    }
+
+    @DisplayName("이메일 미입력시 회원 가입을 하면 400을 반환한다")
+    @Test
+    fun givenBlankEmail_whenRegister_thenReturn400() {
+        // given
+        val request = createValidUserRegisterRequest()
+        request.email = ""
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register/email-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                )
+            )
+    }
+
+    @DisplayName("인증코드 미입력시 회원 가입을 하면 400을 반환한다")
+    @Test
+    fun givenBlankVerificationCode_whenRegister_thenReturn400() {
+        // given
+        val request = createValidUserRegisterRequest()
+        request.verificationCode = ""
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register/verification-code-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                )
+            )
+    }
+
+    @DisplayName("아이디 미입력시 회원 가입을 하면 400을 반환한다")
+    @Test
+    fun givenBlankUsername_whenRegister_thenReturn400() {
+        // given
+        val request = createValidUserRegisterRequest()
+        request.username = ""
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register/username-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                )
+            )
+    }
+
+    @DisplayName("비밀번호 미입력시 회원 가입을 하면 400을 반환한다")
+    @Test
+    fun givenBlankPassword_whenRegister_thenReturn400() {
+        // given
+        val request = createValidUserRegisterRequest()
+        request.password = ""
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register/password-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                )
+            )
+    }
+
+    @DisplayName("비밀번호 재입력 미입력시 회원 가입을 하면 400을 반환한다")
+    @Test
+    fun givenBlankPasswordReEntered_whenRegister_thenReturn400() {
+        // given
+        val request = createValidUserRegisterRequest()
+        request.passwordReEntered = ""
+
+        `when`(authService.registerUser(request.toServiceRequest()))
+            .thenReturn(UserRegisterResponse(1, request.username))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/register")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/register/password-re-entered-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email")
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("verificationCode")
+                            .description("인증코드"),
+                        PayloadDocumentation.fieldWithPath("username")
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password")
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                            .description("비밀벊 재입력")
+                    ),
+                )
+            )
+    }
+
+    private fun createValidUserRegisterRequest(): UserRegisterRequest {
+        return UserRegisterRequest("tester@alloon.com", "000000", "tester",
+            "password1!", "password1!")
     }
 
     private fun createValidContactVerifyRequest(): ContactVerifyRequest {

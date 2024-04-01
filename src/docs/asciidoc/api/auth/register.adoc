@@ -1,0 +1,31 @@
+[[register]]
+=== 회원 가입
+
+==== HTTP Request
+include::{snippets}/auth/register/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth/register/http-response.adoc[]
+include::{snippets}/auth/register/response-fields.adoc[]
+
+==== Exception
+
+====== EMAIL_FIELD_REQUIRED
+include::{snippets}/auth/register/email-field-required/http-request.adoc[]
+include::{snippets}/auth/register/email-field-required/http-response.adoc[]
+
+====== VERIFICATION_CODE_FIELD_REQUIRED
+include::{snippets}/auth/register/verification-code-field-required/http-request.adoc[]
+include::{snippets}/auth/register/verification-code-field-required/http-response.adoc[]
+
+====== USERNAME_FIELD_REQUIRED
+include::{snippets}/auth/register/username-field-required/http-request.adoc[]
+include::{snippets}/auth/register/username-field-required/http-response.adoc[]
+
+====== PASSWORD_FIELD_REQUIRED
+include::{snippets}/auth/register/password-field-required/http-request.adoc[]
+include::{snippets}/auth/register/password-field-required/http-response.adoc[]
+
+====== PASSWORD_RE_ENTERED_FIELD_REQUIRED
+include::{snippets}/auth/register/password-re-entered-field-required/http-request.adoc[]
+include::{snippets}/auth/register/password-re-entered-field-required/http-response.adoc[]

@@ -42,6 +42,5 @@ class EmailServiceTest(
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EMAIL_SEND_ERROR)
-
     }
 }

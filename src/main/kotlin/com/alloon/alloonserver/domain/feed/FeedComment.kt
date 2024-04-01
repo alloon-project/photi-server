@@ -8,7 +8,7 @@ import jakarta.persistence.*
 class FeedComment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feed_comment_id")
+    @Column(name = "feed_comment_id", nullable = false)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)

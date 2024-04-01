@@ -14,12 +14,19 @@ enum class ExceptionCode(
     // @NotBlank, @NotNull
     EMAIL_FIELD_REQUIRED(BAD_REQUEST, "이메일은 필수 입력입니다."),
     VERIFICATION_CODE_FIELD_REQUIRED(BAD_REQUEST, "이메일 인증코드는 필수 입력입니다."),
+    USERNAME_FIELD_REQUIRED(BAD_REQUEST, "아이디는 필수 입력입니다."),
+    PASSWORD_FIELD_REQUIRED(BAD_REQUEST, "비밀번호는 필수 입력입니다."),
+    PASSWORD_RE_ENTERED_FIELD_REQUIRED(BAD_REQUEST, "비밀번호 재입력은 필수 입력입니다."),
 
     // @Size
-    EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자 이하만 가능합니다."),
+    EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자만 가능합니다."),
+    USERNAME_LENGTH_INVALID(BAD_REQUEST, "아이디는 5~20자만 가능합니다."),
+    PASSWORD_LENGTH_INVALID(BAD_REQUEST, "비밀번호는 8~30자만 가능합니다."),
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),
+    USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."),
+    PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
 
     // @Positive, @PositiveOrZero
 
@@ -27,8 +34,8 @@ enum class ExceptionCode(
 
     // Custom
     EMAIL_VERIFICATION_CODE_INVALID(BAD_REQUEST, "이메일 인증코드가 틀렸습니다."),
-    USERNAME_FIELD_REQUIRED(BAD_REQUEST, "아이디는 필수 입력입니다."),
-    USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어와 숫자의 조합으로 입력해 주세요."),
+    PASSWORD_MATCH_INVALID(BAD_REQUEST, "비밀번호와 비밀번호 재입력이 동일하지 않습니다."),
+    EMAIL_VALIDATION_INVALID(BAD_REQUEST, "이메일 인증을 먼저 해주세요."),
 
     /**
      * 401 Unauthorized
@@ -60,6 +67,7 @@ enum class ExceptionCode(
     EXISTING_EMAIL(CONFLICT, "이미 사용중인 이메일입니다."),
     UNAVAILABLE_USERNAME(CONFLICT, "사용 불가능한 아이디입니다."),
     EXISTING_USERNAME(CONFLICT, "이미 사용중인 아이디입니다."),
+    EXISTING_USER(CONFLICT, "해당 이메일로 이미 가입된 회원입니다."),
 
     /**
      * 413 Payload too large

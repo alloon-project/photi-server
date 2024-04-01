@@ -16,7 +16,7 @@ class User(
     @JoinColumn(name = "contact_id", nullable = false)
     val contact: Contact,
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 20)
     val username: String,
     @Column(nullable = false)
     val password: String,

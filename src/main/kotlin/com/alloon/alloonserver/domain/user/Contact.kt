@@ -10,10 +10,10 @@ class Contact(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contact_id")
+    @Column(name = "contact_id", nullable = false)
     val id: Long? = null,
 
-    @Column(nullable = false, unique = true, length = 127)
+    @Column(nullable = false, unique = true, length = 100)
     val email: String,
     @Column(nullable = false, length = 6)
     var verificationCode: String,
