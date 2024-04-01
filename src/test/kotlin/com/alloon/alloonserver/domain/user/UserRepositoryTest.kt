@@ -3,6 +3,7 @@ package com.alloon.alloonserver.domain.user
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -40,6 +41,35 @@ class UserRepositoryTest(
 
         // then
         assertThat(result).isFalse()
+    }
+
+    @DisplayName("이메일로 회원 조회를 하면 정상 작동한다")
+    @Test
+    fun givenValid_whenFindFetchContact_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+
+        // when
+        val foundUser = userRepository.findFetchContact(contact.email)
+
+        assertAll(
+            {
+                assertThat(foundUser)
+                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
+                        "updatedDateTime", "contact")
+                    .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+                        user.createdDateTime, user.updatedDateTime, user.contact)
+            },
+            {
+                assertThat(foundUser)
+                    .extracting("contact")
+                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
+                        contact.createdDateTime, contact.updatedDateTime)
+            }
+        )
     }
 
     private fun createAndSaveContact(): Contact {

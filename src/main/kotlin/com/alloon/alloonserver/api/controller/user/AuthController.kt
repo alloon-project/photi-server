@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.user.request.ContactSendVerificationRequest
 import com.alloon.alloonserver.api.controller.user.request.ContactVerifyRequest
+import com.alloon.alloonserver.api.controller.user.request.UserFindUsernameRequest
 import com.alloon.alloonserver.api.controller.user.request.UserRegisterRequest
 import com.alloon.alloonserver.api.service.user.AuthService
 import com.alloon.alloonserver.common.constant.SuccessCode.*
@@ -52,5 +53,12 @@ class AuthController(
         val headers = jwtProvider.createToken(response.userId)
 
         return DefaultSingleResponse.toResponseEntity(headers, USER_REGISTERED, response)
+    }
+
+    @PostMapping("/api/v1/users/find-username")
+    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<DefaultResponse> {
+        authService.findUsername(request.toServiceRequest())
+
+        return DefaultResponse.toResponseEntity(USERNAME_SENT)
     }
 }

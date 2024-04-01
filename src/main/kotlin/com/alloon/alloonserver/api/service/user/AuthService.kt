@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.service.user
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
 import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
+import com.alloon.alloonserver.api.service.user.request.UserServiceFindUsernameRequest
 import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
@@ -110,5 +111,18 @@ class AuthService(
         userRoleRepository.save(request.toUserRoleEntity(user))
 
         return UserRegisterResponse(user)
+    }
+
+    /**
+     * 아이디 찾기
+     * @param request 회원 아이디 찾기 요청
+     * @throws USER_NOT_FOUND 404
+     * @throws EMAIL_SEND_ERROR 500
+     */
+    fun findUsername(@Valid request: UserServiceFindUsernameRequest) {
+        val user = userRepository.findFetchContact(request.email)
+            ?: throw CustomException(USER_NOT_FOUND)
+
+        emailService.sendVerificationEmail(user.contact.email, user.username)
     }
 }
