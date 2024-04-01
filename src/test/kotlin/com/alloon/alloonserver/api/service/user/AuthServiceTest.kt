@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.service.user
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
 import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
+import com.alloon.alloonserver.api.service.user.request.UserServiceFindUsernameRequest
 import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
@@ -391,6 +392,98 @@ class AuthServiceTest(
             .isEqualTo(EXISTING_USER)
     }
 
+    @DisplayName("아이디 찾기를 하면 정상 작동한다")
+    @Test
+    fun givenValid_whenFindUsername_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+
+        val request = createValidUserServiceFindUsernameRequest()
+
+        // when
+        authService.findUsername(request)
+
+        // then
+        val foundUser = userRepository.findFetchContact(contact.email)
+
+        assertAll(
+            {
+                assertThat(foundUser)
+                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
+                        "updatedDateTime", "contact")
+                    .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+                        user.createdDateTime, user.updatedDateTime, user.contact)
+            },
+            {
+                assertThat(foundUser)
+                    .extracting("contact")
+                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
+                        contact.createdDateTime, contact.updatedDateTime)
+            }
+        )
+    }
+
+    @DisplayName("1자 미만의 이메일로 아이디 찾기를 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan1Email_whenFindUsername_thenThrow() {
+        // given
+        val request = createValidUserServiceFindUsernameRequest()
+        request.email = ""
+
+        // when & then
+        assertThatThrownBy { authService.findUsername(request) }
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("100자 초과의 이메일로 아이디 찾기를 하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan100Email_whenFindUsername_thenThrow() {
+        // given
+        val request = createValidUserServiceFindUsernameRequest()
+        request.email = "a".repeat(101)
+
+        // when & then
+        assertThatThrownBy { authService.findUsername(request) }
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 이메일 포맷으로 아이디 찾기를 하면 예외가 발생한다")
+    @Test
+    fun givenFormatEmail_whenFindUsername_thenThrow() {
+        // given
+        val request = createValidUserServiceFindUsernameRequest()
+        request.email = "testeralloon.com"
+
+        // when & then
+        assertThatThrownBy { authService.findUsername(request) }
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_FORMAT_INVALID.message)
+    }
+
+    @DisplayName("가입되지 않은 이메일로 아이디 찾기를 하면 예외가 발생한다")
+    @Test
+    fun givenNonExistingUser_whenFindUsername_thenThrow() {
+        // given
+        val request = createValidUserServiceFindUsernameRequest()
+
+        // when & then
+        assertThatThrownBy { authService.findUsername(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
+    private fun createValidUserServiceFindUsernameRequest(): UserServiceFindUsernameRequest {
+        return UserServiceFindUsernameRequest("tester@alloon.com")
+    }
     private fun createValidUserServiceRegisterRequest(): UserServiceRegisterRequest {
         return UserServiceRegisterRequest("tester@alloon.com", "000000", "tester", "password1!", "password1!")
     }
