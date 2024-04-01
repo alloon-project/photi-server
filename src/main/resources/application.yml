@@ -176,9 +176,6 @@ spring:
     init:
       mode: ${SQL_INIT_MODE}
 
-  jooq:
-    sql-dialect: mysql
-
   jpa:
     hibernate:
       ddl-auto: none
