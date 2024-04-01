@@ -9,7 +9,7 @@ import java.time.LocalDate
 class Suspension(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "suspend_id")
+    @Column(name = "suspend_id", nullable = false)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,8 +21,8 @@ class Suspension(
     val admin: User,
 
     @Column(nullable = false)
-    val startedDatetime: LocalDate,
+    val startedDate: LocalDate,
     @Column(nullable = false)
-    val endedDatetime: LocalDate,
+    val endedDate: LocalDate,
 ) : BaseEntity() {
 }

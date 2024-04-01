@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.service.user
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
 import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
+import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
@@ -185,6 +187,212 @@ class AuthServiceTest(
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_USERNAME)
+    }
+
+    @DisplayName("회원가입이 정상 작동한다")
+    @Test
+    fun givenValid_whenRegisterUser_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        contactRepository.save(contact)
+
+        val request = createValidUserServiceRegisterRequest()
+
+        // when
+        val response = authService.registerUser(request)
+
+        // then
+        val user = userRepository.findByUsername(request.username)
+            ?: throw CustomException(USER_NOT_FOUND)
+
+        assertThat(response)
+            .extracting("userId", "username")
+            .containsExactly(user.id, request.username)
+    }
+
+    @DisplayName("1자 미만의 이메일로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan1Email_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.email = ""
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("100자 초과의 이메일로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan100Email_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.email = "a".repeat(101)
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 이메일 포맷으로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenFormatEmail_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.email = "testeralloon.com"
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(EMAIL_FORMAT_INVALID.message)
+    }
+
+    @DisplayName("5자 미만의 아이디로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan5Username_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.username = "test"
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(USERNAME_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("20자 초과의 아이디로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan20Username_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.username = "t".repeat(21)
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(USERNAME_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 아이디 포맷으로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenFormatUsername_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.username = "가나다라마"
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(USERNAME_FORMAT_INVALID.message)
+    }
+
+    @DisplayName("8자 미만의 비밀번호 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan8Password_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.password = "passwor"
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(PASSWORD_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("30자 초과의 비밀번호 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan30Password_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.password = "p".repeat(31)
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(PASSWORD_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 비밀번호 포맷으로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenFormatPassword_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+        request.password = "password123"
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(PASSWORD_FORMAT_INVALID.message)
+    }
+
+    @DisplayName("인증을 하지 않은 이메일로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenInvalidEmail_whenRegisterUser_thenThrow() {
+        // given
+        val request = createValidUserServiceRegisterRequest()
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EMAIL_VALIDATION_INVALID)
+    }
+
+    @DisplayName("인증코드 검증을 하지 않은 이메일로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenUnverifiedEmail_whenRegisterUser_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+
+        val request = createValidUserServiceRegisterRequest()
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EMAIL_VALIDATION_INVALID)
+    }
+
+    @DisplayName("존재하는 회원 이메일로 회원 가입을 하면 예외가 발생한다")
+    @Test
+    fun givenRegisteredEmail_whenRegisterUser_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        createAndSaveUser(contact)
+
+        val request = createValidUserServiceRegisterRequest()
+
+        // when & then
+        assertThatThrownBy { authService.registerUser(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EXISTING_USER)
+    }
+
+    private fun createValidUserServiceRegisterRequest(): UserServiceRegisterRequest {
+        return UserServiceRegisterRequest("tester@alloon.com", "000000", "tester", "password1!", "password1!")
     }
 
     private fun createValidContactServiceVerifyRequest(): ContactServiceVerifyRequest {

@@ -7,13 +7,13 @@ import jakarta.persistence.*
 @Entity
 class MissionMember(
     @Id
-    @Column(name = "mission_member_id")
+    @Column(name = "mission_member_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User? = null,
+    val user: User?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id", nullable = false)

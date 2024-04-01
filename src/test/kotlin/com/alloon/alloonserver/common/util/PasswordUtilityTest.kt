@@ -22,7 +22,7 @@ class PasswordUtilityTest(
         val length = 6
 
         // when
-        val code = passwordUtility.generateRandomCode(length)
+        val code = PasswordUtility.generateRandomCode(length)
 
         // then
         assertThat(code.length).isEqualTo(length)

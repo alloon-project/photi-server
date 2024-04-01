@@ -9,7 +9,7 @@ import jakarta.persistence.*
 class Report(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_id")
+    @Column(name = "report_id", nullable = false)
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -23,5 +23,8 @@ class Report(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
     val mission: Mission? = null,
+
+    @Column(length = 300)
+    val reason: String? = null,
 ) : BaseEntity() {
 }

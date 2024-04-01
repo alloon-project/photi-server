@@ -1,9 +1,19 @@
 package com.alloon.alloonserver.config.auth
 
-import io.github.nefilim.kjwt.DecodedJWT
+import arrow.core.Either
+import com.alloon.alloonserver.common.constant.ExceptionCode
+import com.alloon.alloonserver.common.constant.ExceptionCode.TOKEN_UNAUTHENTICATED
+import com.alloon.alloonserver.common.constant.ExceptionCode.TOKEN_UNAUTHORIZED
+import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.domain.user.Role
+import com.alloon.alloonserver.domain.user.UserRoleRepository
+import io.github.nefilim.kjwt.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Component
+import java.time.Instant
 
 @Component
 class JwtProvider(
@@ -14,28 +24,106 @@ class JwtProvider(
     private var domain: String,
 
     @Value("\${api.jwt.time.access}")
-    private var accessTokenTime: String,
+    private var accessTokenTime: Long,
 
     @Value("\${api.jwt.time.refresh}")
-    private var refreshTokenTime: String,
+    private var refreshTokenTime: Long,
+
+    private val userRoleRepository: UserRoleRepository,
 ) {
-    private val tokenPrefix: String = "Bearer"
+    private val tokenPrefix: String = "Bearer "
 
-    // TODO
-//    fun createToken(userId: Long): HttpHeaders {
-//    }
+    /**
+     * JWT 토큰 생성
+     * @param userId 회원 식별자
+     * @return HTTP 헤더
+     */
+    fun createToken(userId: Long): HttpHeaders {
+        val userDetails = getUserDetails(userId)
+        val time = System.currentTimeMillis()
+        val authorities = userDetails.authorities.stream()
+            .map { it.authority }
+            .toList()
 
-    // TODO
-//    fun authenticate(token: String, jwtType: JwtTypeType) {
-//
-//    }
+        val headers: HttpHeaders = HttpHeaders()
 
-    // TODO
-//    fun getUserId(token: String): Long {
-//        return decodeToken(token).subject.toLong()
-//    }
+        val accessToken = JWT.hs256() {
+            subject(userDetails.username)
+            issuedAt(Instant.ofEpochMilli(time))
+            expiresAt(Instant.ofEpochMilli(time + accessTokenTime))
+            issuer(domain)
+            claim("roles", authorities)
+        }
+        accessToken.sign(secret)
 
-    // TODO
-//    private fun decodeToken(token: String): DecodedJWT {
-//    }
+        headers.add(HttpHeaders.AUTHORIZATION, accessToken.encode())
+
+        if (authorities.contains(Role.MASTER.name))
+            return headers
+
+        val refreshToken = JWT.hs256() {
+            subject(userDetails.username)
+            issuedAt(Instant.ofEpochMilli(time))
+            expiresAt(Instant.ofEpochMilli(time + refreshTokenTime))
+            issuer(domain)
+            claim("roles", authorities)
+        }
+        refreshToken.sign(secret)
+
+        headers.add("Refresh-Token", refreshToken.encode())
+
+        return headers
+    }
+
+    /**
+     * JWT 토큰 검증
+     * @param token 토큰
+     * @param jwtType 토큰 타입
+     * @throws TOKEN_UNAUTHORIZED 403
+     * @return JWT 토큰
+     */
+    fun verifyToken(token: String, jwtType: JwtType): JWT<JWSHMAC256Algorithm> {
+        return when (val jwt = verifySignature<JWSHMAC256Algorithm>(token.substring(tokenPrefix.length), secret)) {
+            is Either.Left -> throw CustomException(TOKEN_UNAUTHORIZED)
+            is Either.Right -> jwt.value
+        }
+    }
+
+    /**
+     * 토큰 해독
+     * @param token 토큰
+     * @throws TOKEN_UNAUTHENTICATED 401
+     * @return 해독 JWT 토큰
+     */
+    private fun decodeToken(token: String): DecodedJWT<JWSHMAC256Algorithm> {
+        require(token.isEmpty()) {
+            throw CustomException(TOKEN_UNAUTHENTICATED)
+        }
+
+        return when (val decodedJwt = JWT.decodeT(token.substring(tokenPrefix.length), JWSHMAC256Algorithm)) {
+            is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
+            is Either.Right -> decodedJwt.value
+        }
+    }
+
+    /**
+     * 회원 정보 조회
+     * @param userId 회원 식별자
+     * @throws USER_NOT_FOUND 404
+     * @return 회원 정보
+     */
+    private fun getUserDetails (userId: Long): User {
+        val userRoles = userRoleRepository.findAllFetchUser(userId)
+
+        val user = userRoles.stream()
+            .findFirst()
+            .orElseThrow{ CustomException(ExceptionCode.USER_NOT_FOUND) }
+            .user
+
+        val grantedAuthorities = userRoles.stream()
+            .map { userRole -> SimpleGrantedAuthority(userRole.role.name) }
+            .toList()
+
+        return User(user.id.toString(), user.password, grantedAuthorities)
+    }
 }

@@ -1,7 +1,8 @@
 package com.alloon.alloonserver.common.constant
 
-enum class RegexPatternConstants(
-    val pattern: String
-) {
-    LOWERCASE_NUMBER_UNDERSCORE("^[a-z0-9_]+$")
+class RegexPatternConstants {
+
+    companion object {
+        const val LOWERCASE_NUMBER_UNDERSCORE = "^[a-z0-9_]+$"
+    }
 }

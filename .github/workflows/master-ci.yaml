@@ -23,10 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Database
-        run: |
-          mysql -h 127.0.0.1 -u root -p"${{ secrets.DB_PASSWORD }}" alloon_test < src/main/resources/schema.sql
-
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:

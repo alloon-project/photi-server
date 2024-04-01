@@ -14,6 +14,7 @@ enum class SuccessCode(
      */
     // 201 Created
     EMAIL_VERIFICATION_CODE_SENT(CREATED, "이메일 인증코드를 보냈습니다."),
+    USER_REGISTERED(CREATED, "회원 가입을 완료했습니다."),
 
     // 200 OK
     EMAIL_VERIFICATION_CODE_VERIFIED(OK, "이메일 인증코드가 확인 되었습니다."),

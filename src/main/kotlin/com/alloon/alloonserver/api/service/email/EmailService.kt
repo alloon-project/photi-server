@@ -5,6 +5,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.EMAIL_SEND_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.MailException
+import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.scheduling.annotation.Async
@@ -35,19 +36,19 @@ class EmailService (
                 "key" to key,
             ))
         }
+        val mimeMessage = mailSender.createMimeMessage()
+        val mimeMessageHelper = MimeMessageHelper(mimeMessage, "utf-8")
+
+        with(mimeMessageHelper) {
+            setFrom(fromAddress)
+            setTo(toAddress)
+            setSubject(REGISTER_VERIFICATION_CODE.subject)
+            setText(templateEngine.process("verification-mail", context), true)
+        }
 
         try {
-            val mimeMessage = mailSender.createMimeMessage()
-            val mimeMessageHelper = MimeMessageHelper(mimeMessage, "utf-8")
-
-            with(mimeMessageHelper) {
-                setFrom(fromAddress)
-                setTo(toAddress)
-                setSubject(REGISTER_VERIFICATION_CODE.subject)
-                setText(templateEngine.process("verification-mail", context), true)
-            }
             mailSender.send(mimeMessage)
-        } catch (ex: MailException) {
+        } catch (e: MailSendException) {
             throw CustomException(EMAIL_SEND_ERROR)
         }
     }

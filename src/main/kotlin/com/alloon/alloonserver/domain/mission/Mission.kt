@@ -11,18 +11,20 @@ class Mission(
     @Column(name = "mission_id")
     val id: Long? = null,
 
-    @Column(nullable = false, length = 31)
+    @Column(nullable = false, length = 30)
     var missionName: String,
-    @Column(nullable = false, length = 511)
+    @Column(nullable = false, length = 500)
     val description: String,
+    @Column(length = 500)
     val rule: String? = null,
+    @Column(length = 500)
     val goal: String? = null,
     val imageUrl: String? = null,
 
     @Column(nullable = false)
-    val visitedCnt: Long = 1,
+    val visitedCnt: Int = 1,
     @Column(nullable = false)
-    val currentMemberCnt: Long = 0,
+    val currentMemberCnt: Int = 0,
 
     @Column(nullable = false)
     val isRecruiting: Boolean = true,

@@ -24,6 +24,9 @@ spring:
     init:
       mode: always
 
+  jooq:
+    sql-dialect: mysql
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -91,10 +94,10 @@ spring:
     auto: false
 
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/alloon_local?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/alloon
+    username: sa
+    password:
 
   sql:
     init:
@@ -172,6 +175,9 @@ spring:
   sql:
     init:
       mode: ${SQL_INIT_MODE}
+
+  jooq:
+    sql-dialect: mysql
 
   jpa:
     hibernate:
