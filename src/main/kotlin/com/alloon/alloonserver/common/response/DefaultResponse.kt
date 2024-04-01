@@ -23,38 +23,38 @@ open class DefaultResponse(
 }
 
 class DefaultSingleResponse(
-    val data: Any,
-
     code: String,
     message: String,
+
+    val data: Any,
 ) : DefaultResponse(code, message) {
 
     companion object {
         fun toResponseEntity(successCode: SuccessCode, data: Any): ResponseEntity<DefaultSingleResponse> {
             return ResponseEntity.status(successCode.httpStatus)
-                .body(DefaultSingleResponse(data, successCode.name, successCode.message))
+                .body(DefaultSingleResponse(successCode.name, successCode.message, data))
         }
 
         fun toResponseEntity(headers: HttpHeaders, successCode: SuccessCode, data: Any):
                 ResponseEntity<DefaultSingleResponse> {
             return ResponseEntity.status(successCode.httpStatus)
                 .headers(headers)
-                .body(DefaultSingleResponse(data, successCode.name, successCode.message))
+                .body(DefaultSingleResponse(successCode.name, successCode.message, data))
         }
     }
 }
 
 class DefaultMultiResponse<T>(
-    val data: PageData<T>,
-
     code: String,
     message: String,
+
+    val data: PageData<T>,
 ) : DefaultResponse(code, message) {
 
     companion object {
         fun <T> toResponseEntity(successCode: SuccessCode, data: PageData<T>): ResponseEntity<DefaultMultiResponse<T>> {
             return ResponseEntity.status(successCode.httpStatus)
-                .body(DefaultMultiResponse(data, successCode.name, successCode.message))
+                .body(DefaultMultiResponse(successCode.name, successCode.message, data))
         }
     }
 }

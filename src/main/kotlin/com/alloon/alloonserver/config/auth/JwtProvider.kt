@@ -56,7 +56,7 @@ class JwtProvider(
         }
         accessToken.sign(secret)
 
-        headers.add(HttpHeaders.AUTHORIZATION, accessToken.toString())
+        headers.add(HttpHeaders.AUTHORIZATION, accessToken.encode())
 
         if (authorities.contains(Role.MASTER.name))
             return headers
@@ -70,7 +70,7 @@ class JwtProvider(
         }
         refreshToken.sign(secret)
 
-        headers.add("Refresh-Token", refreshToken.toString())
+        headers.add("Refresh-Token", refreshToken.encode())
 
         return headers
     }

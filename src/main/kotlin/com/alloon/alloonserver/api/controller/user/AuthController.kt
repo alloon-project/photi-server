@@ -10,6 +10,7 @@ import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.config.auth.JwtProvider
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
