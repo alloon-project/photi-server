@@ -11,10 +11,42 @@ include::{snippets}/auth/verify-email-verification-code/response-fields.adoc[]
 
 ==== Exception
 
-====== EMAIL_FILED_REQUIRED
-include::{snippets}/auth/verify-email-verification-code/email-field-required/http-request.adoc[]
-include::{snippets}/auth/verify-email-verification-code/email-field-required/http-response.adoc[]
+===== 400
+----
+{
+  "code" : "EMAIL_FIELD_REQUIRED",
+  "message" : "이메일은 필수 입력입니다."
+}
+----
+----
+{
+  "code" : "EMAIL_LENGTH_INVALID",
+  "message" : "이메일은 1~100자만 가능합니다."
+}
+----
+----
+{
+  "code" : "EMAIL_FORMAT_INVALID",
+  "message" : "올바른 이메일 형식을 입력해 주세요."
+}
+----
+----
+{
+  "code" : "VERIFICATION_CODE_FIELD_REQUIRED",
+  "message" : "이메일 인증코드는 필수 입력입니다."
+}
+----
+----
+{
+  "code" : "EMAIL_VERIFICATION_CODE_INVALID",
+  "message" : "이메일 인증코드가 틀렸습니다."
+}
+----
 
-====== VERIFICATION_CODE_FIELD_REQUIRED
-include::{snippets}/auth/verify-email-verification-code/verification-code-field-required/http-request.adoc[]
-include::{snippets}/auth/verify-email-verification-code/verification-code-field-required/http-response.adoc[]
+===== 404
+----
+{
+  "code" : "EMAIL_NOT_FOUND",
+  "message" : "존재하지 않는 이메일입니다."
+}
+----

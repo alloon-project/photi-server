@@ -19,7 +19,8 @@ enum class SuccessCode(
     // 200 OK
     EMAIL_VERIFICATION_CODE_VERIFIED(OK, "이메일 인증코드가 확인 되었습니다."),
     USERNAME_AVAILABLE(OK, "사용 가능한 아이디입니다."),
-    USERNAME_SENT(OK, "아이디를 이메일로 전송했습니다"),
+    USERNAME_SENT(OK, "아이디를 이메일로 전송했습니다."),
+    PASSWORD_SENT(OK, "임시 비밀번호를 이메일로 전송했습니다."),
 
     /**
      * Develop Controller

@@ -1,10 +1,7 @@
 package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
-import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
-import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
-import com.alloon.alloonserver.api.service.user.request.UserServiceFindUsernameRequest
-import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
+import com.alloon.alloonserver.api.service.user.request.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
@@ -20,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
@@ -153,23 +149,38 @@ class AuthServiceTest(
     @Test
     fun givenValid_whenValidateUsername_thenReturn() {
         // given
-        val username = "tester"
+        val request = createValidUserServiceValidateUsernameRequest()
 
         // when
-        authService.validateUsername(username)
+        authService.validateUsername(request)
 
         // then
-        assertThat(userRepository.existsByUsername(username)).isFalse()
+        assertThat(userRepository.existsByUsername(request.username)).isFalse()
+    }
+
+    @DisplayName("5자 미만인 아이디로 아이디 검증을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan5Username_whenValidateUsername_thenThrow() {
+        // given
+        val request = createValidUserServiceValidateUsernameRequest()
+        request.username = "test"
+
+        // when & then
+        assertThatThrownBy{ authService.validateUsername(request) }
+            .extracting("message")
+            .asString()
+            .contains(USERNAME_LENGTH_INVALID.message)
     }
 
     @DisplayName("사용 불가능한 아이디로 아이디 검증을 하면 예외가 발생한다")
     @Test
     fun givenUnavailableUsername_whenValidateUsername_thenThrow() {
         // given
-        val username = "alloon"
+        val request = createValidUserServiceValidateUsernameRequest()
+        request.username = "alloon"
 
         // when & then
-        assertThatThrownBy{ authService.validateUsername(username) }
+        assertThatThrownBy{ authService.validateUsername(request) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(UNAVAILABLE_USERNAME)
@@ -180,11 +191,12 @@ class AuthServiceTest(
     fun givenExistingUsername_whenValidateUsername_thenThrow() {
         // given
         val contact = createAndSaveContact()
-        val user = createAndSaveUser(contact)
-        val username = user.username
+        createAndSaveUser(contact)
+
+        val request = createValidUserServiceValidateUsernameRequest()
 
         // when & then
-        assertThatThrownBy { authService.validateUsername(username) }
+        assertThatThrownBy { authService.validateUsername(request) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_USERNAME)
@@ -364,7 +376,7 @@ class AuthServiceTest(
     @Test
     fun givenUnverifiedEmail_whenRegisterUser_thenThrow() {
         // given
-        val contact = createAndSaveContact()
+        createAndSaveContact()
 
         val request = createValidUserServiceRegisterRequest()
 
@@ -406,7 +418,7 @@ class AuthServiceTest(
         authService.findUsername(request)
 
         // then
-        val foundUser = userRepository.findFetchContact(contact.email)
+        val foundUser = userRepository.findFetchContact(contact.email, null)
 
         assertAll(
             {
@@ -426,48 +438,6 @@ class AuthServiceTest(
         )
     }
 
-    @DisplayName("1자 미만의 이메일로 아이디 찾기를 하면 예외가 발생한다")
-    @Test
-    fun givenLessThan1Email_whenFindUsername_thenThrow() {
-        // given
-        val request = createValidUserServiceFindUsernameRequest()
-        request.email = ""
-
-        // when & then
-        assertThatThrownBy { authService.findUsername(request) }
-            .extracting("message")
-            .asString()
-            .contains(EMAIL_LENGTH_INVALID.message)
-    }
-
-    @DisplayName("100자 초과의 이메일로 아이디 찾기를 하면 예외가 발생한다")
-    @Test
-    fun givenMoreThan100Email_whenFindUsername_thenThrow() {
-        // given
-        val request = createValidUserServiceFindUsernameRequest()
-        request.email = "a".repeat(101)
-
-        // when & then
-        assertThatThrownBy { authService.findUsername(request) }
-            .extracting("message")
-            .asString()
-            .contains(EMAIL_LENGTH_INVALID.message)
-    }
-
-    @DisplayName("잘못된 이메일 포맷으로 아이디 찾기를 하면 예외가 발생한다")
-    @Test
-    fun givenFormatEmail_whenFindUsername_thenThrow() {
-        // given
-        val request = createValidUserServiceFindUsernameRequest()
-        request.email = "testeralloon.com"
-
-        // when & then
-        assertThatThrownBy { authService.findUsername(request) }
-            .extracting("message")
-            .asString()
-            .contains(EMAIL_FORMAT_INVALID.message)
-    }
-
     @DisplayName("가입되지 않은 이메일로 아이디 찾기를 하면 예외가 발생한다")
     @Test
     fun givenNonExistingUser_whenFindUsername_thenThrow() {
@@ -481,11 +451,56 @@ class AuthServiceTest(
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("비밀번호 찾기가 정상 작동한다")
+    @Test
+    fun givenValid_whenFindPassword_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify("000000")
+        val user = createAndSaveUser(contact)
+
+        val previousPassword = user.password
+
+        val request = createValidUserServiceFindPasswordRequest()
+
+        // when
+        authService.findPassword(request)
+
+        // then
+        val foundUser = userRepository.findFetchContact(contact.email, null)!!
+
+        assertAll(
+            { assertThat(foundUser.password).isNotEqualTo(previousPassword) },
+            { assertThat(foundUser.isTemporaryPassword).isTrue() }
+        )
+    }
+
+    @DisplayName("존재하지 않은 회원 정보로 비밀번호 찾기를 하면 예외가 발생한다")
+    @Test
+    fun givenNonExistingUser_whenFindPassword_thenReturn() {
+        // given
+        val request = createValidUserServiceFindPasswordRequest()
+
+        // when & then
+        assertThatThrownBy { authService.findPassword(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
+    private fun createValidUserServiceFindPasswordRequest(): UserServiceFindPasswordRequest {
+        return UserServiceFindPasswordRequest("tester@alloon.com", "tester")
+    }
+
     private fun createValidUserServiceFindUsernameRequest(): UserServiceFindUsernameRequest {
         return UserServiceFindUsernameRequest("tester@alloon.com")
     }
     private fun createValidUserServiceRegisterRequest(): UserServiceRegisterRequest {
         return UserServiceRegisterRequest("tester@alloon.com", "000000", "tester", "password1!", "password1!")
+    }
+
+    private fun createValidUserServiceValidateUsernameRequest(): UserServiceValidateUsernameRequest {
+        return UserServiceValidateUsernameRequest("tester")
     }
 
     private fun createValidContactServiceVerifyRequest(): ContactServiceVerifyRequest {

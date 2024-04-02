@@ -1,10 +1,8 @@
 package com.alloon.alloonserver.api.controller.user
 
-import com.alloon.alloonserver.api.controller.user.request.ContactSendVerificationRequest
-import com.alloon.alloonserver.api.controller.user.request.ContactVerifyRequest
-import com.alloon.alloonserver.api.controller.user.request.UserFindUsernameRequest
-import com.alloon.alloonserver.api.controller.user.request.UserRegisterRequest
+import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.api.service.user.AuthService
+import com.alloon.alloonserver.api.service.user.request.UserServiceValidateUsernameRequest
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
@@ -41,7 +39,7 @@ class AuthController(
     @GetMapping("/api/v1/users/username")
     fun validateUsername(@RequestParam("username") @NotBlank(message = "아이디는 필수 입력입니다.") username: String):
             ResponseEntity<DefaultResponse> {
-        authService.validateUsername(username)
+        authService.validateUsername(UserServiceValidateUsernameRequest(username))
 
         return DefaultResponse.toResponseEntity(USERNAME_AVAILABLE)
     }
@@ -60,5 +58,12 @@ class AuthController(
         authService.findUsername(request.toServiceRequest())
 
         return DefaultResponse.toResponseEntity(USERNAME_SENT)
+    }
+
+    @PostMapping("/api/v1/users/find-password")
+    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<DefaultResponse> {
+        authService.findPassword(request.toServiceRequest())
+
+        return DefaultResponse.toResponseEntity(PASSWORD_SENT)
     }
 }

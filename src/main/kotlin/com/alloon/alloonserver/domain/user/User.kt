@@ -19,10 +19,15 @@ class User(
     @Column(nullable = false, length = 20)
     val username: String,
     @Column(nullable = false)
-    val password: String,
+    var password: String,
     val imageUrl: String? = null,
 
     @Column(nullable = false)
-    val isTemporaryPassword: Boolean = false,
+    var isTemporaryPassword: Boolean = false,
     ) : BaseEntity() {
+
+        fun resetPassword(password: String) {
+            this.password = password
+            this.isTemporaryPassword = true
+        }
 }

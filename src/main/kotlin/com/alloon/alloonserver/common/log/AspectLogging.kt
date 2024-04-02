@@ -42,7 +42,7 @@ class AspectLogging {
     }
 
     @AfterReturning(value = "global()", returning = "result")
-    fun afterReturningGlobal(jp: JoinPoint, result: Any) {
+    fun afterReturningGlobal(jp: JoinPoint, result: Any?) {
         val signature = jp.signature as MethodSignature
         val className = signature.declaringTypeName.substringAfterLast(".")
         val methodName = signature.method.name

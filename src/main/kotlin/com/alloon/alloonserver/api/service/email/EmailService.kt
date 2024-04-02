@@ -1,10 +1,9 @@
 package com.alloon.alloonserver.api.service.email
 
-import com.alloon.alloonserver.common.constant.EmailConstants.REGISTER_VERIFICATION_CODE
+import com.alloon.alloonserver.common.constant.EmailConstants
 import com.alloon.alloonserver.common.constant.ExceptionCode.EMAIL_SEND_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.mail.MailException
 import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -23,16 +22,17 @@ class EmailService (
 ) {
 
     /**
-     * 인증코드 이메일 전송 |
+     * 이메일 전송 |
      * @param toAddress 받는 주소
      * @param key 인증 코드
+     * @param constants 이메일 종류
      * @throws EMAIL_SEND_ERROR 500
      */
     @Async
-    fun sendVerificationEmail(toAddress: String, key: String) {
+    fun sendEmail(toAddress: String, key: String, constants: EmailConstants) {
         val context = Context().apply {
             setVariables(mapOf(
-                "intro" to REGISTER_VERIFICATION_CODE.content,
+                "intro" to constants.content,
                 "key" to key,
             ))
         }
@@ -42,8 +42,8 @@ class EmailService (
         with(mimeMessageHelper) {
             setFrom(fromAddress)
             setTo(toAddress)
-            setSubject(REGISTER_VERIFICATION_CODE.subject)
-            setText(templateEngine.process("verification-mail", context), true)
+            setSubject(constants.subject)
+            setText(templateEngine.process("mail", context), true)
         }
 
         try {

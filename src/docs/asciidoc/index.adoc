@@ -24,3 +24,7 @@ include::api/auth/verify-email-verification-code.adoc[]
 include::api/auth/validate-username.adoc[]
 
 include::api/auth/register.adoc[]
+
+include::api/auth/find-username.adoc[]
+
+include::api/auth/find-password.adoc[]

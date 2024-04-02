@@ -1,16 +1,13 @@
 package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
-import com.alloon.alloonserver.api.service.user.request.ContactServiceSendVerificationRequest
-import com.alloon.alloonserver.api.service.user.request.ContactServiceVerifyRequest
-import com.alloon.alloonserver.api.service.user.request.UserServiceFindUsernameRequest
-import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
+import com.alloon.alloonserver.api.service.user.request.*
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
+import com.alloon.alloonserver.common.constant.EmailConstants.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.common.util.RegexUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.domain.user.UserRoleRepository
@@ -50,7 +47,7 @@ class AuthService(
             contactRepository.save(request.toEntity(verificationCode))
         }
 
-        emailService.sendVerificationEmail(request.email, verificationCode)
+        emailService.sendEmail(request.email, verificationCode, REGISTER_VERIFICATION_CODE)
     }
 
     /**
@@ -61,25 +58,24 @@ class AuthService(
      */
     @Transactional
     fun verifyEmailVerificationCode(@Valid request: ContactServiceVerifyRequest) {
-        val contact = contactRepository.findByEmail(request.email)
+        contactRepository.findByEmail(request.email)
             ?.verify(request.verificationCode)
             ?: throw CustomException(EMAIL_NOT_FOUND)
     }
 
     /**
      * 아이디 검증
-     * @param username 아이디
+     * @param request 아이디 검증 요청
+     * @throws USERNAME_LENGTH_INVALID 400
      * @throws USERNAME_FORMAT_INVALID 400
      * @throws UNAVAILABLE_USERNAME 409
      * @throws EXISTING_USERNAME 409
      */
-    fun validateUsername(username: String) {
-        RegexUtility.validateUsernameByRegex(username)
-
-        if (username in UNAVAILABLE_USERNAMES.fields)
+    fun validateUsername(@Valid request: UserServiceValidateUsernameRequest) {
+        if (request.username in UNAVAILABLE_USERNAMES.fields)
             throw CustomException(UNAVAILABLE_USERNAME)
 
-        if (userRepository.existsByUsername(username))
+        if (userRepository.existsByUsername(request.username))
             throw CustomException(EXISTING_USERNAME)
     }
 
@@ -87,7 +83,6 @@ class AuthService(
      * 회원 가입
      * @param request 회원 가입 요청
      * @throws EMAIL_VALIDATION_INVALID 400
-     * @throws USERNAME_FORMAT_INVALID 400
      * @throws PASSWORD_MATCH_INVALID 400
      * @throws EXISTING_USER 409
      * @throws UNAVAILABLE_USERNAME 409
@@ -103,7 +98,7 @@ class AuthService(
         if (userRepository.existsByContact(contact))
             throw CustomException(EXISTING_USER)
 
-        validateUsername(request.username)
+        validateUsername(UserServiceValidateUsernameRequest(request.username))
         PasswordUtility.validateMatchPassword(request.password, request.passwordReEntered)
         request.password = passwordUtility.encryptPassword(request.password)
 
@@ -120,9 +115,26 @@ class AuthService(
      * @throws EMAIL_SEND_ERROR 500
      */
     fun findUsername(@Valid request: UserServiceFindUsernameRequest) {
-        val user = userRepository.findFetchContact(request.email)
+        val user = userRepository.findFetchContact(request.email, null)
             ?: throw CustomException(USER_NOT_FOUND)
 
-        emailService.sendVerificationEmail(user.contact.email, user.username)
+        emailService.sendEmail(user.contact.email, user.username, FORGOT_USERNAME)
+    }
+
+    /**
+     * 비밀번호 찾기
+     * @param request 회원 비밀번호 찾기 요청
+     * @throws USER_NOT_FOUND 404
+     * @throws EMAIL_SEND_ERROR 500
+     */
+    fun findPassword(request: UserServiceFindPasswordRequest) {
+        val user = userRepository.findFetchContact(request.email, request.username)
+            ?: throw CustomException(USER_NOT_FOUND)
+
+        val password = PasswordUtility.generateRandomCode(8)
+        val encryptedPassword = passwordUtility.encryptPassword(password)
+        user.resetPassword(encryptedPassword)
+
+        emailService.sendEmail(user.contact.email, password, FORGOT_PASSWORD)
     }
 }

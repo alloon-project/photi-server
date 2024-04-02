@@ -11,6 +11,39 @@ include::{snippets}/auth/send-verification-code/response-fields.adoc[]
 
 ==== Exception
 
-====== EMAIL_FIELD_REQUIRED
-include::{snippets}/auth/send-verification-code/email-field-required/http-request.adoc[]
-include::{snippets}/auth/send-verification-code/email-field-required/http-response.adoc[]
+===== 400
+----
+{
+  "code" : "EMAIL_FIELD_REQUIRED",
+  "message" : "이메일은 필수 입력입니다."
+}
+----
+----
+{
+  "code" : "EMAIL_LENGTH_INVALID",
+  "message" : "이메일은 1~100자만 가능합니다."
+}
+----
+----
+{
+  "code" : "EMAIL_FORMAT_INVALID",
+  "message" : "올바른 이메일 형식을 입력해 주세요."
+}
+----
+
+===== 409
+----
+{
+  "code" : "EXISTING_EMAIL",
+  "message" : "이미 사용중인 이메일입니다."
+}
+----
+
+===== 500
+----
+
+{
+  "code" : "EMAIL_SEND_ERROR",
+  "message" : "이메일 전송 중 서버 에러가 발생했습니다."
+}
+----

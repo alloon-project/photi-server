@@ -67,7 +67,7 @@ enum class ExceptionCode(
     EXISTING_EMAIL(CONFLICT, "이미 사용중인 이메일입니다."),
     UNAVAILABLE_USERNAME(CONFLICT, "사용 불가능한 아이디입니다."),
     EXISTING_USERNAME(CONFLICT, "이미 사용중인 아이디입니다."),
-    EXISTING_USER(CONFLICT, "해당 이메일로 이미 가입된 회원입니다."),
+    EXISTING_USER(CONFLICT, "해당 이메일로 이미 가입된 회원이 있습니다."),
 
     /**
      * 413 Payload too large
