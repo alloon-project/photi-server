@@ -1,0 +1,31 @@
+==== HTTP Request
+include::{snippets}/auth/login/http-request.adoc[]
+include::{snippets}/auth/login/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth/login/http-response.adoc[]
+include::{snippets}/auth/login/response-fields.adoc[]
+
+==== Exception
+
+===== 400
+----
+{
+  "code" : "USERNAME_FIELD_REQUIRED",
+  "message" : "아이디는 필수 입력입니다."
+}
+----
+----
+{
+  "code" : "PASSWORD_FIELD_REQUIRED",
+  "message" : "비밀번호는 필수 입력입니다."
+}
+----
+
+===== 401
+----
+{
+  "code" : "LOGIN_UNAUTHENTICATED",
+  "message" : "아이디 또는 비밀번호가 틀렸습니다."
+}
+----
