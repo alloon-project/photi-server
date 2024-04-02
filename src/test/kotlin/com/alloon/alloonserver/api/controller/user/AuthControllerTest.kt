@@ -1,10 +1,7 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
-import com.alloon.alloonserver.api.controller.user.request.ContactSendVerificationRequest
-import com.alloon.alloonserver.api.controller.user.request.ContactVerifyRequest
-import com.alloon.alloonserver.api.controller.user.request.UserFindUsernameRequest
-import com.alloon.alloonserver.api.controller.user.request.UserRegisterRequest
+import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.api.service.user.AuthService
 import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
@@ -35,7 +32,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
     @DisplayName("이메일 인증코드 전송을 하면 200을 반환한다")
     @Test
-    fun givenValid_whenSendVerificationCode_thenReturn200() {
+    fun givenValid_whenSendEmail_thenReturn200() {
         // given
         val request = createValidContactSendVerificationRequest()
 
@@ -67,7 +64,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
     @DisplayName("이메일 미입력시 이메일 인증코드 전송을 하면 400을 반환한다")
     @Test
-    fun givenBlankEmail__whenSendVerificationCode_thenReturn400() {
+    fun givenBlankEmail__whenSendEmail_thenReturn400() {
         // given
         val request = createValidContactSendVerificationRequest()
         request.email = ""
@@ -261,15 +258,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                     PayloadDocumentation.responseFields(
@@ -312,15 +309,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -351,15 +348,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -390,15 +387,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -429,15 +426,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -468,15 +465,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -502,7 +499,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     ),
                     PayloadDocumentation.responseFields(
@@ -515,7 +512,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
             )
     }
 
-    @DisplayName("아이디 미입력시 아이디 찾기를 하면 00을 반환한다")
+    @DisplayName("아이디 미입력시 아이디 찾기를 하면 400을 반환한다")
     @Test
     fun givenBlankEmail_whenFindUsername_thenReturn400() {
         // given
@@ -535,11 +532,107 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     )
                 )
             )
+    }
+
+    @DisplayName("비밀번호 찾기를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindPassword_thenReturn200() {
+        // given
+        val request = createValidUserFindPasswordRequest()
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/find-password",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("이메일 미입력시 비밀번호 찾기를 하면 400을 반환한다")
+    @Test
+    fun givenBlankEmail_whenFindPassword_thenReturn400() {
+        // given
+        val request = createValidUserFindPasswordRequest()
+        request.email = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/find-password/email-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                    )
+                )
+            )
+    }
+
+    @DisplayName("아이디 미입력시 비밀번호 찾기를 하면 400을 반환한다")
+    @Test
+    fun givenBlankUsername_whenFindPassword_thenReturn400() {
+        // given
+        val request = createValidUserFindPasswordRequest()
+        request.username = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/find-password/username-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                    )
+                )
+            )
+    }
+
+    private fun createValidUserFindPasswordRequest(): UserFindPasswordRequest {
+        return UserFindPasswordRequest("tester@alloon.com", "tester")
     }
     
     private fun createValidUserFindUsernameRequest(): UserFindUsernameRequest {

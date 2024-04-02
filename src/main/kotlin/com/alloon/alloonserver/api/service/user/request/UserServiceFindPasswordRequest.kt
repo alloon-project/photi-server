@@ -1,5 +1,7 @@
 package com.alloon.alloonserver.api.service.user.request
 
-data class UserServiceFindUsernameRequest(
+data class UserServiceFindPasswordRequest(
     var email: String,
+
+    var username: String,
 )
