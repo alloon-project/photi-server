@@ -261,15 +261,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                     PayloadDocumentation.responseFields(
@@ -312,15 +312,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -351,15 +351,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -390,15 +390,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -429,15 +429,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -468,15 +468,15 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode")
+                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username")
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password")
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered")
+                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -502,7 +502,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     ),
                     PayloadDocumentation.responseFields(
@@ -535,7 +535,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email")
+                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     )
                 )
