@@ -66,4 +66,13 @@ class AuthController(
 
         return DefaultResponse.toResponseEntity(PASSWORD_SENT)
     }
+
+    @PostMapping("/api/v1/users/login")
+    fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<DefaultSingleResponse> {
+        val response = authService.login(request.toServiceRequest())
+
+        val headers = jwtProvider.createToken(response.userId)
+
+        return DefaultSingleResponse.toResponseEntity(headers, USER_LOGIN, response)
+    }
 }

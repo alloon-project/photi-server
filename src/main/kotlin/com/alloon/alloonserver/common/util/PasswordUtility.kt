@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.common.util
 
+import com.alloon.alloonserver.common.constant.ExceptionCode.LOGIN_UNAUTHENTICATED
 import com.alloon.alloonserver.common.constant.ExceptionCode.PASSWORD_MATCH_INVALID
 import com.alloon.alloonserver.common.response.CustomException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -43,5 +44,16 @@ class PasswordUtility(
      */
     fun encryptPassword(password: String): String {
         return passwordEncoder.encode(password)
+    }
+
+    /**
+     * 비밀번호 검증
+     * @param password 비밀번호
+     * @param encodedPassword 암호화된 비밀번호
+     * @throws LOGIN_UNAUTHENTICATED 401
+     */
+    fun verifyPassword(password: String, encodedPassword: String) {
+        if (!passwordEncoder.matches(password, encodedPassword))
+            throw CustomException(LOGIN_UNAUTHENTICATED)
     }
 }

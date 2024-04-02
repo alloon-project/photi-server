@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.service.user
 
 import com.alloon.alloonserver.api.service.email.EmailService
 import com.alloon.alloonserver.api.service.user.request.*
+import com.alloon.alloonserver.api.service.user.response.UserLoginResponse
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
 import com.alloon.alloonserver.common.constant.EmailConstants.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
@@ -87,6 +88,7 @@ class AuthService(
      * @throws EXISTING_USER 409
      * @throws UNAVAILABLE_USERNAME 409
      * @throws EXISTING_USERNAME 409
+     * @return 회원 가입 응답
      */
     @Transactional
     fun registerUser(@Valid request: UserServiceRegisterRequest): UserRegisterResponse {
@@ -127,6 +129,7 @@ class AuthService(
      * @throws USER_NOT_FOUND 404
      * @throws EMAIL_SEND_ERROR 500
      */
+    @Transactional
     fun findPassword(request: UserServiceFindPasswordRequest) {
         val user = userRepository.findFetchContact(request.email, request.username)
             ?: throw CustomException(USER_NOT_FOUND)
@@ -136,5 +139,19 @@ class AuthService(
         user.resetPassword(encryptedPassword)
 
         emailService.sendEmail(user.contact.email, password, FORGOT_PASSWORD)
+    }
+
+    /**
+     * 로그인
+     * @param request 회원 로그인 요청
+     * @throws LOGIN_UNAUTHENTICATED 401
+     * @return 회원 로그인 응답
+     */
+    fun login(request: UserServiceLoginRequest): UserLoginResponse {
+        val user = userRepository.findByUsername(request.username) ?: throw CustomException(LOGIN_UNAUTHENTICATED)
+
+        passwordUtility.verifyPassword(request.password, user.password)
+
+        return UserLoginResponse(user)
     }
 }

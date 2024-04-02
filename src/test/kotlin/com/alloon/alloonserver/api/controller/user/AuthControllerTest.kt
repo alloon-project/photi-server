@@ -4,6 +4,7 @@ import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.api.service.user.AuthService
 import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
+import com.alloon.alloonserver.api.service.user.response.UserLoginResponse
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
 import com.alloon.alloonserver.config.auth.JwtProvider
 import org.junit.jupiter.api.DisplayName
@@ -629,6 +630,116 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     )
                 )
             )
+    }
+
+    @DisplayName("회원 로그인을 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenLogin_thenReturn200() {
+        // given
+        val request = createValidUserLoginRequest()
+
+        `when`(authService.login(request.toServiceRequest()))
+            .thenReturn(UserLoginResponse(1, request.username, null, false))
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/login",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지"),
+                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                            .description("데이터"),
+                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                            .description("회원 식별자"),
+                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                            .description("회원 아이디"),
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
+                            .description("회원 프로필 이미지"),
+                        PayloadDocumentation.fieldWithPath("data.isTemporaryPassword").type(JsonFieldType.BOOLEAN)
+                            .description("임시 비밀번호 여부")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("아이디 미입력시 회원 로그인을 하면 400을 반환한다")
+    @Test
+    fun givenBlankUsername_whenLogin_thenReturn400() {
+        // given
+        val request = createValidUserLoginRequest()
+        request.username = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/login/username-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("비밀번호 미입력시 회원 로그인을 하면 400을 반환한다")
+    @Test
+    fun givenBlankPassword_whenLogin_thenReturn400() {
+        // given
+        val request = createValidUserLoginRequest()
+        request.password = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/login/password-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                            .description("아이디"),
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호")
+                    )
+                )
+            )
+    }
+
+    private fun createValidUserLoginRequest(): UserLoginRequest {
+        return UserLoginRequest("tester", "password1!")
     }
 
     private fun createValidUserFindPasswordRequest(): UserFindPasswordRequest {

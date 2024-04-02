@@ -488,6 +488,42 @@ class AuthServiceTest(
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("로그인을 하면 정상 작동한다")
+    @Test
+    fun givenValid_whenLogin_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+
+        val request = createValidUserServiceLoginRequest()
+
+        // when
+        val response = authService.login(request)
+
+        // then
+        assertThat(response)
+            .extracting("userId", "username", "imageUrl", "isTemporaryPassword")
+            .containsExactly(user.id, user.username, user.imageUrl, user.isTemporaryPassword)
+    }
+
+    @DisplayName("가입하지 않은 아이디로 로그인을 하면 예외가 발생한다")
+    @Test
+    fun givenNonRegisteredUsername_whenLogin_thenReturn() {
+        // given
+        val request = createValidUserServiceLoginRequest()
+
+        // when & then
+        assertThatThrownBy { authService.login(request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(LOGIN_UNAUTHENTICATED)
+    }
+
+    private fun createValidUserServiceLoginRequest(): UserServiceLoginRequest {
+        return UserServiceLoginRequest("tester", "password1!")
+    }
+
     private fun createValidUserServiceFindPasswordRequest(): UserServiceFindPasswordRequest {
         return UserServiceFindPasswordRequest("tester@alloon.com", "tester")
     }
@@ -517,7 +553,8 @@ class AuthServiceTest(
     }
 
     private fun createAndSaveUser(contact: Contact): User {
-        val user = User(contact = contact, username = "tester", password = "password")
+        val encryptedPassword = passwordUtility.encryptPassword("password1!")
+        val user = User(contact = contact, username = "tester", password = encryptedPassword)
         return userRepository.save(user)
     }
 }

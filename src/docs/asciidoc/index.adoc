@@ -28,3 +28,5 @@ include::api/auth/register.adoc[]
 include::api/auth/find-username.adoc[]
 
 include::api/auth/find-password.adoc[]
+
+include::api/auth/login.adoc[]
