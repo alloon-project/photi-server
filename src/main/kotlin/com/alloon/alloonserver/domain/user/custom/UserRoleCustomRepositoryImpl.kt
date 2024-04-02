@@ -4,7 +4,9 @@ import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.QUserRole.userRole
 import com.alloon.alloonserver.domain.user.UserRole
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.stereotype.Repository
 
+@Repository
 class UserRoleCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
 ) : UserRoleCustomRepository {

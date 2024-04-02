@@ -4,7 +4,9 @@ import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.stereotype.Repository
 
+@Repository
 class UserCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : UserCustomRepository {
