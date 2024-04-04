@@ -22,6 +22,7 @@ enum class SuccessCode(
     USERNAME_SENT(OK, "아이디를 이메일로 전송했습니다."),
     PASSWORD_SENT(OK, "임시 비밀번호를 이메일로 전송했습니다."),
     USER_LOGIN(OK, "로그인을 했습니다."),
+    PASSWORD_CHANGED(OK, "비밀번호가 변경되었습니다."),
 
     /**
      * Develop Controller

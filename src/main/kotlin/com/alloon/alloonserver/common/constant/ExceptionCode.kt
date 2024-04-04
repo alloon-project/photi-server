@@ -17,16 +17,20 @@ enum class ExceptionCode(
     USERNAME_FIELD_REQUIRED(BAD_REQUEST, "아이디는 필수 입력입니다."),
     PASSWORD_FIELD_REQUIRED(BAD_REQUEST, "비밀번호는 필수 입력입니다."),
     PASSWORD_RE_ENTERED_FIELD_REQUIRED(BAD_REQUEST, "비밀번호 재입력은 필수 입력입니다."),
+    NEW_PASSWORD_FIELD_REQUIRED(BAD_REQUEST, "새 비밀번호는 필수 입력입니다."),
+    NEW_PASSWORD_RE_ENTERED_FIELD_REQUIRED(BAD_REQUEST, "새 비밀번호 재입력은 필수 입력입니다."),
 
     // @Size
     EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자만 가능합니다."),
     USERNAME_LENGTH_INVALID(BAD_REQUEST, "아이디는 5~20자만 가능합니다."),
     PASSWORD_LENGTH_INVALID(BAD_REQUEST, "비밀번호는 8~30자만 가능합니다."),
+    NEW_PASSWORD_LENGTH_INVALID(BAD_REQUEST, "비밀번호는 8~30자만 가능합니다."),
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),
     USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."),
     PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
+    NEW_PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
 
     // @Positive, @PositiveOrZero
 

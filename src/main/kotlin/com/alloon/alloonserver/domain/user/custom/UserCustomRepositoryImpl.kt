@@ -23,6 +23,13 @@ class UserCustomRepositoryImpl(
             ).fetchOne()
     }
 
+    override fun find(userId: Long): User? {
+        return queryFactory
+            .selectFrom(user)
+            .where(user.id.eq(userId))
+            .fetchOne()
+    }
+
     private fun eqEmail(email: String?): BooleanExpression? = email?.let { contact.email.eq(it)}
 
     private fun eqUsername(username: String?): BooleanExpression? = username?.let { user.username.eq(it) }

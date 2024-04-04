@@ -154,4 +154,22 @@ class AuthService(
 
         return UserLoginResponse(user)
     }
+
+    /**
+     * 비밀번호 변경
+     * @param userId 회원 식별자
+     * @param request 비밀번호 변경 요청
+     * @throws PASSWORD_MATCH_INVALID 400
+     * @throws LOGIN_UNAUTHENTICATED 401
+     */
+    @Transactional
+    fun changePassword(userId: Long, @Valid request: UserServiceChangePasswordRequest) {
+        PasswordUtility.validateMatchPassword(request.newPassword, request.newPasswordReEntered)
+
+        val user = userRepository.find(userId) ?: throw CustomException(LOGIN_UNAUTHENTICATED)
+        passwordUtility.verifyPassword(request.password, user.password)
+        val encryptedPassword = passwordUtility.encryptPassword(request.newPassword)
+
+        user.changePassword(encryptedPassword)
+    }
 }
