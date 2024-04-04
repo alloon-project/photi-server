@@ -19,11 +19,11 @@ class CustomAuthenticationFilter(
         val refreshToken = request.getHeader("Refresh-Token")
 
         if (accessToken != null && !request.requestURI.contains("token")) {
-            // TODO
-//            jwtProvider.authenticate(accessToken, JwtTypeType.ACCESS)
+            println(accessToken)
+            jwtProvider.verifyToken(accessToken, JwtType.ACCESS)
         } else if (refreshToken != null) {
-            // TODO
-//            jwtProvider.authenticate(accessToken, JwtTypeType.REFRESH)
+            println(refreshToken)
+            jwtProvider.verifyToken(refreshToken, JwtType.REFRESH)
         }
 
         filterChain.doFilter(request, response)

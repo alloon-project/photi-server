@@ -477,7 +477,7 @@ class AuthServiceTest(
 
     @DisplayName("존재하지 않은 회원 정보로 비밀번호 찾기를 하면 예외가 발생한다")
     @Test
-    fun givenNonExistingUser_whenFindPassword_thenReturn() {
+    fun givenNonExistingUser_whenFindPassword_thenThrow() {
         // given
         val request = createValidUserServiceFindPasswordRequest()
 
@@ -509,7 +509,7 @@ class AuthServiceTest(
 
     @DisplayName("가입하지 않은 아이디로 로그인을 하면 예외가 발생한다")
     @Test
-    fun givenNonRegisteredUsername_whenLogin_thenReturn() {
+    fun givenNonRegisteredUsername_whenLogin_thenThrow() {
         // given
         val request = createValidUserServiceLoginRequest()
 
@@ -518,6 +518,102 @@ class AuthServiceTest(
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(LOGIN_UNAUTHENTICATED)
+    }
+
+    @DisplayName("비밀번호 변경이 정상 작동한다")
+    @Test
+    fun givenValid_whenChangePassword_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+        val encryptedPassword = user.password
+
+        val request = createValidUserServiceChangePasswordRequest()
+
+        // when
+        val response = authService.changePassword(user.id!!, request)
+
+        // then
+        assertThat(user.password).isNotEqualTo(encryptedPassword)
+    }
+
+    @DisplayName("8자 미만인 새 비밀번호로 비밀번호 변경을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan8NewPassword_whenChangePassword_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+        val encryptedPassword = user.password
+
+        val request = createValidUserServiceChangePasswordRequest()
+        request.newPassword = "passwor"
+
+        // when & then
+        assertThatThrownBy { authService.changePassword(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(NEW_PASSWORD_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("30자 초과인 새 비밀번호로 비밀번호 변경을 하면 예외가 발생한다")
+    @Test
+    fun givenMoreThan8NewPassword_whenChangePassword_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+        val encryptedPassword = user.password
+
+        val request = createValidUserServiceChangePasswordRequest()
+        request.newPassword = "a".repeat(31)
+
+        // when & then
+        assertThatThrownBy { authService.changePassword(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(NEW_PASSWORD_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("잘못된 조합인 새 비밀번호로 비밀번호 변경을 하면 예외가 발생한다")
+    @Test
+    fun givenFormatNewPassword_whenChangePassword_thenThrow() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+        val encryptedPassword = user.password
+
+        val request = createValidUserServiceChangePasswordRequest()
+        request.newPassword = "password123"
+
+        // when & then
+        assertThatThrownBy { authService.changePassword(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(NEW_PASSWORD_FORMAT_INVALID.message)
+    }
+
+    @DisplayName("존재하지 않은 회원 식별자로 비밀번호 변경을 하면 예외가 발생한다")
+    @Test
+    fun givenNonExistingUserId_whenChangePassword_thenThrow() {
+        // given
+        val userId = 1L
+        val request = createValidUserServiceChangePasswordRequest()
+
+        // when & then
+        assertThatThrownBy { authService.changePassword(userId, request) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(LOGIN_UNAUTHENTICATED)
+    }
+
+    private fun createValidUserServiceChangePasswordRequest(): UserServiceChangePasswordRequest {
+        return UserServiceChangePasswordRequest("password1!", "password2!", "password2!")
     }
 
     private fun createValidUserServiceLoginRequest(): UserServiceLoginRequest {

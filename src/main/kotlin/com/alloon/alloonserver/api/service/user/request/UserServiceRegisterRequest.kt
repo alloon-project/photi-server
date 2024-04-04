@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.api.service.user.request
 
+import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LETTER_NUMBER_SPECIAL_CHARACTER
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.Role
@@ -18,7 +19,7 @@ data class UserServiceRegisterRequest(
     @field:Pattern(regexp = LOWERCASE_NUMBER_UNDERSCORE, message = "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요.")
     var username: String,
     @field:Size(min = 8, max = 30, message = "비밀번호는 8~30자만 가능합니다.")
-    @field:Pattern(regexp = "^(?=.*[A-z])(?=.*\\d)(?=.*[#$@!%&*])[A-z\\d#$@!%&*]+$", message = "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요.")
+    @field:Pattern(regexp = LETTER_NUMBER_SPECIAL_CHARACTER, message = "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요.")
     var password: String,
     var passwordReEntered: String,
 ) {

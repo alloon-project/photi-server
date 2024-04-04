@@ -5,4 +5,6 @@ import com.alloon.alloonserver.domain.user.User
 interface UserCustomRepository {
 
     fun findFetchContact(email: String?, username: String?): User?
+
+    fun find(userId: Long): User?
 }

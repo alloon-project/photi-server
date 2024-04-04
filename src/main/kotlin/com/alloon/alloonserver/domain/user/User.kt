@@ -26,8 +26,13 @@ class User(
     var isTemporaryPassword: Boolean = false,
     ) : BaseEntity() {
 
-        fun resetPassword(password: String) {
-            this.password = password
-            this.isTemporaryPassword = true
-        }
+    fun resetPassword(password: String) {
+        this.password = password
+        this.isTemporaryPassword = true
+    }
+
+    fun changePassword(password: String) {
+        this.password = password
+        this.isTemporaryPassword = false
+    }
 }

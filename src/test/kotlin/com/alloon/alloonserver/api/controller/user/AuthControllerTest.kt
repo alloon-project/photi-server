@@ -3,7 +3,6 @@ package com.alloon.alloonserver.api.controller.user
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.api.service.user.AuthService
-import com.alloon.alloonserver.api.service.user.request.UserServiceRegisterRequest
 import com.alloon.alloonserver.api.service.user.response.UserLoginResponse
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
 import com.alloon.alloonserver.config.auth.JwtProvider
@@ -736,6 +735,143 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     )
                 )
             )
+    }
+
+    @DisplayName("비밀번호 변경을 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenChangePassword_thenReturn200() {
+        // given
+        val request = createValidUserChangePasswordRequest()
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/change-password",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                            .description("새 비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                            .description("새 비밀번호 재입력")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("비밀번호 미입력시 비밀번호 변경을 하면 400을 반환한다")
+    @Test
+    fun givenBlankPassword_whenChangePassword_thenReturn400() {
+        // given
+        val request = createValidUserChangePasswordRequest()
+        request.password = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/change-password/password-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                            .description("새 비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                            .description("새 비밀번호 재입력")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("새 비밀번호 미입력시 비밀번호 변경을 하면 400을 반환한다")
+    @Test
+    fun givenBlankNewPassword_whenChangePassword_thenReturn400() {
+        // given
+        val request = createValidUserChangePasswordRequest()
+        request.newPassword = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/change-password/new-password-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                            .description("새 비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                            .description("새 비밀번호 재입력")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("새 비밀번호 재입력 미입력시 비밀번호 변경을 하면 400을 반환한다")
+    @Test
+    fun givenBlankNewPasswordReEntered_whenChangePassword_thenReturn400() {
+        // given
+        val request = createValidUserChangePasswordRequest()
+        request.newPasswordReEntered = ""
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/change-password/new-password-re-entered-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                            .description("비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                            .description("새 비밀번호"),
+                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                            .description("새 비밀번호 재입력")
+                    )
+                )
+            )
+    }
+
+    private fun createValidUserChangePasswordRequest(): UserChangePasswordRequest {
+        return UserChangePasswordRequest("password1!", "password2!", "password2!")
     }
 
     private fun createValidUserLoginRequest(): UserLoginRequest {

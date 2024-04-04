@@ -6,6 +6,7 @@ import com.alloon.alloonserver.api.service.user.request.UserServiceValidateUsern
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
+import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.auth.JwtProvider
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @Validated
 @RestController
@@ -74,5 +76,13 @@ class AuthController(
         val headers = jwtProvider.createToken(response.userId)
 
         return DefaultSingleResponse.toResponseEntity(headers, USER_LOGIN, response)
+    }
+
+    @PatchMapping("/api/v1/users/password")
+    fun changePassword(principal: Principal, @RequestBody @Valid request: UserChangePasswordRequest):
+            ResponseEntity<DefaultResponse> {
+        authService.changePassword(UserUtility.getUserId(principal), request.toServiceRequest())
+
+        return DefaultResponse.toResponseEntity(PASSWORD_CHANGED)
     }
 }

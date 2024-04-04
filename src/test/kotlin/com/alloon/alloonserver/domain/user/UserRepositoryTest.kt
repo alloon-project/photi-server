@@ -130,6 +130,24 @@ class UserRepositoryTest(
         )
     }
 
+    @DisplayName("회원 식별자로 회원 조회를 하면 정상 작동한다")
+    @Test
+    fun givenValidUserId_whenFind_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        contact.verify(contact.verificationCode)
+        val user = createAndSaveUser(contact)
+
+        // when
+        val foundUser = userRepository.find(user.id!!)
+
+        // then
+        assertThat(foundUser)
+            .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime", "updatedDateTime")
+            .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+                user.createdDateTime, user.updatedDateTime)
+    }
+
     private fun createAndSaveContact(): Contact {
         val contact = Contact(email = "tester@alloon.com", verificationCode = "000000")
 
