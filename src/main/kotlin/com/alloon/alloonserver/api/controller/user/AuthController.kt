@@ -85,4 +85,11 @@ class AuthController(
 
         return DefaultResponse.toResponseEntity(PASSWORD_CHANGED)
     }
+
+    @PostMapping("/api/v1/users/token")
+    fun refreshToken(principal: Principal): ResponseEntity<DefaultResponse> {
+        val headers = jwtProvider.createToken(UserUtility.getUserId(principal))
+
+        return DefaultResponse.toResponseEntity(headers, TOKEN_REFRESHED)
+    }
 }

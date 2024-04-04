@@ -870,6 +870,33 @@ class AuthControllerDocsTest : RestDocsSupport() {
             )
     }
 
+    @DisplayName("토큰을 재발급하면 200을 반환한다")
+    @Test
+    fun givenValid_whenRefreshToken_thenReturn200() {
+        // given
+        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/token")
+                .principal(mockPrincipal)
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "auth/refresh-token",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지")
+                    )
+                )
+            )
+    }
+
     private fun createValidUserChangePasswordRequest(): UserChangePasswordRequest {
         return UserChangePasswordRequest("password1!", "password2!", "password2!")
     }
