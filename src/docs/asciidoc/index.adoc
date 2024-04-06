@@ -36,4 +36,4 @@ include::api/auth/change-password.adoc[]
 [[User-API]]
 === User API
 
-// include::api/user
+include::api/user/get-my-info.adoc[]
