@@ -32,3 +32,8 @@ include::api/auth/find-password.adoc[]
 include::api/auth/login.adoc[]
 
 include::api/auth/change-password.adoc[]
+
+[[User-API]]
+=== User API
+
+// include::api/user
