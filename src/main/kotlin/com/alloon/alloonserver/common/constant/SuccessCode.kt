@@ -8,6 +8,11 @@ enum class SuccessCode(
     val httpStatus: HttpStatus,
     val message: String,
 ) {
+    /**
+     * User Controller
+     */
+    // 200 OK
+    FOUND_MY_USER_INFO(OK, "내 회원 정보를 조회했습니다."),
 
     /**
      * Auth Controller

@@ -12,11 +12,12 @@ class UserCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : UserCustomRepository {
 
-    override fun findFetchContact(email: String?, username: String?): User? {
+    override fun findFetchContact(email: String?, username: String?, userId: Long?): User? {
         return queryFactory
             .selectFrom(user)
             .innerJoin(user.contact, contact)
             .where(
+                eqUserId(userId),
                 eqUsername(username),
                 eqEmail(email),
                 contact.isVerified.isTrue
@@ -29,6 +30,8 @@ class UserCustomRepositoryImpl(
             .where(user.id.eq(userId))
             .fetchOne()
     }
+
+    private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }
 
     private fun eqEmail(email: String?): BooleanExpression? = email?.let { contact.email.eq(it)}
 

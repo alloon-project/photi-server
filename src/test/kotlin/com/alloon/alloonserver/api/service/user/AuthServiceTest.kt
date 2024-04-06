@@ -418,7 +418,7 @@ class AuthServiceTest(
         authService.findUsername(request)
 
         // then
-        val foundUser = userRepository.findFetchContact(contact.email, null)
+        val foundUser = userRepository.findFetchContact(contact.email, null, null)
 
         assertAll(
             {
@@ -467,7 +467,7 @@ class AuthServiceTest(
         authService.findPassword(request)
 
         // then
-        val foundUser = userRepository.findFetchContact(contact.email, null)!!
+        val foundUser = userRepository.findFetchContact(contact.email, null, null)!!
 
         assertAll(
             { assertThat(foundUser.password).isNotEqualTo(previousPassword) },

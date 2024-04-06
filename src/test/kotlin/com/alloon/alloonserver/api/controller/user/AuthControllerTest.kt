@@ -25,7 +25,6 @@ class AuthControllerDocsTest : RestDocsSupport() {
     private val authService = mock(AuthService::class.java)
     private val jwtProvider = mock(JwtProvider::class.java)
 
-    @Override
     override fun initController(): Any {
         return AuthController(authService, jwtProvider)
     }

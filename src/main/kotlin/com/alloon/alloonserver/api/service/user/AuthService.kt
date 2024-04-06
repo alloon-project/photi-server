@@ -117,7 +117,7 @@ class AuthService(
      * @throws EMAIL_SEND_ERROR 500
      */
     fun findUsername(@Valid request: UserServiceFindUsernameRequest) {
-        val user = userRepository.findFetchContact(request.email, null)
+        val user = userRepository.findFetchContact(request.email, null, null)
             ?: throw CustomException(USER_NOT_FOUND)
 
         emailService.sendEmail(user.contact.email, user.username, FORGOT_USERNAME)
@@ -131,7 +131,7 @@ class AuthService(
      */
     @Transactional
     fun findPassword(request: UserServiceFindPasswordRequest) {
-        val user = userRepository.findFetchContact(request.email, request.username)
+        val user = userRepository.findFetchContact(request.email, request.username, null)
             ?: throw CustomException(USER_NOT_FOUND)
 
         val password = PasswordUtility.generateRandomCode(8)
