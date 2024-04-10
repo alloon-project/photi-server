@@ -1,3 +1,6 @@
+[[login]]
+=== 로그인
+
 ==== HTTP Request
 include::{snippets}/auth/login/http-request.adoc[]
 include::{snippets}/auth/login/request-fields.adoc[]
