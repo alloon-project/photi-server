@@ -21,9 +21,6 @@ spring:
     init:
       mode: always
 
-  jooq:
-    sql-dialect: mysql
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -64,6 +61,16 @@ sentry:
   logging:
     minimum-event-level: info
     minimum-breadcrumb-level: info
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
 
 api:
   name: "Alloon Local"
@@ -138,6 +145,16 @@ sentry:
     minimum-event-level: info
     minimum-breadcrumb-level: info
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+
 api:
   name: "Alloon Test"
   master:
@@ -210,6 +227,16 @@ sentry:
   logging:
     minimum-event-level: info
     minimum-breadcrumb-level: info
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
 
 api:
   name: "Alloon Dev"

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 
@@ -51,6 +52,36 @@ class UserServiceTest(
 
         // when & then
         assertThatThrownBy { userService.getInfo(userId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
+    @DisplayName("회원 이미지 업로드가 정상 작동한다")
+    @Test
+    fun givenValid_whenUploadImage_thenReturn() {
+        // given
+        val contact = createAndSaveContact()
+        val user = createAndSaveUser(contact)
+        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+
+        // when
+        val response = userService.uploadImage(user.id!!, file)
+
+        // then
+        assertThat(response)
+            .extracting("userId", "username", "imageUrl", "email")
+            .containsExactly(user.id, user.username, user.imageUrl, contact.email)
+    }
+
+    @DisplayName("존재하지 않은 회원 식별자로 회원 이미지 업로드를 하면 예외가 발생한다")
+    @Test
+    fun givenNonExistingUserId_whenUploadImage_thenThrow() {
+        // given
+        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+
+        // when & then
+        assertThatThrownBy { userService.uploadImage(1L, file) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)

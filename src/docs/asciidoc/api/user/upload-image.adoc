@@ -1,0 +1,59 @@
+[[upload-image]]
+=== 회원 사진 업로드
+
+==== HTTP Request
+include::{snippets}/user/upload-image/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/user/upload-image/http-response.adoc[]
+include::{snippets}/user/upload-image/response-fields.adoc[]
+
+==== Exception
+
+===== 400
+----
+{
+  "code" : "FILE_FIELD_REQUIRED",
+  "message" : "파일은 필수 입력입니다."
+}
+----
+
+===== 401
+----
+{
+  "code" : "TOKEN_UNAUTHENTICATED",
+  "message" : "승인되지 않은 요청입니다. 다시 로그인 해주세요."
+}
+----
+
+===== 403
+----
+{
+  "code" : "TOKEN_UNAUTHORIZED",
+  "message" : "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."
+}
+----
+
+===== 404
+----
+{
+  "code" : "USER_NOT_FOUND",
+  "message" : "존재하지 않는 회원입니다."
+}
+----
+
+===== 415
+----
+{
+  "code" : "IMAGE_TYPE_UNSUPPORTED",
+  "message" : 이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."
+}
+----
+
+===== 500
+----
+{
+  "code" : "SERVER_ERROR",
+  "message" : "서버 에러가 발생했습니다."
+}
+----
