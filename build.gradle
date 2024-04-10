@@ -50,6 +50,7 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'io.github.nefilim.kjwt:kjwt-core:0.9.0'
 	implementation 'io.sentry:sentry-spring-boot-starter:7.4.0'
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1'
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
@@ -130,7 +131,7 @@ tasks.jacocoTestCoverageVerification {
 			limit {
 				counter = 'INSTRUCTION'
 				value = 'COVEREDRATIO'
-//				minimum = 0.90
+				minimum = 0.50
 			}
 			excludes = [] + qDomains
 		}

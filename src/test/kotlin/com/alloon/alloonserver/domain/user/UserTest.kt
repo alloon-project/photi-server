@@ -42,6 +42,22 @@ class UserTest {
             .containsExactly(password, false)
     }
 
+    @DisplayName("회원 이미지 변경이 정상 작동한다")
+    @Test
+    fun givenValid_whenChangeImageUrl_thenReturn() {
+        // given
+        val contact = createContact()
+        val user = createUser(contact)
+
+        val imageUrl = "https://www.google.com"
+
+        // when
+        user.changeImageUrl(imageUrl)
+
+        // then
+        assertThat(user.imageUrl).isEqualTo(imageUrl)
+    }
+
     private fun createUser(contact: Contact): User {
         return User(contact = contact, username = "tester", password = "password1!")
     }

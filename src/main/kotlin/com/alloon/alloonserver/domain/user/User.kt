@@ -20,7 +20,7 @@ class User(
     val username: String,
     @Column(nullable = false)
     var password: String,
-    val imageUrl: String? = null,
+    var imageUrl: String? = null,
 
     @Column(nullable = false)
     var isTemporaryPassword: Boolean = false,
@@ -34,5 +34,9 @@ class User(
     fun changePassword(password: String) {
         this.password = password
         this.isTemporaryPassword = false
+    }
+
+    fun changeImageUrl(imageUrl: String) {
+        this.imageUrl = imageUrl
     }
 }

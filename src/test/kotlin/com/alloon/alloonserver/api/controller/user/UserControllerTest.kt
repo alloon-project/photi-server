@@ -3,9 +3,13 @@ package com.alloon.alloonserver.api.controller.user
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.service.user.UserService
 import com.alloon.alloonserver.api.service.user.response.UserGetInfoResponse
+import com.alloon.alloonserver.api.service.user.response.UserUploadImageResponse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
+import org.springframework.http.MediaType
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
@@ -60,5 +64,46 @@ class UserControllerTest : RestDocsSupport() {
             )
     }
 
+    @DisplayName("회원 이미지 업로드를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenUploadImage_thenReturn200() {
+        // given
+        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
+        `when`(userService.uploadImage(anyLong(), any()))
+            .thenReturn(UserUploadImageResponse(1, "tester", "https://www.google.com",
+                "tester@alloon.com"))
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/users/image")
+                .principal(mockPrincipal)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+                .param("file", file.toString())
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "user/upload-image",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지"),
+                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                            .description("데이터"),
+                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                            .description("회원 식별자"),
+                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                            .description("회원 아이디"),
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
+                            .description("프로필 이미지"),
+                        PayloadDocumentation.fieldWithPath("data.email").type(JsonFieldType.STRING)
+                            .description("이메일"),
+                    )
+                )
+            )
+    }
 }
