@@ -26,8 +26,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
         env:
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           JWT_DOMAIN: ${{ secrets.JWT_DOMAIN }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_ACCESS: ${{ secrets.JWT_ACCESS }}
@@ -50,8 +52,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           skip_check_run: false
           publish_only_summary: true
-      #          minimum_coverage: 90
-      #          fail_below_threshold: true
+          minimum_coverage: 60
+          fail_below_threshold: true
 
       - name: Add Coverage Job Summary
         run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
