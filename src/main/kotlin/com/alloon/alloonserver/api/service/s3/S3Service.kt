@@ -5,6 +5,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.FileUtility
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList.*
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
@@ -37,7 +38,8 @@ class S3Service(
         }
 
         return try {
-            amazonS3Client.putObject(bucket, "$pathName/$fileName", inputStream, objectMetadata)
+            amazonS3Client.putObject(PutObjectRequest(bucket, "$pathName/$fileName", inputStream, objectMetadata)
+                .withCannedAcl(PublicRead))
             amazonS3Client.getUrl(bucket, "$pathName/$fileName").toExternalForm()
         } catch (e: IOException) {
             throw CustomException(SERVER_ERROR, e.cause)
