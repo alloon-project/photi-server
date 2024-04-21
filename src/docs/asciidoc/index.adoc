@@ -37,3 +37,5 @@ include::api/auth/change-password.adoc[]
 === User API
 
 include::api/user/get-my-info.adoc[]
+
+include::api/user/upload-image.adoc[]

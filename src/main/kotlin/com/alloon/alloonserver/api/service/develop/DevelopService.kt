@@ -12,7 +12,7 @@ class DevelopService(
 
     /**
      * 서버명 조회
-     * @retrun 서버명
+     * @return 서버명
      */
     fun getServerName(): String {
         return serverName
