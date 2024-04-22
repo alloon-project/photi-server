@@ -43,6 +43,7 @@ class UserService(
      * @throws SERVER_ERROR 500
      * @return 회원 이미지 업로드 응답
      */
+    @Transactional
     fun uploadImage(userId: Long, file: MultipartFile?): UserUploadImageResponse {
         val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
 
