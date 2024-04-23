@@ -21,7 +21,7 @@ class MissionMember(
 
     @Column(nullable = false, length = 15)
     @Enumerated(value = EnumType.STRING)
-    val status: MissionMemberStatus,
+    val status: MissionMemberStatus = MissionMemberStatus.PROGRESS,
 
     @Column(nullable = false)
     val isCreator: Boolean,
