@@ -243,7 +243,7 @@ class AuthControllerTest : RestDocsSupport() {
         // given
         val request = createValidUserRegisterRequest()
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -294,7 +294,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.email = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -333,7 +333,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.verificationCode = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -372,7 +372,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.username = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -411,7 +411,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.password = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -450,7 +450,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.passwordReEntered = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
