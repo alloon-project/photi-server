@@ -245,7 +245,11 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+        `when`(jwtProvider.createToken(anyLong()))
+            .thenReturn(HttpHeaders().apply {
+                set(AUTHORIZATION, "access-token")
+                set(REFRESH_TOKEN, "refresh-token")
+            })
 
         // when & then
         mockMvc.perform(
@@ -282,6 +286,10 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("회원 식별자"),
                         PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
+                    ),
+                    HeaderDocumentation.responseHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )
@@ -296,7 +304,6 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
         // when & then
         mockMvc.perform(
@@ -335,7 +342,6 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
         // when & then
         mockMvc.perform(
@@ -374,7 +380,6 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
         // when & then
         mockMvc.perform(
@@ -413,7 +418,6 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
         // when & then
         mockMvc.perform(
@@ -452,7 +456,6 @@ class AuthControllerTest : RestDocsSupport() {
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
         // when & then
         mockMvc.perform(
@@ -826,6 +829,7 @@ class AuthControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
