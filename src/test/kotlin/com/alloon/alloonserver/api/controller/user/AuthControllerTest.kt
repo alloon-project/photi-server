@@ -759,6 +759,7 @@ class AuthControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.patch("/api/v1/users/password")
+                .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
@@ -829,7 +830,6 @@ class AuthControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.patch("/api/v1/users/password")
-                .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
