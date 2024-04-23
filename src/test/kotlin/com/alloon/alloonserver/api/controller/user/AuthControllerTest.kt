@@ -5,12 +5,15 @@ import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.api.service.user.AuthService
 import com.alloon.alloonserver.api.service.user.response.UserLoginResponse
 import com.alloon.alloonserver.api.service.user.response.UserRegisterResponse
+import com.alloon.alloonserver.common.constant.CustomHttpHeaders.Companion.REFRESH_TOKEN
 import com.alloon.alloonserver.config.auth.JwtProvider
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.restdocs.headers.HeaderDocumentation
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
@@ -20,7 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-class AuthControllerDocsTest : RestDocsSupport() {
+class AuthControllerTest : RestDocsSupport() {
 
     private val authService = mock(AuthService::class.java)
     private val jwtProvider = mock(JwtProvider::class.java)
@@ -240,7 +243,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         // given
         val request = createValidUserRegisterRequest()
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -291,7 +294,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.email = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -330,7 +333,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.verificationCode = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -369,7 +372,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.username = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -408,7 +411,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.password = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -447,7 +450,7 @@ class AuthControllerDocsTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
         request.passwordReEntered = ""
 
-        `when`(authService.registerUser(request.toServiceRequest()))
+        `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
         `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
 
@@ -638,7 +641,11 @@ class AuthControllerDocsTest : RestDocsSupport() {
 
         `when`(authService.login(request.toServiceRequest()))
             .thenReturn(UserLoginResponse(1, request.username, null, false))
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+        `when`(jwtProvider.createToken(anyLong()))
+            .thenReturn(HttpHeaders().apply {
+                set(AUTHORIZATION, "access-token")
+                set(REFRESH_TOKEN, "refresh-token")
+            })
 
         // when & then
         mockMvc.perform(
@@ -673,6 +680,10 @@ class AuthControllerDocsTest : RestDocsSupport() {
                             .description("회원 프로필 이미지"),
                         PayloadDocumentation.fieldWithPath("data.isTemporaryPassword").type(JsonFieldType.BOOLEAN)
                             .description("임시 비밀번호 여부")
+                    ),
+                    HeaderDocumentation.responseHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )
@@ -873,11 +884,16 @@ class AuthControllerDocsTest : RestDocsSupport() {
     @Test
     fun givenValid_whenRefreshToken_thenReturn200() {
         // given
-        `when`(jwtProvider.createToken(anyLong())).thenReturn(HttpHeaders.EMPTY)
+        `when`(jwtProvider.createToken(anyLong()))
+            .thenReturn(HttpHeaders().apply {
+                set(AUTHORIZATION, "access-token")
+                set(REFRESH_TOKEN, "refresh-token")
+            })
 
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/token")
+                .header(REFRESH_TOKEN, "Bearer refresh-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
@@ -886,11 +902,18 @@ class AuthControllerDocsTest : RestDocsSupport() {
                     "auth/refresh-token",
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    HeaderDocumentation.requestHeaders(
+                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
+                    ),
                     PayloadDocumentation.responseFields(
                         PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
                         PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
+                    ),
+                    HeaderDocumentation.responseHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )

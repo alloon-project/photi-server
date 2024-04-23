@@ -7,13 +7,15 @@ import com.alloon.alloonserver.api.service.user.response.UserUploadImageResponse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
-import org.springframework.http.MediaType
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.restdocs.headers.HeaderDocumentation
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation
+import org.springframework.restdocs.request.RequestDocumentation
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -36,6 +38,7 @@ class UserControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.get("/api/v1/users")
+                .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
@@ -44,6 +47,9 @@ class UserControllerTest : RestDocsSupport() {
                     "user/get-my-info",
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    HeaderDocumentation.requestHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
                     PayloadDocumentation.responseFields(
                         PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
@@ -77,6 +83,7 @@ class UserControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/users/image")
+                .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MULTIPART_FORM_DATA_VALUE)
                 .param("file", file.toString())
@@ -87,6 +94,9 @@ class UserControllerTest : RestDocsSupport() {
                     "user/upload-image",
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    HeaderDocumentation.requestHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
                     PayloadDocumentation.responseFields(
                         PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
