@@ -3,6 +3,7 @@
 
 ==== HTTP Request
 include::{snippets}/auth/validate-username/http-request.adoc[]
+include::{snippets}/auth/validate-username/query-parameters.adoc[]
 
 ==== HTTP Response
 include::{snippets}/auth/validate-username/http-response.adoc[]
