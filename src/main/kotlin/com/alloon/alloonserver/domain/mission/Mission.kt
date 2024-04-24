@@ -22,15 +22,15 @@ class Mission(
     val imageUrl: String? = null,
 
     @Column(nullable = false)
-    val visitedCnt: Int = 1,
+    val visitedCnt: Int = 0,
     @Column(nullable = false)
-    val currentMemberCnt: Int = 0,
+    val currentMemberCnt: Int = 1,
 
     @Column(nullable = false)
     val isRecruiting: Boolean = true,
 
     @Column(nullable = false)
-    val startedDate: LocalDate,
+    val startedDate: LocalDate = LocalDate.now(),
     @Column(nullable = false)
     val endedDate: LocalDate,
 ) : BasePermanentEntity() {

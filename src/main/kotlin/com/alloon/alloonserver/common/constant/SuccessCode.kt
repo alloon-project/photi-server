@@ -9,6 +9,14 @@ enum class SuccessCode(
     val message: String,
 ) {
     /**
+     * Mission Controller
+     */
+    // 200 Ok
+
+    // 201 Created
+    MISSION_CREATED(CREATED, "미션 생성이 완료되었습니다."),
+
+    /**
      * User Controller
      */
     // 200 OK
