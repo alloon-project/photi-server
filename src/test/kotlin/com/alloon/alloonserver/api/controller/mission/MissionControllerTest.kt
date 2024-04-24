@@ -48,7 +48,7 @@ class MissionControllerTest: RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndedDate!!,
+                request.missionEndDate!!,
                 request.hashtags
             ))
 
@@ -83,7 +83,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .optional()
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndedDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .optional()
@@ -120,9 +120,9 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("data.missionCreator.imageUrl").type(JsonFieldType.STRING)
                             .optional()
                             .description("미션 설립자 프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.missionStartedDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.missionStartDate").type(JsonFieldType.STRING)
                             .description("미션 시작일"),
-                        PayloadDocumentation.fieldWithPath("data.missionEndedDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY)
                             .optional()
@@ -152,7 +152,7 @@ class MissionControllerTest: RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndedDate!!,
+                request.missionEndDate!!,
                 request.hashtags
             ))
 
@@ -187,7 +187,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .optional()
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndedDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .optional()
@@ -217,7 +217,7 @@ class MissionControllerTest: RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndedDate!!,
+                request.missionEndDate!!,
                 request.hashtags
             ))
 
@@ -252,7 +252,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .optional()
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndedDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .optional()
@@ -264,10 +264,10 @@ class MissionControllerTest: RestDocsSupport() {
 
     @DisplayName("미션 소개 미입력시 미션 생성을 하면 400을 반환한다")
     @Test
-    fun givenBlankMissionEndedDate_whenCreateMission_thenReturn400() {
+    fun givenBlankmissionEndDate_whenCreateMission_thenReturn400() {
         // given
         val request = createValidMissionCreateRequest()
-        request.missionEndedDate = null
+        request.missionEndDate = null
 
         val now = LocalDate.now()
 
@@ -317,7 +317,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .optional()
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndedDate").type(JsonFieldType.STRING).optional()
+                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .optional()

@@ -19,7 +19,7 @@ class Contact(
     var verificationCode: String,
 
     @Column(nullable = false)
-    var isVerified: Boolean = false,
+    var isVerify: Boolean = false,
     ) : BaseEntity() {
 
     /**
@@ -28,7 +28,7 @@ class Contact(
      */
     fun changeVerificationCode(verificationCode: String) {
         this.verificationCode = verificationCode
-        this.isVerified = false
+        this.isVerify = false
     }
 
     /**
@@ -39,6 +39,6 @@ class Contact(
     fun verify(verificationCode: String) {
         if (this.verificationCode != verificationCode)
             throw CustomException(ExceptionCode.EMAIL_VERIFICATION_CODE_INVALID)
-        this.isVerified = true
+        this.isVerify = true
     }
 }

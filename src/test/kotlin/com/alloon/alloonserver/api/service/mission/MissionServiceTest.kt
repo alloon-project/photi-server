@@ -57,11 +57,11 @@ class MissionServiceTest(
             {
                 assertThat(response)
                     .extracting("missionName", "missionDescription", "missionRule", "missionGoal", "missionImageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartedDate",
-                        "missionEndedDate", "hashtags")
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
+                        "missionEndDate", "hashtags")
                     .containsExactly(request.missionName, request.missionDescription, request.missionRule,
                         request.missionGoal, request.missionImageUrl, 1, user.username, user.imageUrl, now,
-                        request.missionEndedDate, request.hashtags.stream().map { it.hashtag }.toList())
+                        request.missionEndDate, request.hashtags.stream().map { it.hashtag }.toList())
             },
         )
     }
@@ -85,11 +85,11 @@ class MissionServiceTest(
             {
                 assertThat(response)
                     .extracting("missionName", "missionDescription", "missionRule", "missionGoal", "missionImageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartedDate",
-                        "missionEndedDate", "hashtags")
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
+                        "missionEndDate", "hashtags")
                     .containsExactly(request.missionName, request.missionDescription, request.missionRule,
                         request.missionGoal, request.missionImageUrl, 1, user.username, user.imageUrl, now,
-                        request.missionEndedDate, request.hashtags.stream().map { it.hashtag }.toList())
+                        request.missionEndDate, request.hashtags.stream().map { it.hashtag }.toList())
             },
         )
     }
@@ -112,7 +112,7 @@ class MissionServiceTest(
             .contains(MISSION_NAME_LENGTH_INVALID.message)
     }
 
-    @DisplayName("30자 초과인 미션명으로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("16자 초과인 미션명으로 미션 생성을 하면 예외가 발생한다")
     @Test
     fun givenGreaterThan30MissionName_whenCreateMission_thenThrow() {
         // given
@@ -120,7 +120,7 @@ class MissionServiceTest(
         val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionName = "a".repeat(31)
+        request.missionName = "a".repeat(17)
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -148,7 +148,7 @@ class MissionServiceTest(
             .contains(MISSION_DESCRIPTION_LENGTH_INVALID.message)
     }
 
-    @DisplayName("500자 초과인 미션 소개로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("120자 초과인 미션 소개로 미션 생성을 하면 예외가 발생한다")
     @Test
     fun givenGreaterThan500MissionDescription_whenCreateMission_thenThrow() {
         // given
@@ -156,7 +156,7 @@ class MissionServiceTest(
         val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionDescription = "a".repeat(501)
+        request.missionDescription = "a".repeat(121)
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -166,7 +166,7 @@ class MissionServiceTest(
             .contains(MISSION_DESCRIPTION_LENGTH_INVALID.message)
     }
 
-    @DisplayName("500자 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("30자 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
     @Test
     fun givenGreaterThan500MissionRule_whenCreateMission_thenThrow() {
         // given
@@ -174,7 +174,7 @@ class MissionServiceTest(
         val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionRule = "a".repeat(501)
+        request.missionRule = "a".repeat(31)
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -184,7 +184,7 @@ class MissionServiceTest(
             .contains(MISSION_RULE_LENGTH_INVALID.message)
     }
 
-    @DisplayName("500자 초과인 목표으로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("30자 초과인 목표으로 미션 생성을 하면 예외가 발생한다")
     @Test
     fun givenGreaterThan500MissionGoal_whenCreateMission_thenThrow() {
         // given
@@ -192,7 +192,7 @@ class MissionServiceTest(
         val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionGoal = "a".repeat(501)
+        request.missionGoal = "a".repeat(31)
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -305,7 +305,7 @@ class MissionServiceTest(
         val contact = contactRepository.save(Contact(
             email = "tester@alloon.com",
             verificationCode = "000000",
-            isVerified = true
+            isVerify = true
         ))
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")

@@ -19,7 +19,7 @@ data class MissionCreateRequest(
 
     @field:NotNull(message = "미션 종료일은 필수 입력입니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    var missionEndedDate: LocalDate?,
+    var missionEndDate: LocalDate?,
 
     var hashtags:List<String> = listOf()
 ) {
@@ -31,7 +31,7 @@ data class MissionCreateRequest(
             missionRule,
             missionGoal,
             missionImageUrl,
-            missionEndedDate!!,
+            missionEndDate!!,
             hashtags.map { MissionCreateHashTagServiceRequest(it) }
         )
     }

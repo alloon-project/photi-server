@@ -20,7 +20,8 @@ class User(
     val username: String,
     @Column(nullable = false)
     var password: String,
-    var imageUrl: String? = null,
+    @Column(nullable = false, length = 500)
+    var imageUrl: String = "",
 
     @Column(nullable = false)
     var isTemporaryPassword: Boolean = false,

@@ -21,8 +21,8 @@ class Suspension(
     val admin: User,
 
     @Column(nullable = false)
-    val startedDate: LocalDate,
+    val startDate: LocalDate,
     @Column(nullable = false)
-    val endedDate: LocalDate,
+    val endDate: LocalDate,
 ) : BaseEntity() {
 }

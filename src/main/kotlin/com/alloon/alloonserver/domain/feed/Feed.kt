@@ -21,10 +21,10 @@ class Feed(
     @JoinColumn(name = "mission_id", nullable = false)
     val mission: Mission,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     val imageUrl: String,
 
     @Column(nullable = false)
-    val likedCnt: Int = 0,
+    val likeCnt: Int = 0,
 ) : BasePermanentEntity() {
 }

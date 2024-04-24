@@ -95,7 +95,7 @@ class AuthService(
         val contact = contactRepository.findByEmail(request.email)
             ?: throw CustomException(EMAIL_VALIDATION_INVALID)
 
-        if (!contact.isVerified)
+        if (!contact.isVerify)
             throw CustomException(EMAIL_VALIDATION_INVALID)
         if (userRepository.existsByContact(contact))
             throw CustomException(EXISTING_USER)

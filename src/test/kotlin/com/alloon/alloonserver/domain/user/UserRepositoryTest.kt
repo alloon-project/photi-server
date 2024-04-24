@@ -66,17 +66,17 @@ class UserRepositoryTest(
         assertAll(
             {
                 assertThat(foundUser)
-                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
-                        "updatedDateTime", "contact")
+                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createDateTime",
+                        "updateDateTime", "contact")
                     .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                        user.createdDateTime, user.updatedDateTime, user.contact)
+                        user.createDateTime, user.updateDateTime, user.contact)
             },
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
-                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
-                        contact.createdDateTime, contact.updatedDateTime)
+                    .extracting("email", "verificationCode", "isVerify", "createDateTime", "updateDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.isVerify,
+                        contact.createDateTime, contact.updateDateTime)
             }
         )
     }
@@ -94,9 +94,9 @@ class UserRepositoryTest(
 
         // then
         assertThat(foundUser)
-            .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime", "updatedDateTime")
+            .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createDateTime", "updateDateTime")
             .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                user.createdDateTime, user.updatedDateTime)
+                user.createDateTime, user.updateDateTime)
     }
 
     private fun createAndSaveContact(): Contact {

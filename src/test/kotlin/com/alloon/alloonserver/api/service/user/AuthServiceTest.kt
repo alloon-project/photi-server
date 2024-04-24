@@ -129,7 +129,7 @@ class AuthServiceTest(
         authService.verifyEmailVerificationCode(request)
 
         // then
-        assertThat(contact.isVerified).isTrue()
+        assertThat(contact.isVerify).isTrue()
     }
 
     @DisplayName("존재하지 않는 이메일로 인증코드를 검증하면 예외가 발생한다")
@@ -423,17 +423,17 @@ class AuthServiceTest(
         assertAll(
             {
                 assertThat(foundUser)
-                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
-                        "updatedDateTime", "contact")
+                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createDateTime",
+                        "updateDateTime", "contact")
                     .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                        user.createdDateTime, user.updatedDateTime, user.contact)
+                        user.createDateTime, user.updateDateTime, user.contact)
             },
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
-                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
-                        contact.createdDateTime, contact.updatedDateTime)
+                    .extracting("email", "verificationCode", "isVerify", "createDateTime", "updateDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.isVerify,
+                        contact.createDateTime, contact.updateDateTime)
             }
         )
     }
@@ -644,7 +644,7 @@ class AuthServiceTest(
     }
 
     private fun createAndSaveContact(): Contact {
-        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", isVerified = false)
+        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", isVerify = false)
         return contactRepository.save(contact)
     }
 
