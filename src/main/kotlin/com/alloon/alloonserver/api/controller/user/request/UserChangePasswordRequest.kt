@@ -9,9 +9,9 @@ data class UserChangePasswordRequest(
     @field:NotBlank(message = "새 비밀번호는 필수 입력입니다.")
     var newPassword: String,
     @field:NotBlank(message = "새 비밀번호 재입력은 필수 입력입니다.")
-    var newPasswordReEntered: String,
+    var newPasswordReEnter: String,
 ) {
     fun toServiceRequest(): UserServiceChangePasswordRequest {
-        return UserServiceChangePasswordRequest(password, newPassword, newPasswordReEntered)
+        return UserServiceChangePasswordRequest(password, newPassword, newPasswordReEnter)
     }
 }

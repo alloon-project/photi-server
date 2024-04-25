@@ -44,10 +44,10 @@ class UserRoleRepositoryTest {
             {
                 assertThat(foundUserRoles)
                     .extracting("user")
-                    .extracting("id", "username", "password", "imageUrl", "temporaryPassword", "createDateTime",
+                    .extracting("id", "username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
                         "updateDateTime", "contact")
                     .containsExactly(
-                        tuple(user.id, user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+                        tuple(user.id, user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
                             user.createDateTime, user.updateDateTime, user.contact)
                     )
             }
@@ -63,6 +63,6 @@ class UserRoleRepositoryTest {
     }
 
     private fun createAndSaveContact(): Contact {
-        return contactRepository.save(Contact(email = "tester@alloon.com", verificationCode = "000000", isVerify = true))
+        return contactRepository.save(Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = true))
     }
 }

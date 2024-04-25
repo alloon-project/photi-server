@@ -13,9 +13,9 @@ data class UserRegisterRequest(
     @field:NotBlank(message = "비밀번호는 필수 입력입니다.")
     var password: String,
     @field:NotBlank(message = "비밀번호 재입력은 필수 입력입니다.")
-    var passwordReEntered: String,
+    var passwordReEnter: String,
 ) {
     fun toServiceRequest(): UserServiceRegisterRequest {
-        return UserServiceRegisterRequest(email, verificationCode, username, password, passwordReEntered)
+        return UserServiceRegisterRequest(email, verificationCode, username, password, passwordReEnter)
     }
 }

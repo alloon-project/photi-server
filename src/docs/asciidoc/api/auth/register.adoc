@@ -74,7 +74,7 @@ include::{snippets}/auth/register/response-fields.adoc[]
 ----
 ----
 {
-  "code" : "PASSWORD_RE_ENTERED_FIELD_REQUIRED",
+  "code" : "PASSWORD_RE_ENTER_FIELD_REQUIRED",
   "message" : "비밀번호 재입력은 필수 입력입니다."
 }
 ----

@@ -20,7 +20,7 @@ class UserTest {
 
         // then
         assertThat(user)
-            .extracting("password", "isTemporaryPassword")
+            .extracting("password", "temporaryPasswordYn")
             .containsExactly(password, true)
     }
 
@@ -38,7 +38,7 @@ class UserTest {
 
         // then
         assertThat(user)
-            .extracting("password", "isTemporaryPassword")
+            .extracting("password", "temporaryPasswordYn")
             .containsExactly(password, false)
     }
 

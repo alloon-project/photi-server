@@ -21,7 +21,7 @@ class ContactTest {
 
         // then
         assertThat(contact)
-            .extracting("verificationCode", "isVerify")
+            .extracting("verificationCode", "verifyYn")
             .containsExactly(verificationCode, false)
     }
 
@@ -36,7 +36,7 @@ class ContactTest {
         contact.verify(verificationCode)
 
         // then
-        assertThat(contact.isVerify).isTrue()
+        assertThat(contact.verifyYn).isTrue()
     }
 
     @DisplayName("잘못된 인증코드로 연락처 인증코드 검증을 하면 예외가 발생한다")

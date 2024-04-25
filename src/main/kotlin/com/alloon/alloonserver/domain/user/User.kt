@@ -24,17 +24,17 @@ class User(
     var imageUrl: String = "",
 
     @Column(nullable = false)
-    var isTemporaryPassword: Boolean = false,
+    var temporaryPasswordYn: Boolean = false,
     ) : BaseEntity() {
 
     fun resetPassword(password: String) {
         this.password = password
-        this.isTemporaryPassword = true
+        this.temporaryPasswordYn = true
     }
 
     fun changePassword(password: String) {
         this.password = password
-        this.isTemporaryPassword = false
+        this.temporaryPasswordYn = false
     }
 
     fun changeImageUrl(imageUrl: String) {

@@ -6,8 +6,8 @@ data class UserLoginResponse(
     val userId: Long,
     val username: String,
     val imageUrl: String?,
-    val isTemporaryPassword: Boolean
+    val temporaryPasswordYn: Boolean
 ) {
 
-    constructor(user: User) : this(user.id!!, user.username, user.imageUrl, user.isTemporaryPassword)
+    constructor(user: User) : this(user.id!!, user.username, user.imageUrl, user.temporaryPasswordYn)
 }

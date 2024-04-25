@@ -28,7 +28,7 @@ class Mission(
     val currentMemberCnt: Int = 1,
 
     @Column(nullable = false)
-    val isRecruiting: Boolean = true,
+    val recruitYn: Boolean = true,
 
     @Column(nullable = false)
     val startDate: LocalDate = LocalDate.now(),

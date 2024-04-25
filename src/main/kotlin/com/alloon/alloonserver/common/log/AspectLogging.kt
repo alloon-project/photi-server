@@ -51,7 +51,7 @@ class AspectLogging {
 
         if (methodName.contains("resultMasterPasswordScheduler"))
             res = res.replace(Regex("(?<=password\\s?=\\s?)\\S+"), "******")
-                .replace(Regex("(?<=passwordReEntered\\s?=\\s?)\\S+"), "******")
+                .replace(Regex("(?<=passwordReEnter\\s?=\\s?)\\S+"), "******")
 
         log.info("[{} | AFTER] {} | {} | return={}", uuid, className, methodName, res)
     }

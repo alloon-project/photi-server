@@ -66,16 +66,16 @@ class UserRepositoryTest(
         assertAll(
             {
                 assertThat(foundUser)
-                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createDateTime",
+                    .extracting("username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
                         "updateDateTime", "contact")
-                    .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+                    .containsExactly(user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
                         user.createDateTime, user.updateDateTime, user.contact)
             },
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "isVerify", "createDateTime", "updateDateTime")
-                    .containsExactly(contact.email, contact.verificationCode, contact.isVerify,
+                    .extracting("email", "verificationCode", "verifyYn", "createDateTime", "updateDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.verifyYn,
                         contact.createDateTime, contact.updateDateTime)
             }
         )
@@ -94,8 +94,8 @@ class UserRepositoryTest(
 
         // then
         assertThat(foundUser)
-            .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createDateTime", "updateDateTime")
-            .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
+            .extracting("username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime", "updateDateTime")
+            .containsExactly(user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
                 user.createDateTime, user.updateDateTime)
     }
 

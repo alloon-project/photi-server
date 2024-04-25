@@ -305,7 +305,7 @@ class MissionServiceTest(
         val contact = contactRepository.save(Contact(
             email = "tester@alloon.com",
             verificationCode = "000000",
-            isVerify = true
+            verifyYn = true
         ))
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
