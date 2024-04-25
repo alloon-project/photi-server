@@ -272,7 +272,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                     PayloadDocumentation.responseFields(
@@ -326,7 +326,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -364,7 +364,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -402,7 +402,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -440,7 +440,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -449,10 +449,10 @@ class AuthControllerTest : RestDocsSupport() {
 
     @DisplayName("비밀번호 재입력 미입력시 회원 가입을 하면 400을 반환한다")
     @Test
-    fun givenBlankPasswordReEntered_whenRegister_thenReturn400() {
+    fun givenBlankpasswordReEnter_whenRegister_thenReturn400() {
         // given
         val request = createValidUserRegisterRequest()
-        request.passwordReEntered = ""
+        request.passwordReEnter = ""
 
         `when`(authService.registerUser(any()))
             .thenReturn(UserRegisterResponse(1, request.username))
@@ -478,7 +478,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("아이디"),
                         PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -681,7 +681,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("회원 아이디"),
                         PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
                             .description("회원 프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.isTemporaryPassword").type(JsonFieldType.BOOLEAN)
+                        PayloadDocumentation.fieldWithPath("data.temporaryPasswordYn").type(JsonFieldType.BOOLEAN)
                             .description("임시 비밀번호 여부")
                     ),
                     HeaderDocumentation.responseHeaders(
@@ -775,7 +775,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("비밀번호"),
                         PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     ),
                     PayloadDocumentation.responseFields(
@@ -813,7 +813,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("비밀번호"),
                         PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )
@@ -845,7 +845,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("비밀번호"),
                         PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )
@@ -854,10 +854,10 @@ class AuthControllerTest : RestDocsSupport() {
 
     @DisplayName("새 비밀번호 재입력 미입력시 비밀번호 변경을 하면 400을 반환한다")
     @Test
-    fun givenBlankNewPasswordReEntered_whenChangePassword_thenReturn400() {
+    fun givenBlanknewPasswordReEnter_whenChangePassword_thenReturn400() {
         // given
         val request = createValidUserChangePasswordRequest()
-        request.newPasswordReEntered = ""
+        request.newPasswordReEnter = ""
 
         // when & then
         mockMvc.perform(
@@ -877,7 +877,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("비밀번호"),
                         PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEntered").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )

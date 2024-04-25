@@ -95,13 +95,13 @@ class AuthService(
         val contact = contactRepository.findByEmail(request.email)
             ?: throw CustomException(EMAIL_VALIDATION_INVALID)
 
-        if (!contact.isVerified)
+        if (!contact.verifyYn)
             throw CustomException(EMAIL_VALIDATION_INVALID)
         if (userRepository.existsByContact(contact))
             throw CustomException(EXISTING_USER)
 
         validateUsername(UserServiceValidateUsernameRequest(request.username))
-        PasswordUtility.validateMatchPassword(request.password, request.passwordReEntered)
+        PasswordUtility.validateMatchPassword(request.password, request.passwordReEnter)
         request.password = passwordUtility.encryptPassword(request.password)
 
         val user = userRepository.save(request.toUserEntity(contact))
@@ -164,7 +164,7 @@ class AuthService(
      */
     @Transactional
     fun changePassword(userId: Long, @Valid request: UserServiceChangePasswordRequest) {
-        PasswordUtility.validateMatchPassword(request.newPassword, request.newPasswordReEntered)
+        PasswordUtility.validateMatchPassword(request.newPassword, request.newPasswordReEnter)
 
         val user = userRepository.find(userId) ?: throw CustomException(LOGIN_UNAUTHENTICATED)
         passwordUtility.verifyPassword(request.password, user.password)

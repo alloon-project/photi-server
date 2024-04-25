@@ -20,7 +20,7 @@ class UserCustomRepositoryImpl(
                 eqUserId(userId),
                 eqUsername(username),
                 eqEmail(email),
-                contact.isVerified.isTrue
+                contact.verifyYn.isTrue
             ).fetchOne()
     }
 

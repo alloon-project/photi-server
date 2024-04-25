@@ -129,7 +129,7 @@ class AuthServiceTest(
         authService.verifyEmailVerificationCode(request)
 
         // then
-        assertThat(contact.isVerified).isTrue()
+        assertThat(contact.verifyYn).isTrue()
     }
 
     @DisplayName("존재하지 않는 이메일로 인증코드를 검증하면 예외가 발생한다")
@@ -423,17 +423,17 @@ class AuthServiceTest(
         assertAll(
             {
                 assertThat(foundUser)
-                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
-                        "updatedDateTime", "contact")
-                    .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                        user.createdDateTime, user.updatedDateTime, user.contact)
+                    .extracting("username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
+                        "updateDateTime", "contact")
+                    .containsExactly(user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
+                        user.createDateTime, user.updateDateTime, user.contact)
             },
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
-                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
-                        contact.createdDateTime, contact.updatedDateTime)
+                    .extracting("email", "verificationCode", "verifyYn", "createDateTime", "updateDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.verifyYn,
+                        contact.createDateTime, contact.updateDateTime)
             }
         )
     }
@@ -471,7 +471,7 @@ class AuthServiceTest(
 
         assertAll(
             { assertThat(foundUser.password).isNotEqualTo(previousPassword) },
-            { assertThat(foundUser.isTemporaryPassword).isTrue() }
+            { assertThat(foundUser.temporaryPasswordYn).isTrue() }
         )
     }
 
@@ -503,8 +503,8 @@ class AuthServiceTest(
 
         // then
         assertThat(response)
-            .extracting("userId", "username", "imageUrl", "isTemporaryPassword")
-            .containsExactly(user.id, user.username, user.imageUrl, user.isTemporaryPassword)
+            .extracting("userId", "username", "imageUrl", "temporaryPasswordYn")
+            .containsExactly(user.id, user.username, user.imageUrl, user.temporaryPasswordYn)
     }
 
     @DisplayName("가입하지 않은 아이디로 로그인을 하면 예외가 발생한다")
@@ -644,7 +644,7 @@ class AuthServiceTest(
     }
 
     private fun createAndSaveContact(): Contact {
-        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", isVerified = false)
+        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = false)
         return contactRepository.save(contact)
     }
 

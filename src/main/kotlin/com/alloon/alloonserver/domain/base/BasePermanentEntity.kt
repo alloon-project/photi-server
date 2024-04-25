@@ -7,9 +7,9 @@ import java.time.LocalDateTime
 @MappedSuperclass
 abstract class BasePermanentEntity(
 
-    @Column(nullable = false)
-    var isDeleted: Boolean = false,
+    @Column(nullable = false, length = 10)
+    var serviceStatus: ServiceStatus = ServiceStatus.ACTIVE,
 
-    createdDateTime: LocalDateTime? = null,
-    updatedDateTime: LocalDateTime? = null,
-    ) : BaseEntity(createdDateTime, updatedDateTime)
+    createDateTime: LocalDateTime? = null,
+    updateDateTime: LocalDateTime? = null,
+    ) : BaseEntity(createDateTime, updateDateTime)

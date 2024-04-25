@@ -28,11 +28,11 @@ class PasswordUtility(
         /**
          * 비밀번호와 비밀번호 재입력 검증
          * @param password 비밀번호
-         * @param passwordReEntered 비밀번호 재입력
+         * @param passwordReEnter 비밀번호 재입력
          * @throws PASSWORD_MATCH_INVALID 400
          */
-        fun validateMatchPassword(password: String, passwordReEntered: String) {
-            if (password != passwordReEntered)
+        fun validateMatchPassword(password: String, passwordReEnter: String) {
+            if (password != passwordReEnter)
                 throw CustomException(PASSWORD_MATCH_INVALID)
         }
     }

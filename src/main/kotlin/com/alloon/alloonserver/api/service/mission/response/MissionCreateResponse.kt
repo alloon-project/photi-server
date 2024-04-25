@@ -16,10 +16,10 @@ data class MissionCreateResponse(
     var missionCreator: MissionCreateCreatorResponse,
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val missionStartedDate: LocalDate,
+    val missionStartDate: LocalDate,
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val missionEndedDate: LocalDate,
+    val missionEndDate: LocalDate,
     val hashtags: List<String>,
 ) {
 
@@ -32,8 +32,8 @@ data class MissionCreateResponse(
         creator.mission.imageUrl,
         creator.mission.currentMemberCnt,
         MissionCreateCreatorResponse(creator),
-        creator.mission.startedDate,
-        creator.mission.endedDate,
+        creator.mission.startDate,
+        creator.mission.endDate,
         hashtags.map { it.hashtag }
     )
 }

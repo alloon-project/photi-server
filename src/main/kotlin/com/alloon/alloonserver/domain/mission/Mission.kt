@@ -11,27 +11,28 @@ class Mission(
     @Column(name = "mission_id")
     val id: Long? = null,
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 16)
     var missionName: String,
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 120)
     val description: String,
-    @Column(length = 500)
-    val rule: String? = null,
-    @Column(length = 500)
+    @Column(length = 30)
     val goal: String? = null,
-    val imageUrl: String? = null,
+    @Column(length = 30)
+    val rule: String? = null,
+    @Column(nullable = false, length = 500)
+    val imageUrl: String,
 
     @Column(nullable = false)
-    val visitedCnt: Int = 0,
+    val visitCnt: Int = 0,
     @Column(nullable = false)
     val currentMemberCnt: Int = 1,
 
     @Column(nullable = false)
-    val isRecruiting: Boolean = true,
+    val recruitYn: Boolean = true,
 
     @Column(nullable = false)
-    val startedDate: LocalDate = LocalDate.now(),
+    val startDate: LocalDate = LocalDate.now(),
     @Column(nullable = false)
-    val endedDate: LocalDate,
+    val endDate: LocalDate,
 ) : BasePermanentEntity() {
 }

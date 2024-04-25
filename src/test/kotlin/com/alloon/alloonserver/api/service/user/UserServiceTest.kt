@@ -88,7 +88,7 @@ class UserServiceTest(
     }
 
     private fun createAndSaveContact(): Contact {
-        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", isVerified = true)
+        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = true)
         return contactRepository.save(contact)
     }
 

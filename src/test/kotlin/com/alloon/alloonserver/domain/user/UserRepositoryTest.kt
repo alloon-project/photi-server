@@ -66,17 +66,17 @@ class UserRepositoryTest(
         assertAll(
             {
                 assertThat(foundUser)
-                    .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime",
-                        "updatedDateTime", "contact")
-                    .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                        user.createdDateTime, user.updatedDateTime, user.contact)
+                    .extracting("username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
+                        "updateDateTime", "contact")
+                    .containsExactly(user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
+                        user.createDateTime, user.updateDateTime, user.contact)
             },
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "isVerified", "createdDateTime", "updatedDateTime")
-                    .containsExactly(contact.email, contact.verificationCode, contact.isVerified,
-                        contact.createdDateTime, contact.updatedDateTime)
+                    .extracting("email", "verificationCode", "verifyYn", "createDateTime", "updateDateTime")
+                    .containsExactly(contact.email, contact.verificationCode, contact.verifyYn,
+                        contact.createDateTime, contact.updateDateTime)
             }
         )
     }
@@ -94,9 +94,9 @@ class UserRepositoryTest(
 
         // then
         assertThat(foundUser)
-            .extracting("username", "password", "imageUrl", "isTemporaryPassword", "createdDateTime", "updatedDateTime")
-            .containsExactly(user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                user.createdDateTime, user.updatedDateTime)
+            .extracting("username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime", "updateDateTime")
+            .containsExactly(user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
+                user.createDateTime, user.updateDateTime)
     }
 
     private fun createAndSaveContact(): Contact {

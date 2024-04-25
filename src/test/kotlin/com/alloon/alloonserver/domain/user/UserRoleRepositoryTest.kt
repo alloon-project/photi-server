@@ -35,20 +35,20 @@ class UserRoleRepositoryTest {
         assertAll(
             {
                 assertThat(foundUserRoles)
-                    .extracting("id", "role", "createdDateTime", "updatedDateTime", "user")
+                    .extracting("id", "role", "createDateTime", "updateDateTime", "user")
                     .containsExactly(
-                        tuple(userRole.id, userRole.role, userRole.createdDateTime, userRole.updatedDateTime,
+                        tuple(userRole.id, userRole.role, userRole.createDateTime, userRole.updateDateTime,
                             userRole.user)
                     )
             },
             {
                 assertThat(foundUserRoles)
                     .extracting("user")
-                    .extracting("id", "username", "password", "imageUrl", "temporaryPassword", "createdDateTime",
-                        "updatedDateTime", "contact")
+                    .extracting("id", "username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
+                        "updateDateTime", "contact")
                     .containsExactly(
-                        tuple(user.id, user.username, user.password, user.imageUrl, user.isTemporaryPassword,
-                            user.createdDateTime, user.updatedDateTime, user.contact)
+                        tuple(user.id, user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
+                            user.createDateTime, user.updateDateTime, user.contact)
                     )
             }
         )
@@ -63,6 +63,6 @@ class UserRoleRepositoryTest {
     }
 
     private fun createAndSaveContact(): Contact {
-        return contactRepository.save(Contact(email = "tester@alloon.com", verificationCode = "000000", isVerified = true))
+        return contactRepository.save(Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = true))
     }
 }
