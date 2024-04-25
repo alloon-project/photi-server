@@ -99,7 +99,6 @@ class MissionServiceTest(
     fun givenLessThan2MissionName_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionName = "a"
@@ -117,7 +116,6 @@ class MissionServiceTest(
     fun givenGreaterThan30MissionName_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionName = "a".repeat(17)
@@ -135,7 +133,6 @@ class MissionServiceTest(
     fun givenLessThan1MissionDescription_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionDescription = ""
@@ -153,7 +150,6 @@ class MissionServiceTest(
     fun givenGreaterThan500MissionDescription_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionDescription = "a".repeat(121)
@@ -171,7 +167,7 @@ class MissionServiceTest(
     fun givenGreaterThan500MissionRule_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
+
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionRule = "a".repeat(31)
@@ -189,7 +185,6 @@ class MissionServiceTest(
     fun givenGreaterThan500MissionGoal_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionGoal = "a".repeat(31)
@@ -207,7 +202,6 @@ class MissionServiceTest(
     fun givenGreaterThan500MissionImageUrl_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.missionImageUrl = "a".repeat(501)
@@ -225,7 +219,6 @@ class MissionServiceTest(
     fun givenGreaterThan5Hashtags_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.hashtags = listOf(MissionCreateHashTagServiceRequest("해"),
@@ -248,7 +241,6 @@ class MissionServiceTest(
     fun givenLessThan1Hashtag_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.hashtags = listOf(MissionCreateHashTagServiceRequest(""))
@@ -266,7 +258,6 @@ class MissionServiceTest(
     fun givenGreaterThan30Hashtag_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
 
         val request = createValidMissionServiceCreateMissionRequest()
         request.hashtags = listOf(MissionCreateHashTagServiceRequest("해".repeat(31)))
