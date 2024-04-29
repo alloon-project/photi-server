@@ -42,8 +42,8 @@ class MissionControllerTest: RestDocsSupport() {
                 1L,
                 request.missionName,
                 request.missionDescription,
-                request.missionRule,
                 request.missionGoal,
+                request.missionRules,
                 request.missionImageUrl,
                 1,
                 MissionCreateCreatorResponse("tester", null),
@@ -77,7 +77,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRule").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
@@ -102,7 +102,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         PayloadDocumentation.fieldWithPath("data.missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("data.missionRule").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("data.missionGoal").type(JsonFieldType.STRING)
@@ -146,8 +146,8 @@ class MissionControllerTest: RestDocsSupport() {
                 1L,
                 request.missionName,
                 request.missionDescription,
-                request.missionRule,
                 request.missionGoal,
+                request.missionRules,
                 request.missionImageUrl,
                 1,
                 MissionCreateCreatorResponse("tester", null),
@@ -181,7 +181,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRule").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
@@ -211,8 +211,8 @@ class MissionControllerTest: RestDocsSupport() {
                 1L,
                 request.missionName,
                 request.missionDescription,
-                request.missionRule,
                 request.missionGoal,
+                request.missionRules,
                 request.missionImageUrl,
                 1,
                 MissionCreateCreatorResponse("tester", null),
@@ -246,7 +246,7 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRule").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
@@ -262,12 +262,12 @@ class MissionControllerTest: RestDocsSupport() {
             )
     }
 
-    @DisplayName("미션 소개 미입력시 미션 생성을 하면 400을 반환한다")
+    @DisplayName("미션 대표 이미지 미입력시 미션 생성을 하면 400을 반환한다")
     @Test
-    fun givenBlankmissionEndDate_whenCreateMission_thenReturn400() {
+    fun givenBlankMissionImageUrl_whenCreateMission_thenReturn400() {
         // given
         val request = createValidMissionCreateRequest()
-        request.missionEndDate = null
+        request.missionImageUrl = ""
 
         val now = LocalDate.now()
 
@@ -276,8 +276,8 @@ class MissionControllerTest: RestDocsSupport() {
                 1L,
                 request.missionName,
                 request.missionDescription,
-                request.missionRule,
                 request.missionGoal,
+                request.missionRules,
                 request.missionImageUrl,
                 1,
                 MissionCreateCreatorResponse("tester", null),
@@ -297,7 +297,7 @@ class MissionControllerTest: RestDocsSupport() {
             .andExpect(status().isBadRequest)
             .andDo(
                 MockMvcRestDocumentation.document(
-                    "mission/create-mission/mission-name-filed-required",
+                    "mission/create-mission/mission-image_url-field-required",
                     Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                     Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                     HeaderDocumentation.requestHeaders(
@@ -311,7 +311,72 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRule").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
+                            .optional()
+                            .description("규칙"),
+                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                            .optional()
+                            .description("대표 이미지"),
+                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
+                            .description("미션 종료일"),
+                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
+                            .optional()
+                            .description("해시태그")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("미션 종료일 미입력시 미션 생성을 하면 400을 반환한다")
+    @Test
+    fun givenBlankMissionEndDate_whenCreateMission_thenReturn400() {
+        // given
+        val request = createValidMissionCreateRequest()
+        request.missionEndDate = null
+
+        val now = LocalDate.now()
+
+        `when`(missionService.createMission(anyLong(), any()))
+            .thenReturn(MissionCreateResponse(
+                1L,
+                request.missionName,
+                request.missionDescription,
+                request.missionGoal,
+                request.missionRules,
+                request.missionImageUrl,
+                1,
+                MissionCreateCreatorResponse("tester", null),
+                now,
+                now,
+                request.hashtags
+            ))
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/v1/missions")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "mission/create-mission/mission-end-date-field-required",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    HeaderDocumentation.requestHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    PayloadDocumentation.requestFields(
+                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                            .description("미션명"),
+                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                            .description("미션 소개"),
+                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
+                            .optional()
+                            .description("목표"),
+                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
@@ -329,7 +394,7 @@ class MissionControllerTest: RestDocsSupport() {
 
     private fun createValidMissionCreateRequest(): MissionCreateRequest {
         return MissionCreateRequest("얼른", "얼른 프로젝트 설명입니다.",
-            "얼른 프로젝트 규칙입니다.", "얼른 프로젝트 목표입니다.",
+            "얼른 프로젝트 목표입니다.", listOf("얼른 프로젝트 규칙입니다."),
             "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
             LocalDate.of(2025, 1, 1), listOf("해시", "태그"))
     }

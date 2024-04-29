@@ -59,7 +59,7 @@ class UserTest {
     }
 
     private fun createUser(contact: Contact): User {
-        return User(contact = contact, username = "tester", password = "password1!")
+        return User(contact = contact, username = "tester", password = "password1!", imageUrl = "")
     }
 
     private fun createContact(): Contact {

@@ -106,7 +106,7 @@ class UserRepositoryTest(
     }
 
     private fun createAndSaveUser(contact: Contact): User {
-        val user = User(contact = contact, username = "tester", password = "password")
+        val user = User(contact = contact, username = "tester", password = "password", imageUrl = "")
         return userRepository.save(user)
     }
 

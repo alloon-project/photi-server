@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.api.service.mission
 
 import com.alloon.alloonserver.api.service.mission.request.MissionCreateHashTagServiceRequest
+import com.alloon.alloonserver.api.service.mission.request.MissionCreateMissionRuleServiceRequest
 import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateMissionRequest
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
@@ -39,9 +40,9 @@ class MissionServiceTest(
     @Autowired private val passwordUtility: PasswordUtility,
 ) {
 
-    @DisplayName("해시태그와 함께 미션 생성을 하면 정상 작동한다")
+    @DisplayName("미션 생성을 하면 정상 작동한다")
     @Test
-    fun givenWithHashtags_whenCreateMission_thenReturn() {
+    fun givenValid_whenCreateMission_thenReturn() {
         // given
         val user = createAndSaveUserWithContact()
         val now = LocalDate.now()
@@ -56,12 +57,13 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "missionDescription", "missionRule", "missionGoal", "missionImageUrl",
+                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
                         "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
                         "missionEndDate", "hashtags")
-                    .containsExactly(request.missionName, request.missionDescription, request.missionRule,
-                        request.missionGoal, request.missionImageUrl, 1, user.username, user.imageUrl, now,
-                        request.missionEndDate, request.hashtags.stream().map { it.hashtag }.toList())
+                    .containsExactly(request.missionName, request.missionDescription,
+                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
+                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
+                        request.hashtags.stream().map { it.hashtag }.toList())
             },
         )
     }
@@ -84,12 +86,42 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "missionDescription", "missionRule", "missionGoal", "missionImageUrl",
+                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
                         "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
                         "missionEndDate", "hashtags")
-                    .containsExactly(request.missionName, request.missionDescription, request.missionRule,
-                        request.missionGoal, request.missionImageUrl, 1, user.username, user.imageUrl, now,
-                        request.missionEndDate, request.hashtags.stream().map { it.hashtag }.toList())
+                    .containsExactly(request.missionName, request.missionDescription,
+                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
+                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
+                        request.hashtags.stream().map { it.hashtag }.toList())
+            },
+        )
+    }
+
+    @DisplayName("규칙 없이 미션 생성을 하면 정상 작동한다")
+    @Test
+    fun givenWithoutMissionRules_whenCreateMission_thenReturn() {
+        // given
+        val user = createAndSaveUserWithContact()
+        val now = LocalDate.now()
+
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.missionRules = emptyList()
+
+        // when
+        val response = missionService.createMission(user.id!!, request)
+
+        // then
+        assertAll(
+            { assertThat(response.missionId).isNotNull() },
+            {
+                assertThat(response)
+                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
+                        "missionEndDate", "hashtags")
+                    .containsExactly(request.missionName, request.missionDescription,
+                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
+                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
+                        request.hashtags.stream().map { it.hashtag }.toList())
             },
         )
     }
@@ -162,15 +194,53 @@ class MissionServiceTest(
             .contains(MISSION_DESCRIPTION_LENGTH_INVALID.message)
     }
 
-    @DisplayName("30자 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("5개 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
     @Test
-    fun givenGreaterThan500MissionRule_whenCreateMission_thenThrow() {
+    fun givenGreaterThan5MissionRules_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
 
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.missionRules = listOf(MissionCreateMissionRuleServiceRequest("a"),
+            MissionCreateMissionRuleServiceRequest("a"),
+            MissionCreateMissionRuleServiceRequest("a"),
+            MissionCreateMissionRuleServiceRequest("a"),
+            MissionCreateMissionRuleServiceRequest("a"),
+            MissionCreateMissionRuleServiceRequest("a"))
+
+        // when & then
+        assertThatThrownBy { missionService.createMission(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(MISSION_RULES_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("1자 미만인 규칙으로 미션 생성을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan1MissionRule_whenCreateMission_thenThrow() {
+        // given
+        val user = createAndSaveUserWithContact()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionRule = "a".repeat(31)
+        request.missionRules = listOf(MissionCreateMissionRuleServiceRequest(""))
+
+        // when & then
+        assertThatThrownBy { missionService.createMission(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(MISSION_RULE_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("30자 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
+    @Test
+    fun givenGreaterThan30MissionRule_whenCreateMission_thenThrow() {
+        // given
+        val user = createAndSaveUserWithContact()
+
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.missionRules = listOf(MissionCreateMissionRuleServiceRequest("a".repeat(31)))
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -285,8 +355,9 @@ class MissionServiceTest(
     }
 
     private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionRequest {
-        return MissionServiceCreateMissionRequest("얼른", "얼른 프로젝트 설명입니다.",
-            "얼른 프로젝트 규칙입니다.", "얼른 프로젝트 목표입니다.",
+        return MissionServiceCreateMissionRequest("얼른",
+            "얼른 프로젝트 설명입니다.", "얼른 프로젝트 목표입니다.",
+            listOf(MissionCreateMissionRuleServiceRequest("얼른 프로젝트 규칙입니다.")),
             "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
             LocalDate.of(2025, 1, 1),
             listOf(MissionCreateHashTagServiceRequest("해시"), MissionCreateHashTagServiceRequest("태그")))
@@ -300,6 +371,6 @@ class MissionServiceTest(
         ))
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        return userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword))
+        return userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
     }
 }
