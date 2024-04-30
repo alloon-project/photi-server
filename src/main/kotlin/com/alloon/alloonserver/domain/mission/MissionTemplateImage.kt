@@ -24,4 +24,7 @@ class MissionTemplateImage(
 
     @Column(nullable = false)
     val endDateTime: LocalDateTime,
+
+    @Column(nullable = false)
+    val sort: Int,
 ) : BaseEntity()

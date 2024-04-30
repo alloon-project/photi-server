@@ -34,7 +34,7 @@ data class MissionServiceCreateMissionRequest(
                 missionName = missionName,
                 description = missionDescription,
                 goal = missionGoal,
-                imageUrl = missionImageUrl ?: "",
+                imageUrl = missionImageUrl,
                 endDate = missionEndDate
             ),
             creatorYn = true

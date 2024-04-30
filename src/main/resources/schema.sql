@@ -101,6 +101,7 @@ CREATE TABLE mission_template_image
     image_url                   VARCHAR(500)              NOT NULL,
     start_date_time             DATETIME(6)               NOT NULL,
     end_date_time               DATETIME(6)               NOT NULL,
+    sort                        INT                       NOT NULL,
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
@@ -187,6 +188,7 @@ CREATE TABLE inquiry_category
 (
     inquiry_category_id         INT AUTO_INCREMENT PRIMARY KEY,
     description                 VARCHAR(30)               NOT NULL,
+    sort                        INT                       NOT NULL,
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
@@ -211,6 +213,7 @@ CREATE TABLE report_category
     report_category_id          INT AUTO_INCREMENT PRIMARY KEY,
     type                        VARCHAR(15)               NOT NULL,
     description                 VARCHAR(30)               NOT NULL,
+    sort                        INT                       NOT NULL,
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,

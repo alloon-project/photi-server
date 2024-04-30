@@ -20,6 +20,9 @@ class ReportCategory(
     val type: ReportCategoryType,
 
     @Column(nullable = false, length = 30)
-    val description: String
+    val description: String,
+
+    @Column(nullable = false)
+    val sort: Int,
 ) : BasePermanentEntity() {
 }
