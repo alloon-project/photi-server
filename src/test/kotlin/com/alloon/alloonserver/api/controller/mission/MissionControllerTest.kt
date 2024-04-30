@@ -34,8 +34,6 @@ class MissionControllerTest: RestDocsSupport() {
     @Test
     fun givenValid_whenGetAllMissionTemplateImages_thenReturn200() {
         // given
-        val now = LocalDate.now()
-
         `when`(missionService.getAllMissionTemplateImages(any()))
             .thenReturn(listOf("https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png"))
 
