@@ -21,7 +21,7 @@ enum class ExceptionCode(
     NEW_PASSWORD_RE_ENTER_FIELD_REQUIRED(BAD_REQUEST, "새 비밀번호 재입력은 필수 입력입니다."),
     MISSION_NAME_FIELD_REQUIRED(BAD_REQUEST, "미션명은 필수 입력입니다."),
     MISSION_DESCRIPTION_FIELD_REQUIRED(BAD_REQUEST, "미션 소개는 필수 입력입니다."),
-    MISSION_STARTED_AT_FIELD_REQUIRED(BAD_REQUEST, "미션 시작일은 필수 입력입니다."),
+    MISSION_IMAGE_URL_FIELD_INVALID(BAD_REQUEST, "미션 대표 이미지는 필수 입력입니다."),
     MISSION_ENDED_AT_FIELD_REQUIRED(BAD_REQUEST, "미션 종료일은 필수 입력입니다."),
     VERSION_FIELD_REQUIRED(BAD_REQUEST, "버전은 필수 입력입니다."),
 
@@ -32,11 +32,12 @@ enum class ExceptionCode(
     NEW_PASSWORD_LENGTH_INVALID(BAD_REQUEST, "비밀번호는 8~30자만 가능합니다."),
     MISSION_NAME_LENGTH_INVALID(BAD_REQUEST, "미션명은 2~16자만 가능합니다."),
     MISSION_DESCRIPTION_LENGTH_INVALID(BAD_REQUEST, "미션 소개는 1~120자만 가능합니다."),
-    MISSION_RULE_LENGTH_INVALID(BAD_REQUEST, "규칙은 0~30자만 가능합니다."),
+    MISSION_RULES_LENGTH_INVALID(BAD_REQUEST, "규칙은 0~5개만 가능합니다."),
+    MISSION_RULE_LENGTH_INVALID(BAD_REQUEST, "규칙은 1~30자만 가능합니다."),
     MISSION_GOAL_LENGTH_INVALID(BAD_REQUEST, "목표는 0~30자만 가능합니다."),
     MISSION_IMAGE_URL_LENGTH_INVALID(BAD_REQUEST, "미션 대표 이미지는 0~500자만 가능합니다."),
     HASHTAGS_LENGTH_INVALID(BAD_REQUEST, "해시태그는 0~5개만 가능합니다."),
-    HASHTAG_LENGTH_INVALID(BAD_REQUEST, "해시태그는 1~30자만 가능합니다."),
+    HASHTAG_LENGTH_INVALID(BAD_REQUEST, "해시태그는 1~5자만 가능합니다."),
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),

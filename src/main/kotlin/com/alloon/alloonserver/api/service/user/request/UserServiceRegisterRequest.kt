@@ -2,10 +2,7 @@ package com.alloon.alloonserver.api.service.user.request
 
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LETTER_NUMBER_SPECIAL_CHARACTER
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
-import com.alloon.alloonserver.domain.user.Contact
-import com.alloon.alloonserver.domain.user.Role
-import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.domain.user.UserRole
+import com.alloon.alloonserver.domain.user.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
@@ -23,8 +20,8 @@ data class UserServiceRegisterRequest(
     var password: String,
     var passwordReEnter: String,
 ) {
-    fun toUserEntity(contact: Contact): User {
-        return User(contact = contact, username = username, password = password)
+    fun toUserEntity(contact: Contact, userTemplateImage: String): User {
+        return User(contact = contact, username = username, password = password, imageUrl = userTemplateImage)
     }
 
     fun toUserRoleEntity(user: User): UserRole {

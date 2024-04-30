@@ -9,13 +9,12 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.user.ContactRepository
-import com.alloon.alloonserver.domain.user.UserRepository
-import com.alloon.alloonserver.domain.user.UserRoleRepository
+import com.alloon.alloonserver.domain.user.*
 import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import kotlin.random.Random
 
 @Service
 @Validated
@@ -24,6 +23,7 @@ class AuthService(
     private val contactRepository: ContactRepository,
     private val userRepository: UserRepository,
     private val userRoleRepository: UserRoleRepository,
+    private val userTemplateImageRepository: UserTemplateImageRepository,
     private val emailService: EmailService,
     private val passwordUtility: PasswordUtility,
 ) {
@@ -104,7 +104,9 @@ class AuthService(
         PasswordUtility.validateMatchPassword(request.password, request.passwordReEnter)
         request.password = passwordUtility.encryptPassword(request.password)
 
-        val user = userRepository.save(request.toUserEntity(contact))
+        val userTemplateImage = getUserTemplateImage()
+
+        val user = userRepository.save(request.toUserEntity(contact, userTemplateImage))
         userRoleRepository.save(request.toUserRoleEntity(user))
 
         return UserRegisterResponse(user)
@@ -171,5 +173,14 @@ class AuthService(
         val encryptedPassword = passwordUtility.encryptPassword(request.newPassword)
 
         user.changePassword(encryptedPassword)
+    }
+
+    /**
+     * 회원 임시 프로필 이미지 가져오기
+     * @return 회원 임시 프로필 이미지
+     */
+    private fun getUserTemplateImage(): String {
+        val userTemplateImages = userTemplateImageRepository.findAll()
+        return userTemplateImages.randomOrNull()?.imageUrl ?: ""
     }
 }

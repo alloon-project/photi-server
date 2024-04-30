@@ -59,7 +59,7 @@ class UserRoleRepositoryTest {
     }
 
     private fun createAndSaveUser(contact: Contact): User {
-        return userRepository.save(User(contact = contact, username = "tester", password = "password1!"))
+        return userRepository.save(User(contact = contact, username = "tester", password = "password1!", imageUrl = ""))
     }
 
     private fun createAndSaveContact(): Contact {

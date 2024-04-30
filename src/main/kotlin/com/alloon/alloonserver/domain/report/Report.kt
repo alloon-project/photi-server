@@ -13,8 +13,12 @@ class Report(
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporter_id", nullable = false)
-    val reporter: User,
+    @JoinColumn(name = "report_category_id", nullable = false)
+    val reportCategory: ReportCategory,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporter_id")
+    val reporter: User?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

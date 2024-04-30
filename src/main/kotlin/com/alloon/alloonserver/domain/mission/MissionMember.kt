@@ -24,6 +24,6 @@ class MissionMember(
     val missionMemberStatus: MissionMemberStatus = MissionMemberStatus.PROGRESS,
 
     @Column(nullable = false)
-    val isCreator: Boolean,
+    val creatorYn: Boolean,
 ) : BasePermanentEntity() {
 }
