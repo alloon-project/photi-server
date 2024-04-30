@@ -57,9 +57,9 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
-                        "missionEndDate", "hashtags")
+                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
+                        "endDate", "hashtags")
                     .containsExactly(request.missionName, request.missionDescription,
                         request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
                         request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
@@ -86,9 +86,9 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
-                        "missionEndDate", "hashtags")
+                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
+                        "endDate", "hashtags")
                     .containsExactly(request.missionName, request.missionDescription,
                         request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
                         request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
@@ -115,9 +115,9 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "missionDescription", "missionRules", "missionGoal", "missionImageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "missionStartDate",
-                        "missionEndDate", "hashtags")
+                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
+                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
+                        "endDate", "hashtags")
                     .containsExactly(request.missionName, request.missionDescription,
                         request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
                         request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,

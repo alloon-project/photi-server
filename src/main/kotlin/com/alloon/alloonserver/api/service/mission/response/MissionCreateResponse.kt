@@ -9,18 +9,18 @@ import java.time.LocalDate
 data class MissionCreateResponse(
     val missionId: Long,
     val missionName: String,
-    val missionDescription: String,
-    val missionGoal: String?,
-    val missionRules: List<String>,
-    var missionImageUrl: String,
+    val description: String,
+    val goal: String?,
+    val rules: List<String>,
+    var imageUrl: String,
     var currentMemberCnt: Int,
     var missionCreator: MissionCreateCreatorResponse,
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val missionStartDate: LocalDate,
+    val startDate: LocalDate,
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    val missionEndDate: LocalDate,
+    val endDate: LocalDate,
     val hashtags: List<String>,
 ) {
 

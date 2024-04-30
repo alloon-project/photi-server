@@ -46,7 +46,7 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionRules,
                 request.missionImageUrl,
                 1,
-                MissionCreateCreatorResponse("tester", null),
+                MissionCreateCreatorResponse("tester", ""),
                 now,
                 request.missionEndDate!!,
                 request.hashtags
@@ -100,15 +100,15 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션 식별자"),
                         PayloadDocumentation.fieldWithPath("data.missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("data.missionDescription").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.description").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("data.missionRules").type(JsonFieldType.ARRAY)
+                        PayloadDocumentation.fieldWithPath("data.rules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("data.missionGoal").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.goal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("data.missionImageUrl").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("미션 대표 이미지"),
                         PayloadDocumentation.fieldWithPath("data.currentMemberCnt").type(JsonFieldType.NUMBER)
                             .description("현재 멤버 인원"),
@@ -118,9 +118,9 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션 설립자 아이디"),
                         PayloadDocumentation.fieldWithPath("data.missionCreator.imageUrl").type(JsonFieldType.STRING)
                             .description("미션 설립자 프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.missionStartDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                             .description("미션 시작일"),
-                        PayloadDocumentation.fieldWithPath("data.missionEndDate").type(JsonFieldType.STRING)
+                        PayloadDocumentation.fieldWithPath("data.endDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         PayloadDocumentation.fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY)
                             .optional()
