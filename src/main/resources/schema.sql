@@ -263,7 +263,7 @@ CREATE TABLE block
     CONSTRAINT fk_bock_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
-create table ver
+CREATE TABLE ver
 (
     ver_id                      INT AUTO_INCREMENT PRIMARY KEY,
     version                     VARCHAR(10)               NOT NULL,
