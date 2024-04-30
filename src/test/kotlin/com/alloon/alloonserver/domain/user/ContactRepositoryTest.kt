@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
-class ContactRepositoryTest {
-
-    @Autowired private lateinit var contactRepository: ContactRepository
+class ContactRepositoryTest(
+    @Autowired private val contactRepository: ContactRepository,
+) {
 
     @DisplayName("이메일로 연락처 단건 조회가 정상 작동한다")
     @Test

@@ -9,5 +9,5 @@ data class UserUploadImageResponse(
     val email: String,
 ) {
 
-    constructor(user: User) : this(user.id!!, user.username, user.imageUrl!!, user.contact.email)
+    constructor(user: User) : this(user.id!!, user.username, user.imageUrl, user.contact.email)
 }

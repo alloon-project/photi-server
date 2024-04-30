@@ -43,5 +43,6 @@ enum class SuccessCode(
      * Develop Controller
      */
     // 200 OK
-    SERVER_OK(OK, "헬스 체크를 했습니다.")
+    SERVER_OK(OK, "헬스 체크를 했습니다."),
+    FORCE_UPDATE(OK, "앱 강제 업데이트 여부를 조회했습니다."),
 }

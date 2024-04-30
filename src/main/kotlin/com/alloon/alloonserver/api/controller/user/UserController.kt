@@ -34,7 +34,7 @@ class UserController(
     fun uploadImage(principal: Principal, @RequestPart(required = false) file: MultipartFile?):
             ResponseEntity<DefaultSingleResponse> {
         val response = userService.uploadImage(UserUtility.getUserId(principal), file)
-//
+
         return DefaultSingleResponse.toResponseEntity(SuccessCode.USER_IMAGE_UPLOADED, response)
     }
 }

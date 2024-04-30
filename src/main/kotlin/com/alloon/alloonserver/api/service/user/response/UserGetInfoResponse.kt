@@ -5,7 +5,7 @@ import com.alloon.alloonserver.domain.user.User
 data class UserGetInfoResponse(
     val userId: Long,
     val username: String,
-    val imageUrl: String?,
+    val imageUrl: String,
     val email: String,
 ) {
 

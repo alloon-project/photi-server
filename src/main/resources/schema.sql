@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS ver;
 DROP TABLE IF EXISTS block;
 DROP TABLE IF EXISTS suspension;
 DROP TABLE IF EXISTS report;
@@ -260,4 +261,14 @@ CREATE TABLE block
     blocker_id                  BIGINT,
     CONSTRAINT fk_bock_blocker FOREIGN KEY (blocker_id) REFERENCES users (user_id),
     CONSTRAINT fk_bock_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
+create table ver
+(
+    ver_id                      INT AUTO_INCREMENT PRIMARY KEY,
+    version                     VARCHAR(10)               NOT NULL,
+    create_date_time            DATETIME(6)               NOT NULL,
+    update_date_time            DATETIME(6)               NOT NULL,
+    admin_id                    BIGINT,
+    CONSTRAINT fk_app_version_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
 );

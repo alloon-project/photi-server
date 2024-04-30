@@ -14,6 +14,8 @@ endif::[]
 
 include::api/develop/health-check.adoc[]
 
+include::api/develop/need-force-update.adoc[]
+
 [[Auth-API]]
 === Auth API
 
