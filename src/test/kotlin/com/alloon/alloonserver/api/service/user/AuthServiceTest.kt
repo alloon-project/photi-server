@@ -532,7 +532,7 @@ class AuthServiceTest(
         val request = createValidUserServiceChangePasswordRequest()
 
         // when
-        val response = authService.changePassword(user.id!!, request)
+        authService.changePassword(user.id!!, request)
 
         // then
         assertThat(user.password).isNotEqualTo(encryptedPassword)
@@ -545,7 +545,6 @@ class AuthServiceTest(
         val contact = createAndSaveContact()
         contact.verify(contact.verificationCode)
         val user = createAndSaveUser(contact)
-        val encryptedPassword = user.password
 
         val request = createValidUserServiceChangePasswordRequest()
         request.newPassword = "passwor"
@@ -565,7 +564,6 @@ class AuthServiceTest(
         val contact = createAndSaveContact()
         contact.verify(contact.verificationCode)
         val user = createAndSaveUser(contact)
-        val encryptedPassword = user.password
 
         val request = createValidUserServiceChangePasswordRequest()
         request.newPassword = "a".repeat(31)
@@ -585,7 +583,6 @@ class AuthServiceTest(
         val contact = createAndSaveContact()
         contact.verify(contact.verificationCode)
         val user = createAndSaveUser(contact)
-        val encryptedPassword = user.password
 
         val request = createValidUserServiceChangePasswordRequest()
         request.newPassword = "password123"

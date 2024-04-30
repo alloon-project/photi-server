@@ -353,7 +353,7 @@ class MissionServiceTest(
             .isEqualTo(USER_NOT_FOUND)
     }
 
-    @DisplayName("미션 에시 이미지 전체 조회가 정상 작동한다")
+    @DisplayName("미션 예시 이미지 전체 조회가 정상 작동한다")
     @Test
     fun givenValid_whenGetAllMissionTemplateImages_thenReturn() {
         // given
@@ -378,7 +378,8 @@ class MissionServiceTest(
 
     private fun createAndSaveMissionTemplateImage(now: LocalDateTime): MissionTemplateImage {
         return missionTemplateImageRepository.save(
-            MissionTemplateImage(imageUrl = "image", startDateTime = now, endDateTime = now, sort = 1, admin = null)
+            MissionTemplateImage(imageUrl = "image", startDateTime = now.minusSeconds(1),
+                endDateTime = now.plusSeconds(1), sort = 1, admin = null)
         )
     }
 
