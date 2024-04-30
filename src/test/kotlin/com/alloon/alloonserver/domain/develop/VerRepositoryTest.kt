@@ -52,7 +52,7 @@ class VerRepositoryTest(
         ))
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword))
+        val user = userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
 
         return userRoleRepository.save(UserRole(user = user, role = Role.ADMIN))
     }
