@@ -2,7 +2,6 @@ package com.alloon.alloonserver.api.controller.mission
 
 import com.alloon.alloonserver.api.controller.mission.request.MissionCreateRequest
 import com.alloon.alloonserver.api.service.mission.MissionService
-import com.alloon.alloonserver.api.service.mission.response.MissionGetAllMissionTemplateImagesResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.FOUND_MISSION_TEMPLATE_IMAGES
 import com.alloon.alloonserver.common.constant.SuccessCode.MISSION_CREATED
 import com.alloon.alloonserver.common.response.DefaultMultiResponse
