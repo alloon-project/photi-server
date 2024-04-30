@@ -12,6 +12,7 @@ enum class SuccessCode(
      * Mission Controller
      */
     // 200 Ok
+    FOUND_MISSION_TEMPLATE_IMAGES(OK, "미션 예시 이미지를 전체 조회했습니다."),
 
     // 201 Created
     MISSION_CREATED(CREATED, "미션 생성이 완료되었습니다."),

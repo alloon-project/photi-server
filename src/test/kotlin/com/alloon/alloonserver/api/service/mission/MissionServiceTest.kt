@@ -6,10 +6,7 @@ import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateM
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.mission.HashtagRepository
-import com.alloon.alloonserver.domain.mission.MissionHashtagRepository
-import com.alloon.alloonserver.domain.mission.MissionMemberRepository
-import com.alloon.alloonserver.domain.mission.MissionRepository
+import com.alloon.alloonserver.domain.mission.*
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
@@ -25,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -35,6 +33,7 @@ class MissionServiceTest(
     @Autowired private val missionMemberRepository: MissionMemberRepository,
     @Autowired private val missionHashtagRepository: MissionHashtagRepository,
     @Autowired private val hashtagRepository: HashtagRepository,
+    @Autowired private val missionTemplateImageRepository: MissionTemplateImageRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
     @Autowired private val passwordUtility: PasswordUtility,
@@ -354,6 +353,20 @@ class MissionServiceTest(
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("미션 에시 이미지 전체 조회가 정상 작동한다")
+    @Test
+    fun givenValid_whenGetAllMissionTemplateImages_thenReturn() {
+        // given
+        val now = LocalDateTime.now()
+        val missionTemplateImage = createAndSaveMissionTemplateImage(now)
+
+        // when
+        val response = missionService.getAllMissionTemplateImages(now)
+
+        // then
+        assertThat(response).containsExactly(missionTemplateImage.imageUrl)
+    }
+
     private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionRequest {
         return MissionServiceCreateMissionRequest("얼른",
             "얼른 프로젝트 설명입니다.", "얼른 프로젝트 목표입니다.",
@@ -361,6 +374,12 @@ class MissionServiceTest(
             "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
             LocalDate.of(2025, 1, 1),
             listOf(MissionCreateHashTagServiceRequest("해시"), MissionCreateHashTagServiceRequest("태그")))
+    }
+
+    private fun createAndSaveMissionTemplateImage(now: LocalDateTime): MissionTemplateImage {
+        return missionTemplateImageRepository.save(
+            MissionTemplateImage(imageUrl = "image", startDateTime = now, endDateTime = now, sort = 1, admin = null)
+        )
     }
 
     private fun createAndSaveUserWithContact(): User {

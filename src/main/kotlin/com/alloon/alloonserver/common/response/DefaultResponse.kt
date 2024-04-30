@@ -48,18 +48,14 @@ class DefaultMultiResponse<T>(
     code: String,
     message: String,
 
-    val data: PageData<T>,
+    val total: Long,
+    val data: List<T>,
 ) : DefaultResponse(code, message) {
 
     companion object {
-        fun <T> toResponseEntity(successCode: SuccessCode, data: PageData<T>): ResponseEntity<DefaultMultiResponse<T>> {
+        fun <T> toResponseEntity(successCode: SuccessCode, data: List<T>): ResponseEntity<DefaultMultiResponse<T>> {
             return ResponseEntity.status(successCode.httpStatus)
-                .body(DefaultMultiResponse(successCode.name, successCode.message, data))
+                .body(DefaultMultiResponse(successCode.name, successCode.message, data.size.toLong(), data))
         }
     }
 }
-
-class PageData<T>(
-    val data: T,
-    val total: Long,
-)
