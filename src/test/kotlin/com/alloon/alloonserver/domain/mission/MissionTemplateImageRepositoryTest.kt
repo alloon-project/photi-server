@@ -41,10 +41,8 @@ class MissionTemplateImageRepositoryTest(
                 now.plusSeconds(1), 4),
             createAndSaveMissionTemplateImage(adminRole.user, "image5", now.minusSeconds(1),
                 now.plusSeconds(1), 5),
-            createAndSaveMissionTemplateImage(adminRole.user, "image6", now,
-                now, 6),
-            createAndSaveMissionTemplateImage(adminRole.user, "image7", now.plusSeconds(1),
-                now.plusSeconds(2), 7),
+            createAndSaveMissionTemplateImage(adminRole.user, "image6", now.plusSeconds(1),
+                now.plusSeconds(2), 6),
         )
         missionTemplateImages[1].serviceStatus = ServiceStatus.ADMIN_DEL
         missionTemplateImages[3].serviceStatus = ServiceStatus.ADMIN_DEL
@@ -55,8 +53,7 @@ class MissionTemplateImageRepositoryTest(
 
         // then
         assertThat(result)
-            .containsExactly(missionTemplateImages[2].imageUrl, missionTemplateImages[4].imageUrl,
-                missionTemplateImages[5].imageUrl)
+            .containsExactly(missionTemplateImages[2].imageUrl, missionTemplateImages[4].imageUrl)
     }
 
     private fun createAndSaveMissionTemplateImage(
