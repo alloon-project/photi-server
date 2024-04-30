@@ -23,6 +23,7 @@ enum class ExceptionCode(
     MISSION_DESCRIPTION_FIELD_REQUIRED(BAD_REQUEST, "미션 소개는 필수 입력입니다."),
     MISSION_STARTED_AT_FIELD_REQUIRED(BAD_REQUEST, "미션 시작일은 필수 입력입니다."),
     MISSION_ENDED_AT_FIELD_REQUIRED(BAD_REQUEST, "미션 종료일은 필수 입력입니다."),
+    VERSION_FIELD_REQUIRED(BAD_REQUEST, "버전은 필수 입력입니다."),
 
     // @Size
     EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자만 가능합니다."),

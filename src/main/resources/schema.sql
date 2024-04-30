@@ -177,3 +177,13 @@ create table feed_like
     CONSTRAINT fk_feed_like_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
     CONSTRAINT fk_feed_like_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id)
 );
+
+create table ver
+(
+    ver_id                      INT AUTO_INCREMENT PRIMARY KEY,
+    version                     VARCHAR(10)               NOT NULL,
+    create_date_time            DATETIME(6)               NOT NULL,
+    update_date_time            DATETIME(6)               NOT NULL,
+    admin_id                    BIGINT,
+    CONSTRAINT fk_app_version_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
+)
