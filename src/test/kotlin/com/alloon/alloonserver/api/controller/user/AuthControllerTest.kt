@@ -643,7 +643,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserLoginRequest()
 
         `when`(authService.login(request.toServiceRequest()))
-            .thenReturn(UserLoginResponse(1, request.username, null, false))
+            .thenReturn(UserLoginResponse(1, request.username, "", false))
         `when`(jwtProvider.createToken(anyLong()))
             .thenReturn(HttpHeaders().apply {
                 set(AUTHORIZATION, "access-token")

@@ -33,7 +33,7 @@ class UserControllerTest : RestDocsSupport() {
     fun givenValid_whenGetMyInfo_thenReturn200() {
         // given
         `when`(userService.getInfo(anyLong()))
-            .thenReturn(UserGetInfoResponse(1, "tester", null, "tester@alloon.com"))
+            .thenReturn(UserGetInfoResponse(1, "tester", "", "tester@alloon.com"))
 
         // when & then
         mockMvc.perform(
