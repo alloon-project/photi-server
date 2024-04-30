@@ -94,7 +94,7 @@ class UserServiceTest(
 
     private fun createAndSaveUser(contact: Contact): User {
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = User(contact = contact, username = "tester", password = encryptedPassword)
+        val user = User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = "")
         return userRepository.save(user)
     }
 }

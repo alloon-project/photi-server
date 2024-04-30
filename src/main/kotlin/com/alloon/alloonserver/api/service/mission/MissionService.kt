@@ -4,10 +4,7 @@ import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateM
 import com.alloon.alloonserver.api.service.mission.response.MissionCreateResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.domain.mission.HashtagRepository
-import com.alloon.alloonserver.domain.mission.MissionHashtagRepository
-import com.alloon.alloonserver.domain.mission.MissionMemberRepository
-import com.alloon.alloonserver.domain.mission.MissionRepository
+import com.alloon.alloonserver.domain.mission.*
 import com.alloon.alloonserver.domain.user.UserRepository
 import jakarta.validation.Valid
 import org.springframework.stereotype.Service
@@ -21,6 +18,7 @@ class MissionService(
     private val missionRepository: MissionRepository,
     private val missionMemberRepository: MissionMemberRepository,
     private val missionHashtagRepository: MissionHashtagRepository,
+    private val missionRuleRepository: MissionRuleRepository,
     private val hashtagRepository: HashtagRepository,
     private val userRepository: UserRepository,
 ) {
@@ -40,12 +38,15 @@ class MissionService(
         missionRepository.save(missionMember.mission)
         missionMemberRepository.save(missionMember)
 
+        val missionRules = request.toMissionRule(missionMember.mission)
+        missionRules.isNotEmpty().let { missionRuleRepository.saveAll(missionRules) }
+
         val missionHashtags = request.toMissionHashtag(missionMember.mission)
         if (missionHashtags.isNotEmpty()) {
             hashtagRepository.saveAll(missionHashtags.map { it.hashtag })
             missionHashtagRepository.saveAll(missionHashtags)
         }
 
-        return MissionCreateResponse(missionMember, missionHashtags.map { it.hashtag })
+        return MissionCreateResponse(missionMember, missionRules.map { it.rule }, missionHashtags.map { it.hashtag })
     }
 }

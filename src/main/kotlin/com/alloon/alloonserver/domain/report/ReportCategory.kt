@@ -1,0 +1,28 @@
+package com.alloon.alloonserver.domain.report
+
+import com.alloon.alloonserver.domain.base.BasePermanentEntity
+import com.alloon.alloonserver.domain.user.User
+import jakarta.persistence.*
+
+@Entity
+class ReportCategory(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "report_category_id")
+    val id: Int? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    val admin: User?,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 15)
+    val type: ReportCategoryType,
+
+    @Column(nullable = false, length = 30)
+    val description: String,
+
+    @Column(nullable = false)
+    val sort: Int,
+) : BasePermanentEntity() {
+}

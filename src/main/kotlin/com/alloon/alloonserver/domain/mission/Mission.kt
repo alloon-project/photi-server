@@ -17,8 +17,6 @@ class Mission(
     val description: String,
     @Column(length = 30)
     val goal: String? = null,
-    @Column(length = 30)
-    val rule: String? = null,
     @Column(nullable = false, length = 500)
     val imageUrl: String,
 
