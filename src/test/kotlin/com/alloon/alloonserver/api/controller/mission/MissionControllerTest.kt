@@ -109,7 +109,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .optional()
                             .description("목표"),
                         PayloadDocumentation.fieldWithPath("data.missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("미션 대표 이미지"),
                         PayloadDocumentation.fieldWithPath("data.currentMemberCnt").type(JsonFieldType.NUMBER)
                             .description("현재 멤버 인원"),
@@ -118,7 +117,6 @@ class MissionControllerTest: RestDocsSupport() {
                         PayloadDocumentation.fieldWithPath("data.missionCreator.username").type(JsonFieldType.STRING)
                             .description("미션 설립자 아이디"),
                         PayloadDocumentation.fieldWithPath("data.missionCreator.imageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("미션 설립자 프로필 이미지"),
                         PayloadDocumentation.fieldWithPath("data.missionStartDate").type(JsonFieldType.STRING)
                             .description("미션 시작일"),
@@ -185,7 +183,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("대표 이미지"),
                         PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
@@ -250,7 +247,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("대표 이미지"),
                         PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
@@ -315,7 +311,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("대표 이미지"),
                         PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
                             .description("미션 종료일"),
@@ -380,7 +375,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .optional()
                             .description("규칙"),
                         PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
                             .description("대표 이미지"),
                         PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
                             .description("미션 종료일"),
