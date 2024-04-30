@@ -61,7 +61,7 @@ class UserControllerTest : RestDocsSupport() {
                             .description("회원 식별자"),
                         PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("프로필 이미지"),
                         PayloadDocumentation.fieldWithPath("data.email").type(JsonFieldType.STRING)
                             .description("이메일"),
@@ -108,7 +108,7 @@ class UserControllerTest : RestDocsSupport() {
                             .description("회원 식별자"),
                         PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("프로필 이미지"),
                         PayloadDocumentation.fieldWithPath("data.email").type(JsonFieldType.STRING)
                             .description("이메일"),
