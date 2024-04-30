@@ -679,7 +679,7 @@ class AuthControllerTest : RestDocsSupport() {
                             .description("회원 식별자"),
                         PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING).optional()
+                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("회원 프로필 이미지"),
                         PayloadDocumentation.fieldWithPath("data.temporaryPasswordYn").type(JsonFieldType.BOOLEAN)
                             .description("임시 비밀번호 여부")
