@@ -4,7 +4,7 @@ import com.alloon.alloonserver.api.controller.mission.request.MissionCreateReque
 import com.alloon.alloonserver.api.service.mission.MissionService
 import com.alloon.alloonserver.common.constant.SuccessCode.FOUND_MISSION_TEMPLATE_IMAGES
 import com.alloon.alloonserver.common.constant.SuccessCode.MISSION_CREATED
-import com.alloon.alloonserver.common.response.DefaultMultiResponse
+import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import jakarta.validation.Valid
@@ -24,10 +24,10 @@ class MissionController(
 ) {
 
     @GetMapping("/api/v1/missions/image/templates")
-    fun getAllMissionTemplateImages(): ResponseEntity<DefaultMultiResponse<String>> {
+    fun getAllMissionTemplateImages(): ResponseEntity<DefaultListResponse<String>> {
         val response = missionService.getAllMissionTemplateImages(LocalDateTime.now())
 
-        return DefaultMultiResponse.toResponseEntity(FOUND_MISSION_TEMPLATE_IMAGES, response)
+        return DefaultListResponse.toResponseEntity(FOUND_MISSION_TEMPLATE_IMAGES, response)
     }
 
     @PostMapping("/api/v1/missions")

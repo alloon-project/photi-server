@@ -57,8 +57,6 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("코드"),
                         PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("total").type(JsonFieldType.NUMBER)
-                            .description("데이터 총 개수"),
                         PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.ARRAY)
                             .description("데이터"),
                     )
