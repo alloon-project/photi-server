@@ -22,7 +22,8 @@ class DevelopController(
     fun healthCheck(): ResponseEntity<DefaultResponse> {
         val serverName = developService.getServerName()
 
-        return DefaultResponse.toResponseEntity(SERVER_OK)
+        return ResponseEntity.status(SERVER_OK.httpStatus)
+            .body(DefaultResponse(SERVER_OK.name, serverName + SERVER_OK.message))
     }
 
     @GetMapping("/api/ver")
