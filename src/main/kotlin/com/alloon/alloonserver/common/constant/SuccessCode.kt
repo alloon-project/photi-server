@@ -9,6 +9,15 @@ enum class SuccessCode(
     val message: String,
 ) {
     /**
+     * Report Controller
+     */
+    // 200 Ok
+    FOUND_MISSION_CATEGORIES(OK, "미션 신고 항목을 전체 조회했습니다."),
+
+    // 201 Created
+
+
+    /**
      * Mission Controller
      */
     // 200 Ok

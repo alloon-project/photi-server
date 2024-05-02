@@ -52,8 +52,7 @@ class MissionTemplateImageRepositoryTest(
         val result = missionTemplateImageRepository.findAllImageUrl(now)
 
         // then
-        assertThat(result)
-            .containsExactly(missionTemplateImages[2].imageUrl, missionTemplateImages[4].imageUrl)
+        assertThat(result).containsExactly(missionTemplateImages[2].imageUrl, missionTemplateImages[4].imageUrl)
     }
 
     private fun createAndSaveMissionTemplateImage(
