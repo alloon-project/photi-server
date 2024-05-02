@@ -23,14 +23,14 @@ class MissionController(
     private val missionService: MissionService,
 ) {
 
-    @GetMapping("/api/v1/missions/image/templates")
+    @GetMapping("/api/missions/image/templates")
     fun getAllMissionTemplateImages(): ResponseEntity<DefaultListResponse<String>> {
         val response = missionService.getAllMissionTemplateImages(LocalDateTime.now())
 
         return DefaultListResponse.toResponseEntity(FOUND_MISSION_TEMPLATE_IMAGES, response)
     }
 
-    @PostMapping("/api/v1/missions")
+    @PostMapping("/api/missions")
     fun createMission(principal: Principal, @RequestBody @Valid request: MissionCreateRequest):
             ResponseEntity<DefaultSingleResponse> {
         val response = missionService.createMission(UserUtility.getUserId(principal), request.toServiceRequest())

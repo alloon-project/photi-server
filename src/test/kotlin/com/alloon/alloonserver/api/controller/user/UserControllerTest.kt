@@ -37,7 +37,7 @@ class UserControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/users")
+            MockMvcRequestBuilders.get("/api/users")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
@@ -82,7 +82,7 @@ class UserControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/image")
+            MockMvcRequestBuilders.post("/api/users/image")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MULTIPART_FORM_DATA_VALUE)

@@ -39,7 +39,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/missions/image/templates")
+            MockMvcRequestBuilders.get("/api/missions/image/templates")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
@@ -88,7 +88,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/missions")
+            MockMvcRequestBuilders.post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -190,7 +190,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/missions")
+            MockMvcRequestBuilders.post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -254,7 +254,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/missions")
+            MockMvcRequestBuilders.post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -318,7 +318,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/missions")
+            MockMvcRequestBuilders.post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -382,7 +382,7 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/missions")
+            MockMvcRequestBuilders.post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

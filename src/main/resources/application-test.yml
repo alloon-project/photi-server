@@ -1,0 +1,23 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:~/alloon
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+
+logging:
+  config: classpath:logback/dev-logback.xml
+
+sentry:
+  dsn:
+
+api:
+  name: "Alloon Test"

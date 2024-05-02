@@ -30,7 +30,7 @@ class DevelopControllerTest : RestDocsSupport() {
     fun givenValid_whenHealthCheck_return200() {
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/health")
+            MockMvcRequestBuilders.get("/api/health")
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
@@ -58,7 +58,7 @@ class DevelopControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/ver")
+            MockMvcRequestBuilders.get("/api/ver")
                 .queryParam("version", version)
         ).andDo(print())
             .andExpect(status().isOk)
@@ -95,7 +95,7 @@ class DevelopControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/ver")
+            MockMvcRequestBuilders.get("/api/ver")
                 .queryParam("version", version)
         ).andDo(print())
             .andExpect(status().isBadRequest)

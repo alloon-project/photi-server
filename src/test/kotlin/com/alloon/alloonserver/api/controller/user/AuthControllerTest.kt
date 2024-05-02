@@ -40,7 +40,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contacts")
+            MockMvcRequestBuilders.post("/api/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -73,7 +73,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contacts")
+            MockMvcRequestBuilders.post("/api/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -99,7 +99,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -134,7 +134,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -163,7 +163,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            MockMvcRequestBuilders.patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -191,7 +191,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/users/username")
+            MockMvcRequestBuilders.get("/api/users/username")
                 .queryParam("username", username)
         ).andDo(print())
             .andExpect(status().isOk)
@@ -221,7 +221,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/users/username")
+            MockMvcRequestBuilders.get("/api/users/username")
                 .queryParam("username", username)
         ).andDo(print())
             .andExpect(status().isBadRequest)
@@ -253,7 +253,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -307,7 +307,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -345,7 +345,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -383,7 +383,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -421,7 +421,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -459,7 +459,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            MockMvcRequestBuilders.post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -493,7 +493,7 @@ class AuthControllerTest : RestDocsSupport() {
         
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-username")
+            MockMvcRequestBuilders.post("/api/users/find-username")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -526,7 +526,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-username")
+            MockMvcRequestBuilders.post("/api/users/find-username")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -552,7 +552,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            MockMvcRequestBuilders.post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -587,7 +587,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            MockMvcRequestBuilders.post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -616,7 +616,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            MockMvcRequestBuilders.post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -652,7 +652,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            MockMvcRequestBuilders.post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -701,7 +701,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            MockMvcRequestBuilders.post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -730,7 +730,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            MockMvcRequestBuilders.post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
@@ -758,7 +758,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            MockMvcRequestBuilders.patch("/api/users/password")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -797,7 +797,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            MockMvcRequestBuilders.patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
@@ -829,7 +829,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            MockMvcRequestBuilders.patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
@@ -861,7 +861,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            MockMvcRequestBuilders.patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
@@ -896,7 +896,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/token")
+            MockMvcRequestBuilders.post("/api/users/token")
                 .header(REFRESH_TOKEN, "Bearer refresh-token")
                 .principal(mockPrincipal)
         ).andDo(print())
