@@ -47,4 +47,6 @@ include::api/user/upload-image.adoc[]
 [[Mission-API]]
 === Mission API
 
+include::api/mission/get-all-mission-template-images.adoc[]
+
 include::api/mission/create-mission.adoc[]

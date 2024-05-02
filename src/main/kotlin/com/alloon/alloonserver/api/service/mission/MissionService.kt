@@ -10,6 +10,7 @@ import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import java.time.LocalDateTime
 
 @Service
 @Validated
@@ -19,6 +20,7 @@ class MissionService(
     private val missionMemberRepository: MissionMemberRepository,
     private val missionHashtagRepository: MissionHashtagRepository,
     private val missionRuleRepository: MissionRuleRepository,
+    private val missionTemplateImageRepository: MissionTemplateImageRepository,
     private val hashtagRepository: HashtagRepository,
     private val userRepository: UserRepository,
 ) {
@@ -48,5 +50,14 @@ class MissionService(
         }
 
         return MissionCreateResponse(missionMember, missionRules.map { it.rule }, missionHashtags.map { it.hashtag })
+    }
+
+    /**
+     * 미션 에시 이미지 전체 조회
+     * @param now 현재 시간
+     * @return 전체 미션 에시 이미지
+     */
+    fun getAllMissionTemplateImages(now: LocalDateTime): List<String> {
+        return missionTemplateImageRepository.findAllImageUrl(now)
     }
 }

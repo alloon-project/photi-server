@@ -30,6 +30,40 @@ class MissionControllerTest: RestDocsSupport() {
         return MissionController(missionService)
     }
 
+    @DisplayName("미션 예시 이미지 전체 조회를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenGetAllMissionTemplateImages_thenReturn200() {
+        // given
+        `when`(missionService.getAllMissionTemplateImages(any()))
+            .thenReturn(listOf("https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png"))
+
+        // when & then
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/missions/image/templates")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        ).andDo(print())
+            .andExpect(status().isOk)
+            .andDo(
+                MockMvcRestDocumentation.document(
+                    "mission/get-all-mission-template-images",
+                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    HeaderDocumentation.requestHeaders(
+                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    PayloadDocumentation.responseFields(
+                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                            .description("코드"),
+                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                            .description("메세지"),
+                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.ARRAY)
+                            .description("데이터"),
+                    )
+                )
+            )
+    }
+
     @DisplayName("미션 생성을 하면 201을 반환한다")
     @Test
     fun givenValid_whenCreateMission_thenReturn201() {

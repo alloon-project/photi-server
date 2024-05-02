@@ -44,22 +44,38 @@ class DefaultSingleResponse(
     }
 }
 
-class DefaultMultiResponse<T>(
+class DefaultListResponse<T>(
     code: String,
     message: String,
-
-    val data: PageData<T>,
+    
+    val data: List<T>,
 ) : DefaultResponse(code, message) {
 
     companion object {
-        fun <T> toResponseEntity(successCode: SuccessCode, data: PageData<T>): ResponseEntity<DefaultMultiResponse<T>> {
+        fun <T> toResponseEntity(successCode: SuccessCode, data: List<T>): ResponseEntity<DefaultListResponse<T>> {
             return ResponseEntity.status(successCode.httpStatus)
-                .body(DefaultMultiResponse(successCode.name, successCode.message, data))
+                .body(DefaultListResponse(successCode.name, successCode.message, data))
+        }
+    }
+}
+
+class DefaultPageResponse<T>(
+    code: String,
+    message: String,
+
+    val total: Long,
+    val data: List<T>,
+) : DefaultResponse(code, message) {
+
+    companion object {
+        fun <T> toResponseEntity(successCode: SuccessCode, data: PageData<T>): ResponseEntity<DefaultPageResponse<T>> {
+            return ResponseEntity.status(successCode.httpStatus)
+                .body(DefaultPageResponse(successCode.name, successCode.message, data.total, data.data))
         }
     }
 }
 
 class PageData<T>(
-    val data: T,
+    val data: List<T>,
     val total: Long,
 )
