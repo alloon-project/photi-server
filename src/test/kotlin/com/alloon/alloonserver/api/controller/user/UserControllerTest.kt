@@ -10,13 +10,15 @@ import org.mockito.Mockito.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.restdocs.headers.HeaderDocumentation
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation
-import org.springframework.restdocs.request.RequestDocumentation
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -37,33 +39,33 @@ class UserControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/users")
+            get("/api/users")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "user/get-my-info",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
                             .description("회원 식별자"),
-                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                        fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.email").type(JsonFieldType.STRING)
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     )
                 )
@@ -82,7 +84,7 @@ class UserControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/users/image")
+            post("/api/users/image")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MULTIPART_FORM_DATA_VALUE)
@@ -90,27 +92,27 @@ class UserControllerTest : RestDocsSupport() {
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "user/upload-image",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
                             .description("회원 식별자"),
-                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                        fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.email").type(JsonFieldType.STRING)
+                        fieldWithPath("data.email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     )
                 )

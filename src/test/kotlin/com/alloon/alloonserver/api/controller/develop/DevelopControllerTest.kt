@@ -8,12 +8,15 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
+import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation
-import org.springframework.restdocs.request.RequestDocumentation
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -30,17 +33,17 @@ class DevelopControllerTest : RestDocsSupport() {
     fun givenValid_whenHealthCheck_return200() {
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/health")
+            get("/api/health")
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "develop/health",
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    preprocessResponse(prettyPrint()),
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -58,26 +61,26 @@ class DevelopControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/ver")
+            get("/api/ver")
                 .queryParam("version", version)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "develop/need-force-update",
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    RequestDocumentation.queryParameters(
-                        RequestDocumentation.parameterWithName("version")
+                    preprocessResponse(prettyPrint()),
+                    queryParameters(
+                        parameterWithName("version")
                             .description("버전")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.updateYn").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.updateYn").type(JsonFieldType.BOOLEAN)
                             .description("강제 업데이트 필요 여부"),
                     )
                 )
@@ -95,15 +98,15 @@ class DevelopControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/ver")
+            get("/api/ver")
                 .queryParam("version", version)
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "develop/need-force-update/version-field-required",
-                    RequestDocumentation.queryParameters(
-                        RequestDocumentation.parameterWithName("version")
+                    queryParameters(
+                        parameterWithName("version")
                             .description("버전")
                     )
                 )

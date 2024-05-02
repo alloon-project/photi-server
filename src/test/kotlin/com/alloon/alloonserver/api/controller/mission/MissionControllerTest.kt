@@ -11,13 +11,15 @@ import org.mockito.ArgumentMatchers.anyLong
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.http.MediaType
-import org.springframework.restdocs.headers.HeaderDocumentation
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -39,25 +41,25 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/missions/image/templates")
+            get("/api/missions/image/templates")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/get-all-mission-template-images",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.ARRAY)
+                        fieldWithPath("data").type(JsonFieldType.ARRAY)
                             .description("데이터"),
                     )
                 )
@@ -88,76 +90,69 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/missions")
+            post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isCreated)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/create-mission",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING).optional()
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.missionId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.missionId").type(JsonFieldType.NUMBER)
                             .description("미션 식별자"),
-                        PayloadDocumentation.fieldWithPath("data.missionName").type(JsonFieldType.STRING)
+                        fieldWithPath("data.missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("data.description").type(JsonFieldType.STRING)
+                        fieldWithPath("data.description").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("data.rules").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("data.rules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("data.goal").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("data.goal").type(JsonFieldType.STRING).optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("미션 대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.currentMemberCnt").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.currentMemberCnt").type(JsonFieldType.NUMBER)
                             .description("현재 멤버 인원"),
-                        PayloadDocumentation.fieldWithPath("data.missionCreator").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data.missionCreator").type(JsonFieldType.OBJECT)
                             .description("미션 설립자"),
-                        PayloadDocumentation.fieldWithPath("data.missionCreator.username").type(JsonFieldType.STRING)
+                        fieldWithPath("data.missionCreator.username").type(JsonFieldType.STRING)
                             .description("미션 설립자 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.missionCreator.imageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("data.missionCreator.imageUrl").type(JsonFieldType.STRING)
                             .description("미션 설립자 프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.startDate").type(JsonFieldType.STRING)
+                        fieldWithPath("data.startDate").type(JsonFieldType.STRING)
                             .description("미션 시작일"),
-                        PayloadDocumentation.fieldWithPath("data.endDate").type(JsonFieldType.STRING)
+                        fieldWithPath("data.endDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그"),
                     )
                 )
@@ -190,37 +185,37 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/missions")
+            post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/create-mission/mission-name-filed-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .optional()
                             .description("해시태그")
                     )
@@ -254,38 +249,35 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/missions")
+            post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/create-mission/mission-name-filed-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그")
                     )
                 )
@@ -318,38 +310,35 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/missions")
+            post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/create-mission/mission-image_url-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그")
                     )
                 )
@@ -382,38 +371,35 @@ class MissionControllerTest: RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/missions")
+            post("/api/missions")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "mission/create-mission/mission-end-date-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
                     ),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("missionName").type(JsonFieldType.STRING)
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
                             .description("미션명"),
-                        PayloadDocumentation.fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        PayloadDocumentation.fieldWithPath("missionGoal").type(JsonFieldType.STRING)
-                            .optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
                             .description("목표"),
-                        PayloadDocumentation.fieldWithPath("missionRules").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        PayloadDocumentation.fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
-                        PayloadDocumentation.fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
                             .description("미션 종료일"),
-                        PayloadDocumentation.fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그")
                     )
                 )
