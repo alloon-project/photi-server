@@ -21,7 +21,6 @@ class DevelopControllerTest : RestDocsSupport() {
 
     private val developService = mock(DevelopService::class.java)
 
-    @Override
     override fun initController(): Any {
         return DevelopController(developService)
     }

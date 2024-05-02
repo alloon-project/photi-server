@@ -50,3 +50,8 @@ include::api/user/upload-image.adoc[]
 include::api/mission/get-all-mission-template-images.adoc[]
 
 include::api/mission/create-mission.adoc[]
+
+[[Report-API]]
+=== Report API
+
+include::api/report/get-all-mission-report-categories.adoc[]
