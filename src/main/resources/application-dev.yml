@@ -1,0 +1,24 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  sql:
+    init:
+      mode: ${SQL_INIT_MODE}
+
+logging:
+  config: classpath:logback/prod-logback.xml
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: dev
+
+api:
+  name: "Alloon Dev"

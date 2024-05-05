@@ -14,12 +14,15 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.restdocs.headers.HeaderDocumentation
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.restdocs.operation.preprocess.Preprocessors
+import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
+import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation
-import org.springframework.restdocs.request.RequestDocumentation
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -40,24 +43,24 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contacts")
+            post("/api/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isCreated)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/send-verification-code",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -73,18 +76,18 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/contacts")
+            post("/api/contacts")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/send-verification-code/email-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일")
                     )
                 )
@@ -99,26 +102,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/verify-email-verification-code",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -134,20 +137,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/verify-email-verification-code/email-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드")
                     )
                 )
@@ -163,20 +166,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/contacts/verify")
+            patch("/api/contacts/verify")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/verify-email-verification-code/verification-code-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드")
                     )
                 )
@@ -191,22 +194,22 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/users/username")
+            get("/api/users/username")
                 .queryParam("username", username)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/validate-username",
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    RequestDocumentation.queryParameters(
-                        RequestDocumentation.parameterWithName("username")
+                    preprocessResponse(prettyPrint()),
+                    queryParameters(
+                        parameterWithName("username")
                             .description("아이디")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -221,16 +224,16 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/users/username")
+            get("/api/users/username")
                 .queryParam("username", username)
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/validate-username/username-field-required",
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    RequestDocumentation.queryParameters(
-                        RequestDocumentation.parameterWithName("username")
+                    preprocessResponse(prettyPrint()),
+                    queryParameters(
+                        parameterWithName("username")
                             .description("아이디")
                     )
                 )
@@ -253,43 +256,43 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isCreated)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
                             .description("회원 식별자"),
-                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                        fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
                     ),
-                    HeaderDocumentation.responseHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
-                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
+                    responseHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )
@@ -307,26 +310,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register/email-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -345,26 +348,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register/verification-code-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -383,26 +386,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register/username-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -421,26 +424,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register/password-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -459,26 +462,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/register")
+            post("/api/users/register")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/register/password-re-entered-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("verificationCode").type(JsonFieldType.STRING)
+                        fieldWithPath("verificationCode").type(JsonFieldType.STRING)
                             .description("인증코드"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("passwordReEnter").type(JsonFieldType.STRING)
                             .description("비밀번호 재입력")
                     ),
                 )
@@ -493,24 +496,24 @@ class AuthControllerTest : RestDocsSupport() {
         
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-username")
+            post("/api/users/find-username")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/find-username",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -526,18 +529,18 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-username")
+            post("/api/users/find-username")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/find-username/email-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
                     )
                 )
@@ -552,26 +555,26 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/find-password",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -587,20 +590,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/find-password/email-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
                     )
                 )
@@ -616,20 +619,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/find-password")
+            post("/api/users/find-password")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/find-password/username-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("email").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING)
                             .description("이메일"),
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
                     )
                 )
@@ -652,41 +655,41 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/login",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지"),
-                        PayloadDocumentation.fieldWithPath("data").type(JsonFieldType.OBJECT)
+                        fieldWithPath("data").type(JsonFieldType.OBJECT)
                             .description("데이터"),
-                        PayloadDocumentation.fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("data.userId").type(JsonFieldType.NUMBER)
                             .description("회원 식별자"),
-                        PayloadDocumentation.fieldWithPath("data.username").type(JsonFieldType.STRING)
+                        fieldWithPath("data.username").type(JsonFieldType.STRING)
                             .description("회원 아이디"),
-                        PayloadDocumentation.fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("회원 프로필 이미지"),
-                        PayloadDocumentation.fieldWithPath("data.temporaryPasswordYn").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("data.temporaryPasswordYn").type(JsonFieldType.BOOLEAN)
                             .description("임시 비밀번호 여부")
                     ),
-                    HeaderDocumentation.responseHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
-                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
+                    responseHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )
@@ -701,20 +704,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/login/username-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호")
                     )
                 )
@@ -730,20 +733,20 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/login")
+            post("/api/users/login")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/login/password-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("username").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("username").type(JsonFieldType.STRING)
                             .description("아이디"),
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호")
                     )
                 )
@@ -758,7 +761,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            patch("/api/users/password")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
@@ -766,22 +769,22 @@ class AuthControllerTest : RestDocsSupport() {
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/change-password",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                        fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     )
                 )
@@ -797,23 +800,23 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/change-password/password-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                        fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )
@@ -829,23 +832,23 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/change-password/new-password-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                        fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )
@@ -861,23 +864,23 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.patch("/api/v1/users/password")
+            patch("/api/users/password")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
         ).andDo(print())
             .andExpect(status().isBadRequest)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/change-password/new-password-re-entered-field-required",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                    PayloadDocumentation.requestFields(
-                        PayloadDocumentation.fieldWithPath("password").type(JsonFieldType.STRING)
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("password").type(JsonFieldType.STRING)
                             .description("비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPassword").type(JsonFieldType.STRING)
+                        fieldWithPath("newPassword").type(JsonFieldType.STRING)
                             .description("새 비밀번호"),
-                        PayloadDocumentation.fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
+                        fieldWithPath("newPasswordReEnter").type(JsonFieldType.STRING)
                             .description("새 비밀번호 재입력")
                     )
                 )
@@ -896,28 +899,28 @@ class AuthControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/users/token")
+            post("/api/users/token")
                 .header(REFRESH_TOKEN, "Bearer refresh-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
-                MockMvcRestDocumentation.document(
+                document(
                     "auth/refresh-token",
-                    Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                    Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
                     HeaderDocumentation.requestHeaders(
-                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
+                        headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     ),
-                    PayloadDocumentation.responseFields(
-                        PayloadDocumentation.fieldWithPath("code").type(JsonFieldType.STRING)
+                    responseFields(
+                        fieldWithPath("code").type(JsonFieldType.STRING)
                             .description("코드"),
-                        PayloadDocumentation.fieldWithPath("message").type(JsonFieldType.STRING)
+                        fieldWithPath("message").type(JsonFieldType.STRING)
                             .description("메세지")
                     ),
-                    HeaderDocumentation.responseHeaders(
-                        HeaderDocumentation.headerWithName(AUTHORIZATION).description("액세스 토큰"),
-                        HeaderDocumentation.headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
+                    responseHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰"),
+                        headerWithName(REFRESH_TOKEN).description("리프레시 토큰")
                     )
                 )
             )

@@ -2,25 +2,6 @@ spring:
   profiles:
     default: local
 
-###################
-###### LOCAL ######
-###################
----
-spring:
-  config:
-    activate:
-      on-profile: local
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/alloon_local?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-  sql:
-    init:
-      mode: always
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -51,12 +32,10 @@ spring:
       max-file-size: 50MB
 
 logging:
-  config: classpath:logback/dev-logback.xml
   file:
     name: alloon-rolling.log
 
 sentry:
-  dsn:
   traces-sample-rate: 1.0
   logging:
     minimum-event-level: info
@@ -73,173 +52,6 @@ cloud:
       bucket: ${AWS_BUCKET}
 
 api:
-  name: "Alloon Local"
-  master:
-    id: alloon
-  jwt:
-    secret: ${JWT_SECRET}
-    domain: ${JWT_DOMAIN}
-    time:
-      access: ${JWT_ACCESS}
-      refresh: ${JWT_REFRESH}
-  mail:
-    address: ${MAIL_ADDRESS}
-
-###################
-###### TEST #######
-###################
----
-spring:
-  config:
-    activate:
-      on-profile: test
-
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:~/alloon
-    username: sa
-    password:
-
-  sql:
-    init:
-      mode: always
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        default_batch_fetch_size: 100
-        show_sql: false
-        format_sql: true
-        use_sql_comments: true
-
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            require: true
-
-  servlet:
-    multipart:
-      max-request-size: 10MB
-      max-file-size: 50MB
-
-logging:
-  config: classpath:logback/dev-logback.xml
-  file:
-    name: alloon-rolling.log
-
-sentry:
-  dsn:
-  traces-sample-rate: 1.0
-  logging:
-    minimum-event-level: info
-    minimum-breadcrumb-level: info
-
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION}
-    s3:
-      bucket: ${AWS_BUCKET}
-
-api:
-  name: "Alloon Test"
-  master:
-    id: alloon
-  jwt:
-    secret: ${JWT_SECRET}
-    domain: ${JWT_DOMAIN}
-    time:
-      access: ${JWT_ACCESS}
-      refresh: ${JWT_REFRESH}
-  mail:
-    address: ${MAIL_ADDRESS}
-
-###################
-####### DEV #######
-###################
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-  sql:
-    init:
-      mode: ${SQL_INIT_MODE}
-
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        default_batch_fetch_size: 100
-        show_sql: false
-        format_sql: true
-        use_sql_comments: true
-
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            require: true
-
-  servlet:
-    multipart:
-      max-request-size: 10MB
-      max-file-size: 50MB
-
-logging:
-  config: classpath:logback/prod-logback.xml
-  file.name: alloon-rolling.log
-
-sentry:
-  dsn: ${SENTRY_DSN}
-  environment: develop
-  traces-sample-rate: 1.0
-  logging:
-    minimum-event-level: info
-    minimum-breadcrumb-level: info
-
-cloud:
-  aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION}
-    s3:
-      bucket: ${AWS_BUCKET}
-
-api:
-  name: "Alloon Dev"
   master:
     id: alloon
   jwt:

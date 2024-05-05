@@ -23,14 +23,14 @@ class UserController(
     private val userService: UserService,
 ) {
 
-    @GetMapping("/api/v1/users")
+    @GetMapping("/api/users")
     fun getMyInfo(principal: Principal): ResponseEntity<DefaultSingleResponse> {
         val response = userService.getInfo(UserUtility.getUserId(principal))
 
         return DefaultSingleResponse.toResponseEntity(FOUND_MY_USER_INFO, response)
     }
 
-    @PostMapping("/api/v1/users/image", consumes = [MULTIPART_FORM_DATA_VALUE], produces = [APPLICATION_JSON_VALUE])
+    @PostMapping("/api/users/image", consumes = [MULTIPART_FORM_DATA_VALUE], produces = [APPLICATION_JSON_VALUE])
     fun uploadImage(principal: Principal, @RequestPart(required = false) file: MultipartFile?):
             ResponseEntity<DefaultSingleResponse> {
         val response = userService.uploadImage(UserUtility.getUserId(principal), file)

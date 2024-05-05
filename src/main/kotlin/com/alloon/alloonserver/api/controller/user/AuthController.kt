@@ -23,7 +23,7 @@ class AuthController(
     private val jwtProvider: JwtProvider,
 ) {
 
-    @PostMapping("/api/v1/contacts")
+    @PostMapping("/api/contacts")
     fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest):
             ResponseEntity<DefaultResponse> {
         authService.sendVerificationCode(request.toServiceRequest())
@@ -31,14 +31,14 @@ class AuthController(
         return DefaultResponse.toResponseEntity(EMAIL_VERIFICATION_CODE_SENT)
     }
 
-    @PatchMapping("/api/v1/contacts/verify")
+    @PatchMapping("/api/contacts/verify")
     fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<DefaultResponse> {
         authService.verifyEmailVerificationCode(request.toServiceRequest())
 
         return DefaultResponse.toResponseEntity(EMAIL_VERIFICATION_CODE_VERIFIED)
     }
 
-    @GetMapping("/api/v1/users/username")
+    @GetMapping("/api/users/username")
     fun validateUsername(@RequestParam("username") @NotBlank(message = "아이디는 필수 입력입니다.") username: String):
             ResponseEntity<DefaultResponse> {
         authService.validateUsername(UserServiceValidateUsernameRequest(username))
@@ -46,7 +46,7 @@ class AuthController(
         return DefaultResponse.toResponseEntity(USERNAME_AVAILABLE)
     }
 
-    @PostMapping("/api/v1/users/register")
+    @PostMapping("/api/users/register")
     fun registerUser(@RequestBody @Valid request: UserRegisterRequest): ResponseEntity<DefaultSingleResponse> {
         val response = authService.registerUser(request.toServiceRequest())
 
@@ -55,21 +55,21 @@ class AuthController(
         return DefaultSingleResponse.toResponseEntity(headers, USER_REGISTERED, response)
     }
 
-    @PostMapping("/api/v1/users/find-username")
+    @PostMapping("/api/users/find-username")
     fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<DefaultResponse> {
         authService.findUsername(request.toServiceRequest())
 
         return DefaultResponse.toResponseEntity(USERNAME_SENT)
     }
 
-    @PostMapping("/api/v1/users/find-password")
+    @PostMapping("/api/users/find-password")
     fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<DefaultResponse> {
         authService.findPassword(request.toServiceRequest())
 
         return DefaultResponse.toResponseEntity(PASSWORD_SENT)
     }
 
-    @PostMapping("/api/v1/users/login")
+    @PostMapping("/api/users/login")
     fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<DefaultSingleResponse> {
         val response = authService.login(request.toServiceRequest())
 
@@ -78,7 +78,7 @@ class AuthController(
         return DefaultSingleResponse.toResponseEntity(headers, USER_LOGIN, response)
     }
 
-    @PatchMapping("/api/v1/users/password")
+    @PatchMapping("/api/users/password")
     fun changePassword(principal: Principal, @RequestBody @Valid request: UserChangePasswordRequest):
             ResponseEntity<DefaultResponse> {
         authService.changePassword(UserUtility.getUserId(principal), request.toServiceRequest())
@@ -86,7 +86,7 @@ class AuthController(
         return DefaultResponse.toResponseEntity(PASSWORD_CHANGED)
     }
 
-    @PostMapping("/api/v1/users/token")
+    @PostMapping("/api/users/token")
     fun refreshToken(principal: Principal): ResponseEntity<DefaultResponse> {
         val headers = jwtProvider.createToken(UserUtility.getUserId(principal))
 

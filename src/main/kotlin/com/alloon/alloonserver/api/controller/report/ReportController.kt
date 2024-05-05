@@ -15,7 +15,7 @@ class ReportController(
     private val reportService: ReportService,
 ) {
 
-    @GetMapping("/api/v1/reports/missions/category")
+    @GetMapping("/api/reports/missions/category")
     fun getAllMissionReportCategories(): ResponseEntity<DefaultListResponse<String>> {
         val response = reportService.getAllReportCategoryDescription(MISSION)
 

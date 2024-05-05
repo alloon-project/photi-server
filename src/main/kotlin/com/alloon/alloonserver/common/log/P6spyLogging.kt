@@ -14,7 +14,7 @@ class P6spyLogging : MessageFormattingStrategy {
         sql: String?,
         url: String?,
     ): String {
-        val uuid = InterceptorLogging().requestId ?: "SYSTEM"
+        val uuid = InterceptorLogging().requestId
         var sqlLog = "[" + uuid + " | DATABASE] connectionId=" + connectionId + ", time=" + elapsed + "ms"
 
         if (sql == null || sql.trim() == "")

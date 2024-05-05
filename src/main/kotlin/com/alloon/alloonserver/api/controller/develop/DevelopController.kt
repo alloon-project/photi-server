@@ -18,14 +18,15 @@ class DevelopController(
     private val developService: DevelopService
 ) {
 
-    @GetMapping("/api/v1/health")
+    @GetMapping("/api/health")
     fun healthCheck(): ResponseEntity<DefaultResponse> {
         val serverName = developService.getServerName()
 
-        return DefaultResponse.toResponseEntity(SERVER_OK)
+        return ResponseEntity.status(SERVER_OK.httpStatus)
+            .body(DefaultResponse(SERVER_OK.name, serverName + SERVER_OK.message))
     }
 
-    @GetMapping("/api/v1/ver")
+    @GetMapping("/api/ver")
     fun needForceUpdate(@RequestParam("version") @NotBlank(message = "앱 버전은 필수 입력입니다.") version: String):
             ResponseEntity<DefaultSingleResponse>  {
         val response = developService.needForceUpdate(version)

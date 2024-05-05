@@ -30,7 +30,7 @@ class ReportControllerTest : RestDocsSupport() {
     fun givenValid_whenGetAllMissionReportCategories_thenReturn200() {
         // when & then
         mockMvc.perform(
-            get("/api/v1/reports/missions/category")
+            get("/api/reports/missions/category")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
