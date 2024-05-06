@@ -1,7 +1,9 @@
 package com.alloon.alloonserver.domain.report
 
 import com.alloon.alloonserver.domain.base.BaseEntity
+import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.mission.Mission
+import com.alloon.alloonserver.domain.mission.MissionMember
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
 
@@ -21,14 +23,18 @@ class Report(
     val reporter: User?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    val user: User? = null,
+    @JoinColumn(name = "mission_member_id")
+    val missionMember: MissionMember? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
     val mission: Mission? = null,
 
-    @Column(length = 300)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "feed_id")
+    val feed: Feed? = null,
+
+    @Column(length = 120)
     val reason: String? = null,
 ) : BaseEntity() {
 }

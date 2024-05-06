@@ -24,6 +24,9 @@ enum class ExceptionCode(
     MISSION_IMAGE_URL_FIELD_INVALID(BAD_REQUEST, "미션 대표 이미지는 필수 입력입니다."),
     MISSION_ENDED_AT_FIELD_REQUIRED(BAD_REQUEST, "미션 종료일은 필수 입력입니다."),
     VERSION_FIELD_REQUIRED(BAD_REQUEST, "버전은 필수 입력입니다."),
+    REPORT_TARGET_ID_FIELD_REQUIRED(BAD_REQUEST, "신고 대상 식별자는 필수 입력입니다."),
+    REPORT_TYPE_FIELD_REQUIRED(BAD_REQUEST, "신고 타입은 필수 입력입니다."),
+    REPORT_CATEGORY_ID(BAD_REQUEST, "신고 카테고리 식별자는 필수 입력입니다."),
 
     // @Size
     EMAIL_LENGTH_INVALID(BAD_REQUEST, "이메일은 1~100자만 가능합니다."),
@@ -38,12 +41,14 @@ enum class ExceptionCode(
     MISSION_IMAGE_URL_LENGTH_INVALID(BAD_REQUEST, "미션 대표 이미지는 0~500자만 가능합니다."),
     HASHTAGS_LENGTH_INVALID(BAD_REQUEST, "해시태그는 0~5개만 가능합니다."),
     HASHTAG_LENGTH_INVALID(BAD_REQUEST, "해시태그는 1~5자만 가능합니다."),
+    REPORT_REASON_LENGTH_INVALID(BAD_REQUEST, "신고 사유는 0~120자만 가능합니다."),
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),
     USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."),
     PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     NEW_PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
+    REPORT_TYPE_INVALID(BAD_REQUEST, "신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다."),
 
     // @Positive, @PositiveOrZero
 
@@ -73,6 +78,10 @@ enum class ExceptionCode(
      */
     USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 회원입니다."),
     EMAIL_NOT_FOUND(NOT_FOUND, "존재하지 않는 이메일입니다."),
+    REPORT_CATEGORY_NOT_FOUND(NOT_FOUND, "존재하지 않는 신고 항목입니다."),
+    MISSION_NOT_FOUND(NOT_FOUND, "존재하지 않는 미션입니다."),
+    MISSION_MEMBER_NOT_FOUND(NOT_FOUND, "존재하지 않는 미션 멤버입니다."),
+    FEED_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드입니다."),
 
     /**
      * 405 Method Not Allowed

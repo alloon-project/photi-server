@@ -154,6 +154,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         } else if (responseMessage.contains("형식") || responseMessage.contains("조합")) {
             responseCode = "_FORMAT_INVALID" // @Pattern, @Email - format
         } else if (responseMessage.contains("중 하나여야 됩니다.")) {
+            if (responseCode.contains("TYPE")) responseCode.removeSurrounding("TYPE")
             responseCode = "_TYPE_INVALID" // @Pattern - type
         } else if (responseMessage.contains("까지의 수만")) {
             responseCode = "_RANGE_INVALID" // @Range

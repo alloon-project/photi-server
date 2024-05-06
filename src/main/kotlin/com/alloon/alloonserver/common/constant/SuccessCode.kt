@@ -15,7 +15,7 @@ enum class SuccessCode(
     FOUND_MISSION_CATEGORIES(OK, "미션 신고 항목을 전체 조회했습니다."),
 
     // 201 Created
-
+    REPORT_CREATED(CREATED, "신고가 완료 되었습니다."),
 
     /**
      * Mission Controller
