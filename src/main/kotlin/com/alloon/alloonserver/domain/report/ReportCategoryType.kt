@@ -6,4 +6,5 @@ enum class ReportCategoryType(
     MISSION("미션"),
     MISSION_MEMBER("미션 멤버"),
     FEED("피드"),
+    ;
 }

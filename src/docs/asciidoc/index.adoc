@@ -54,4 +54,4 @@ include::api/mission/create-mission.adoc[]
 [[Report-API]]
 === Report API
 
-include::api/report/get-all-mission-report-categories.adoc[]
+include::api/report/get-all-report-categories.adoc[]

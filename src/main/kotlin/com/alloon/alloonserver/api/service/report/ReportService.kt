@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.service.report
 import com.alloon.alloonserver.api.service.report.request.ReportCreateServiceRequest
 import com.alloon.alloonserver.common.constant.ExceptionCode
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.REPORT_CATEGORY_TYPE_CHARACTER
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.feed.FeedRepository
 import com.alloon.alloonserver.domain.mission.MissionMemberRepository
@@ -13,6 +14,7 @@ import com.alloon.alloonserver.domain.report.ReportCategoryType.*
 import com.alloon.alloonserver.domain.report.ReportRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Pattern
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
@@ -31,11 +33,15 @@ class ReportService(
 
     /**
      * 신고 항목 설명 전체 조회
-     * @param type 신고 항목 종류
+     * @param reportType 신고 항목 종류
+     * @throws REPORT_TYPE_INVALID 400
      * @return 신고 항목 설명들
      */
-    fun getAllReportCategoryDescription(type: ReportCategoryType): List<String> {
-        return reportCategoryRepository.findAllDescription(type)
+    fun getAllReportCategoryDescription(
+        @Pattern(regexp = REPORT_CATEGORY_TYPE_CHARACTER,
+            message = "신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다.")
+        reportType: String): List<String> {
+        return reportCategoryRepository.findAllDescription(ReportCategoryType.valueOf(reportType))
     }
 
     /**
