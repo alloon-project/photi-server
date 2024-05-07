@@ -33,7 +33,7 @@ include::{snippets}/mission/create-mission/response-fields.adoc[]
 ----
 {
   "code" : "MISSION_DESCRIPTION_LENGTH_INVALID",
-  "message" : "미션 소개는 1~120자만 가능합니다."
+  "message" : "미션 소개는 10~120자만 가능합니다."
 }
 ----
 ----
@@ -50,8 +50,14 @@ include::{snippets}/mission/create-mission/response-fields.adoc[]
 ----
 ----
 {
+"code" : "MISSION_GOAL_FIELD_REQUIRED",
+"message" : "목표는 필수 입력입니다."
+}
+----
+----
+{
 "code" : "MISSION_GOAL_LENGTH_INVALID",
-"message" : "목표는 0~30자만 가능합니다."
+"message" : "목표는 1~30자만 가능합니다."
 }
 ----
 ----
@@ -63,7 +69,7 @@ include::{snippets}/mission/create-mission/response-fields.adoc[]
 ----
 {
   "code" : "MISSION_IMAGE_URL_LENGTH_INVALID",
-  "message" : "미션 대표 이미지는 0~500자만 가능합니다."
+  "message" : "미션 대표 이미지는 1~500자만 가능합니다."
 }
 ----
 ----
@@ -75,7 +81,7 @@ include::{snippets}/mission/create-mission/response-fields.adoc[]
 ----
 {
   "code" : "HASHTAGS_LENGTH_INVALID",
-  "message" : "해시태그는 0~5개만 가능합니다."
+  "message" : "해시태그는 1~5개만 가능합니다."
 }
 ----
 ----

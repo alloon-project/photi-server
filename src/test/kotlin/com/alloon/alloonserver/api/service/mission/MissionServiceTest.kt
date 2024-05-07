@@ -67,35 +67,6 @@ class MissionServiceTest(
         )
     }
 
-    @DisplayName("해시태그 없이 미션 생성을 하면 정상 작동한다")
-    @Test
-    fun givenWithoutHashtags_whenCreateMission_thenReturn() {
-        // given
-        val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
-
-        val request = createValidMissionServiceCreateMissionRequest()
-        request.hashtags = emptyList()
-
-        // when
-        val response = missionService.createMission(user.id!!, request)
-
-        // then
-        assertAll(
-            { assertThat(response.missionId).isNotNull() },
-            {
-                assertThat(response)
-                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
-                        "endDate", "hashtags")
-                    .containsExactly(request.missionName, request.missionDescription,
-                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
-                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
-                        request.hashtags.stream().map { it.hashtag }.toList())
-            },
-        )
-    }
-
     @DisplayName("규칙 없이 미션 생성을 하면 정상 작동한다")
     @Test
     fun givenWithoutMissionRules_whenCreateMission_thenReturn() {
@@ -159,14 +130,14 @@ class MissionServiceTest(
             .contains(MISSION_NAME_LENGTH_INVALID.message)
     }
 
-    @DisplayName("1자 미만인 미션 소개로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("10자 미만인 미션 소개로 미션 생성을 하면 예외가 발생한다")
     @Test
     fun givenLessThan1MissionDescription_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionDescription = ""
+        request.missionDescription = "a".repeat(9)
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
@@ -191,6 +162,40 @@ class MissionServiceTest(
             .extracting("message")
             .asString()
             .contains(MISSION_DESCRIPTION_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("1자 미만인 미션 목표로 미션 생성을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan1MissionGoal_whenCreateMission_thenThrow() {
+        // given
+        val user = createAndSaveUserWithContact()
+
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.missionGoal = ""
+
+        // when & then
+        assertThatThrownBy { missionService.createMission(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(MISSION_GOAL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("30자 초과인 미션 목표로 미션 생성을 하면 예외가 발생한다")
+    @Test
+    fun givenGreaterThan30MissionGoal_whenCreateMission_thenThrow() {
+        // given
+        val user = createAndSaveUserWithContact()
+
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.missionGoal = "a".repeat(31)
+
+        // when & then
+        assertThatThrownBy { missionService.createMission(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(MISSION_GOAL_LENGTH_INVALID.message)
     }
 
     @DisplayName("5개 초과인 규칙으로 미션 생성을 하면 예외가 발생한다")
@@ -249,21 +254,21 @@ class MissionServiceTest(
             .contains(MISSION_RULE_LENGTH_INVALID.message)
     }
 
-    @DisplayName("30자 초과인 목표으로 미션 생성을 하면 예외가 발생한다")
+    @DisplayName("1자 미만인 미션 대표 이미지로 미션 생성을 하면 예외가 발생한다")
     @Test
-    fun givenGreaterThan500MissionGoal_whenCreateMission_thenThrow() {
+    fun givenLessThan1MissionImageUrl_whenCreateMission_thenThrow() {
         // given
         val user = createAndSaveUserWithContact()
 
         val request = createValidMissionServiceCreateMissionRequest()
-        request.missionGoal = "a".repeat(31)
+        request.missionImageUrl = ""
 
         // when & then
         assertThatThrownBy { missionService.createMission(user.id!!, request) }
             .isInstanceOf(ConstraintViolationException::class.java)
             .extracting("message")
             .asString()
-            .contains(MISSION_GOAL_LENGTH_INVALID.message)
+            .contains(MISSION_IMAGE_URL_LENGTH_INVALID.message)
     }
 
     @DisplayName("500자 초과인 미션 대표 이미지로 미션 생성을 하면 예외가 발생한다")
@@ -281,6 +286,23 @@ class MissionServiceTest(
             .extracting("message")
             .asString()
             .contains(MISSION_IMAGE_URL_LENGTH_INVALID.message)
+    }
+
+    @DisplayName("1개 미만인 해시태그로 미션 생성을 하면 예외가 발생한다")
+    @Test
+    fun givenLessThan1Hashtags_whenCreateMission_thenThrow() {
+        // given
+        val user = createAndSaveUserWithContact()
+
+        val request = createValidMissionServiceCreateMissionRequest()
+        request.hashtags = emptyList()
+
+        // when & then
+        assertThatThrownBy { missionService.createMission(user.id!!, request) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .extracting("message")
+            .asString()
+            .contains(HASHTAGS_LENGTH_INVALID.message)
     }
 
     @DisplayName("5개 초과인 해시태그로 미션 생성을 하면 예외가 발생한다")

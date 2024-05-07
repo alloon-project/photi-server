@@ -15,8 +15,8 @@ class Mission(
     var missionName: String,
     @Column(nullable = false, length = 120)
     val description: String,
-    @Column(length = 30)
-    val goal: String? = null,
+    @Column(nullable = false, length = 30)
+    val goal: String,
     @Column(nullable = false, length = 500)
     val imageUrl: String,
 
