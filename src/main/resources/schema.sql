@@ -73,7 +73,7 @@ CREATE TABLE mission
     mission_id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
     mission_name                VARCHAR(16)               NOT NULL,
     description                 VARCHAR(120)              NOT NULL,
-    goal                        VARCHAR(30),
+    goal                        VARCHAR(30)               NOT NULL,
     image_url                   VARCHAR(500)              NOT NULL,
     current_member_cnt          INT                       NOT NULL,
     visit_cnt                   INT                       NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE mission
 
 CREATE TABLE mission_rule
 (
-    mission_rule_id             INT AUTO_INCREMENT PRIMARY KEY,
+    mission_rule_id             BIGINT AUTO_INCREMENT PRIMARY KEY,
     rule                        VARCHAR(30)               NOT NULL,
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
