@@ -3,6 +3,7 @@
 
 ==== HTTP Request
 include::{snippets}/mission/create-mission/http-request.adoc[]
+include::{snippets}/mission/create-mission/request-fields.adoc[]
 
 ==== HTTP Response
 include::{snippets}/mission/create-mission/http-response.adoc[]

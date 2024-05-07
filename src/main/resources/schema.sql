@@ -225,16 +225,18 @@ CREATE TABLE report_category
 CREATE TABLE report
 (
     report_id                   BIGINT AUTO_INCREMENT PRIMARY KEY,
-    reason                      VARCHAR(300),
+    reason                      VARCHAR(120),
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
-    user_id                     BIGINT,
     reporter_id                 BIGINT,
+    mission_member_id           BIGINT,
     mission_id                  BIGINT,
+    feed_id                     BIGINT,
     report_category_id          INT                       NOT NULL,
-    CONSTRAINT fk_report_user FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT fk_report_reporter FOREIGN KEY (reporter_id) REFERENCES users (user_id),
+    CONSTRAINT fk_report_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id),
     CONSTRAINT fk_report_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id),
+    CONSTRAINT fk_report_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
     CONSTRAINT fk_report_report_category FOREIGN KEY (report_category_id) REFERENCES report_category (report_category_id)
 );
 
