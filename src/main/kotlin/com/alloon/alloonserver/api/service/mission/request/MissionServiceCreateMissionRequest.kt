@@ -9,21 +9,21 @@ import java.time.LocalDate
 data class MissionServiceCreateMissionRequest(
     @field:Size(min = 2, max = 16, message = "미션명은 2~16자만 가능합니다.")
     var missionName: String,
-    @field:Size(min = 1, max = 120, message = "미션 소개는 1~120자만 가능합니다.")
+    @field:Size(min = 10, max = 120, message = "미션 소개는 10~120자만 가능합니다.")
     var missionDescription: String,
-    @field:Size(max = 30, message = "목표는 0~30자만 가능합니다.")
-    var missionGoal: String?,
+    @field:Size(min = 1, max = 30, message = "목표는 1~30자만 가능합니다.")
+    var missionGoal: String,
 
     @field:Size(max = 5, message = "규칙은 0~5개만 가능합니다.")
     @field:Valid
     var missionRules: List<MissionCreateMissionRuleServiceRequest>,
 
-    @field:Size(max = 500, message = "미션 대표 이미지는 0~500자만 가능합니다.")
+    @field:Size(min = 1, max = 500, message = "미션 대표 이미지는 1~500자만 가능합니다.")
     var missionImageUrl: String,
 
     var missionEndDate: LocalDate,
 
-    @field:Size(max = 5, message = "해시태그는 0~5개만 가능합니다.")
+    @field:Size(min = 1, max = 5, message = "해시태그는 1~5개만 가능합니다.")
     @field:Valid
     var hashtags: List<MissionCreateHashTagServiceRequest>,
 ) {

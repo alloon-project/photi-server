@@ -46,7 +46,7 @@ class FeedRepositoryTest(
 
     private fun createAdnSaveFeed(): Feed {
         val mission = missionRepository.save(
-            Mission(missionName = "미션명", description = "미션 설명",
+            Mission(missionName = "미션명", description = "미션 설명", goal = "미션 목표",
             imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
             endDate = LocalDate.of(2999, 1, 1))
         )

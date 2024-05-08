@@ -44,10 +44,8 @@ class MissionService(
         missionRules.isNotEmpty().let { missionRuleRepository.saveAll(missionRules) }
 
         val missionHashtags = request.toMissionHashtag(missionMember.mission)
-        if (missionHashtags.isNotEmpty()) {
-            hashtagRepository.saveAll(missionHashtags.map { it.hashtag })
-            missionHashtagRepository.saveAll(missionHashtags)
-        }
+        hashtagRepository.saveAll(missionHashtags.map { it.hashtag })
+        missionHashtagRepository.saveAll(missionHashtags)
 
         return MissionCreateResponse(missionMember, missionRules.map { it.rule }, missionHashtags.map { it.hashtag })
     }
