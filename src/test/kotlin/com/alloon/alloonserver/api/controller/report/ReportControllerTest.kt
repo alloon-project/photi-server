@@ -3,9 +3,12 @@ package com.alloon.alloonserver.api.controller.report
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.report.request.ReportCreateRequest
 import com.alloon.alloonserver.api.service.report.ReportService
+import com.alloon.alloonserver.domain.report.ReportCategoryType
 import com.alloon.alloonserver.domain.report.ReportCategoryType.FEED
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.Mockito.mock
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
@@ -15,6 +18,8 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
+import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -28,23 +33,27 @@ class ReportControllerTest : RestDocsSupport() {
         return ReportController(reportService)
     }
 
+    @ParameterizedTest(name = "[{index}] {0} 신고 항목 종류 전체 조회를 하면 200을 반환한다")
+    @EnumSource(ReportCategoryType::class)
     @DisplayName("신고 항목 전체 조회를 하면 200을 반환한다")
-    @Test
-    fun givenValid_whenGetAllMissionReportCategories_thenReturn200() {
+    fun givenEnum_whenGetAllReportCategories_thenReturn200(reportType: ReportCategoryType) {
         // when & then
         mockMvc.perform(
-            get("/api/reports/missions/category")
+            get("/api/reports/category")
+                .queryParam("type", reportType.name)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         ).andDo(print())
             .andExpect(status().isOk)
             .andDo(
                 document(
-                    "report/get-all-mission-report-categories",
-                    preprocessRequest(prettyPrint()),
+                    "report/get-all-report-categories",
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
                         headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    queryParameters(
+                        parameterWithName("type").description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')")
                     ),
                     responseFields(
                         fieldWithPath("code").type(JsonFieldType.STRING)
@@ -53,6 +62,34 @@ class ReportControllerTest : RestDocsSupport() {
                             .description("메세지"),
                         fieldWithPath("data").type(JsonFieldType.ARRAY)
                             .description("데이터")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("신고 항목 종류 미입력시 신고 항목 전체 조회를 하면 400을 반환한다")
+    @Test
+    fun givenBlankReportType_whenGetAllReportCategories_thenReturn400() {
+        // given
+        val reportType = null
+
+        // when & then
+        mockMvc.perform(
+            get("/api/reports/category")
+                .queryParam("type", reportType)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                document(
+                    "report/get-all-report-categories/report-type-field-required",
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    queryParameters(
+                        parameterWithName("type").description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')")
                     )
                 )
             )
@@ -85,7 +122,7 @@ class ReportControllerTest : RestDocsSupport() {
                         fieldWithPath("reportTargetId").type(JsonFieldType.NUMBER)
                             .description("신고 대상자 식별자"),
                         fieldWithPath("reportType").type(JsonFieldType.STRING)
-                            .description("신고 타입"),
+                            .description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')"),
                         fieldWithPath("reportCategoryId").type(JsonFieldType.NUMBER)
                             .description("신고 카테고리 식별자"),
                         fieldWithPath("reportReason").type(JsonFieldType.STRING).optional()
@@ -129,7 +166,7 @@ class ReportControllerTest : RestDocsSupport() {
                         fieldWithPath("reportTargetId").type(JsonFieldType.NUMBER).optional()
                             .description("신고 대상자 식별자"),
                         fieldWithPath("reportType").type(JsonFieldType.STRING)
-                            .description("신고 타입"),
+                            .description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')"),
                         fieldWithPath("reportCategoryId").type(JsonFieldType.NUMBER)
                             .description("신고 카테고리 식별자"),
                         fieldWithPath("reportReason").type(JsonFieldType.STRING).optional()
@@ -167,7 +204,7 @@ class ReportControllerTest : RestDocsSupport() {
                         fieldWithPath("reportTargetId").type(JsonFieldType.NUMBER)
                             .description("신고 대상자 식별자"),
                         fieldWithPath("reportType").type(JsonFieldType.STRING)
-                            .description("신고 타입"),
+                            .description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')"),
                         fieldWithPath("reportCategoryId").type(JsonFieldType.NUMBER)
                             .description("신고 카테고리 식별자"),
                         fieldWithPath("reportReason").type(JsonFieldType.STRING).optional()
@@ -205,7 +242,7 @@ class ReportControllerTest : RestDocsSupport() {
                         fieldWithPath("reportTargetId").type(JsonFieldType.NUMBER)
                             .description("신고 대상자 식별자"),
                         fieldWithPath("reportType").type(JsonFieldType.STRING)
-                            .description("신고 타입"),
+                            .description("신고 항목 종류('MISSION', 'MISSION_MEMBER', 'FEED')"),
                         fieldWithPath("reportCategoryId").type(JsonFieldType.NUMBER).optional()
                             .description("신고 카테고리 식별자"),
                         fieldWithPath("reportReason").type(JsonFieldType.STRING).optional()

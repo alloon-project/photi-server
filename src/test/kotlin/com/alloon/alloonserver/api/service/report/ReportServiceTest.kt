@@ -56,10 +56,23 @@ class ReportServiceTest(
         val reportCategory = createAndSaveReportCategory(adminRole.user, type, "항목", 1)
 
         // when
-        val result = reportService.getAllReportCategoryDescription(type)
+        val result = reportService.getAllReportCategoryDescription(type.name)
 
         // then
         assertThat(result).containsExactly(reportCategory.description)
+    }
+
+    @DisplayName("잘못된 신고 항목 종류로 신고 항목 설명 전체 조회를 하면 예외가 발생한다")
+    @Test
+    fun givenPatternReportType_whenGetAllReportCategoryDescription_thenThrows() {
+        // given
+        val adminRole = createAndSaveUserWithContact("tester@alloon.com", "tester", ADMIN)
+        val type = "WRONG_TYPE"
+
+        // when & then
+        assertThatThrownBy { reportService.getAllReportCategoryDescription(type) }
+            .isInstanceOf(ConstraintViolationException::class.java)
+            .hasMessageContaining(REPORT_TYPE_INVALID.message)
     }
 
     @ParameterizedTest(name = "[{index}] {0} 종류의 신고 등록이 정상 작동한다")
