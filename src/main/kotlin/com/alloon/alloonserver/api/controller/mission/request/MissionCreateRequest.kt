@@ -10,15 +10,15 @@ import java.time.LocalDate
 
 data class MissionCreateRequest(
     @field:NotBlank(message = "미션명은 필수 입력입니다.")
-    var missionName: String,
+    var missionName: String?,
     @field:NotBlank(message = "미션 소개는 필수 입력입니다.")
-    var missionDescription: String,
+    var missionDescription: String?,
     @field:NotBlank(message = "목표는 필수 입력입니다.")
-    var missionGoal: String,
+    var missionGoal: String?,
     var missionRules: List<String> = listOf(),
 
     @field:NotBlank(message = "미션 대표 이미지는 필수 입력입니다.")
-    var missionImageUrl: String,
+    var missionImageUrl: String?,
 
     @field:NotNull(message = "미션 종료일은 필수 입력입니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -30,11 +30,11 @@ data class MissionCreateRequest(
 
     fun toServiceRequest(): MissionServiceCreateMissionRequest {
         return MissionServiceCreateMissionRequest(
-            missionName,
-            missionDescription,
-            missionGoal,
+            missionName!!,
+            missionDescription!!,
+            missionGoal!!,
             missionRules.map { MissionCreateMissionRuleServiceRequest(it) },
-            missionImageUrl,
+            missionImageUrl!!,
             missionEndDate!!,
             hashtags!!.map { MissionCreateHashTagServiceRequest(it) }
         )
