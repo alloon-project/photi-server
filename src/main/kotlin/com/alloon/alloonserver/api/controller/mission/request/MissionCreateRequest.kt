@@ -13,8 +13,8 @@ data class MissionCreateRequest(
     var missionName: String,
     @field:NotBlank(message = "미션 소개는 필수 입력입니다.")
     var missionDescription: String,
-
-    var missionGoal: String?,
+    @field:NotBlank(message = "목표는 필수 입력입니다.")
+    var missionGoal: String,
     var missionRules: List<String> = listOf(),
 
     @field:NotBlank(message = "미션 대표 이미지는 필수 입력입니다.")
@@ -24,7 +24,8 @@ data class MissionCreateRequest(
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     var missionEndDate: LocalDate?,
 
-    var hashtags:List<String> = listOf()
+    @field:NotNull(message = "해시태그는 필수 입력입니다.")
+    var hashtags:List<String>?,
 ) {
 
     fun toServiceRequest(): MissionServiceCreateMissionRequest {
@@ -35,7 +36,7 @@ data class MissionCreateRequest(
             missionRules.map { MissionCreateMissionRuleServiceRequest(it) },
             missionImageUrl,
             missionEndDate!!,
-            hashtags.map { MissionCreateHashTagServiceRequest(it) }
+            hashtags!!.map { MissionCreateHashTagServiceRequest(it) }
         )
     }
 }

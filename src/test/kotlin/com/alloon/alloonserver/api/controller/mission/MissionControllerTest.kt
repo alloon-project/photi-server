@@ -85,7 +85,7 @@ class MissionControllerTest: RestDocsSupport() {
                 MissionCreateCreatorResponse("tester", ""),
                 now,
                 request.missionEndDate!!,
-                request.hashtags
+                request.hashtags!!
             ))
 
         // when & then
@@ -110,7 +110,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
@@ -118,7 +118,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("대표 이미지"),
                         fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .description("해시태그")
                     ),
                     responseFields(
@@ -136,7 +136,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션 소개"),
                         fieldWithPath("data.rules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
-                        fieldWithPath("data.goal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("data.goal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("data.imageUrl").type(JsonFieldType.STRING)
                             .description("미션 대표 이미지"),
@@ -152,7 +152,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션 시작일"),
                         fieldWithPath("data.endDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY).optional()
+                        fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY)
                             .description("해시태그"),
                     )
                 )
@@ -180,7 +180,7 @@ class MissionControllerTest: RestDocsSupport() {
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 request.missionEndDate!!,
-                request.hashtags
+                request.hashtags!!
             ))
 
         // when & then
@@ -194,7 +194,7 @@ class MissionControllerTest: RestDocsSupport() {
             .andExpect(status().isBadRequest)
             .andDo(
                 document(
-                    "mission/create-mission/mission-name-filed-required",
+                    "mission/create-mission/mission-name-field-required",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
@@ -205,7 +205,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
@@ -214,7 +214,6 @@ class MissionControllerTest: RestDocsSupport() {
                         fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
-                            .optional()
                             .description("해시태그")
                     )
                 )
@@ -242,7 +241,7 @@ class MissionControllerTest: RestDocsSupport() {
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 request.missionEndDate!!,
-                request.hashtags
+                request.hashtags!!
             ))
 
         // when & then
@@ -256,7 +255,7 @@ class MissionControllerTest: RestDocsSupport() {
             .andExpect(status().isBadRequest)
             .andDo(
                 document(
-                    "mission/create-mission/mission-name-filed-required",
+                    "mission/create-mission/mission-description-field-required",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
@@ -267,7 +266,7 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
@@ -275,7 +274,68 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("대표 이미지"),
                         fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
+                            .description("해시태그")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("미션 목표 미입력시 미션 생성을 하면 400을 반환한다")
+    @Test
+    fun givenBlankMissionGoal_whenCreateMission_thenReturn400() {
+        // given
+        val request = createValidMissionCreateRequest()
+        request.missionGoal = ""
+
+        val now = LocalDate.now()
+
+        `when`(missionService.createMission(anyLong(), any()))
+            .thenReturn(MissionCreateResponse(
+                1L,
+                request.missionName,
+                request.missionDescription,
+                request.missionGoal,
+                request.missionRules,
+                request.missionImageUrl,
+                1,
+                MissionCreateCreatorResponse("tester", null),
+                now,
+                request.missionEndDate!!,
+                request.hashtags!!
+            ))
+
+        // when & then
+        mockMvc.perform(
+            post("/api/missions")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                document(
+                    "mission/create-mission/mission-goal-field-required",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
+                            .description("미션명"),
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                            .description("미션 소개"),
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
+                            .description("목표"),
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
+                            .description("규칙"),
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                            .description("대표 이미지"),
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
+                            .description("미션 종료일"),
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .description("해시태그")
                     )
                 )
@@ -303,7 +363,7 @@ class MissionControllerTest: RestDocsSupport() {
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 now,
-                request.hashtags
+                request.hashtags!!
             ))
 
         // when & then
@@ -328,15 +388,15 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
                         fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
-                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
-                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
                             .description("해시태그")
                     )
                 )
@@ -364,7 +424,7 @@ class MissionControllerTest: RestDocsSupport() {
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 now,
-                request.hashtags
+                request.hashtags!!
             ))
 
         // when & then
@@ -389,13 +449,75 @@ class MissionControllerTest: RestDocsSupport() {
                             .description("미션명"),
                         fieldWithPath("missionDescription").type(JsonFieldType.STRING)
                             .description("미션 소개"),
-                        fieldWithPath("missionGoal").type(JsonFieldType.STRING).optional()
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
                             .description("목표"),
                         fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
                             .description("규칙"),
                         fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
                             .description("대표 이미지"),
                         fieldWithPath("missionEndDate").type(JsonFieldType.STRING).optional()
+                            .description("미션 종료일"),
+                        fieldWithPath("hashtags").type(JsonFieldType.ARRAY)
+                            .description("해시태그")
+                    )
+                )
+            )
+    }
+
+    @DisplayName("해시태그 미입력시 미션 생성을 하면 400을 반환한다")
+    @Test
+    fun givenBlankHashtags_whenCreateMission_thenReturn400() {
+        // given
+        val request = createValidMissionCreateRequest()
+
+        val now = LocalDate.now()
+
+        `when`(missionService.createMission(anyLong(), any()))
+            .thenReturn(MissionCreateResponse(
+                1L,
+                request.missionName,
+                request.missionDescription,
+                request.missionGoal,
+                request.missionRules,
+                request.missionImageUrl,
+                1,
+                MissionCreateCreatorResponse("tester", null),
+                now,
+                now,
+                request.hashtags!!
+            ))
+
+        request.hashtags = null
+
+        // when & then
+        mockMvc.perform(
+            post("/api/missions")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        ).andDo(print())
+            .andExpect(status().isBadRequest)
+            .andDo(
+                document(
+                    "mission/create-mission/hashtags-field-required",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(AUTHORIZATION).description("액세스 토큰")
+                    ),
+                    requestFields(
+                        fieldWithPath("missionName").type(JsonFieldType.STRING)
+                            .description("미션명"),
+                        fieldWithPath("missionDescription").type(JsonFieldType.STRING)
+                            .description("미션 소개"),
+                        fieldWithPath("missionGoal").type(JsonFieldType.STRING)
+                            .description("목표"),
+                        fieldWithPath("missionRules").type(JsonFieldType.ARRAY).optional()
+                            .description("규칙"),
+                        fieldWithPath("missionImageUrl").type(JsonFieldType.STRING)
+                            .description("대표 이미지"),
+                        fieldWithPath("missionEndDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         fieldWithPath("hashtags").type(JsonFieldType.ARRAY).optional()
                             .description("해시태그")
