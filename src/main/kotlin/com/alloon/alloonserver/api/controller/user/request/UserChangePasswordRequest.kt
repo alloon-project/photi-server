@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotBlank
 
 data class UserChangePasswordRequest(
     @field:NotBlank(message = "비밀번호는 필수 업력입니다.")
-    var password: String,
+    var password: String?,
     @field:NotBlank(message = "새 비밀번호는 필수 입력입니다.")
-    var newPassword: String,
+    var newPassword: String?,
     @field:NotBlank(message = "새 비밀번호 재입력은 필수 입력입니다.")
-    var newPasswordReEnter: String,
+    var newPasswordReEnter: String?,
 ) {
     fun toServiceRequest(): UserServiceChangePasswordRequest {
-        return UserServiceChangePasswordRequest(password, newPassword, newPasswordReEnter)
+        return UserServiceChangePasswordRequest(password!!, newPassword!!, newPasswordReEnter!!)
     }
 }

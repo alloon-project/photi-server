@@ -76,11 +76,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", ""),
                 now,
@@ -171,11 +171,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
@@ -232,11 +232,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
@@ -293,11 +293,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
@@ -354,11 +354,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
@@ -415,11 +415,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
@@ -475,11 +475,11 @@ class MissionControllerTest: RestDocsSupport() {
         `when`(missionService.createMission(anyLong(), any()))
             .thenReturn(MissionCreateResponse(
                 1L,
-                request.missionName,
-                request.missionDescription,
+                request.missionName!!,
+                request.missionDescription!!,
                 request.missionGoal,
                 request.missionRules,
-                request.missionImageUrl,
+                request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,

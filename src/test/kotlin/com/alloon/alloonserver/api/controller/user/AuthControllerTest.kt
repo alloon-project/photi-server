@@ -247,7 +247,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserRegisterRequest()
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
         `when`(jwtProvider.createToken(anyLong()))
             .thenReturn(HttpHeaders().apply {
                 set(AUTHORIZATION, "access-token")
@@ -306,7 +306,7 @@ class AuthControllerTest : RestDocsSupport() {
         request.email = ""
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
 
         // when & then
         mockMvc.perform(
@@ -344,7 +344,7 @@ class AuthControllerTest : RestDocsSupport() {
         request.verificationCode = ""
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
 
         // when & then
         mockMvc.perform(
@@ -382,7 +382,7 @@ class AuthControllerTest : RestDocsSupport() {
         request.username = ""
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
 
         // when & then
         mockMvc.perform(
@@ -420,7 +420,7 @@ class AuthControllerTest : RestDocsSupport() {
         request.password = ""
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
 
         // when & then
         mockMvc.perform(
@@ -458,7 +458,7 @@ class AuthControllerTest : RestDocsSupport() {
         request.passwordReEnter = ""
 
         `when`(authService.registerUser(any()))
-            .thenReturn(UserRegisterResponse(1, request.username))
+            .thenReturn(UserRegisterResponse(1, request.username!!))
 
         // when & then
         mockMvc.perform(
@@ -646,7 +646,7 @@ class AuthControllerTest : RestDocsSupport() {
         val request = createValidUserLoginRequest()
 
         `when`(authService.login(request.toServiceRequest()))
-            .thenReturn(UserLoginResponse(1, request.username, "", false))
+            .thenReturn(UserLoginResponse(1, request.username!!, "", false))
         `when`(jwtProvider.createToken(anyLong()))
             .thenReturn(HttpHeaders().apply {
                 set(AUTHORIZATION, "access-token")
