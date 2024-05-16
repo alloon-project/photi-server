@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.service.mission
 
 import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateMissionRequest
 import com.alloon.alloonserver.api.service.mission.response.MissionCreateResponse
+import com.alloon.alloonserver.api.service.s3.S3Service
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
@@ -10,19 +11,22 @@ import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 @Validated
 @Transactional(readOnly = true)
 class MissionService(
-    private val missionRepository: MissionRepository,
-    private val missionMemberRepository: MissionMemberRepository,
-    private val missionHashtagRepository: MissionHashtagRepository,
-    private val missionRuleRepository: MissionRuleRepository,
-    private val missionTemplateImageRepository: MissionTemplateImageRepository,
-    private val hashtagRepository: HashtagRepository,
-    private val userRepository: UserRepository,
+        private val missionRepository: MissionRepository,
+        private val missionMemberRepository: MissionMemberRepository,
+        private val missionHashtagRepository: MissionHashtagRepository,
+        private val missionRuleRepository: MissionRuleRepository,
+        private val missionTemplateImageRepository: MissionTemplateImageRepository,
+        private val hashtagRepository: HashtagRepository,
+        private val userRepository: UserRepository,
+        private val s3Service: S3Service,
 ) {
 
     /**
@@ -57,5 +61,20 @@ class MissionService(
      */
     fun getAllMissionTemplateImages(now: LocalDateTime): List<String> {
         return missionTemplateImageRepository.findAllImageUrl(now)
+    }
+
+    /**
+     * 미션 이미지 업로드
+     * @param userId 회원 식별자
+     * @param file 파일
+     * @throws FILE_FIELD_REQUIRED 400
+     * @throws IMAGE_TYPE_UNSUPPORTED 415
+     * @throws SERVER_ERROR 500
+     * @return 미션 이미지 업로드 응답
+     */
+    @Transactional
+    fun uploadMissionImage(userId: Long, file: MultipartFile?): String {
+
+        return s3Service.uploadFile(file, "users/$userId/missions", UUID.randomUUID().toString())
     }
 }

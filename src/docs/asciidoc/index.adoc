@@ -51,6 +51,8 @@ include::api/mission/get-all-mission-template-images.adoc[]
 
 include::api/mission/create-mission.adoc[]
 
+include::api/mission/upload-mission-image.adoc[]
+
 [[Report-API]]
 === Report API
 

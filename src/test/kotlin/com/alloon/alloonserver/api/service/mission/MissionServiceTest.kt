@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -387,6 +388,20 @@ class MissionServiceTest(
 
         // then
         assertThat(response).containsExactly(missionTemplateImage.imageUrl)
+    }
+
+    @DisplayName("미션 이미지 업로드가 정상 작동한다")
+    @Test
+    fun givenValid_whenUploadMissionImage_thenReturn() {
+        // given
+        val user = createAndSaveUserWithContact()
+        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+
+        // when
+        val response = missionService.uploadMissionImage(user.id!!, file)
+
+        // then
+        assertThat(response).isNotNull()
     }
 
     private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionRequest {
