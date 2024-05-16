@@ -1,0 +1,35 @@
+[[upload-mission-image]]
+=== 미션 사진 업로드
+
+==== HTTP Request
+include::{snippets}/mission/upload-mission-image/http-request.adoc[]
+
+==== HTTP Response
+include::{snippets}/mission/upload-mission-image/http-response.adoc[]
+include::{snippets}/mission/upload-mission-image/response-fields.adoc[]
+
+==== Exception
+
+===== 400
+----
+{
+  "code" : "FILE_FIELD_REQUIRED",
+  "message" : "파일은 필수 입력입니다."
+}
+----
+
+===== 415
+----
+{
+  "code" : "IMAGE_TYPE_UNSUPPORTED",
+  "message" : 이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."
+}
+----
+
+===== 500
+----
+{
+  "code" : "SERVER_ERROR",
+  "message" : "서버 에러가 발생했습니다."
+}
+----
