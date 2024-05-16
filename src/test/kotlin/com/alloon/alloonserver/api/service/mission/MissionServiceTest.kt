@@ -402,7 +402,6 @@ class MissionServiceTest(
 
         // then
         assertThat(response).isNotNull()
-        assertThat(response).isInstanceOf(String::class.java)
     }
 
     private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionRequest {

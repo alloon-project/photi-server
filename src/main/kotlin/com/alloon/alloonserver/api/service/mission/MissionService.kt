@@ -68,7 +68,6 @@ class MissionService(
      * @param userId 회원 식별자
      * @param file 파일
      * @throws FILE_FIELD_REQUIRED 400
-     * @throws MISSION_NOT_FOUND 404
      * @throws IMAGE_TYPE_UNSUPPORTED 415
      * @throws SERVER_ERROR 500
      * @return 미션 이미지 업로드 응답
