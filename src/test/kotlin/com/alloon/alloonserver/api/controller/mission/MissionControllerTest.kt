@@ -548,7 +548,7 @@ class MissionControllerTest: RestDocsSupport() {
                 .andExpect(status().isOk)
                 .andDo(
                         document(
-                                "mission/upload-image",
+                                "mission/upload-mission-image",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
                                 requestHeaders(
