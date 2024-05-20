@@ -128,7 +128,7 @@ CREATE TABLE mission_member
 CREATE TABLE hashtag
 (
     hashtag_id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
-    hashtag                     VARCHAR(30)               NOT NULL,
+    tag                         VARCHAR(30)               NOT NULL,
     create_date_time            DATETIME(6)               NOT NULL,
     update_date_time            DATETIME(6)               NOT NULL,
     service_status              VARCHAR(10)               NOT NULL

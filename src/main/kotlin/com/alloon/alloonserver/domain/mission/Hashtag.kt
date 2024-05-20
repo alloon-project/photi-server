@@ -12,6 +12,6 @@ class Hashtag(
     val id: Long? = null,
 
     @Column(nullable = false, length = 30)
-    val hashtag: String,
+    val tag: String,
 ) : BasePermanentEntity() {
 }

@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.service.mission
 import com.alloon.alloonserver.api.service.mission.request.MissionCreateHashTagServiceRequest
 import com.alloon.alloonserver.api.service.mission.request.MissionCreateMissionRuleServiceRequest
 import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateMissionRequest
+import com.alloon.alloonserver.api.service.mission.response.MissionCreateRuleResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
@@ -33,8 +34,9 @@ class MissionServiceTest(
     @Autowired private val missionRepository: MissionRepository,
     @Autowired private val missionMemberRepository: MissionMemberRepository,
     @Autowired private val missionHashtagRepository: MissionHashtagRepository,
-    @Autowired private val hashtagRepository: HashtagRepository,
+    @Autowired private val missionRuleRepository: MissionRuleRepository,
     @Autowired private val missionTemplateImageRepository: MissionTemplateImageRepository,
+    @Autowired private val hashtagRepository: HashtagRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
     @Autowired private val passwordUtility: PasswordUtility,
@@ -57,13 +59,30 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
-                        "endDate", "hashtags")
-                    .containsExactly(request.missionName, request.missionDescription,
-                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
-                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
-                        request.hashtags.stream().map { it.hashtag }.toList())
+                    .extracting("missionName", "description", "goal", "imageUrl", "currentMemberCnt",
+                        "missionCreator.username", "missionCreator.imageUrl", "startDate", "endDate")
+                    .containsExactly(request.missionName, request.missionDescription, request.missionGoal,
+                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate)
+            },
+            {
+                assertThat(response.rules)
+                    .extracting("missionRuleId")
+                    .isNotNull()
+            },
+            {
+                assertThat(response.rules)
+                    .extracting("rule")
+                    .isEqualTo(request.missionRules.map { it.missionRule })
+            },
+            {
+                assertThat(response.hashtags)
+                    .extracting("hashtagId")
+                    .isNotNull()
+            },
+            {
+                assertThat(response.hashtags)
+                    .extracting("tag")
+                    .isEqualTo(request.hashtags.map { it.hashtag })
             },
         )
     }
@@ -86,13 +105,23 @@ class MissionServiceTest(
             { assertThat(response.missionId).isNotNull() },
             {
                 assertThat(response)
-                    .extracting("missionName", "description", "rules", "goal", "imageUrl",
-                        "currentMemberCnt", "missionCreator.username", "missionCreator.imageUrl", "startDate",
-                        "endDate", "hashtags")
-                    .containsExactly(request.missionName, request.missionDescription,
-                        request.missionRules.stream().map { it.missionRule }.toList(), request.missionGoal,
-                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate,
-                        request.hashtags.stream().map { it.hashtag }.toList())
+                    .extracting("missionName", "description", "goal", "imageUrl", "currentMemberCnt",
+                        "missionCreator.username", "missionCreator.imageUrl", "startDate", "endDate")
+                    .containsExactly(request.missionName, request.missionDescription, request.missionGoal,
+                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate)
+            },
+            {
+                assertThat(response.rules).isEmpty()
+            },
+            {
+                assertThat(response.hashtags)
+                    .extracting("hashtagId")
+                    .isNotNull()
+            },
+            {
+                assertThat(response.hashtags)
+                    .extracting("tag")
+                    .isEqualTo(request.hashtags.map { it.hashtag })
             },
         )
     }

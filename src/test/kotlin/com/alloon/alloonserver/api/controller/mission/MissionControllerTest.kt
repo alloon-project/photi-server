@@ -4,7 +4,9 @@ import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.mission.request.MissionCreateRequest
 import com.alloon.alloonserver.api.service.mission.MissionService
 import com.alloon.alloonserver.api.service.mission.response.MissionCreateCreatorResponse
+import com.alloon.alloonserver.api.service.mission.response.MissionCreateHashtagResponse
 import com.alloon.alloonserver.api.service.mission.response.MissionCreateResponse
+import com.alloon.alloonserver.api.service.mission.response.MissionCreateRuleResponse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyLong
@@ -81,13 +83,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", ""),
                 now,
                 request.missionEndDate!!,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -137,6 +139,10 @@ class MissionControllerTest: RestDocsSupport() {
                         fieldWithPath("data.description").type(JsonFieldType.STRING)
                             .description("미션 소개"),
                         fieldWithPath("data.rules").type(JsonFieldType.ARRAY).optional()
+                            .description("미션 규칙들"),
+                        fieldWithPath("data.rules[].missionRuleId").type(JsonFieldType.NUMBER).optional()
+                            .description("미션 규칙 식별자"),
+                        fieldWithPath("data.rules[].rule").type(JsonFieldType.STRING).optional()
                             .description("규칙"),
                         fieldWithPath("data.goal").type(JsonFieldType.STRING)
                             .description("목표"),
@@ -155,6 +161,10 @@ class MissionControllerTest: RestDocsSupport() {
                         fieldWithPath("data.endDate").type(JsonFieldType.STRING)
                             .description("미션 종료일"),
                         fieldWithPath("data.hashtags").type(JsonFieldType.ARRAY)
+                            .description("해시태그들"),
+                        fieldWithPath("data.hashtags[].hashtagId").type(JsonFieldType.NUMBER)
+                            .description("해시태그 식별자"),
+                        fieldWithPath("data.hashtags[].tag").type(JsonFieldType.STRING)
                             .description("해시태그"),
                     )
                 )
@@ -176,13 +186,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 request.missionEndDate!!,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -237,13 +247,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 request.missionEndDate!!,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -298,13 +308,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 request.missionEndDate!!,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -359,13 +369,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 now,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -420,13 +430,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 now,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         // when & then
@@ -480,13 +490,13 @@ class MissionControllerTest: RestDocsSupport() {
                 request.missionName!!,
                 request.missionDescription!!,
                 request.missionGoal,
-                request.missionRules,
+                request.missionRules.map { MissionCreateRuleResponse(1L, it) },
                 request.missionImageUrl!!,
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
                 now,
-                request.hashtags!!
+                request.hashtags!!.map { MissionCreateHashtagResponse(1L, it) }
             ))
 
         request.hashtags = null
