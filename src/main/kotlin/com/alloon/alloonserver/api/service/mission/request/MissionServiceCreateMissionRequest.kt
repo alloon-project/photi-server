@@ -46,7 +46,7 @@ data class MissionServiceCreateMissionRequest(
     }
 
     fun toMissionHashtag(mission: Mission): List<MissionHashtag> {
-        return hashtags.map { MissionHashtag(mission = mission, hashtag = Hashtag(hashtag = it.hashtag)) }
+        return hashtags.map { MissionHashtag(mission = mission, hashtag = Hashtag(tag = it.hashtag)) }
     }
 }
 
