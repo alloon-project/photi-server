@@ -2,8 +2,11 @@ package com.alloon.alloonserver.config
 
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
-import org.springframework.beans.factory.annotation.Value
+import org.redisson.Redisson
+import org.redisson.api.RedissonClient
+import org.redisson.config.Config
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
@@ -23,6 +26,13 @@ class EmbeddedRedisConfig(
         else RedisServer(redisProperties.port)
 
         redisServer.start()
+    }
+
+    @Bean
+    fun redissonClient(): RedissonClient {
+        val config = Config()
+        config.useSingleServer().setAddress("redis://" + redisProperties.host + ":" + redisProperties.port)
+        return Redisson.create(config)
     }
 
     @PreDestroy
