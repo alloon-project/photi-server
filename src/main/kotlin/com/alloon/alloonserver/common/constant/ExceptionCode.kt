@@ -109,6 +109,12 @@ enum class ExceptionCode(
     IMAGE_TYPE_UNSUPPORTED(UNSUPPORTED_MEDIA_TYPE, "이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."),
 
     /**
+     * 423 Locked
+     */
+    REDIS_LOCK_WAIT_TIMEOUT(LOCKED, "잠시 후에 다시 시도해주세요."),
+    REDIS_LOCK_FORCE_LEASED(LOCKED, "잠시 후에 다시 시도해주세요."),
+
+    /**
      * 500 Internal Server Error
      */
     EMAIL_SEND_ERROR(INTERNAL_SERVER_ERROR, "이메일 전송 중 서버 에러가 발생했습니다."),
