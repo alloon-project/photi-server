@@ -7,6 +7,10 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import kotlin.random.Random
 
+/**
+ * 패스워드 유틸리티 객체
+ * @constructor passwordEncoder 구현 객체
+ */
 @Component
 class PasswordUtility(
     private val passwordEncoder: PasswordEncoder,
