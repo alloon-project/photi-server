@@ -53,7 +53,7 @@ cloud:
       bucket: ${AWS_BUCKET:}
 
 api:
-  name: "Allon Test"
+  name: "Alloon Test"
   master:
     id: alloon
   jwt:

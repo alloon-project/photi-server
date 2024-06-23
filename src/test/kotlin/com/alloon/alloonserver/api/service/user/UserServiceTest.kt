@@ -7,16 +7,23 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.PutObjectResult
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
+import java.net.URL
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -27,6 +34,16 @@ class UserServiceTest(
     @Autowired private val contactRepository: ContactRepository,
     @Autowired private val passwordUtility: PasswordUtility,
 ) {
+
+    @MockBean private lateinit var amazonS3Client: AmazonS3Client
+
+    @BeforeEach
+    fun beforeEach() {
+        `when`(amazonS3Client.putObject(any()))
+            .thenReturn(PutObjectResult())
+        `when`(amazonS3Client.getUrl(any(), any()))
+            .thenReturn(URL("https://localhost:8080/api/image/givenValid_whenUploadImage_thenReturn"))
+    }
 
     @DisplayName("회원 정보를 조회가 정상 작동한다")
     @Test

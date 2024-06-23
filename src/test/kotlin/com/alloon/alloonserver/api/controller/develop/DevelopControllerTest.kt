@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.controller.develop
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.service.develop.DevelopService
 import com.alloon.alloonserver.api.service.develop.response.DevelopIsNeedForceUpdateResponse
+import com.alloon.alloonserver.framework.AbstractTestContainer
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
