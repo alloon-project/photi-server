@@ -85,6 +85,7 @@ tasks.withType(KotlinCompile) {
 tasks.named('test') {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
 }
 
 tasks.named('asciidoctor') {
