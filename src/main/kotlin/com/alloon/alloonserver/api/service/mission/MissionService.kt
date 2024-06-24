@@ -19,22 +19,23 @@ import java.util.*
 @Validated
 @Transactional(readOnly = true)
 class MissionService(
-        private val missionRepository: MissionRepository,
-        private val missionMemberRepository: MissionMemberRepository,
-        private val missionHashtagRepository: MissionHashtagRepository,
-        private val missionRuleRepository: MissionRuleRepository,
-        private val missionTemplateImageRepository: MissionTemplateImageRepository,
-        private val hashtagRepository: HashtagRepository,
-        private val userRepository: UserRepository,
-        private val s3Service: S3Service,
+    private val missionRepository: MissionRepository,
+    private val missionMemberRepository: MissionMemberRepository,
+    private val missionHashtagRepository: MissionHashtagRepository,
+    private val missionRuleRepository: MissionRuleRepository,
+    private val missionTemplateImageRepository: MissionTemplateImageRepository,
+    private val hashtagRepository: HashtagRepository,
+    private val userRepository: UserRepository,
+    private val s3Service: S3Service,
 ) {
 
     /**
-     * 미션 생성
-     * @param userId 회원 식별자
-     * @param request 미션 생성 요청
-     * @throws USER_NOT_FOUND 404
-     * @return 미션 생성 응답
+     * 생성된 챌린지 정보를 포함한 응답을 반환한다.
+     *
+     * @param userId 사용자 id
+     * @param request 유효성 검사가 포함된 챌린지 생성 폼 데이터
+     * @return 생성된 챌린지 정보를 포함한 응답
+     * @throws CustomException 사용자 정보를 찾을 수 없을 때 발생한다 ([USER_NOT_FOUND] 404)
      */
     @Transactional
     fun createMission(userId: Long, @Valid request: MissionServiceCreateMissionRequest): MissionCreateResponse {
@@ -58,26 +59,24 @@ class MissionService(
     }
 
     /**
-     * 미션 에시 이미지 전체 조회
+     * 모든 챌린지 템플릿 이미지 리스트를 반환한다.
+     *
      * @param now 현재 시간
-     * @return 전체 미션 에시 이미지
+     * @return 모든 챌린지 템플릿 이미지 URL 리스트
      */
     fun getAllMissionTemplateImages(now: LocalDateTime): List<String> {
         return missionTemplateImageRepository.findAllImageUrl(now)
     }
 
     /**
-     * 미션 이미지 업로드
-     * @param userId 회원 식별자
-     * @param file 파일
-     * @throws FILE_FIELD_REQUIRED 400
-     * @throws IMAGE_TYPE_UNSUPPORTED 415
-     * @throws SERVER_ERROR 500
-     * @return 미션 이미지 업로드 응답
+     * S3에 업로드된 이미지 URL을 반환한다.
+     *
+     * @param userId 사용자 id
+     * @param file 업로드할 이미지 파일
+     * @return 업로드된 이미지 URL
      */
     @Transactional
     fun uploadMissionImage(userId: Long, file: MultipartFile?): String {
-
         return s3Service.uploadFile(file, "users/$userId/missions", UUID.randomUUID().toString())
     }
 }
