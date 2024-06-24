@@ -1,11 +1,10 @@
 package com.alloon.alloonserver.api.service.s3
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.IMAGE_TYPE_UNSUPPORTED
 import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.FileUtility
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.CannedAccessControlList.*
+import com.amazonaws.services.s3.model.CannedAccessControlList.PublicRead
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import org.springframework.beans.factory.annotation.Value
@@ -18,15 +17,16 @@ class S3Service(
     private val amazonS3Client: AmazonS3Client,
 ) {
     @Value("\${cloud.aws.s3.bucket}")
-    private lateinit var bucket:String
+    private lateinit var bucket: String
 
     /**
-     * 파일 업로드
-     * @param file 파일
-     * @throws FILE_FIELD_REQUIRED 400
-     * @throws IMAGE_TYPE_UNSUPPORTED 415
-     * @throws SERVER_ERROR 500
-     * @return 파일 URL
+     * S3에 이미지 업로드 후 이미지 URL을 반환한다.
+     *
+     * @param file 업로드할 이미지 파일
+     * @param pathName 파일이 저장될 경로
+     * @param fileName 저장될 파일 이름
+     * @return 업로드된 이미지 URL
+     * @throws CustomException 서버 오류가 났을 때 발생한다 ([SERVER_ERROR] 500)
      */
     fun uploadFile(file: MultipartFile?, pathName: String, fileName: String): String {
         FileUtility.validateImageFileType(file)
@@ -38,8 +38,10 @@ class S3Service(
         }
 
         return try {
-            amazonS3Client.putObject(PutObjectRequest(bucket, "$pathName/$fileName", inputStream, objectMetadata)
-                .withCannedAcl(PublicRead))
+            amazonS3Client.putObject(
+                PutObjectRequest(bucket, "$pathName/$fileName", inputStream, objectMetadata)
+                    .withCannedAcl(PublicRead)
+            )
             amazonS3Client.getUrl(bucket, "$pathName/$fileName").toExternalForm()
         } catch (e: IOException) {
             throw CustomException(SERVER_ERROR, e.cause)
