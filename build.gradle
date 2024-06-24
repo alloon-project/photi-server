@@ -9,6 +9,7 @@ plugins {
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.21'
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.21'
 	id 'org.jetbrains.kotlin.kapt' version '1.9.21'
+	id 'org.jetbrains.dokka' version '1.9.20'
 }
 
 group = 'com.alloon'
@@ -144,4 +145,8 @@ tasks.jacocoTestCoverageVerification {
 			excludes = [] + qDomains
 		}
 	}
+}
+
+dokkaHtml {
+	outputDirectory.set(file("build/documentation/html"))
 }
