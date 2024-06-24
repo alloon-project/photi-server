@@ -11,10 +11,11 @@ class FileUtility {
     companion object {
 
         /**
-         * 이미지 파일 타입 검증
-         * @param file 파일
-         * @throws FILE_FIELD_REQUIRED 400
-         * @throws IMAGE_TYPE_UNSUPPORTED 415
+         * 이미지 파일 타입의 유효성을 검증한다.
+         *
+         * @param file 이미지 파일
+         * @throws CustomException 파일이 없을 때 발생한다 ([FILE_FIELD_REQUIRED] 400)
+         * @throws CustomException 이미지 타입이 .jpeg, .jpg, .png가 아닐 때 발생한다 ([IMAGE_TYPE_UNSUPPORTED] 415)
          */
         fun validateImageFileType(file: MultipartFile?) {
             requireNotNull(file) { throw CustomException(FILE_FIELD_REQUIRED) }
