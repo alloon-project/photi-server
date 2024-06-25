@@ -1,6 +1,5 @@
 package com.alloon.alloonserver.api.service.develop
 
-import com.alloon.alloonserver.domain.develop.VerRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class DevelopServiceTest(
     @Autowired private val developService: DevelopService,
-    @Autowired private val verRepository: VerRepository,
 ) {
 
     @DisplayName("서버명 조회가 정상 작동한다")

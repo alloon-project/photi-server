@@ -3,48 +3,60 @@ package com.alloon.alloonserver.api.service.mission
 import com.alloon.alloonserver.api.service.mission.request.MissionCreateHashTagServiceRequest
 import com.alloon.alloonserver.api.service.mission.request.MissionCreateMissionRuleServiceRequest
 import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateMissionRequest
-import com.alloon.alloonserver.api.service.mission.response.MissionCreateRuleResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.mission.*
+import com.alloon.alloonserver.domain.mission.MissionTemplateImage
+import com.alloon.alloonserver.domain.mission.MissionTemplateImageRepository
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
+import com.alloon.alloonserver.framework.AbstractMailProperties
+import com.alloon.alloonserver.framework.AbstractTestContainer
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.PutObjectResult
 import jakarta.validation.ConstraintViolationException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
+import org.mockito.Mock
+import org.mockito.Mockito.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.mail.MailSender
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
+import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@ActiveProfiles("test")
-@SpringBootTest
 @Transactional
-class MissionServiceTest(
+@SpringBootTest
+@ActiveProfiles("test")
+class MissionServiceTest (
     @Autowired private val missionService: MissionService,
-    @Autowired private val missionRepository: MissionRepository,
-    @Autowired private val missionMemberRepository: MissionMemberRepository,
-    @Autowired private val missionHashtagRepository: MissionHashtagRepository,
-    @Autowired private val missionRuleRepository: MissionRuleRepository,
     @Autowired private val missionTemplateImageRepository: MissionTemplateImageRepository,
-    @Autowired private val hashtagRepository: HashtagRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
-    @Autowired private val passwordUtility: PasswordUtility,
-) {
+    @Autowired private val passwordUtility: PasswordUtility
+) : AbstractTestContainer(), AbstractMailProperties {
+
+    @MockBean private lateinit var amazonS3Client: AmazonS3Client
+    @BeforeEach
+    fun beforeEach() {
+        `when`(amazonS3Client.getUrl(any(), any()))
+            .thenReturn(URL("https://localhost:8080/api/image/mission-service"))
+    }
 
     @DisplayName("미션 생성을 하면 정상 작동한다")
     @Test
-    fun givenValid_whenCreateMission_thenReturn() {
+    fun givenValid_whenCreateMission_thenReturn(){
         // given
         val user = createAndSaveUserWithContact()
         val now = LocalDate.now()
@@ -434,12 +446,16 @@ class MissionServiceTest(
     }
 
     private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionRequest {
-        return MissionServiceCreateMissionRequest("얼른",
-            "얼른 프로젝트 설명입니다.", "얼른 프로젝트 목표입니다.",
+        return MissionServiceCreateMissionRequest(
+            "얼른",
+            "얼른 프로젝트 설명입니다.",
+            "얼른 프로젝트 목표입니다.",
             listOf(MissionCreateMissionRuleServiceRequest("얼른 프로젝트 규칙입니다.")),
             "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
             LocalDate.of(2025, 1, 1),
-            listOf(MissionCreateHashTagServiceRequest("해시"), MissionCreateHashTagServiceRequest("태그")))
+            listOf(MissionCreateHashTagServiceRequest("해시"),
+                MissionCreateHashTagServiceRequest("태그"))
+        )
     }
 
     private fun createAndSaveMissionTemplateImage(now: LocalDateTime): MissionTemplateImage {
