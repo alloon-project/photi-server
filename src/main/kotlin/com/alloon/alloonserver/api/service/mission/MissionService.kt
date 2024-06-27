@@ -29,14 +29,6 @@ class MissionService(
     private val s3Service: S3Service,
 ) {
 
-    /**
-     * 생성된 챌린지 정보를 포함한 응답을 반환한다.
-     *
-     * @param userId 사용자 id
-     * @param request 유효성 검사가 포함된 챌린지 생성 폼 데이터
-     * @return 생성된 챌린지 정보를 포함한 응답
-     * @throws CustomException 사용자 정보를 찾을 수 없을 때 발생한다 ([USER_NOT_FOUND] 404)
-     */
     @Transactional
     fun createMission(userId: Long, @Valid request: MissionServiceCreateMissionRequest): MissionCreateResponse {
         val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
@@ -58,23 +50,10 @@ class MissionService(
         return MissionCreateResponse(missionMember, missionRules, missionHashtags.map { it.hashtag })
     }
 
-    /**
-     * 모든 챌린지 템플릿 이미지 리스트를 반환한다.
-     *
-     * @param now 현재 시간
-     * @return 모든 챌린지 템플릿 이미지 URL 리스트
-     */
     fun getAllMissionTemplateImages(now: LocalDateTime): List<String> {
         return missionTemplateImageRepository.findAllImageUrl(now)
     }
 
-    /**
-     * S3에 업로드된 이미지 URL을 반환한다.
-     *
-     * @param userId 사용자 id
-     * @param file 업로드할 이미지 파일
-     * @return 업로드된 이미지 URL
-     */
     @Transactional
     fun uploadMissionImage(userId: Long, file: MultipartFile?): String {
         return s3Service.uploadFile(file, "users/$userId/missions", UUID.randomUUID().toString())

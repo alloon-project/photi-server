@@ -2,12 +2,18 @@ package com.alloon.alloonserver.api.controller.mission
 
 import com.alloon.alloonserver.api.controller.mission.request.MissionCreateRequest
 import com.alloon.alloonserver.api.service.mission.MissionService
-import com.alloon.alloonserver.common.constant.SuccessCode.MISSION_IMAGE_UPLOADED
-import com.alloon.alloonserver.common.constant.SuccessCode.FOUND_MISSION_TEMPLATE_IMAGES
-import com.alloon.alloonserver.common.constant.SuccessCode.MISSION_CREATED
+import com.alloon.alloonserver.api.service.mission.request.MissionServiceCreateMissionRequest
+import com.alloon.alloonserver.api.service.mission.response.MissionCreateResponse
+import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.common.util.UserUtility
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -19,51 +25,48 @@ import java.time.LocalDateTime
 
 @Validated
 @RestController
+@Tag(name = "Challenge", description = "챌린지 API")
 class MissionController(
     private val missionService: MissionService,
 ) {
 
-    /**
-     * 200 상태코드와 모든 챌린지 템플릿 이미지 리스트를 포함한 응답을 반환한다.
-     *
-     * @return [FOUND_MISSION_TEMPLATE_IMAGES] 및 모든 챌린지 템플릿 이미지 리스트를 포함한 응답
-     */
     @GetMapping("/api/missions/image/templates")
+    @Operation(summary = "챌린지 예시 이미지 리스트 조회")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "챌린지 예시 이미지 리스트 조회 성공")])
     fun getAllMissionTemplateImages(): ResponseEntity<DefaultListResponse<String>> {
         val response = missionService.getAllMissionTemplateImages(LocalDateTime.now())
 
         return DefaultListResponse.toResponseEntity(FOUND_MISSION_TEMPLATE_IMAGES, response)
     }
 
-    /**
-     * 201 상태코드와 생성된 챌린지 정보를 포함한 응답을 반환한다.
-     *
-     * @param principal 사용자 인증 정보
-     * @param request 챌린지 생성 폼 데이터
-     * @return [MISSION_CREATED] 및 생성된 챌린지 정보를 포함한 응답
-     */
     @PostMapping("/api/missions")
+    @Operation(summary = "챌린지 생성")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "챌린지 생성 성공",
+                content = [Content(schema = Schema(implementation = MissionCreateResponse::class))]
+            )
+        ]
+    )
     fun createMission(
         principal: Principal,
-        @RequestBody @Valid request: MissionCreateRequest
+        @RequestBody @Valid @Schema(implementation = MissionServiceCreateMissionRequest::class)
+        request: MissionCreateRequest
     ): ResponseEntity<DefaultSingleResponse> {
         val response = missionService.createMission(UserUtility.getUserId(principal), request.toServiceRequest())
 
         return DefaultSingleResponse.toResponseEntity(MISSION_CREATED, response)
     }
 
-    /**
-     * 200 상태코드와 업로드된 이미지 정보를 포함한 응답을 반환한다.
-     *
-     * @param principal 사용자 인증 정보
-     * @param file 업로드할 이미지 파일 (선택 사항)
-     * @return [MISSION_IMAGE_UPLOADED] 및 업로드된 이미지 정보를 포함한 응답
-     */
     @PostMapping(
         "/api/missions/image",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @Operation(summary = "챌린지 이미지 업로드")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "챌린지 이미지 업로드 성공")])
     fun uploadMissionImage(
         principal: Principal,
         @RequestPart(required = false) file: MultipartFile?
