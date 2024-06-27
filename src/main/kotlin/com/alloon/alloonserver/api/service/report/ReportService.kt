@@ -30,12 +30,6 @@ class ReportService(
     private val userRepository: UserRepository,
 ) {
 
-    /**
-     * 모든 신고 항목 리스트를 반환한다.
-     *
-     * @param reportType 신고 항목
-     * @return 모든 신고 항목 리스트
-     */
     fun getAllReportCategoryDescription(
         @Pattern(
             regexp = REPORT_CATEGORY_TYPE_CHARACTER,
@@ -45,17 +39,6 @@ class ReportService(
         return reportCategoryRepository.findAllDescription(ReportCategoryType.valueOf(reportType))
     }
 
-    /**
-     * 신고를 새로 등록한다.
-     *
-     * @param userId 사용자 id
-     * @param request 유효성 검사가 포함된 신고 등록 폼 데이터
-     * @throws CustomException 사용자 정보를 찾을 수 없을 때 발생한다 ([USER_NOT_FOUND] 404)
-     * @throws CustomException 신고 항목을 찾을 수 없을 때 발생한다 ([REPORT_CATEGORY_NOT_FOUND] 404)
-     * @throws CustomException 챌린지 정보를 찾을 수 없을 때 발생한다 ([MISSION_NOT_FOUND] 404)
-     * @throws CustomException 챌린지 파티원을 찾을 수 없을 때 발생한다 ([MISSION_MEMBER_NOT_FOUND] 404)
-     * @throws CustomException 챌린지 피드를 찾을 수 없을 때 발생한다 ([FEED_NOT_FOUND] 404)
-     */
     fun createReport(userId: Long, @Valid request: ReportCreateServiceRequest) {
         val reporter = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
 
