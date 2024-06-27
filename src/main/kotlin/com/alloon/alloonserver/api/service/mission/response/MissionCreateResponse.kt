@@ -29,7 +29,7 @@ data class MissionCreateResponse(
     var currentMemberCnt: Int,
     @Schema(
         description = "챌린지 파티장",
-        example = "{\"username\": \"파티장\",\n \"imageUrl\": \"https://url.kr/5MhHhD\"}",
+        example = "{\"username\": \"photi\",\n \"imageUrl\": \"https://url.kr/5MhHhD\"}",
         implementation = MissionCreateCreatorResponse::class
     )
     var missionCreator: MissionCreateCreatorResponse,
