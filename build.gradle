@@ -4,28 +4,14 @@ plugins {
 	id 'jacoco'
 	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
 	id 'org.jetbrains.kotlin.jvm' version '1.9.21'
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.21'
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.21'
 	id 'org.jetbrains.kotlin.kapt' version '1.9.21'
-	id 'org.jetbrains.dokka' version '1.9.20'
 }
 
 group = 'com.alloon'
 version = '0.0.1'
-
-bootJar {
-	archiveFileName = 'app.jar'
-	dependsOn asciidoctor
-	from("${asciidoctor.outputDir}") {
-		into 'static/docs'
-	}
-}
-
-configurations {
-	asciidoctorExt
-}
 
 java {
 	sourceCompatibility = '17'
@@ -65,8 +51,6 @@ dependencies {
 
 	runtimeOnly 'com.h2database:h2:'
 
-	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
@@ -87,16 +71,6 @@ tasks.named('test') {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'
-}
-
-tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	configurations 'asciidoctorExt'
-	sources {
-		include("**/index.adoc")
-	}
-	baseDirFollowsSourceFile()
-	dependsOn test
 }
 
 jacoco {
@@ -145,8 +119,4 @@ tasks.jacocoTestCoverageVerification {
 			excludes = [] + qDomains
 		}
 	}
-}
-
-dokkaHtml {
-	outputDirectory.set(file("build/documentation/html"))
 }
