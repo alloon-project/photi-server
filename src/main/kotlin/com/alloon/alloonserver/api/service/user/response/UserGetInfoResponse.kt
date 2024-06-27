@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class UserGetInfoResponse(
     @Schema(description = "사용자 식별자", example = "1")
     val userId: Long,
-    @Schema(description = "사용자 id", example = "photi")
+    @Schema(description = "사용자 아이디", example = "photi")
     val username: String,
     @Schema(description = "사용자 프로필 이미지 url", example = "https://url.kr/5MhHhD")
     val imageUrl: String,
