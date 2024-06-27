@@ -65,7 +65,7 @@ data class MissionCreateResponse(
 }
 
 data class MissionCreateCreatorResponse(
-    @Schema(description = "파티장 id")
+    @Schema(description = "파티장 아이디")
     val username: String,
     @Schema(description = "파티장 프로필 이미지 url")
     val imageUrl: String?,
