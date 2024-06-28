@@ -30,7 +30,20 @@ class ReportController(
 
     @GetMapping("/api/reports/category")
     @Operation(summary = "신고 항목 리스트 조회", description = "신고 항목별로 등록된 신고 리스트를 조회합니다.")
-    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "신고 항목 리스트 조회 성공")])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "신고 항목 리스트 조회 성공"),
+            ApiResponse(
+                responseCode = "400",
+                description = """
+                1. 신고 타입은 필수 입력입니다.
+                2. 신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다.
+                """
+            ),
+            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
+            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
+        ]
+    )
     fun getAllReportCategories(
         @RequestParam("type") @NotBlank(message = "신고 항목은 필수 입력입니다.")
         @Parameter(description = "신고 항목", example = "MISSION")
@@ -43,7 +56,33 @@ class ReportController(
 
     @PostMapping("/api/reports")
     @Operation(summary = "신고 등록")
-    @ApiResponses(value = [ApiResponse(responseCode = "201", description = "신고 등록 성공")])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "201", description = "신고 등록 성공"),
+            ApiResponse(
+                responseCode = "400",
+                description = """
+                1. 신고 대상 식별자는 필수 입력입니다.
+                2. 신고 타입은 필수 입력입니다.
+                3. 신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다.
+                4. 신고 카테고리 식별자는 필수 입력입니다.
+                5. 신고 사유는 0~120자만 가능합니다.
+                """
+            ),
+            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
+            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
+            ApiResponse(
+                responseCode = "404",
+                description = """
+                1. 존재하지 않는 회원입니다.
+                2. 존재하지 않는 신고 항목입니다.
+                3. 존재하지 않는 미션입니다.
+                4. 존재하지 않는 미션 멤버입니다.
+                5. 존재하지 않는 피드입니다.
+                """
+            ),
+        ]
+    )
     fun reportMission(
         principal: Principal,
         @RequestBody @Valid @Schema(implementation = ReportCreateServiceRequest::class) request: ReportCreateRequest
