@@ -1,9 +1,0 @@
-[[health-check]]
-=== 헬스 체크
-
-==== HTTP Request
-include::{snippets}/develop/health/http-request.adoc[]
-
-==== HTTP Response
-include::{snippets}/develop/health/http-response.adoc[]
-include::{snippets}/develop//health/response-fields.adoc[]
