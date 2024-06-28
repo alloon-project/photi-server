@@ -13,10 +13,10 @@ spring:
         use_sql_comments: true
 
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host:
+    port:
+    username:
+    password:
     default-encoding: UTF-8
     properties:
       mail:
@@ -44,24 +44,24 @@ sentry:
 cloud:
   aws:
     credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
+      access-key:
+      secret-key:
     region:
-      static: ${AWS_REGION}
+      static:
     s3:
-      bucket: ${AWS_BUCKET}
+      bucket:
 
 api:
   master:
     id: alloon
   jwt:
-    secret: ${JWT_SECRET}
-    domain: ${JWT_DOMAIN}
+    secret:
+    domain:
     time:
-      access: ${JWT_ACCESS}
-      refresh: ${JWT_REFRESH}
+      access: 19999999999
+      refresh: 99999999999
   mail:
-    address: ${MAIL_ADDRESS}
+    address:
 
 springdoc:
   swagger-ui:
