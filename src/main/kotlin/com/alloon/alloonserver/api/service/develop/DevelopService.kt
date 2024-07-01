@@ -13,18 +13,10 @@ class DevelopService(
     private val verRepository: VerRepository,
 ) {
 
-    /**
-     * 서버명 조회
-     * @return 서버명
-     */
     fun getServerName(): String {
         return serverName
     }
 
-    /**
-     * 강제 업데이트 필요 여부 조회
-     * @return 강제 업데이트 필요 여부
-     */
     fun needForceUpdate(version: String): DevelopIsNeedForceUpdateResponse {
         return DevelopIsNeedForceUpdateResponse(verRepository.exists(version))
     }
