@@ -250,7 +250,3 @@ CREATE TABLE ver
     admin_id                    BIGINT,
     CONSTRAINT fk_app_version_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
 );
-
-INSERT INTO contact VALUES (1, 'photi@photi.com', '111111', true, '2024-07-11 18:38:51.987865', '2024-07-11 18:39:07.478122');
-INSERT INTO users VALUES (1, 'photi', '$2a$10$OsjvzVpkjvB9./.kwgPGUe9xQV3HypUd25cnECvtKMZQj00lT2.3K', '', false, '2024-07-11 18:39:20.678616', '2024-07-11 18:39:20.678616', 1);
-INSERT INTO user_role VALUES (1, '2024-07-11 18:39:20.684412', '2024-07-11 18:39:20.684412', 'MASTER', 1);
