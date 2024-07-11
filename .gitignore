@@ -40,3 +40,6 @@ out/
 ### log ###
 *.log
 *log*.gz
+
+### env ###
+docker/*.env
