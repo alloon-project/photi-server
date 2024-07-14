@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  alloon:
+    restart: always
+    env_file:
+      - docker/.env
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      ## init sql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres!2#
+      POSTGRES_DB: allon_server
+  mem-db:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - .:/var
+    environment:
+      REDIS_USER:
+      REDIS_PASSWORD:

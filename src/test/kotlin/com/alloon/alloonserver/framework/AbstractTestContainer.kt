@@ -17,7 +17,7 @@ abstract class AbstractTestContainer(){
         val DATABASE_NAME = "allon_server"
         val USER_NAME = "allon"
         val PASSWORD = "1234"
-        val INIT_SCHEMA_PATH = "init_schema.sql"
+        val INIT_SCHEMA_PATH = "init.sql"
 
         @JvmStatic
         private val container = PostgreSQLContainer("postgres:latest")
@@ -36,7 +36,7 @@ abstract class AbstractTestContainer(){
 
         @DynamicPropertySource
         fun dynamicProperties(dynamicPropertyRegistry: DynamicPropertyRegistry) {
-            val datasource = "jdbc:mariadb://"  + container.host + ':' + container.firstMappedPort + "/alloon_server?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+            val datasource = "jdbc:postgres://"  + container.host + ':' + container.firstMappedPort + "/alloon_server?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
             dynamicPropertyRegistry.add("spring.datasource.url" , { datasource })
             dynamicPropertyRegistry.add("spring.datasource.username", { USER_NAME })
             dynamicPropertyRegistry.add("spring.datasource.password", { PASSWORD })
