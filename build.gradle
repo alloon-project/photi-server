@@ -51,14 +51,13 @@ dependencies {
 	implementation 'org.postgresql:postgresql:42.7.3'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	runtimeOnly 'com.h2database:h2:'
-
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'io.mockk:mockk:1.13.11'
 	testImplementation 'org.testcontainers:testcontainers:1.18.3'
 	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:junit-jupiter'
 
 }
 

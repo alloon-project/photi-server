@@ -8,8 +8,6 @@ DROP TABLE IF EXISTS inquiry_category;
 DROP TABLE IF EXISTS feed_like;
 DROP TABLE IF EXISTS feed_comment;
 DROP TABLE IF EXISTS feed;
-DROP TABLE IF EXISTS mission_hashtag;
-DROP TABLE IF EXISTS hashtag;
 DROP TABLE IF EXISTS mission_member;
 DROP TABLE IF EXISTS mission_template_image;
 DROP TABLE IF EXISTS mission_rule;
@@ -81,8 +79,10 @@ CREATE TABLE mission
     end_date                    DATE                      NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
+    service_status              VARCHAR(10)               NOT NULL,
+    hashtags                    TEXT                      NOT NULL
 );
+CREATE INDEX idx_mission_hashtags ON mission USING GIN (to_tsvector('simple', hashtags));
 
 CREATE TABLE mission_rule
 (
@@ -121,27 +121,6 @@ CREATE TABLE mission_member
     user_id                     BIGINT,
     CONSTRAINT fk_mission_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT fk_mission_member_mission_id FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
-);
-
-CREATE TABLE hashtag
-(
-    hashtag_id                  BIGSERIAL PRIMARY KEY,
-    tag                         VARCHAR(30)               NOT NULL,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
-);
-
-CREATE TABLE mission_hashtag
-(
-    mission_hashtag_id          BIGSERIAL PRIMARY KEY,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL,
-    hashtag_id                  BIGINT                    NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
-    CONSTRAINT fk_mission_hashtag_hashtag FOREIGN KEY (hashtag_id) REFERENCES hashtag (hashtag_id),
-    CONSTRAINT fk_mission_hashtag_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
 );
 
 CREATE TABLE feed

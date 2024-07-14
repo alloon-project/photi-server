@@ -43,3 +43,6 @@ out/
 
 ### env ###
 docker/*.env
+.env
+src/main/resources/.env*
+src/test/resources/.env*

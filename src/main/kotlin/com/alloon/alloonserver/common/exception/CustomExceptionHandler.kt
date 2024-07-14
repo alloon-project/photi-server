@@ -1,22 +1,31 @@
 package com.alloon.alloonserver.common.exception
 
+import com.alloon.alloonserver.common.constant.ExceptionCode
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ExceptionResponse
 import io.sentry.Sentry
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.validation.BindException
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+
 
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
@@ -24,6 +33,32 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(CustomException::class)
     protected fun handleCustomException(ex: CustomException): ResponseEntity<ExceptionResponse> {
         return ExceptionResponse.toResponseEntity(ex)
+    }
+
+    @ExceptionHandler(RuntimeException::class)
+    public fun handleUndefinedException(ex : RuntimeException) : ResponseEntity<ExceptionResponse>{
+        logger.info("Exception : ${ex.message}")
+        return ExceptionResponse.toResponseEntity(CustomException(ExceptionCode.SERVER_ERROR, ex.cause))
+    }
+
+    override fun handleHttpMessageNotReadable(
+        ex: HttpMessageNotReadableException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        logger.error("${ex.message}")
+        return super.handleHttpMessageNotReadable(ex, headers, status, request)
+    }
+
+    override fun handleServletRequestBindingException(
+        ex: ServletRequestBindingException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        logger.error("${ex.message}")
+        return super.handleServletRequestBindingException(ex, headers, status, request)
     }
 
     /**
@@ -49,7 +84,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
-    protected fun handleConstraintViolationException(ex: ConstraintViolationException):
+    fun handleConstraintViolationException(ex: ConstraintViolationException):
             ResponseEntity<ExceptionResponse> {
         var responseCode: String
         val responseMessage: String
