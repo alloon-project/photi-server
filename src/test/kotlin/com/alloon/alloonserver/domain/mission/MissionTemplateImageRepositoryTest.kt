@@ -67,6 +67,16 @@ class MissionTemplateImageRepositoryTest(
         assertThat(result).containsExactly(missionTemplateImages[2].imageUrl, missionTemplateImages[4].imageUrl)
     }
 
+    @DisplayName("미션 해시태그를 통한 검색 테스트")
+    @Test
+    fun searchMissionByHashtag() {
+        //given
+
+        //when
+
+        //then
+    }
+
     private fun createAndSaveMissionTemplateImage(
         admin: User,
         imageUrl: String,

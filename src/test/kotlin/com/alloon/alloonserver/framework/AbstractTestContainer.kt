@@ -1,10 +1,14 @@
 package com.alloon.alloonserver.framework
 
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.slf4j.Logger
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 
 /**
  * 테스트용 MYSQL CONTAINER
@@ -20,6 +24,7 @@ abstract class AbstractTestContainer(){
         val INIT_SCHEMA_PATH = "init.sql"
 
         @JvmStatic
+        @Container
         private val container = PostgreSQLContainer("postgres:latest")
             .withUsername(USER_NAME)
             .withPassword(PASSWORD)
@@ -28,15 +33,17 @@ abstract class AbstractTestContainer(){
 
         private val logger : Logger = org.slf4j.LoggerFactory.getLogger(AbstractTestContainer::class.java)
 
-        init {
+        @BeforeAll
+        @JvmStatic
+        fun beforeAll() {
             logger.info("==== START TEST CONTAINER ====")
             container.start()
-
         }
 
         @DynamicPropertySource
+        @JvmStatic
         fun dynamicProperties(dynamicPropertyRegistry: DynamicPropertyRegistry) {
-            val datasource = "jdbc:postgres://"  + container.host + ':' + container.firstMappedPort + "/alloon_server?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+            val datasource = "jdbc:postgresql://"  + container.host + ':' + container.firstMappedPort + "/allon_server?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
             dynamicPropertyRegistry.add("spring.datasource.url" , { datasource })
             dynamicPropertyRegistry.add("spring.datasource.username", { USER_NAME })
             dynamicPropertyRegistry.add("spring.datasource.password", { PASSWORD })
