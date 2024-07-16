@@ -21,7 +21,6 @@ class MissionTemplateImageCustomRepositoryImpl(
                 missionTemplateImage.endDateTime.goe(now),
                 missionTemplateImage.serviceStatus.eq(ServiceStatus.ACTIVE)
             )
-            .orderBy(missionTemplateImage.sort.asc())
             .fetch()
     }
 }

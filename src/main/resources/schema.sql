@@ -101,7 +101,6 @@ CREATE TABLE mission_template_image
     image_url                   VARCHAR(500)              NOT NULL,
     start_date_time             TIMESTAMP(6)              NOT NULL,
     end_date_time               TIMESTAMP(6)              NOT NULL,
-    sort                        INT                       NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
