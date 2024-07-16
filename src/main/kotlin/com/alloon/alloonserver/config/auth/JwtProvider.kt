@@ -2,7 +2,7 @@ package com.alloon.alloonserver.config.auth
 
 import arrow.core.Either
 import arrow.core.getOrElse
-import com.alloon.alloonserver.common.constant.ExceptionCode
+import com.alloon.alloonserver.common.constant.CustomHttpHeaders
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.user.Role
@@ -49,7 +49,7 @@ class JwtProvider(
             .map { it.authority }
             .toList()
 
-        val headers: HttpHeaders = HttpHeaders()
+        val headers = HttpHeaders()
 
         val accessToken = JWT.hs256 {
             subject(userDetails.username)
@@ -67,7 +67,7 @@ class JwtProvider(
         if (authorities.contains(Role.MASTER.name))
             return headers
 
-        val refreshToken = JWT.hs256() {
+        val refreshToken = JWT.hs256 {
             subject(userDetails.username)
             issuedAt(Instant.ofEpochMilli(time))
             expiresAt(Instant.ofEpochMilli(time + refreshTokenTime))
@@ -77,7 +77,7 @@ class JwtProvider(
 
         when (val signedJWT = refreshToken.sign(secret)) {
             is Either.Left -> throw CustomException(SERVER_ERROR)
-            is Either.Right -> headers.add("Refresh-Token", signedJWT.value.rendered)
+            is Either.Right -> headers.add(CustomHttpHeaders.REFRESH_TOKEN, signedJWT.value.rendered)
         }
 
         return headers
@@ -92,8 +92,9 @@ class JwtProvider(
      * @return JWT 토큰
      */
     fun verifyToken(token: String, jwtType: JwtType): JWT<JWSHMAC256Algorithm> {
-        return when (val jwt = verifySignature<JWSHMAC256Algorithm>(token.substring(tokenPrefix.length), secret)) {
+        return when (val jwt = verifySignature<JWSHMAC256Algorithm>(token.removePrefix(tokenPrefix), secret)) {
             is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
+
             is Either.Right -> {
                 val user = getUserDetails(jwt.value.subject()
                     .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
@@ -129,12 +130,12 @@ class JwtProvider(
      * @throws USER_NOT_FOUND 404
      * @return 회원 정보
      */
-    private fun getUserDetails (userId: Long): User {
+    private fun getUserDetails(userId: Long): User {
         val userRoles = userRoleRepository.findAllFetchUser(userId)
 
         val user = userRoles.stream()
             .findFirst()
-            .orElseThrow{ CustomException(ExceptionCode.USER_NOT_FOUND) }
+            .orElseThrow { CustomException(USER_NOT_FOUND) }
             .user
 
         val grantedAuthorities = userRoles.stream()

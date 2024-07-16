@@ -15,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserRoleRepositoryTest {
 
-    @Autowired private lateinit var userRoleRepository: UserRoleRepository
-    @Autowired private lateinit var userRepository: UserRepository
-    @Autowired private lateinit var contactRepository: ContactRepository
+    @Autowired
+    private lateinit var userRoleRepository: UserRoleRepository
+    @Autowired
+    private lateinit var userRepository: UserRepository
+    @Autowired
+    private lateinit var contactRepository: ContactRepository
 
     @DisplayName("회원 식별자로 모든 회원 권한을 조회하면 정상 작동한다")
     @Test
@@ -37,18 +40,24 @@ class UserRoleRepositoryTest {
                 assertThat(foundUserRoles)
                     .extracting("id", "role", "createDateTime", "updateDateTime", "user")
                     .containsExactly(
-                        tuple(userRole.id, userRole.role, userRole.createDateTime, userRole.updateDateTime,
-                            userRole.user)
+                        tuple(
+                            userRole.id, userRole.role, userRole.createDateTime, userRole.updateDateTime,
+                            userRole.user
+                        )
                     )
             },
             {
                 assertThat(foundUserRoles)
                     .extracting("user")
-                    .extracting("id", "username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
-                        "updateDateTime", "contact")
+                    .extracting(
+                        "id", "username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
+                        "updateDateTime", "contact"
+                    )
                     .containsExactly(
-                        tuple(user.id, user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
-                            user.createDateTime, user.updateDateTime, user.contact)
+                        tuple(
+                            user.id, user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
+                            user.createDateTime, user.updateDateTime, user.contact
+                        )
                     )
             }
         )
@@ -63,6 +72,12 @@ class UserRoleRepositoryTest {
     }
 
     private fun createAndSaveContact(): Contact {
-        return contactRepository.save(Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = true))
+        return contactRepository.save(
+            Contact(
+                email = "tester@alloon.com",
+                verificationCode = "000000",
+                verifyYn = true
+            )
+        )
     }
 }

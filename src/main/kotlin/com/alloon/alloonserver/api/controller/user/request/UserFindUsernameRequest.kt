@@ -1,14 +1,18 @@
 package com.alloon.alloonserver.api.controller.user.request
 
-import com.alloon.alloonserver.api.service.user.request.UserServiceFindUsernameRequest
+import com.alloon.alloonserver.service.user.dto.UserServiceFindUsernameDto
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 
+@Schema(description = "아이디 찾기 요청 객체")
 data class UserFindUsernameRequest(
+
+    @Schema(description = "이메일", example = "photi@photi.com")
     @field:NotBlank(message = "이메일은 필수 입력입니다.")
-    var email: String?,
+    val email: String,
 ) {
 
-    fun toServiceRequest(): UserServiceFindUsernameRequest {
-        return UserServiceFindUsernameRequest(email!!)
+    fun toServiceDto(): UserServiceFindUsernameDto {
+        return UserServiceFindUsernameDto(email)
     }
 }

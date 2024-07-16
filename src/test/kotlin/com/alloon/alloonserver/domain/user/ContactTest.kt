@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 
 class ContactTest {
 
-    @DisplayName("연락처 인증 코드를 변경이 정상 작동한다")
+    @DisplayName("연락처 인증 코드 변경이 정상 작동한다")
     @Test
     fun givenValid_whenChangeVerificationCode_thenReturn() {
         // given
@@ -54,6 +54,6 @@ class ContactTest {
     }
 
     private fun createContact(): Contact {
-        return Contact(email = "tester@alloon.com", verificationCode = "000000")
+        return Contact(email = "test@photi.com", verificationCode = "000000")
     }
 }

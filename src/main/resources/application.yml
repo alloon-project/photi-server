@@ -17,7 +17,6 @@ spring:
     port:
     username:
     password:
-    default-encoding: UTF-8
     properties:
       mail:
         smtp:
@@ -58,8 +57,8 @@ api:
     secret:
     domain:
     time:
-      access: 19999999999
-      refresh: 99999999999
+      access:
+      refresh:
   mail:
     address:
 

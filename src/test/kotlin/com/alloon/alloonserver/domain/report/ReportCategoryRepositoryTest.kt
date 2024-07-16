@@ -81,25 +81,34 @@ class ReportCategoryRepositoryTest(
         description: String,
         sort: Int,
     ): ReportCategory {
-        return reportCategoryRepository.save(ReportCategory(
-            admin = admin,
-            type = type,
-            description = description,
-            sort = sort
-        ))
+        return reportCategoryRepository.save(
+            ReportCategory(
+                admin = admin,
+                type = type,
+                description = description,
+                sort = sort
+            )
+        )
     }
 
     private fun createAndSaveAdminWithContact(): UserRole {
         val contact = contactRepository.save(
             Contact(
-            email = "tester@alloon.com",
-            verificationCode = "000000",
-            verifyYn = true
+                email = "tester@alloon.com",
+                verificationCode = "000000",
+                verifyYn = true
             )
         )
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
+        val user = userRepository.save(
+            User(
+                contact = contact,
+                username = "tester",
+                password = encryptedPassword,
+                imageUrl = ""
+            )
+        )
 
         return userRoleRepository.save(UserRole(user = user, role = Role.ADMIN))
     }

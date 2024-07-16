@@ -24,11 +24,14 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
-            .csrf{ it.disable() }
+            .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .authorizeHttpRequests {
+                it.requestMatchers("/api/users/token", "/api/users/password").authenticated()
+                it.anyRequest().permitAll()
+            }
             .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .exceptionHandling{ it.authenticationEntryPoint(customAuthenticationEntryPoint) }
+            .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint) }
             .build()
     }
 }

@@ -46,19 +46,31 @@ class FeedRepositoryTest(
 
     private fun createAdnSaveFeed(): Feed {
         val mission = missionRepository.save(
-            Mission(missionName = "미션명", description = "미션 설명", goal = "미션 목표",
-            imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
-            endDate = LocalDate.of(2999, 1, 1))
+            Mission(
+                missionName = "미션명", description = "미션 설명", goal = "미션 목표",
+                imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
+                endDate = LocalDate.of(2999, 1, 1)
+            )
         )
 
-        val contact = contactRepository.save(Contact(
-            email = "tester@alloon.com",
-            verificationCode = "000000",
-            verifyYn = true
-        ))
+        val contact = contactRepository.save(
+            Contact(
+                email = "tester@alloon.com",
+                verificationCode = "000000",
+                verifyYn = true
+            )
+        )
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
-        val missionMember = missionMemberRepository.save(MissionMember(user = user, mission = mission, creatorYn = true))
+        val user = userRepository.save(
+            User(
+                contact = contact,
+                username = "tester",
+                password = encryptedPassword,
+                imageUrl = ""
+            )
+        )
+        val missionMember =
+            missionMemberRepository.save(MissionMember(user = user, mission = mission, creatorYn = true))
 
         return feedRepository.save(Feed(missionMember = missionMember, mission = mission, imageUrl = ""))
     }

@@ -1,22 +1,12 @@
 package com.alloon.alloonserver.api.controller.develop
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
-import com.alloon.alloonserver.api.service.develop.DevelopService
-import com.alloon.alloonserver.api.service.develop.response.DevelopIsNeedForceUpdateResponse
-import com.alloon.alloonserver.framework.AbstractTestContainer
+import com.alloon.alloonserver.service.develop.DevelopService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
-import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
-import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
-import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
-import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -35,20 +25,7 @@ class DevelopControllerTest : RestDocsSupport() {
         // when & then
         mockMvc.perform(
             get("/api/health")
-        ).andDo(print())
-            .andExpect(status().isOk)
-            .andDo(
-                document(
-                    "develop/health",
-                    preprocessResponse(prettyPrint()),
-                    responseFields(
-                        fieldWithPath("code").type(JsonFieldType.STRING)
-                            .description("코드"),
-                        fieldWithPath("message").type(JsonFieldType.STRING)
-                            .description("메세지")
-                    )
-                )
-            )
+        ).andDo(print()).andExpect(status().isOk)
     }
 
     @DisplayName("강제 업데이트 필요 여부 조회를 하면 200을 반환한다")
@@ -58,34 +35,13 @@ class DevelopControllerTest : RestDocsSupport() {
         val version = "1.0.0"
 
         `when`(developService.needForceUpdate(anyString()))
-            .thenReturn(DevelopIsNeedForceUpdateResponse(true))
+            .thenReturn(com.alloon.alloonserver.service.develop.response.DevelopIsNeedForceUpdateResponse(true))
 
         // when & then
         mockMvc.perform(
             get("/api/ver")
                 .queryParam("version", version)
-        ).andDo(print())
-            .andExpect(status().isOk)
-            .andDo(
-                document(
-                    "develop/need-force-update",
-                    preprocessResponse(prettyPrint()),
-                    queryParameters(
-                        parameterWithName("version")
-                            .description("버전")
-                    ),
-                    responseFields(
-                        fieldWithPath("code").type(JsonFieldType.STRING)
-                            .description("코드"),
-                        fieldWithPath("message").type(JsonFieldType.STRING)
-                            .description("메세지"),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT)
-                            .description("데이터"),
-                        fieldWithPath("data.updateYn").type(JsonFieldType.BOOLEAN)
-                            .description("강제 업데이트 필요 여부"),
-                    )
-                )
-            )
+        ).andDo(print()).andExpect(status().isOk)
     }
 
     @DisplayName("버전 미입력시 강제 업데이트 필요 여부 조회를 하면 400을 반환한다")
@@ -95,23 +51,12 @@ class DevelopControllerTest : RestDocsSupport() {
         val version = null
 
         `when`(developService.needForceUpdate(anyString()))
-            .thenReturn(DevelopIsNeedForceUpdateResponse(true))
+            .thenReturn(com.alloon.alloonserver.service.develop.response.DevelopIsNeedForceUpdateResponse(true))
 
         // when & then
         mockMvc.perform(
             get("/api/ver")
                 .queryParam("version", version)
-        ).andDo(print())
-            .andExpect(status().isBadRequest)
-            .andDo(
-                document(
-                    "develop/need-force-update/version-field-required",
-                    queryParameters(
-                        parameterWithName("version")
-                            .description("버전")
-                    )
-                )
-            )
+        ).andDo(print()).andExpect(status().isBadRequest)
     }
-
 }

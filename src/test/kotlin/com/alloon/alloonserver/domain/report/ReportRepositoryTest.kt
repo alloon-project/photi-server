@@ -53,13 +53,15 @@ class ReportRepositoryTest(
         mission: Mission? = null,
         feed: Feed? = null
     ): Report {
-        return reportRepository.save(Report(
-            reportCategory = createAndSaveReportCategory(type),
-            reporter = reporter,
-            missionMember = missionMember,
-            mission = mission,
-            feed = feed
-        ))
+        return reportRepository.save(
+            Report(
+                reportCategory = createAndSaveReportCategory(type),
+                reporter = reporter,
+                missionMember = missionMember,
+                mission = mission,
+                feed = feed
+            )
+        )
     }
 
     private fun createAndSaveReportCategory(type: ReportCategoryType): ReportCategory {
@@ -67,13 +69,15 @@ class ReportRepositoryTest(
     }
 
     private fun createAndSaveMission(): Mission {
-        return missionRepository.save(Mission(
-            missionName = "미션명",
-            description = "미션 설명",
-            goal = "미션 목표",
-            imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
-            endDate = LocalDate.of(2999, 1, 1)
-        ))
+        return missionRepository.save(
+            Mission(
+                missionName = "미션명",
+                description = "미션 설명",
+                goal = "미션 목표",
+                imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
+                endDate = LocalDate.of(2999, 1, 1)
+            )
+        )
     }
 
     private fun createAndSaveUserWithContact(): User {
@@ -86,6 +90,13 @@ class ReportRepositoryTest(
         )
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        return userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
+        return userRepository.save(
+            User(
+                contact = contact,
+                username = "tester",
+                password = encryptedPassword,
+                imageUrl = ""
+            )
+        )
     }
 }

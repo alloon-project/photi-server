@@ -1,10 +1,10 @@
 package com.alloon.alloonserver.api.controller.develop
 
-import com.alloon.alloonserver.api.service.develop.DevelopService
 import com.alloon.alloonserver.common.constant.SuccessCode.FORCE_UPDATE
 import com.alloon.alloonserver.common.constant.SuccessCode.SERVER_OK
 import com.alloon.alloonserver.common.response.DefaultResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
+import com.alloon.alloonserver.service.develop.DevelopService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @Tag(name = "Develop", description = "서버, 앱 버전 API")
 class DevelopController(
-    private val developService: DevelopService
+    private val developService: DevelopService,
 ) {
 
     @GetMapping("/api/health")
@@ -36,12 +36,7 @@ class DevelopController(
 
     @GetMapping("/api/ver")
     @Operation(summary = "앱 강제 업데이트 필요 여부 조회", description = "사용자의 앱 버전을 확인하고, 앱 업데이트가 필요한지 조회합니다.")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "앱 강제 업데이트 필요 여부 조회 성공"),
-            ApiResponse(responseCode = "400", description = "버전은 필수 입력입니다."),
-        ]
-    )
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "앱 강제 업데이트 필요 여부 조회 성공")])
     fun needForceUpdate(
         @RequestParam("version") @NotBlank(message = "앱 버전은 필수 입력입니다.")
         @Parameter(description = "앱 버전", example = "1.0.0")

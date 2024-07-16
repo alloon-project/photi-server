@@ -45,10 +45,10 @@ api:
   master:
     id: alloon
   jwt:
-    secret: ${JWT_SECRET:ThisIsSecret}
-    domain: ${JWT_DOMAIN:TEST}
+    secret: ${JWT_SECRET}
+    domain: ${JWT_DOMAIN}
     time:
-      access: ${JWT_ACCESS:6000}
-      refresh: ${JWT_REFRESH:36000}
+      access: ${JWT_ACCESS}
+      refresh: ${JWT_REFRESH}
   mail:
-    address: ${MAIL_ADDRESS:}
+    address: ${MAIL_ADDRESS}

@@ -12,9 +12,11 @@ class CustomAuthenticationFilter(
     private val jwtProvider: JwtProvider,
 ) : OncePerRequestFilter() {
 
-    override fun doFilterInternal(request: HttpServletRequest,
-                                  response: HttpServletResponse,
-                                  filterChain: FilterChain) {
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         val accessToken = request.getHeader(AUTHORIZATION)
         val refreshToken = request.getHeader("Refresh-Token")
 
@@ -26,6 +28,4 @@ class CustomAuthenticationFilter(
 
         filterChain.doFilter(request, response)
     }
-
-
 }

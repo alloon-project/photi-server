@@ -31,18 +31,30 @@ class MissionTemplateImageRepositoryTest(
         val now = LocalDateTime.now()
 
         val missionTemplateImages: List<MissionTemplateImage> = listOf(
-            createAndSaveMissionTemplateImage(adminRole.user, "image1", now.minusSeconds(2),
-                now.minusSeconds(1), 1),
-            createAndSaveMissionTemplateImage(adminRole.user, "image2", now.minusSeconds(2),
-                now.plusSeconds(2), 2),
-            createAndSaveMissionTemplateImage(adminRole.user, "image3", now.minusSeconds(2),
-                now.plusSeconds(2), 3),
-            createAndSaveMissionTemplateImage(adminRole.user, "image4", now.minusSeconds(1),
-                now.plusSeconds(1), 4),
-            createAndSaveMissionTemplateImage(adminRole.user, "image5", now.minusSeconds(1),
-                now.plusSeconds(1), 5),
-            createAndSaveMissionTemplateImage(adminRole.user, "image6", now.plusSeconds(1),
-                now.plusSeconds(2), 6),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image1", now.minusSeconds(2),
+                now.minusSeconds(1), 1
+            ),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image2", now.minusSeconds(2),
+                now.plusSeconds(2), 2
+            ),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image3", now.minusSeconds(2),
+                now.plusSeconds(2), 3
+            ),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image4", now.minusSeconds(1),
+                now.plusSeconds(1), 4
+            ),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image5", now.minusSeconds(1),
+                now.plusSeconds(1), 5
+            ),
+            createAndSaveMissionTemplateImage(
+                adminRole.user, "image6", now.plusSeconds(1),
+                now.plusSeconds(2), 6
+            ),
         )
         missionTemplateImages[1].serviceStatus = ServiceStatus.ADMIN_DEL
         missionTemplateImages[3].serviceStatus = ServiceStatus.ADMIN_DEL
@@ -62,26 +74,35 @@ class MissionTemplateImageRepositoryTest(
         endDateTime: LocalDateTime,
         sort: Int,
     ): MissionTemplateImage {
-        return missionTemplateImageRepository.save(MissionTemplateImage(
-            admin = admin,
-            imageUrl = imageUrl,
-            startDateTime = startDateTime,
-            endDateTime = endDateTime,
-            sort = sort,
-        ))
+        return missionTemplateImageRepository.save(
+            MissionTemplateImage(
+                admin = admin,
+                imageUrl = imageUrl,
+                startDateTime = startDateTime,
+                endDateTime = endDateTime,
+                sort = sort,
+            )
+        )
     }
 
     private fun createAndSaveAdminWithContact(): UserRole {
         val contact = contactRepository.save(
             Contact(
-            email = "tester@alloon.com",
-            verificationCode = "000000",
-            verifyYn = true
-        )
+                email = "tester@alloon.com",
+                verificationCode = "000000",
+                verifyYn = true
+            )
         )
 
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = userRepository.save(User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = ""))
+        val user = userRepository.save(
+            User(
+                contact = contact,
+                username = "tester",
+                password = encryptedPassword,
+                imageUrl = ""
+            )
+        )
 
         return userRoleRepository.save(UserRole(user = user, role = Role.ADMIN))
     }
