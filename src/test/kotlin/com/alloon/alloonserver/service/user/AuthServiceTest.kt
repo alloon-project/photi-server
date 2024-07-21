@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.email.EmailService
 import com.alloon.alloonserver.service.user.dto.*
 import org.assertj.core.api.Assertions.assertThat
@@ -17,11 +18,13 @@ import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class AuthServiceTest(
     @Autowired private val authService: AuthService,
     @Autowired private val contactRepository: ContactRepository,

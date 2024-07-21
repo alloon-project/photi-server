@@ -1,6 +1,5 @@
 package com.alloon.alloonserver.service.mission.response
 
-import com.alloon.alloonserver.domain.mission.Hashtag
 import com.alloon.alloonserver.domain.mission.MissionMember
 import com.alloon.alloonserver.domain.mission.MissionRule
 import com.fasterxml.jackson.annotation.JsonFormat
@@ -41,15 +40,11 @@ data class MissionCreateResponse(
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Schema(description = "챌린지 종료 날짜", example = "2024-12-01")
     val endDate: LocalDate,
-    @Schema(
-        description = "챌린지 해시태그 리스트",
-        example = "[{\"hashtagId\": 1,\n \"tag\": \"러닝\"}, {\"hashtagId\": 2,\n \"tag\": \"건강\"}]",
-        implementation = MissionCreateHashtagResponse::class
-    )
-    val hashtags: List<MissionCreateHashtagResponse>,
+
+    val hashtags : List<String> = listOf()
 ) {
 
-    constructor(creator: MissionMember, rules: List<MissionRule>, hashtags: List<Hashtag>) : this(
+    constructor(creator: MissionMember, rules: List<MissionRule>) : this(
         creator.mission.id!!,
         creator.mission.missionName,
         creator.mission.description,
@@ -60,7 +55,7 @@ data class MissionCreateResponse(
         MissionCreateCreatorResponse(creator),
         creator.mission.startDate,
         creator.mission.endDate,
-        hashtags.map { hashtag -> MissionCreateHashtagResponse(hashtag) }.toList()
+        creator.mission.hashtags
     )
 }
 
@@ -82,14 +77,4 @@ data class MissionCreateRuleResponse(
 ) {
 
     constructor(missionRule: MissionRule) : this(missionRule.id!!, missionRule.rule)
-}
-
-data class MissionCreateHashtagResponse(
-    @Schema(description = "챌린지 해시태그 id")
-    val hashtagId: Long,
-    @Schema(description = "챌린지 해시태그 내용")
-    val tag: String,
-) {
-
-    constructor(hashtag: Hashtag) : this(hashtag.id!!, hashtag.tag)
 }

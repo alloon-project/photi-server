@@ -60,8 +60,10 @@ CREATE TABLE mission
     end_date                    DATE                      NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
+    service_status              VARCHAR(10)               NOT NULL,
+    hashtags                    TEXT                      NOT NULL
 );
+CREATE INDEX idx_mission_hashtags ON mission USING GIN (to_tsvector('simple', hashtags));
 
 CREATE TABLE mission_rule
 (
@@ -80,7 +82,6 @@ CREATE TABLE mission_template_image
     image_url                   VARCHAR(500)              NOT NULL,
     start_date_time             TIMESTAMP(6)              NOT NULL,
     end_date_time               TIMESTAMP(6)              NOT NULL,
-    sort                        INT                       NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
@@ -100,27 +101,6 @@ CREATE TABLE mission_member
     user_id                     BIGINT,
     CONSTRAINT fk_mission_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT fk_mission_member_mission_id FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
-);
-
-CREATE TABLE hashtag
-(
-    hashtag_id                  BIGSERIAL PRIMARY KEY,
-    tag                         VARCHAR(30)               NOT NULL,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
-);
-
-CREATE TABLE mission_hashtag
-(
-    mission_hashtag_id          BIGSERIAL PRIMARY KEY,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL,
-    hashtag_id                  BIGINT                    NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
-    CONSTRAINT fk_mission_hashtag_hashtag FOREIGN KEY (hashtag_id) REFERENCES hashtag (hashtag_id),
-    CONSTRAINT fk_mission_hashtag_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
 );
 
 CREATE TABLE feed

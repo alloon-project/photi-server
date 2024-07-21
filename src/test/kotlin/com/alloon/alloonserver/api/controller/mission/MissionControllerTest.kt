@@ -6,7 +6,6 @@ import com.alloon.alloonserver.api.controller.mission.request.MissionCreateMissi
 import com.alloon.alloonserver.api.controller.mission.request.MissionCreateRequest
 import com.alloon.alloonserver.service.mission.MissionService
 import com.alloon.alloonserver.service.mission.response.MissionCreateCreatorResponse
-import com.alloon.alloonserver.service.mission.response.MissionCreateHashtagResponse
 import com.alloon.alloonserver.service.mission.response.MissionCreateResponse
 import com.alloon.alloonserver.service.mission.response.MissionCreateRuleResponse
 import org.junit.jupiter.api.DisplayName
@@ -66,8 +65,7 @@ class MissionControllerTest : RestDocsSupport() {
                     1,
                     MissionCreateCreatorResponse("tester", ""),
                     now,
-                    request.missionEndDate,
-                    request.hashtags.map { MissionCreateHashtagResponse(1L, it.hashtag) }
+                    request.missionEndDate
                 )
             )
 
@@ -108,8 +106,7 @@ class MissionControllerTest : RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndDate,
-                request.hashtags.map { MissionCreateHashtagResponse(1L, it.hashtag) }
+                request.missionEndDate
             ))
 
         // when & then
@@ -149,8 +146,7 @@ class MissionControllerTest : RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndDate,
-                request.hashtags.map { MissionCreateHashtagResponse(1L, it.hashtag) }
+                request.missionEndDate
             ))
 
         // when & then
@@ -190,8 +186,7 @@ class MissionControllerTest : RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                request.missionEndDate,
-                request.hashtags.map { MissionCreateHashtagResponse(1L, it.hashtag) }
+                request.missionEndDate
             ))
 
         // when & then
@@ -231,8 +226,7 @@ class MissionControllerTest : RestDocsSupport() {
                 1,
                 MissionCreateCreatorResponse("tester", null),
                 now,
-                now,
-                request.hashtags.map { MissionCreateHashtagResponse(1L, it.hashtag) }
+                now
             ))
 
         // when & then

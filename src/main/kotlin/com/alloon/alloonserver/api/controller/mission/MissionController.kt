@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException.Forbidden
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 import java.time.LocalDateTime
@@ -23,7 +26,7 @@ import java.time.LocalDateTime
 @RestController
 @Tag(name = "Challenge", description = "챌린지 API")
 class MissionController(
-    private val missionService: MissionService,
+    private val missionService: MissionService
 ) {
 
     @GetMapping("/api/missions/image/templates")

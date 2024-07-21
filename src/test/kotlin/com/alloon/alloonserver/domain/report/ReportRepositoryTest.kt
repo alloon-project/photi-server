@@ -10,18 +10,22 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
+import com.alloon.alloonserver.framework.TestContainerConfig
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class ReportRepositoryTest(
     @Autowired private val reportRepository: ReportRepository,
     @Autowired private val userRepository: UserRepository,

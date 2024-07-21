@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.PutObjectResult
 import org.assertj.core.api.Assertions.assertThat
@@ -21,12 +22,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.net.URL
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class UserServiceTest(
     @Autowired private val userService: UserService,
     @Autowired private val userRepository: UserRepository,

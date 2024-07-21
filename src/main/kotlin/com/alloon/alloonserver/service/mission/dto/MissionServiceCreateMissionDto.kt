@@ -24,7 +24,8 @@ data class MissionServiceCreateMissionDto(
                 description = missionDescription,
                 goal = missionGoal,
                 imageUrl = missionImageUrl,
-                endDate = missionEndDate
+                endDate = missionEndDate,
+                hashtags = this.hashtags.map{ it.hashtag }
             ),
             creatorYn = true
         )
@@ -32,9 +33,5 @@ data class MissionServiceCreateMissionDto(
 
     fun toMissionRule(mission: Mission): List<MissionRule> {
         return missionRules.map { MissionRule(mission = mission, rule = it.missionRule) }
-    }
-
-    fun toMissionHashtag(mission: Mission): List<MissionHashtag> {
-        return hashtags.map { MissionHashtag(mission = mission, hashtag = Hashtag(tag = it.hashtag)) }
     }
 }

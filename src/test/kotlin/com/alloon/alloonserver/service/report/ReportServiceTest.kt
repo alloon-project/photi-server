@@ -17,6 +17,7 @@ import com.alloon.alloonserver.domain.report.ReportRepository
 import com.alloon.alloonserver.domain.user.*
 import com.alloon.alloonserver.domain.user.Role.ADMIN
 import com.alloon.alloonserver.domain.user.Role.USER
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.report.dto.ReportCreateServiceDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -27,12 +28,14 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class ReportServiceTest(
     @Autowired private val reportService: ReportService,
     @Autowired private val reportRepository: ReportRepository,

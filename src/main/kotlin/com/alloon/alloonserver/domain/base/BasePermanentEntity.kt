@@ -1,6 +1,8 @@
 package com.alloon.alloonserver.domain.base
 
 import jakarta.persistence.Column
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.MappedSuperclass
 import java.time.LocalDateTime
 
@@ -8,6 +10,7 @@ import java.time.LocalDateTime
 abstract class BasePermanentEntity(
 
     @Column(nullable = false, length = 10)
+    @Enumerated(EnumType.STRING)
     var serviceStatus: ServiceStatus = ServiceStatus.ACTIVE,
 
     createDateTime: LocalDateTime? = null,

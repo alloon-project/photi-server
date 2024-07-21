@@ -4,6 +4,7 @@ import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.report.ReportCategoryType.*
 import com.alloon.alloonserver.domain.user.*
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,12 +14,14 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.util.stream.Stream
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class ReportCategoryRepositoryTest(
     @Autowired private val reportCategoryRepository: ReportCategoryRepository,
     @Autowired private val userRoleRepository: UserRoleRepository,
