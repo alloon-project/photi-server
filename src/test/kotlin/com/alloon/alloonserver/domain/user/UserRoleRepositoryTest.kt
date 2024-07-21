@@ -1,5 +1,7 @@
 package com.alloon.alloonserver.domain.user
 
+
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.DisplayName
@@ -8,11 +10,13 @@ import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class UserRoleRepositoryTest {
 
     @Autowired

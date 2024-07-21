@@ -47,8 +47,9 @@ class Mission(
     @Column(nullable = false)
     val endDate: LocalDate,
 
-    @ElementCollection
-    @Column(nullable = false)
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    @Convert(converter = MissionListStringConverter::class)
     val hashtags : List<String> = listOf()
 ) : BasePermanentEntity() {
 }

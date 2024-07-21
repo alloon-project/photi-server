@@ -12,7 +12,7 @@ import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.AbstractMailProperties
-import com.alloon.alloonserver.framework.AbstractTestContainer
+import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.mission.dto.MissionServiceCreateMissionDto
 import com.amazonaws.services.s3.AmazonS3Client
 import org.assertj.core.api.Assertions.assertThat
@@ -22,27 +22,33 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.mockito.Mockito.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.math.log
 
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
+@ContextConfiguration(initializers = [TestContainerInitializer::class])
 class MissionServiceTest(
     @Autowired private val missionService: MissionService,
     @Autowired private val missionTemplateImageRepository: MissionTemplateImageRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
     @Autowired private val passwordUtility: PasswordUtility
-) : AbstractTestContainer(), AbstractMailProperties {
+) : AbstractMailProperties {
 
+    val logger : Logger = LoggerFactory.getLogger(MissionService::class.java)
     @MockBean
     private lateinit var amazonS3Client: AmazonS3Client
 
@@ -58,11 +64,11 @@ class MissionServiceTest(
         // given
         val user = createAndSaveUserWithContact()
         val now = LocalDate.now()
-
         val request = createValidMissionServiceCreateMissionRequest()
 
         // when
         val response = missionService.createMission(user.id!!, request)
+        logger.info("$response")
 
         // then
         assertAll(
@@ -90,13 +96,7 @@ class MissionServiceTest(
             },
             {
                 assertThat(response.hashtags)
-                    .extracting("hashtagId")
-                    .isNotNull()
-            },
-            {
-                assertThat(response.hashtags)
-                    .extracting("tag")
-                    .isEqualTo(request.hashtags.map { it.hashtag })
+                    .containsExactlyInAnyOrder("해시", "태그")
             },
         )
     }
@@ -161,7 +161,6 @@ class MissionServiceTest(
                 imageUrl = "image",
                 startDateTime = now.minusSeconds(1),
                 endDateTime = now.plusSeconds(1),
-                sort = 1,
                 admin = null
             )
         )
