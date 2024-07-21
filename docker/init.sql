@@ -1,3 +1,22 @@
+DROP TABLE IF EXISTS ver;
+DROP TABLE IF EXISTS block;
+DROP TABLE IF EXISTS suspension;
+DROP TABLE IF EXISTS report;
+DROP TABLE IF EXISTS report_category;
+DROP TABLE IF EXISTS inquiry;
+DROP TABLE IF EXISTS inquiry_category;
+DROP TABLE IF EXISTS feed_like;
+DROP TABLE IF EXISTS feed_comment;
+DROP TABLE IF EXISTS feed;
+DROP TABLE IF EXISTS mission_member;
+DROP TABLE IF EXISTS mission_template_image;
+DROP TABLE IF EXISTS mission_rule;
+DROP TABLE IF EXISTS mission;
+DROP TABLE IF EXISTS user_template_image;
+DROP TABLE IF EXISTS user_role;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS contact;
+
 CREATE TABLE contact
 (
     contact_id	                BIGSERIAL PRIMARY KEY,
@@ -60,8 +79,10 @@ CREATE TABLE mission
     end_date                    DATE                      NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
+    service_status              VARCHAR(10)               NOT NULL,
+    hashtags                    TEXT                      NOT NULL
 );
+CREATE INDEX idx_mission_hashtags ON mission USING GIN (to_tsvector('simple', hashtags));
 
 CREATE TABLE mission_rule
 (
@@ -99,27 +120,6 @@ CREATE TABLE mission_member
     user_id                     BIGINT,
     CONSTRAINT fk_mission_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT fk_mission_member_mission_id FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
-);
-
-CREATE TABLE hashtag
-(
-    hashtag_id                  BIGSERIAL PRIMARY KEY,
-    tag                         VARCHAR(30)               NOT NULL,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL
-);
-
-CREATE TABLE mission_hashtag
-(
-    mission_hashtag_id          BIGSERIAL PRIMARY KEY,
-    create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL,
-    hashtag_id                  BIGINT                    NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
-    CONSTRAINT fk_mission_hashtag_hashtag FOREIGN KEY (hashtag_id) REFERENCES hashtag (hashtag_id),
-    CONSTRAINT fk_mission_hashtag_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
 );
 
 CREATE TABLE feed
@@ -214,4 +214,39 @@ CREATE TABLE report
     CONSTRAINT fk_report_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id),
     CONSTRAINT fk_report_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
     CONSTRAINT fk_report_report_category FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id)
+);
+
+CREATE TABLE suspension
+(
+    suspend_id                  BIGSERIAL PRIMARY KEY,
+    start_date                  DATE                      NOT NULL,
+    end_date                    DATE                      NOT NULL,
+    create_date_time            TIMESTAMP(6)              NOT NULL,
+    update_date_time            TIMESTAMP(6)              NOT NULL,
+    user_id                     BIGINT,
+    admin_id                    BIGINT,
+    CONSTRAINT fk_suspension_admin FOREIGN KEY (admin_id) REFERENCES users (user_id),
+    CONSTRAINT fk_suspension_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
+CREATE TABLE block
+(
+    block_id                    BIGSERIAL PRIMARY KEY,
+    create_date_time            TIMESTAMP(6)              NOT NULL,
+    update_date_time            TIMESTAMP(6)              NOT NULL,
+    service_status              VARCHAR(10)               NOT NULL,
+    user_id                     BIGINT,
+    blocker_id                  BIGINT,
+    CONSTRAINT fk_bock_blocker FOREIGN KEY (blocker_id) REFERENCES users (user_id),
+    CONSTRAINT fk_bock_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
+CREATE TABLE ver
+(
+    ver_id                      SERIAL PRIMARY KEY,
+    version                     VARCHAR(10)               NOT NULL,
+    create_date_time            TIMESTAMP(6)              NOT NULL,
+    update_date_time            TIMESTAMP(6)              NOT NULL,
+    admin_id                    BIGINT,
+    CONSTRAINT fk_app_version_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
 );
