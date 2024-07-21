@@ -36,7 +36,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(RuntimeException::class)
-    public fun handleUndefinedException(ex : RuntimeException) : ResponseEntity<ExceptionResponse>{
+    protected fun handleUndefinedException(ex : RuntimeException) : ResponseEntity<ExceptionResponse>{
         logger.info("Exception : ${ex.message}")
         return ExceptionResponse.toResponseEntity(CustomException(ExceptionCode.SERVER_ERROR, ex.cause))
     }

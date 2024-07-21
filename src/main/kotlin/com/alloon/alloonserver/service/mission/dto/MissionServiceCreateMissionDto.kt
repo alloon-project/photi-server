@@ -25,7 +25,7 @@ data class MissionServiceCreateMissionDto(
                 goal = missionGoal,
                 imageUrl = missionImageUrl,
                 endDate = missionEndDate,
-                hashtags = this.hashtags.map(MissionCreateHashTagRequest::hashtag).toList()
+                hashtags = this.hashtags.map{ it.hashtag }
             ),
             creatorYn = true
         )
