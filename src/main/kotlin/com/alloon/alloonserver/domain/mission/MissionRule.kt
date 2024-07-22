@@ -13,7 +13,7 @@ class MissionRule(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id", nullable = false)
-    val mission: Mission,
+    var mission: Mission? = null,
 
     @Column(nullable = false, length = 30)
     val rule: String,

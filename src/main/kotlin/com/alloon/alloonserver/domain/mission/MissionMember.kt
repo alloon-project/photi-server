@@ -6,6 +6,7 @@ import jakarta.persistence.*
 
 @Entity
 class MissionMember(
+
     @Id
     @Column(name = "mission_member_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +22,9 @@ class MissionMember(
 
     @Column(nullable = false, length = 15)
     @Enumerated(value = EnumType.STRING)
-    val missionMemberStatus: MissionMemberStatus = MissionMemberStatus.PROGRESS,
+    val status: MissionMemberStatus = MissionMemberStatus.PROGRESS,
 
     @Column(nullable = false)
-    val creatorYn: Boolean,
+    val isCreator: Boolean = true,
 ) : BasePermanentEntity() {
 }
