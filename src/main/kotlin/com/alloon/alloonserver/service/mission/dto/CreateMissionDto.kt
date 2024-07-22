@@ -11,6 +11,5 @@ data class CreateMissionDto(
     val endDate: LocalDate,
     val imageUrl: String,
     val rules: List<CreateMissionRuleDto>,
-//    val hashtags: List<CreateMissionHashtagDto>,
-) {
-}
+    val hashtags: List<CreateMissionHashtagDto>,
+)

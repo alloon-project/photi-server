@@ -77,6 +77,7 @@ class Mission(
                 proveTime = dto.proveTime,
                 endDate = dto.endDate,
                 imageUrl = dto.imageUrl,
+                hashtags = dto.hashtags.map { it.hashtag },
             )
             dto.rules.forEach {
                 mission.addMissionRule(MissionRule(rule = it.rule))

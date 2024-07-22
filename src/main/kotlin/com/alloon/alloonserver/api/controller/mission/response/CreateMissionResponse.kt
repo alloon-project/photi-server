@@ -19,6 +19,7 @@ data class CreateMissionResponse(
     val goal: String,
 
     @Schema(description = "챌린지 인증 시간", example = "13:00")
+    @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -39,12 +40,15 @@ data class CreateMissionResponse(
     )
     val rules: List<CreateMissionRuleResponse>,
 
-//    @Schema(
-//        description = "챌린지 해시태그 리스트",
-//        example = "[{\"hashtagId\": 1,\n \"tag\": \"러닝\"}, {\"hashtagId\": 2,\n \"tag\": \"건강\"}]",
-//        implementation = MissionCreateHashtagResponse::class
-//    )
-//    val hashtags: List<MissionCreateHashtagResponse>,
+    @Schema(
+        description = "챌린지 해시태그 리스트", example = """
+        [
+            {"hashtag": "러닝"},
+            {"hashtag": "건강"}
+        ]
+    """
+    )
+    val hashtags: List<CreateMissionHashtagResponse>,
 ) {
 
     companion object {
@@ -60,6 +64,9 @@ data class CreateMissionResponse(
                 mission.rules.map {
                     CreateMissionRuleResponse.of(it)
                 },
+                mission.hashtags.map {
+                    CreateMissionHashtagResponse.of(it)
+                }
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.api.controller.mission.request
 
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
 import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
@@ -59,11 +60,18 @@ data class CreateMissionRequest(
     @field:Valid
     val rules: List<CreateMissionRuleRequest>,
 
-//    @Schema(description = "챌린지 해시태그 리스트", example = "[\"러닝\", \"건강\"]")
-//    @field:NotNull(message = "해시태그는 필수 입력입니다.")
-//    @field:Size(min = 1, max = 3, message = "해시태그는 1~3개만 가능합니다.")
-//    @field:Valid
-//    val hashtags: List<ChallengeCreateHashTagRequest>,
+    @Schema(
+        description = "챌린지 해시태그 리스트", example = """
+        [
+            {"hashtag": "러닝"},
+            {"hashtag": "건강"}
+        ]
+    """
+    )
+    @field:NotNull(message = "해시태그는 필수 입력입니다.")
+    @field:Size(min = 1, max = 3, message = "해시태그는 1~3개만 가능합니다.")
+    @field:Valid
+    val hashtags: List<CreateMissionHashtagRequest>,
 ) {
 
     fun toServiceDto(): CreateMissionDto {
@@ -77,7 +85,9 @@ data class CreateMissionRequest(
             rules.map {
                 CreateMissionRuleDto(it.rule)
             },
-//            hashtags,
+            hashtags.map {
+                CreateMissionHashtagDto(it.hashtag)
+            },
         )
     }
 }
