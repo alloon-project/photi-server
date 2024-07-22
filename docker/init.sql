@@ -68,15 +68,16 @@ CREATE TABLE user_template_image
 CREATE TABLE mission
 (
     mission_id                  BIGSERIAL PRIMARY KEY,
-    mission_name                VARCHAR(16)               NOT NULL,
-    description                 VARCHAR(120)              NOT NULL,
-    goal                        VARCHAR(30)               NOT NULL,
+    name                        VARCHAR(16)               NOT NULL,
+    goal                        VARCHAR(120)              NOT NULL,
+    prove_time                  TIME                      NOT NULL,
+    end_date                    DATE                      NOT NULL,
     image_url                   VARCHAR(500)              NOT NULL,
+    is_public                   BOOLEAN                   NOT NULL,
+    start_date                  DATE                      NOT NULL,
     current_member_cnt          INT                       NOT NULL,
     visit_cnt                   INT                       NOT NULL,
-    recruit_yn                  BOOLEAN                   NOT NULL,
-    start_date                  DATE                      NOT NULL,
-    end_date                    DATE                      NOT NULL,
+    is_recruit                  BOOLEAN                   NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
@@ -92,7 +93,7 @@ CREATE TABLE mission_rule
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
     mission_id                  BIGINT                    NOT NULL,
-    CONSTRAINT fk_mission_rule_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
+    CONSTRAINT fk_mission_rule_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id) ON DELETE CASCADE
 );
 
 CREATE TABLE mission_template_image
@@ -111,8 +112,8 @@ CREATE TABLE mission_template_image
 CREATE TABLE mission_member
 (
     mission_member_id           BIGSERIAL PRIMARY KEY,
-    creator_yn                  BOOLEAN                   NOT NULL,
-    mission_member_status       VARCHAR(15)               NOT NULL,
+    is_creator                  BOOLEAN                   NOT NULL,
+    status                      VARCHAR(15)               NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
