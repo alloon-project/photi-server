@@ -4,10 +4,8 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
 import com.alloon.alloonserver.domain.user.UserRepository
-import com.alloon.alloonserver.service.mission.dto.MissionServiceCreateMissionDto
-import com.alloon.alloonserver.service.mission.response.MissionCreateResponse
+import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.s3.S3Service
-import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
@@ -21,24 +19,22 @@ import java.util.*
 class MissionService(
     private val missionRepository: MissionRepository,
     private val missionMemberRepository: MissionMemberRepository,
-    private val missionRuleRepository: MissionRuleRepository,
     private val missionTemplateImageRepository: MissionTemplateImageRepository,
     private val userRepository: UserRepository,
     private val s3Service: S3Service,
 ) {
 
     @Transactional
-    fun createMission(userId: Long, @Valid request: MissionServiceCreateMissionDto): MissionCreateResponse {
+    fun createMission(userId: Long, dto: CreateMissionDto): Mission {
         val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
 
-        val missionMember = request.toMissionMember(user)
-        missionRepository.save(missionMember.mission)
+        val mission = Mission.toEntity(dto)
+        val missionMember = MissionMember(user = user, mission = mission)
+
+        missionRepository.save(mission)
         missionMemberRepository.save(missionMember)
 
-        val missionRules = request.toMissionRule(missionMember.mission)
-        missionRules.isNotEmpty().let { missionRuleRepository.saveAll(missionRules) }
-
-        return MissionCreateResponse(missionMember, missionRules)
+        return mission
     }
 
     fun getAllMissionTemplateImages(now: LocalDateTime): List<String> {
