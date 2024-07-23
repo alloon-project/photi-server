@@ -1,104 +1,87 @@
 package com.alloon.alloonserver.service.mission
 
-import com.alloon.alloonserver.api.controller.mission.request.MissionCreateHashTagRequest
-import com.alloon.alloonserver.api.controller.mission.request.MissionCreateMissionRuleRequest
-import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.mission.MissionTemplateImage
-import com.alloon.alloonserver.domain.mission.MissionTemplateImageRepository
+import com.alloon.alloonserver.domain.mission.*
 import com.alloon.alloonserver.domain.user.Contact
-import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.AbstractMailProperties
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.mission.dto.MissionServiceCreateMissionDto
-import com.amazonaws.services.s3.AmazonS3Client
+import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
+import com.alloon.alloonserver.service.s3.S3Service
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
-import org.mockito.Mockito.*
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
-import java.net.URL
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.math.log
+import java.time.LocalTime
 
 @Transactional
-@SpringBootTest
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
-class MissionServiceTest(
-    @Autowired private val missionService: MissionService,
-    @Autowired private val missionTemplateImageRepository: MissionTemplateImageRepository,
-    @Autowired private val userRepository: UserRepository,
-    @Autowired private val contactRepository: ContactRepository,
-    @Autowired private val passwordUtility: PasswordUtility
-) : AbstractMailProperties {
+class MissionServiceTest : AbstractMailProperties {
 
-    val logger : Logger = LoggerFactory.getLogger(MissionService::class.java)
-    @MockBean
-    private lateinit var amazonS3Client: AmazonS3Client
+    private val missionRepository = mockk<MissionRepository>()
+    private val missionMemberRepository = mockk<MissionMemberRepository>()
+    private val missionTemplateImageRepository = mockk<MissionTemplateImageRepository>()
+    private val userRepository = mockk<UserRepository>()
+    private val s3Service = mockk<S3Service>()
+
+    private val missionService = MissionService(
+        missionRepository,
+        missionMemberRepository,
+        missionTemplateImageRepository,
+        userRepository,
+        s3Service
+    )
 
     @BeforeEach
     fun beforeEach() {
-        `when`(amazonS3Client.getUrl(any(), any()))
-            .thenReturn(URL("https://localhost:8080/api/image/mission-service"))
+        unmockkAll()
     }
+
+//    @MockBean
+//    private lateinit var amazonS3Client: AmazonS3Client
+//
+//    @BeforeEach
+//    fun beforeEach() {
+//        `when`(amazonS3Client.getUrl(any(), any()))
+//            .thenReturn(URL("https://localhost:8080/api/image/mission-service"))
+//    }
 
     @DisplayName("미션 생성을 하면 정상 작동한다")
     @Test
     fun givenValid_whenCreateMission_thenReturn() {
         // given
-        val user = createAndSaveUserWithContact()
-        val now = LocalDate.now()
-        val request = createValidMissionServiceCreateMissionRequest()
+        mockkObject(Mission)
+        val dto = getCreateMissionDto()
+        val user = getUser()
+        val mission = Mission.toEntity(dto)
+        val missionMember = MissionMember(user = user, mission = mission)
+
+        every { userRepository.find(any()) } returns user
+        every { Mission.toEntity(any()) } returns mission
+        every { missionRepository.save(any()) } returns mission
+        every { missionMemberRepository.save(any()) } returns missionMember
 
         // when
-        val response = missionService.createMission(user.id!!, request)
-        logger.info("$response")
+        val result = missionService.createMission(1L, dto)
 
         // then
-        assertAll(
-            { assertThat(response.missionId).isNotNull() },
-            {
-                assertThat(response)
-                    .extracting(
-                        "missionName", "description", "goal", "imageUrl", "currentMemberCnt",
-                        "missionCreator.username", "missionCreator.imageUrl", "startDate", "endDate"
-                    )
-                    .containsExactly(
-                        request.missionName, request.missionDescription, request.missionGoal,
-                        request.missionImageUrl, 1, user.username, user.imageUrl, now, request.missionEndDate
-                    )
-            },
-            {
-                assertThat(response.rules)
-                    .extracting("missionRuleId")
-                    .isNotNull()
-            },
-            {
-                assertThat(response.rules)
-                    .extracting("rule")
-                    .isEqualTo(request.missionRules.map { it.missionRule })
-            },
-            {
-                assertThat(response.hashtags)
-                    .containsExactlyInAnyOrder("해시", "태그")
-            },
-        )
+        assertThat(result).isEqualTo(mission)
     }
 
     @DisplayName("존재하지 않은 회원으로 미션 생성을 하면 예외가 발생한다")
@@ -106,10 +89,12 @@ class MissionServiceTest(
     fun givenNonExistingUser_whenCreateMission_thenThrow() {
         // given
         val userId = 1L
-        val request = createValidMissionServiceCreateMissionRequest()
+        val dto = getCreateMissionDto()
+
+        every { userRepository.find(any()) } returns null
 
         // when & then
-        assertThatThrownBy { missionService.createMission(userId, request) }
+        assertThatThrownBy { missionService.createMission(userId, dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)
@@ -120,7 +105,9 @@ class MissionServiceTest(
     fun givenValid_whenGetAllMissionTemplateImages_thenReturn() {
         // given
         val now = LocalDateTime.now()
-        val missionTemplateImage = createAndSaveMissionTemplateImage(now)
+        val missionTemplateImage = getMissionTemplateImage(now)
+
+        every { missionTemplateImageRepository.findAllImageUrl(any()) } returns mutableListOf("image")
 
         // when
         val response = missionService.getAllMissionTemplateImages(now)
@@ -133,56 +120,48 @@ class MissionServiceTest(
     @Test
     fun givenValid_whenUploadMissionImage_thenReturn() {
         // given
-        val user = createAndSaveUserWithContact()
         val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
+        every { s3Service.uploadFile(any(), any(), any()) } returns ""
+
         // when
-        val response = missionService.uploadMissionImage(user.id!!, file)
+        val response = missionService.uploadMissionImage(1L, file)
 
         // then
         assertThat(response).isNotNull()
     }
 
-    private fun createValidMissionServiceCreateMissionRequest(): MissionServiceCreateMissionDto {
-        return MissionServiceCreateMissionDto(
-            "얼른",
-            "얼른 프로젝트 설명입니다.",
-            "얼른 프로젝트 목표입니다.",
-            listOf(MissionCreateMissionRuleRequest("얼른 프로젝트 규칙입니다.")),
-            "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
-            LocalDate.of(2025, 1, 1),
-            listOf(MissionCreateHashTagRequest("해시"), MissionCreateHashTagRequest("태그"))
+    private fun getUser(): User {
+        val contact = Contact(1L, "tester@photi.com", "000000", true)
+        return User(1L, contact, "tester", "password1!", "")
+    }
+
+    private fun getCreateMissionDto(): CreateMissionDto {
+        return CreateMissionDto(
+            "챌린지 이름",
+            true,
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf(
+                CreateMissionRuleDto("챌린지 인증 룰1"),
+                CreateMissionRuleDto("챌린지 인증 룰2"),
+                CreateMissionRuleDto("챌린지 인증 룰3"),
+            ),
+            listOf(
+                CreateMissionHashtagDto("해시태그 1"),
+                CreateMissionHashtagDto("해시태그 2"),
+            )
         )
     }
 
-    private fun createAndSaveMissionTemplateImage(now: LocalDateTime): MissionTemplateImage {
-        return missionTemplateImageRepository.save(
-            MissionTemplateImage(
-                imageUrl = "image",
-                startDateTime = now.minusSeconds(1),
-                endDateTime = now.plusSeconds(1),
-                admin = null
-            )
-        )
-    }
-
-    private fun createAndSaveUserWithContact(): User {
-        val contact = contactRepository.save(
-            Contact(
-                email = "tester@alloon.com",
-                verificationCode = "000000",
-                verifyYn = true
-            )
-        )
-
-        val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        return userRepository.save(
-            User(
-                contact = contact,
-                username = "tester",
-                password = encryptedPassword,
-                imageUrl = ""
-            )
+    private fun getMissionTemplateImage(now: LocalDateTime): MissionTemplateImage {
+        return MissionTemplateImage(
+            imageUrl = "image",
+            startDateTime = now.minusSeconds(1),
+            endDateTime = now.plusSeconds(1),
+            admin = null
         )
     }
 }
