@@ -31,12 +31,10 @@ data class CreateMissionRequest(
     val goal: String,
 
     @Schema(description = "챌린지 인증 시간", example = "13:00")
-    @field:NotNull(message = "인증 시간은 필수 입력입니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
 
     @Schema(description = "챌린지 종료 날짜", example = "2024-12-01")
-    @field:NotNull(message = "종료 날짜는 필수 입력입니다.")
     @field:Future(message = "종료 날짜는 시작 날짜보다 앞설 수 없습니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
@@ -55,7 +53,6 @@ data class CreateMissionRequest(
         ]
     """
     )
-    @field:NotNull(message = "인증 룰은 필수 입력입니다.")
     @field:Size(min = 1, max = 5, message = "인증 룰은 1~5개만 가능합니다.")
     @field:Valid
     val rules: List<CreateMissionRuleRequest>,
@@ -68,7 +65,6 @@ data class CreateMissionRequest(
         ]
     """
     )
-    @field:NotNull(message = "해시태그는 필수 입력입니다.")
     @field:Size(min = 1, max = 3, message = "해시태그는 1~3개만 가능합니다.")
     @field:Valid
     val hashtags: List<CreateMissionHashtagRequest>,

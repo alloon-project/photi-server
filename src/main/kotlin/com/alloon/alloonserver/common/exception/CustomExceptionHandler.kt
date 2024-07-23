@@ -1,31 +1,25 @@
 package com.alloon.alloonserver.common.exception
 
-import com.alloon.alloonserver.common.constant.ExceptionCode
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ExceptionResponse
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.sentry.Sentry
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.validation.BindException
-import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-
 
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
@@ -36,9 +30,9 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(RuntimeException::class)
-    protected fun handleUndefinedException(ex : RuntimeException) : ResponseEntity<ExceptionResponse>{
+    protected fun handleUndefinedException(ex: RuntimeException): ResponseEntity<ExceptionResponse> {
         logger.info("Exception : ${ex.message}")
-        return ExceptionResponse.toResponseEntity(CustomException(ExceptionCode.SERVER_ERROR, ex.cause))
+        return ExceptionResponse.toResponseEntity(CustomException(SERVER_ERROR, ex.cause))
     }
 
     override fun handleHttpMessageNotReadable(
@@ -48,7 +42,13 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any>? {
         logger.error("${ex.message}")
-        return super.handleHttpMessageNotReadable(ex, headers, status, request)
+
+        val message = when (val cause = ex.cause) {
+            is MismatchedInputException -> "${cause.path.joinToString { it.fieldName }} 필드는 null이 될 수 없습니다."
+            else -> "유효하지 않은 요청입니다."
+        }
+
+        return ResponseEntity.status(BAD_REQUEST).body(ExceptionResponse(BAD_REQUEST.name, message))
     }
 
     override fun handleServletRequestBindingException(
@@ -78,8 +78,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
         return ResponseEntity.status(BAD_REQUEST)
             .body(responseMessage?.let {
-                responseCode?.let {
-                        it1 -> ExceptionResponse(it1, it) }
+                responseCode?.let { it1 -> ExceptionResponse(it1, it) }
             })
     }
 
@@ -199,6 +198,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
             responseCode = "_POSITIVE_ONLY" // @Positive
         } else if (responseMessage.contains("요청")) {
             responseCode = "REQUEST_INVALID"
+        } else if (responseMessage.contains("앞설 수 없습니다.")) {
+            responseCode = "_FUTURE_INVALID" // @Future
         }
 
         return responseCode
