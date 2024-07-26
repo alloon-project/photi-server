@@ -49,6 +49,6 @@ class MissionService(
     }
 
     fun getPopularMissions(pageable: Pageable): List<Mission> {
-        return missionRepository.findPopularByServiceStatus(ServiceStatus.ACTIVE, pageable)
+        return missionRepository.findPopularByServiceStatusAndIsPublicTrue(ServiceStatus.ACTIVE, pageable)
     }
 }

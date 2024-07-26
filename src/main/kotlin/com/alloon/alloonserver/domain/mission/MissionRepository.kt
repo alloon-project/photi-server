@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface MissionRepository : JpaRepository<Mission, Long>, MissionCustomRepository {
 
-    fun findPopularByServiceStatus(status: ServiceStatus, pageable: Pageable): List<Mission>
+    fun findPopularByServiceStatusAndIsPublicTrue(status: ServiceStatus, pageable: Pageable): List<Mission>
 }
