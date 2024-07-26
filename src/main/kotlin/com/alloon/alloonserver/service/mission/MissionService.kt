@@ -2,10 +2,12 @@ package com.alloon.alloonserver.service.mission
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.mission.*
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.s3.S3Service
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
@@ -44,5 +46,9 @@ class MissionService(
     @Transactional
     fun uploadMissionImage(userId: Long, file: MultipartFile?): String {
         return s3Service.uploadFile(file, "users/$userId/missions", UUID.randomUUID().toString())
+    }
+
+    fun getPopularMissions(pageable: Pageable): List<Mission> {
+        return missionRepository.findPopularByServiceStatus(ServiceStatus.ACTIVE, pageable)
     }
 }
