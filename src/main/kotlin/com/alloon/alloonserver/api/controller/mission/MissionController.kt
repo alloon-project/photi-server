@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.mission
 
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
+import com.alloon.alloonserver.api.controller.mission.response.GetPopularMissionsResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
@@ -9,11 +10,15 @@ import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.mission.MissionService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort.Direction.DESC
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -85,5 +90,23 @@ class MissionController(
         val response = missionService.uploadMissionImage(UserUtility.getUserId(principal), file)
 
         return DefaultSingleResponse.toResponseEntity(MISSION_IMAGE_UPLOADED, response)
+    }
+
+    @GetMapping("/api/missions/popular")
+    @Operation(summary = "지금 인기있는 챌린지 조회", description = "공개 및 종료되지 않은 챌린지만 방문순으로 최대 5개가 조회됩니다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "지금 인기있는 챌린지 조회 성공"),
+        ]
+    )
+    fun getPopularMissions(
+        @PageableDefault(size = 5, sort = ["visitCnt"], direction = DESC)
+        @Parameter(hidden = true) pageable: Pageable
+    ): ResponseEntity<DefaultListResponse<GetPopularMissionsResponse>> {
+        val response = missionService.getPopularMissions(pageable).map {
+            GetPopularMissionsResponse.of(it)
+        }
+
+        return DefaultListResponse.toResponseEntity(FOUND_POPULAR_MISSIONS, response)
     }
 }
