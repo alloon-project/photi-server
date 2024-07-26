@@ -21,6 +21,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -129,6 +131,27 @@ class MissionServiceTest : AbstractMailProperties {
 
         // then
         assertThat(response).isNotNull()
+    }
+
+    @DisplayName("지금 인기있는 챌린지 조회가 정상 작동한다")
+    @Test
+    fun givenPageRequest_whenGetPopularMissions_thenReturn() {
+        // given
+        val pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "visitCnt"))
+        val mission = Mission.toEntity(getCreateMissionDto())
+
+        every { missionRepository.findPopularByServiceStatusAndIsPublicTrue(any(), any()) } returns listOf(
+            mission,
+            mission,
+            mission,
+            mission,
+        )
+
+        // when
+        val result = missionService.getPopularMissions(pageRequest)
+
+        // then
+        assertThat(result.size).isEqualTo(4)
     }
 
     private fun getUser(): User {
