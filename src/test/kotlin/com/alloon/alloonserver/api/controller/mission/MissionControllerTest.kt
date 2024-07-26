@@ -90,6 +90,44 @@ class MissionControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenMission_whenGetPopularMissions_thenReturn200() {
+        // given
+        val mission = Mission.toEntity(getCreateMissionRequest().toServiceDto())
+
+        every { missionService.getPopularMissions(any()) } returns listOf(mission)
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/popular")
+                .param("size", "5")
+                .param("sort", "visitCnt,DESC")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지를 전체 조회했습니다."))
+    }
+
+    @DisplayName("챌린지가 없는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenNoMission_whenGetPopularMissions_thenReturn200() {
+        // given
+        every { missionService.getPopularMissions(any()) } returns listOf()
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/popular")
+                .param("size", "5")
+                .param("sort", "visitCnt,DESC")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지가 없습니다."))
+    }
+
     private fun getCreateMissionRequest(): CreateMissionRequest {
         return CreateMissionRequest(
             "챌린지 이름",
