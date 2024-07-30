@@ -1,6 +1,6 @@
 package com.alloon.alloonserver.api.controller.mission.response
 
-import com.alloon.alloonserver.domain.mission.Mission
+import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
@@ -34,7 +34,7 @@ data class GetPopularMissionsResponse(
 
     companion object {
 
-        fun of(mission: Mission): GetPopularMissionsResponse {
+        fun of(mission: PopularMissionDto): GetPopularMissionsResponse {
             return GetPopularMissionsResponse(
                 mission.id,
                 mission.name,

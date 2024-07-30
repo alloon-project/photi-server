@@ -4,6 +4,8 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.mission.Mission
 import com.alloon.alloonserver.domain.mission.QMission.mission
+import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
+import com.alloon.alloonserver.domain.mission.custom.dto.QPopularMissionDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -20,6 +22,17 @@ class MissionCustomRepositoryImpl(
                 mission.id.eq(id),
                 eqServiceStatus(ACTIVE)
             ).fetchFirst()
+    }
+
+    override fun findPopular(): List<PopularMissionDto> {
+        return queryFactory
+            .select(QPopularMissionDto(mission.id, mission.name, mission.endDate, mission.imageUrl, mission.hashtags))
+            .from(mission)
+            .where(eqServiceStatus(ACTIVE))
+            .orderBy(mission.visitCnt.desc())
+            .offset(0)
+            .limit(5)
+            .fetch()
     }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
