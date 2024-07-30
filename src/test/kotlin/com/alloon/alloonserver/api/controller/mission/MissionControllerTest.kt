@@ -5,6 +5,7 @@ import com.alloon.alloonserver.api.controller.mission.request.CreateMissionHasht
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRuleRequest
 import com.alloon.alloonserver.domain.mission.Mission
+import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
 import com.alloon.alloonserver.service.mission.MissionService
 import io.mockk.every
 import io.mockk.mockk
@@ -94,15 +95,19 @@ class MissionControllerTest : RestDocsSupport() {
     @Test
     fun givenMission_whenGetPopularMissions_thenReturn200() {
         // given
-        val mission = Mission.toEntity(getCreateMissionRequest().toServiceDto())
+        val mission = PopularMissionDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
+        )
 
-        every { missionService.getPopularMissions(any()) } returns listOf(mission)
+        every { missionService.getPopularMissions() } returns listOf(mission)
 
         // when
         val resultActions = mockMvc.perform(
             get("/api/missions/popular")
-                .param("size", "5")
-                .param("sort", "visitCnt,DESC")
         )
 
         // then
@@ -114,7 +119,7 @@ class MissionControllerTest : RestDocsSupport() {
     @Test
     fun givenNoMission_whenGetPopularMissions_thenReturn200() {
         // given
-        every { missionService.getPopularMissions(any()) } returns listOf()
+        every { missionService.getPopularMissions() } returns listOf()
 
         // when
         val resultActions = mockMvc.perform(

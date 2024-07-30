@@ -3,6 +3,7 @@ package com.alloon.alloonserver.service.mission
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
+import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -21,8 +22,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -137,18 +136,18 @@ class MissionServiceTest : AbstractMailProperties {
     @Test
     fun givenPageRequest_whenGetPopularMissions_thenReturn() {
         // given
-        val pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "visitCnt"))
-        val mission = Mission.toEntity(getCreateMissionDto())
-
-        every { missionRepository.findPopularByServiceStatusAndIsPublicTrue(any(), any()) } returns listOf(
-            mission,
-            mission,
-            mission,
-            mission,
+        val mission = PopularMissionDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
         )
 
+        every { missionRepository.findPopular() } returns listOf(mission, mission, mission, mission)
+
         // when
-        val result = missionService.getPopularMissions(pageRequest)
+        val result = missionService.getPopularMissions()
 
         // then
         assertThat(result.size).isEqualTo(4)
