@@ -45,5 +45,7 @@ data class GetPopularMissionsResponse(
                 }
             )
         }
+
+        fun of(missions: List<PopularMissionDto>): List<GetPopularMissionsResponse> = missions.map { of(it) }
     }
 }

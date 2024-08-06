@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration
@@ -35,7 +34,6 @@ abstract class RestDocsSupport {
 
         mockMvc = MockMvcBuilders.standaloneSetup(initController())
             .apply<StandaloneMockMvcBuilder>(documentationConfiguration(provider))
-            .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .build()
     }
 

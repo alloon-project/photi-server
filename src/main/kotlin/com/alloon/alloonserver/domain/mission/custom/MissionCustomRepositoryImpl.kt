@@ -30,7 +30,6 @@ class MissionCustomRepositoryImpl(
             .from(mission)
             .where(eqServiceStatus(ACTIVE))
             .orderBy(mission.visitCnt.desc())
-            .offset(0)
             .limit(5)
             .fetch()
     }
