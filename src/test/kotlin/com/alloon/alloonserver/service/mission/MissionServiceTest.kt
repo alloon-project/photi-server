@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.service.mission
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_NOT_FOUND
+import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_MEMBER_NOT_FOUND
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
@@ -14,6 +15,7 @@ import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
 import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
 import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
+import com.alloon.alloonserver.service.mission.dto.UpdateMissionMemberGoalDto
 import com.alloon.alloonserver.service.s3.S3Service
 import io.mockk.every
 import io.mockk.mockk
@@ -186,6 +188,44 @@ class MissionServiceTest : AbstractMailProperties {
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(MISSION_NOT_FOUND)
+    }
+
+    @DisplayName("챌린지 멤버가 개인목표 작성을 하면 개인목표가 수정된다")
+    @Test
+    fun givenValid_whenUpdateMissionMemberGoal_thenReturn() {
+        // given
+        val userId = 1L
+        val missionId = 1L
+        val dto = UpdateMissionMemberGoalDto("개인목표")
+
+        mockkObject(Mission)
+        val mission = Mission.toEntity(getCreateMissionDto())
+        val missionMember = MissionMember(user = getUser(), mission = mission)
+
+        every { missionMemberRepository.findByUserIdAndMissionId(any(), any()) } returns missionMember
+
+        // when
+        missionService.updateMissionMemberGoal(userId, missionId, dto)
+
+        // then
+        assertThat(missionMember.goal).isEqualTo(dto.goal)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 멤버가 개인목표 작성을 하면 예외가 발생한다")
+    @Test
+    fun givenNotFoundMissionMember_whenUpdateMissionMemberGoal_thenThrow() {
+        // given
+        val userId = 1L
+        val missionId = 1L
+        val dto = UpdateMissionMemberGoalDto("개인목표")
+
+        every { missionMemberRepository.findByUserIdAndMissionId(any(), any()) } returns null
+
+        // when & then
+        assertThatThrownBy { missionService.updateMissionMemberGoal(userId, missionId, dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(MISSION_MEMBER_NOT_FOUND)
     }
 
     private fun getUser(): User {
