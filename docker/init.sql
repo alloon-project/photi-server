@@ -119,6 +119,7 @@ CREATE TABLE mission_member
     service_status              VARCHAR(10)               NOT NULL,
     mission_id                  BIGINT                    NOT NULL,
     user_id                     BIGINT,
+    goal                        VARCHAR(16),
     CONSTRAINT fk_mission_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT fk_mission_member_mission_id FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
 );
