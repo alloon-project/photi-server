@@ -21,7 +21,6 @@ import java.time.LocalTime
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Transactional
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
 class MissionMemberRepositoryTest(
     @Autowired private val missionMemberRepository: MissionMemberRepository,
@@ -32,6 +31,7 @@ class MissionMemberRepositoryTest(
 
     @DisplayName("미션 멤버 식별자로 미션 멤버 조회가 정상 작동한다")
     @Test
+    @Transactional
     fun givenValid_whenFind_thenReturnTrue() {
         // given
         val missionMember = createAndSaveMissionMember()
@@ -45,6 +45,7 @@ class MissionMemberRepositoryTest(
 
     @DisplayName("사용자 id와 챌린지 id로 조회하면 일치하는 챌린지 멤버를 반환한다")
     @Test
+    @Transactional
     fun givenValid_whenFindByUserIdAndMissionId_thenReturnMissionMember() {
         // given
         val userId = 1L
