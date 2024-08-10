@@ -27,7 +27,12 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/users/token", "/api/users/password", "/api/missions").authenticated()
+                it.requestMatchers(
+                    "/api/users/token",
+                    "/api/users/password",
+                    "/api/missions",
+                    "/api/missions/{missionId}/info"
+                ).authenticated()
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
