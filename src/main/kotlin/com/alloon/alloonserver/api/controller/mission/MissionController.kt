@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.controller.mission
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
 import com.alloon.alloonserver.api.controller.mission.response.FindPopularMissionsResponse
+import com.alloon.alloonserver.api.controller.mission.response.FindMissionInfoResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
@@ -96,5 +97,24 @@ class MissionController(
         val successCode = if (response.isNotEmpty()) FOUND_POPULAR_MISSIONS else NO_POPULAR_MISSIONS
 
         return DefaultListResponse.toResponseEntity(successCode, response)
+    }
+
+    @GetMapping("/api/missions/{missionId}/info")
+    @Operation(summary = "챌린지 소개 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "챌린지 소개 조회 성공"),
+            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
+            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
+            ApiResponse(responseCode = "404", description = "존재하지 않는 미션입니다."),
+        ]
+    )
+    fun findMissionInfo(
+        principal: Principal,
+        @PathVariable missionId: Long
+    ): ResponseEntity<DefaultSingleResponse> {
+        val missionInfo = missionService.findMissionInfo(missionId)
+        val response = FindMissionInfoResponse.of(missionInfo)
+        return DefaultSingleResponse.toResponseEntity(FOUND_MISSION_INFO, response)
     }
 }

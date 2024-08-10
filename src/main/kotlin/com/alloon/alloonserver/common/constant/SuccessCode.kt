@@ -25,6 +25,7 @@ enum class SuccessCode(
     MISSION_IMAGE_UPLOADED(OK, "미션 이미지를 업로드했습니다."),
     FOUND_POPULAR_MISSIONS(OK, "지금 인기있는 챌린지를 전체 조회했습니다."),
     NO_POPULAR_MISSIONS(OK, "지금 인기있는 챌린지가 없습니다."),
+    FOUND_MISSION_INFO(OK, "챌린지 소개를 조회했습니다."),
 
     // 201 Created
     MISSION_CREATED(CREATED, "미션 생성이 완료되었습니다."),
