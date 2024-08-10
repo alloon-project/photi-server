@@ -17,7 +17,6 @@ import java.time.LocalTime
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Transactional
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
 class MissionRepositoryTest(
     @Autowired private val missionRepository: MissionRepository,
@@ -25,12 +24,28 @@ class MissionRepositoryTest(
 
     @DisplayName("미션 식별자로 미션 조회가 정상 작동한다")
     @Test
+    @Transactional
     fun givenValid_whenFind_thenReturnTrue() {
         // given
         val mission = createAndSaveMission()
 
         // when
         val result = missionRepository.find(mission.id!!)
+
+        // then
+        assertThat(result).isEqualTo(mission)
+    }
+
+    @DisplayName("챌린지 id로 조회하면 일치하는 챌린지를 반환한다")
+    @Test
+    @Transactional
+    fun givenValid_whenFindInfoById_thenReturnMission() {
+        // given
+        val missionId = 1L
+        val mission = createAndSaveMission()
+
+        // when
+        val result = missionRepository.findInfoById(missionId)
 
         // then
         assertThat(result).isEqualTo(mission)
