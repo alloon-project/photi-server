@@ -7,6 +7,8 @@ import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRuleR
 import com.alloon.alloonserver.domain.mission.Mission
 import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.service.mission.MissionService
+import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
+import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.DisplayName
@@ -133,6 +135,25 @@ class MissionControllerTest : RestDocsSupport() {
             .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지가 없습니다."))
     }
 
+    @DisplayName("챌린지 멤버가 챌린지 소개 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindMissionInfo_thenReturn200() {
+        // given
+        val dto = getFindMissionInfoDto()
+        every { missionService.findMissionInfo(any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/{missionId}/info", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("챌린지 소개를 조회했습니다."))
+    }
+
     private fun getCreateMissionRequest(): CreateMissionRequest {
         return CreateMissionRequest(
             "챌린지 이름",
@@ -150,6 +171,20 @@ class MissionControllerTest : RestDocsSupport() {
                 CreateMissionHashtagRequest("해시태그 1"),
                 CreateMissionHashtagRequest("해시태그 2"),
             )
+        )
+    }
+
+    private fun getFindMissionInfoDto(): FindMissionInfoDto {
+        return FindMissionInfoDto(
+            listOf(
+                CreateMissionRuleDto("챌린지 인증 룰1"),
+                CreateMissionRuleDto("챌린지 인증 룰2"),
+                CreateMissionRuleDto("챌린지 인증 룰3"),
+            ),
+            LocalTime.of(13, 0),
+            "챌린지 목표입니다.",
+            LocalDate.now(),
+            LocalDate.of(2024, 12, 1),
         )
     }
 }
