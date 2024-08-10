@@ -42,6 +42,14 @@ class MissionCustomRepositoryImpl(
             .fetch()
     }
 
+    override fun findInfoById(id: Long): Mission? {
+        return queryFactory
+            .selectFrom(mission)
+            .join(mission.rules).fetchJoin()
+            .where(mission.id.eq(id))
+            .fetchFirst()
+    }
+
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { mission.serviceStatus.eq(serviceStatus) }
 }
