@@ -5,10 +5,9 @@ import com.alloon.alloonserver.api.controller.mission.request.UpdateMissionMembe
 import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
 import com.alloon.alloonserver.api.controller.mission.response.FindPopularMissionsResponse
 import com.alloon.alloonserver.api.controller.mission.response.FindMissionInfoResponse
+import com.alloon.alloonserver.api.controller.mission.response.FindMissionMembersResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
-import com.alloon.alloonserver.common.response.DefaultListResponse
-import com.alloon.alloonserver.common.response.DefaultResponse
-import com.alloon.alloonserver.common.response.DefaultSingleResponse
+import com.alloon.alloonserver.common.response.*
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.mission.MissionService
@@ -143,5 +142,23 @@ class MissionController(
         )
 
         return DefaultResponse.toResponseEntity(MISSION_MEMBER_GOAL_UPDATED)
+    }
+
+    @GetMapping("/api/missions/{missionId}/mission-members")
+    @Operation(summary = "챌린지 파티원 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "챌린지 파티원 조회 성공"),
+            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
+            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
+        ]
+    )
+    fun findMissionMembers(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") missionId: Long,
+    ): ResponseEntity<DefaultPageResponse<FindMissionMembersResponse>> {
+        val missionMembers = missionService.findMissionMembers(UserUtility.getUserId(principal), missionId)
+        val response = FindMissionMembersResponse.of(missionMembers)
+        return DefaultPageResponse.toResponseEntity(FOUND_MISSION_MEMBERS, PageData(response, response.size.toLong()))
     }
 }
