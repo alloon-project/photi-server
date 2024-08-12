@@ -9,6 +9,7 @@ import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
+import com.alloon.alloonserver.service.mission.dto.FindMissionMembersDto
 import com.alloon.alloonserver.service.mission.dto.UpdateMissionMemberGoalDto
 import com.alloon.alloonserver.service.s3.S3Service
 import org.springframework.stereotype.Service
@@ -66,5 +67,9 @@ class MissionService(
             ?: throw CustomException(MISSION_MEMBER_NOT_FOUND)
 
         missionMember.updateGoal(dto.goal)
+    }
+
+    fun findMissionMembers(userId: Long, missionId: Long): List<FindMissionMembersDto> {
+        return missionMemberRepository.findAllByMissionId(userId, missionId)
     }
 }
