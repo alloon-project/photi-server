@@ -1,23 +1,23 @@
 package com.alloon.alloonserver.api.controller.mission
 
-import com.alloon.alloonserver.api.controller.mission.request.MissionCreateRequest
+import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
+import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.common.util.UserUtility
+import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.mission.MissionService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.client.HttpClientErrorException.Forbidden
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 import java.time.LocalDateTime
@@ -45,7 +45,7 @@ class MissionController(
     }
 
     @PostMapping("/api/missions")
-    @Operation(summary = "챌린지 생성")
+    @Operation(summary = "챌린지 생성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "챌린지 생성 성공"),
@@ -56,9 +56,10 @@ class MissionController(
     )
     fun createMission(
         principal: Principal,
-        @RequestBody @Valid request: MissionCreateRequest
+        @RequestBody @Valid request: CreateMissionRequest
     ): ResponseEntity<DefaultSingleResponse> {
-        val response = missionService.createMission(UserUtility.getUserId(principal), request.toServiceDto())
+        val mission = missionService.createMission(UserUtility.getUserId(principal), request.toServiceDto())
+        val response = CreateMissionResponse.of(mission)
 
         return DefaultSingleResponse.toResponseEntity(MISSION_CREATED, response)
     }

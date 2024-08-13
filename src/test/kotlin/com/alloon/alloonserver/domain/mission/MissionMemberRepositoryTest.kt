@@ -5,8 +5,10 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
-import com.alloon.alloonserver.framework.TestContainerConfig
 import com.alloon.alloonserver.framework.TestContainerInitializer
+import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -16,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalTime
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -43,15 +46,7 @@ class MissionMemberRepositoryTest(
     }
 
     private fun createAndSaveMissionMember(): MissionMember {
-        val mission = missionRepository.save(
-            Mission(
-                missionName = "미션명", description = "미션 설명", goal = "미션 목표",
-                imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
-                endDate = LocalDate.of(2999, 1, 1),
-                hashtags = listOf("러닝")
-            )
-        )
-
+        val mission = createAndSaveMission()
         val contact = contactRepository.save(
             Contact(
                 email = "tester@alloon.com",
@@ -70,6 +65,32 @@ class MissionMemberRepositoryTest(
             )
         )
 
-        return missionMemberRepository.save(MissionMember(user = user, mission = mission, creatorYn = true))
+        return missionMemberRepository.save(MissionMember(user = user, mission = mission, isCreator = true))
+    }
+
+    private fun createAndSaveMission(): Mission {
+        val dto = getCreateMissionDto()
+        val mission = Mission.toEntity(dto)
+        return missionRepository.save(mission)
+    }
+
+    private fun getCreateMissionDto(): CreateMissionDto {
+        return CreateMissionDto(
+            "챌린지 이름",
+            true,
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf(
+                CreateMissionRuleDto("챌린지 인증 룰1"),
+                CreateMissionRuleDto("챌린지 인증 룰2"),
+                CreateMissionRuleDto("챌린지 인증 룰3"),
+            ),
+            listOf(
+                CreateMissionHashtagDto("해시태그 1"),
+                CreateMissionHashtagDto("해시태그 2"),
+            )
+        )
     }
 }

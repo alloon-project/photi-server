@@ -18,6 +18,9 @@ import com.alloon.alloonserver.domain.user.*
 import com.alloon.alloonserver.domain.user.Role.ADMIN
 import com.alloon.alloonserver.domain.user.Role.USER
 import com.alloon.alloonserver.framework.TestContainerInitializer
+import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
+import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
 import com.alloon.alloonserver.service.report.dto.ReportCreateServiceDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -31,6 +34,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalTime
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -195,17 +199,31 @@ class ReportServiceTest(
     private fun createAndSaveMissionMember(): MissionMember {
         val userRole = createAndSaveUserWithContact("tester2@alloon.com", "tester2", USER)
         val mission = createAndSaveMission()
-        return missionMemberRepository.save(MissionMember(user = userRole.user, mission = mission, creatorYn = false))
+        return missionMemberRepository.save(MissionMember(user = userRole.user, mission = mission, isCreator = false))
     }
 
     private fun createAndSaveMission(): Mission {
-        return missionRepository.save(
-            Mission(
-                missionName = "미션명",
-                description = "미션 설명",
-                goal = "미션 목표",
-                imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png",
-                endDate = LocalDate.of(2999, 1, 1)
+        val dto = getCreateMissionDto()
+        val mission = Mission.toEntity(dto)
+        return missionRepository.save(mission)
+    }
+
+    private fun getCreateMissionDto(): CreateMissionDto {
+        return CreateMissionDto(
+            "챌린지 이름",
+            true,
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf(
+                CreateMissionRuleDto("챌린지 인증 룰1"),
+                CreateMissionRuleDto("챌린지 인증 룰2"),
+                CreateMissionRuleDto("챌린지 인증 룰3"),
+            ),
+            listOf(
+                CreateMissionHashtagDto("해시태그 1"),
+                CreateMissionHashtagDto("해시태그 2"),
             )
         )
     }
