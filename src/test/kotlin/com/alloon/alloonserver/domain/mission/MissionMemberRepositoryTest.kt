@@ -62,24 +62,44 @@ class MissionMemberRepositoryTest(
         assertThat(result).isEqualTo(missionMember)
     }
 
+    @DisplayName("챌린지 id로 조회하면 정렬된 챌린지 멤버 리스트를 반환한다")
+    @Test
+    fun givenValid_whenFindAllByMissionId_thenReturnMissionMembers() {
+        // given
+        val tester = createAndSaveMissionMember()
+        val mission = tester.mission.id?.let { missionRepository.findById(it) }?.get()
+
+        val contact = contactRepository.save(getContact("tester2@photi.com"))
+        val user = userRepository.save(getUser(contact, "tester2"))
+        val tester2 = mission?.let { MissionMember(user = user, mission = it, isCreator = false) }
+
+        val missionMember = tester2?.let { missionMemberRepository.save(it) }
+        val userId = missionMember?.user?.id
+        val missionId = missionMember?.mission?.id
+
+        // when
+        val result = userId?.let { uid ->
+            missionId?.let { mid ->
+                missionMemberRepository.findAllByMissionId(uid, mid)
+            }
+        }
+
+        // then
+        assertThat(result?.size).isEqualTo(2)
+    }
+
+    private fun getContact(email: String): Contact {
+        return Contact(email = email, verificationCode = "000000", verifyYn = true)
+    }
+
+    private fun getUser(contact: Contact, username: String): User {
+        return User(contact = contact, username = username, password = "password1!", imageUrl = "")
+    }
+
     private fun createAndSaveMissionMember(): MissionMember {
         val mission = createAndSaveMission()
-        val contact = contactRepository.save(
-            Contact(
-                email = "tester@photi.com",
-                verificationCode = "000000",
-                verifyYn = true
-            )
-        )
-        val user = userRepository.save(
-            User(
-                contact = contact,
-                username = "tester",
-                password = "password1!",
-                imageUrl = ""
-            )
-        )
-
+        val contact = contactRepository.save(getContact("tester@photi.com"))
+        val user = userRepository.save(getUser(contact, "tester"))
         return missionMemberRepository.save(MissionMember(user = user, mission = mission))
     }
 
