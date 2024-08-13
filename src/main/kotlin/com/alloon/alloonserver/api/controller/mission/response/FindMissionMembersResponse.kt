@@ -2,7 +2,7 @@ package com.alloon.alloonserver.api.controller.mission.response
 
 import com.alloon.alloonserver.service.mission.dto.FindMissionMembersDto
 import io.swagger.v3.oas.annotations.media.Schema
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 data class FindMissionMembersResponse(
@@ -23,7 +23,7 @@ data class FindMissionMembersResponse(
     val duration: Long,
 
     @Schema(description = "파티원 개인목표", example = "열심히 운동하기!!")
-    val goal: String,
+    val goal: String?,
 ) {
 
     companion object {
@@ -34,7 +34,7 @@ data class FindMissionMembersResponse(
                 missionMember.username,
                 missionMember.imageUrl,
                 missionMember.isCreator,
-                ChronoUnit.DAYS.between(missionMember.joinedDate, LocalDateTime.now()) + 1,
+                ChronoUnit.DAYS.between(missionMember.joinedDate.toLocalDate(), LocalDate.now()) + 1,
                 missionMember.goal,
             )
         }

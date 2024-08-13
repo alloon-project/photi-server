@@ -9,5 +9,5 @@ data class FindMissionMembersDto @QueryProjection constructor(
     val imageUrl: String,
     val isCreator: Boolean,
     val joinedDate: LocalDateTime,
-    val goal: String,
+    val goal: String?,
 )
