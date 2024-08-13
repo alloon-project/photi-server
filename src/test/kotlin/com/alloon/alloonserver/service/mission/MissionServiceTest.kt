@@ -5,17 +5,12 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_MEMBER_NOT_
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
-import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.AbstractMailProperties
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
-import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
-import com.alloon.alloonserver.service.mission.dto.UpdateMissionMemberGoalDto
+import com.alloon.alloonserver.service.mission.dto.*
 import com.alloon.alloonserver.service.s3.S3Service
 import io.mockk.every
 import io.mockk.mockk
@@ -226,6 +221,24 @@ class MissionServiceTest : AbstractMailProperties {
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(MISSION_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("챌린지 멤버가 챌린지 파티원 조회를 하면 일치하는 챌린지 멤버 리스트를 반환한다")
+    @Test
+    fun givenValid_whenFindMissionMembers_thenReturn() {
+        // given
+        val userId = 1L
+        val missionId = 1L
+        val dto = FindMissionMembersDto(1L, "tester", "", true, LocalDateTime.now(), "개인목표")
+
+        every { missionMemberRepository.findAllByMissionId(any(), any()) } returns listOf(dto)
+
+        // when
+        val result = missionService.findMissionMembers(userId, missionId)
+
+        // then
+        assertThat(result[0]).isEqualTo(dto)
+        assertThat(result.size).isEqualTo(1)
     }
 
     private fun getUser(): User {
