@@ -10,6 +10,7 @@ import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.service.mission.MissionService
 import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
 import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
+import com.alloon.alloonserver.service.mission.dto.FindMissionMembersDto
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class MissionControllerTest : RestDocsSupport() {
@@ -176,6 +178,26 @@ class MissionControllerTest : RestDocsSupport() {
         // then
         resultActions.andExpect(status().isOk)
             .andExpect(jsonPath("$.message").value("챌린지 개인목표 작성이 완료되었습니다."))
+    }
+
+    @DisplayName("챌린지 멤버가 챌린지 파티원 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindMissionMembers_thenReturn200() {
+        // given
+        val dto = FindMissionMembersDto(1L, "tester", "", true, LocalDateTime.now(), "개인목표")
+
+        every { missionService.findMissionMembers(any(), any()) } returns listOf(dto)
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/{missionId}/mission-members", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("챌린지 파티원을 전체 조회했습니다."))
     }
 
     private fun getCreateMissionRequest(): CreateMissionRequest {
