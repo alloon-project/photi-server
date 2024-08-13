@@ -145,7 +145,11 @@ class MissionController(
     }
 
     @GetMapping("/api/missions/{missionId}/mission-members")
-    @Operation(summary = "챌린지 파티원 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @Operation(
+        summary = "챌린지 파티원 조회",
+        description = "파티장 -> 본인 -> 가입순으로 파티원이 전체 조회됩니다.",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "챌린지 파티원 조회 성공"),
