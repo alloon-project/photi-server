@@ -27,7 +27,7 @@ data class CreateMissionResponse(
     val endDate: LocalDate,
 
     @Schema(description = "챌린지 대표 이미지", example = "https://url.kr/5MhHhD")
-    var imageUrl: String,
+    val imageUrl: String,
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """

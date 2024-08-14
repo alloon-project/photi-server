@@ -3,6 +3,7 @@ package com.alloon.alloonserver.service.mission
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
+import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -129,6 +130,27 @@ class MissionServiceTest : AbstractMailProperties {
 
         // then
         assertThat(response).isNotNull()
+    }
+
+    @DisplayName("지금 인기있는 챌린지 조회가 정상 작동한다")
+    @Test
+    fun givenValid_whenFindPopularMissions_thenReturn() {
+        // given
+        val mission = FindPopularMissionsDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
+        )
+
+        every { missionRepository.findPopular() } returns listOf(mission, mission, mission, mission)
+
+        // when
+        val result = missionService.findPopularMissions()
+
+        // then
+        assertThat(result.size).isEqualTo(4)
     }
 
     private fun getUser(): User {

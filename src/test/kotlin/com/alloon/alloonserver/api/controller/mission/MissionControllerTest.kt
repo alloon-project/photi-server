@@ -5,6 +5,7 @@ import com.alloon.alloonserver.api.controller.mission.request.CreateMissionHasht
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRuleRequest
 import com.alloon.alloonserver.domain.mission.Mission
+import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.service.mission.MissionService
 import io.mockk.every
 import io.mockk.mockk
@@ -88,6 +89,48 @@ class MissionControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenMission_whenFindPopularMissions_thenReturn200() {
+        // given
+        val mission = FindPopularMissionsDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
+        )
+
+        every { missionService.findPopularMissions() } returns listOf(mission)
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/popular")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지를 전체 조회했습니다."))
+    }
+
+    @DisplayName("챌린지가 없는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenNoMission_whenFindPopularMissions_thenReturn200() {
+        // given
+        every { missionService.findPopularMissions() } returns listOf()
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/missions/popular")
+                .param("size", "5")
+                .param("sort", "visitCnt,DESC")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지가 없습니다."))
     }
 
     private fun getCreateMissionRequest(): CreateMissionRequest {
