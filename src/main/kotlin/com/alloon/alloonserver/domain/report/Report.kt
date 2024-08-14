@@ -1,14 +1,15 @@
 package com.alloon.alloonserver.domain.report
 
 import com.alloon.alloonserver.domain.base.BaseEntity
+import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.feed.Feed
-import com.alloon.alloonserver.domain.mission.Mission
-import com.alloon.alloonserver.domain.mission.MissionMember
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
 
 @Entity
 class Report(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id", nullable = false)
@@ -23,12 +24,12 @@ class Report(
     val reporter: User?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mission_member_id")
-    val missionMember: MissionMember? = null,
+    @JoinColumn(name = "challenge_member_id")
+    val challengeMember: ChallengeMember? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mission_id")
-    val mission: Mission? = null,
+    @JoinColumn(name = "challenge_id")
+    val challenge: Challenge? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feed_id")

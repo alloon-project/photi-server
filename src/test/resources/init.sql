@@ -46,9 +46,9 @@ CREATE TABLE user_template_image
     CONSTRAINT fk_user_template_image_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
 );
 
-CREATE TABLE mission
+CREATE TABLE challenge
 (
-    mission_id                  BIGSERIAL PRIMARY KEY,
+    challenge_id                BIGSERIAL PRIMARY KEY,
     name                        VARCHAR(16)               NOT NULL,
     goal                        VARCHAR(120)              NOT NULL,
     prove_time                  TIME                      NOT NULL,
@@ -64,22 +64,22 @@ CREATE TABLE mission
     service_status              VARCHAR(10)               NOT NULL,
     hashtags                    TEXT                      NOT NULL
 );
-CREATE INDEX idx_mission_hashtags ON mission USING GIN (to_tsvector('simple', hashtags));
+CREATE INDEX idx_challenge_hashtags ON challenge USING GIN (to_tsvector('simple', hashtags));
 
-CREATE TABLE mission_rule
+CREATE TABLE challenge_rule
 (
-    mission_rule_id             BIGSERIAL PRIMARY KEY,
+    challenge_rule_id           BIGSERIAL PRIMARY KEY,
     rule                        VARCHAR(30)               NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
-    CONSTRAINT fk_mission_rule_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id) ON DELETE CASCADE
+    challenge_id                BIGINT                    NOT NULL,
+    CONSTRAINT fk_challenge_rule_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
 );
 
-CREATE TABLE mission_template_image
+CREATE TABLE challenge_template_image
 (
-    mission_template_image_id   BIGSERIAL PRIMARY KEY,
+    challenge_template_image_id BIGSERIAL PRIMARY KEY,
     image_url                   VARCHAR(500)              NOT NULL,
     start_date_time             TIMESTAMP(6)              NOT NULL,
     end_date_time               TIMESTAMP(6)              NOT NULL,
@@ -87,22 +87,22 @@ CREATE TABLE mission_template_image
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
     admin_id                    BIGINT,
-    CONSTRAINT fk_mission_image_template_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
+    CONSTRAINT fk_challenge_image_template_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
 );
 
-CREATE TABLE mission_member
+CREATE TABLE challenge_member
 (
-    mission_member_id           BIGSERIAL PRIMARY KEY,
+    challenge_member_id         BIGSERIAL PRIMARY KEY,
     is_creator                  BOOLEAN                   NOT NULL,
     status                      VARCHAR(15)               NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
+    challenge_id                BIGINT                    NOT NULL,
     user_id                     BIGINT,
     goal                        VARCHAR(16),
-    CONSTRAINT fk_mission_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
-    CONSTRAINT fk_mission_member_mission_id FOREIGN KEY (mission_id) REFERENCES mission (mission_id)
+    CONSTRAINT fk_challenge_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_challenge_member_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id)
 );
 
 CREATE TABLE feed
@@ -113,10 +113,10 @@ CREATE TABLE feed
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
-    mission_id                  BIGINT                    NOT NULL,
-    mission_member_id           BIGINT                    NOT NULL,
-    CONSTRAINT fk_feed_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id),
-    CONSTRAINT fk_feed_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id)
+    challenge_id                BIGINT                    NOT NULL,
+    challenge_member_id         BIGINT                    NOT NULL,
+    CONSTRAINT fk_feed_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
+    CONSTRAINT fk_feed_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
 );
 
 CREATE TABLE feed_comment
@@ -127,9 +127,9 @@ CREATE TABLE feed_comment
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
     feed_id                     BIGINT                    NOT NULL,
-    mission_member_id           BIGINT                    NOT NULL,
+    challenge_member_id         BIGINT                    NOT NULL,
     CONSTRAINT fk_feed_comment_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_feed_comment_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id)
+    CONSTRAINT fk_feed_comment_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
 );
 
 CREATE TABLE feed_like
@@ -139,9 +139,9 @@ CREATE TABLE feed_like
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
     feed_id                     BIGINT                    NOT NULL,
-    mission_member_id           BIGINT                    NOT NULL,
+    challenge_member_id         BIGINT                    NOT NULL,
     CONSTRAINT fk_feed_like_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_feed_like_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id)
+    CONSTRAINT fk_feed_like_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
 );
 
 CREATE TABLE inquiry_category
@@ -171,7 +171,7 @@ CREATE TABLE inquiry
 CREATE TABLE report_category
 (
     report_category_id          SERIAL PRIMARY KEY,
-    type                        VARCHAR(15)               NOT NULL,
+    type                        VARCHAR(16)               NOT NULL,
     description                 VARCHAR(30)               NOT NULL,
     sort                        INT                       NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
@@ -183,18 +183,18 @@ CREATE TABLE report_category
 
 CREATE TABLE report
 (
-    report_id          BIGSERIAL PRIMARY KEY,
-    reason             VARCHAR(120),
-    create_date_time   TIMESTAMP(6) NOT NULL,
-    update_date_time   TIMESTAMP(6) NOT NULL,
-    reporter_id        BIGINT,
-    mission_member_id  BIGINT,
-    mission_id         BIGINT,
-    feed_id            BIGINT,
-    report_category_id INT          NOT NULL,
+    report_id                   BIGSERIAL PRIMARY KEY,
+    reason                      VARCHAR(120),
+    create_date_time            TIMESTAMP(6)              NOT NULL,
+    update_date_time            TIMESTAMP(6)              NOT NULL,
+    reporter_id                 BIGINT,
+    challenge_member_id         BIGINT,
+    challenge_id                BIGINT,
+    feed_id                     BIGINT,
+    report_category_id          INT                       NOT NULL,
     CONSTRAINT fk_report_reporter FOREIGN KEY (reporter_id) REFERENCES users (user_id),
-    CONSTRAINT fk_report_mission_member FOREIGN KEY (mission_member_id) REFERENCES mission_member (mission_member_id),
-    CONSTRAINT fk_report_mission FOREIGN KEY (mission_id) REFERENCES mission (mission_id),
+    CONSTRAINT fk_report_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id),
+    CONSTRAINT fk_report_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
     CONSTRAINT fk_report_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
     CONSTRAINT fk_report_report_category FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id)
 );

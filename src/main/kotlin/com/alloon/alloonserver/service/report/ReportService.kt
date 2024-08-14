@@ -3,8 +3,8 @@ package com.alloon.alloonserver.service.report
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.feed.FeedRepository
-import com.alloon.alloonserver.domain.mission.MissionMemberRepository
-import com.alloon.alloonserver.domain.mission.MissionRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.report.ReportCategoryRepository
 import com.alloon.alloonserver.domain.report.ReportCategoryType
 import com.alloon.alloonserver.domain.report.ReportCategoryType.*
@@ -22,8 +22,8 @@ import org.springframework.validation.annotation.Validated
 class ReportService(
     private val reportCategoryRepository: ReportCategoryRepository,
     private val reportRepository: ReportRepository,
-    private val missionRepository: MissionRepository,
-    private val missionMemberRepository: MissionMemberRepository,
+    private val challengeRepository: ChallengeRepository,
+    private val challengeMemberRepository: ChallengeMemberRepository,
     private val feedRepository: FeedRepository,
     private val userRepository: UserRepository,
 ) {
@@ -40,15 +40,16 @@ class ReportService(
         ) ?: throw CustomException(REPORT_CATEGORY_NOT_FOUND)
 
         when (ReportCategoryType.valueOf(request.reportType)) {
-            MISSION -> {
-                val mission = missionRepository.find(request.reportTargetId) ?: throw CustomException(MISSION_NOT_FOUND)
-                reportRepository.save(request.toEntity(reportCategory, reporter, mission = mission))
+            CHALLENGE -> {
+                val challenge =
+                    challengeRepository.find(request.reportTargetId) ?: throw CustomException(CHALLENGE_NOT_FOUND)
+                reportRepository.save(request.toEntity(reportCategory, reporter, challenge = challenge))
             }
 
-            MISSION_MEMBER -> {
-                val missionMember = missionMemberRepository.find(request.reportTargetId)
-                    ?: throw CustomException(MISSION_MEMBER_NOT_FOUND)
-                reportRepository.save(request.toEntity(reportCategory, reporter, missionMember = missionMember))
+            CHALLENGE_MEMBER -> {
+                val challengeMember = challengeMemberRepository.find(request.reportTargetId)
+                    ?: throw CustomException(CHALLENGE_MEMBER_NOT_FOUND)
+                reportRepository.save(request.toEntity(reportCategory, reporter, challengeMember = challengeMember))
             }
 
             FEED -> {

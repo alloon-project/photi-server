@@ -1,0 +1,236 @@
+package com.alloon.alloonserver.api.controller.challenge
+
+import com.alloon.alloonserver.api.controller.RestDocsSupport
+import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeHashtagRequest
+import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
+import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
+import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
+import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
+import com.alloon.alloonserver.service.challenge.ChallengeService
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeInfoDto
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeMembersDto
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.MediaType.APPLICATION_JSON
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
+import org.springframework.mock.web.MockMultipartFile
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+
+class ChallengeControllerTest : RestDocsSupport() {
+
+    private val challengeService = mockk<ChallengeService>()
+
+    override fun initController(): Any {
+        return ChallengeController(challengeService)
+    }
+
+    @DisplayName("챌린지 예시 이미지 전체 조회를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenGetAllChallengeTemplateImages_thenReturn200() {
+        // given
+        every { challengeService.getAllChallengeTemplateImages(any()) } returns listOf("https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png")
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/image/templates")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지 생성을 하면 201을 반환한다")
+    @Test
+    fun givenValid_whenCreateChallenge_thenReturn201() {
+        // given
+        val request = getCreateChallengeRequest()
+        val challenge = Challenge.toEntity(request.toServiceDto())
+
+        every { challengeService.createChallenge(any(), any()) } returns challenge
+
+        // when
+        val resultActions = mockMvc.perform(
+            post("/api/challenges")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+
+        // then
+        resultActions.andExpect(status().isCreated)
+            .andExpect(jsonPath("$.message").value("챌린지 생성이 완료되었습니다."))
+    }
+
+    @DisplayName("챌린지 이미지 업로드를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenUploadChallengeImage_thenReturn200() {
+        // given
+        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+
+        every { challengeService.uploadChallengeImage(any(), any()) } returns "https://www.google.com"
+
+        // when
+        val resultActions = mockMvc.perform(
+            post("/api/challenges/image")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+                .param("file", file.toString())
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenChallenge_whenFindPopularChallenges_thenReturn200() {
+        // given
+        val challenge = FindPopularChallengesDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
+        )
+
+        every { challengeService.findPopularChallenges() } returns listOf(challenge)
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/popular")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지를 전체 조회했습니다."))
+    }
+
+    @DisplayName("챌린지가 없는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
+    @Test
+    fun givenNoChallenge_whenFindPopularChallenges_thenReturn200() {
+        // given
+        every { challengeService.findPopularChallenges() } returns listOf()
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/popular")
+                .param("size", "5")
+                .param("sort", "visitCnt,DESC")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지가 없습니다."))
+    }
+
+    @DisplayName("챌린지 멤버가 챌린지 소개 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindChallengeInfo_thenReturn200() {
+        // given
+        val dto = getFindChallengeInfoDto()
+        every { challengeService.findChallengeInfo(any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}/info", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("챌린지 소개를 조회했습니다."))
+    }
+
+    @DisplayName("챌린지 멤버가 개인목표 작성을 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenUpdateChallengeMemberGoal_thenReturn200() {
+        // given
+        val request = UpdateChallengeMemberGoalRequest("개인목표")
+
+        every { challengeService.updateChallengeMemberGoal(any(), any(), any()) } just runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            patch("/api/challenges/{challengeId}/challenge-members/goal", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("챌린지 개인목표 작성이 완료되었습니다."))
+    }
+
+    @DisplayName("챌린지 멤버가 챌린지 파티원 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindChallengeMembers_thenReturn200() {
+        // given
+        val dto = FindChallengeMembersDto(1L, "tester", "", true, LocalDateTime.now(), "개인목표")
+
+        every { challengeService.findChallengeMembers(any(), any()) } returns listOf(dto)
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}/challenge-members", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+            .andExpect(jsonPath("$.message").value("챌린지 파티원을 전체 조회했습니다."))
+    }
+
+    private fun getCreateChallengeRequest(): CreateChallengeRequest {
+        return CreateChallengeRequest(
+            "챌린지 이름",
+            true,
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf(
+                CreateChallengeRuleRequest("챌린지 인증 룰1"),
+                CreateChallengeRuleRequest("챌린지 인증 룰2"),
+                CreateChallengeRuleRequest("챌린지 인증 룰3"),
+            ),
+            listOf(
+                CreateChallengeHashtagRequest("해시태그 1"),
+                CreateChallengeHashtagRequest("해시태그 2"),
+            )
+        )
+    }
+
+    private fun getFindChallengeInfoDto(): FindChallengeInfoDto {
+        return FindChallengeInfoDto(
+            listOf(
+                CreateChallengeRuleDto("챌린지 인증 룰1"),
+                CreateChallengeRuleDto("챌린지 인증 룰2"),
+                CreateChallengeRuleDto("챌린지 인증 룰3"),
+            ),
+            LocalTime.of(13, 0),
+            "챌린지 목표입니다.",
+            LocalDate.now(),
+            LocalDate.of(2024, 12, 1),
+        )
+    }
+}

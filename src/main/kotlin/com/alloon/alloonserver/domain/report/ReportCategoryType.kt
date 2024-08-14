@@ -3,8 +3,8 @@ package com.alloon.alloonserver.domain.report
 enum class ReportCategoryType(
     val text: String,
 ) {
-    MISSION("미션"),
-    MISSION_MEMBER("미션 멤버"),
+    CHALLENGE("챌린지"),
+    CHALLENGE_MEMBER("챌린지 파티원"),
     FEED("피드"),
     ;
 }

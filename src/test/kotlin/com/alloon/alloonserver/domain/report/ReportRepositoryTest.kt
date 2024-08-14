@@ -1,19 +1,19 @@
 package com.alloon.alloonserver.domain.report
 
 import com.alloon.alloonserver.common.util.PasswordUtility
+import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.feed.Feed
-import com.alloon.alloonserver.domain.mission.Mission
-import com.alloon.alloonserver.domain.mission.MissionMember
-import com.alloon.alloonserver.domain.mission.MissionRepository
-import com.alloon.alloonserver.domain.report.ReportCategoryType.MISSION
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
+import com.alloon.alloonserver.domain.report.ReportCategoryType.CHALLENGE
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeHashtagDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -33,7 +33,7 @@ class ReportRepositoryTest(
     @Autowired private val reportRepository: ReportRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
-    @Autowired private val missionRepository: MissionRepository,
+    @Autowired private val challengeRepository: ChallengeRepository,
     @Autowired private val reportCategoryRepository: ReportCategoryRepository,
     @Autowired private val passwordUtility: PasswordUtility,
 ) {
@@ -43,8 +43,8 @@ class ReportRepositoryTest(
     fun givenValid_whenFind_whenReturn() {
         // given
         val user = createAndSaveUserWithContact()
-        val mission = createAndSaveMission()
-        val report = createAndSaveReport(user, MISSION, mission = mission)
+        val challenge = createAndSaveChallenge()
+        val report = createAndSaveReport(user, CHALLENGE, challenge = challenge)
 
         // when
         val result = reportRepository.find(user.id!!)
@@ -56,16 +56,16 @@ class ReportRepositoryTest(
     private fun createAndSaveReport(
         reporter: User,
         type: ReportCategoryType,
-        missionMember: MissionMember? = null,
-        mission: Mission? = null,
+        challengeMember: ChallengeMember? = null,
+        challenge: Challenge? = null,
         feed: Feed? = null
     ): Report {
         return reportRepository.save(
             Report(
                 reportCategory = createAndSaveReportCategory(type),
                 reporter = reporter,
-                missionMember = missionMember,
-                mission = mission,
+                challengeMember = challengeMember,
+                challenge = challenge,
                 feed = feed
             )
         )
@@ -75,14 +75,14 @@ class ReportRepositoryTest(
         return reportCategoryRepository.save(ReportCategory(admin = null, type = type, description = "신고 사유", sort = 1))
     }
 
-    private fun createAndSaveMission(): Mission {
-        val dto = getCreateMissionDto()
-        val mission = Mission.toEntity(dto)
-        return missionRepository.save(mission)
+    private fun createAndSaveChallenge(): Challenge {
+        val dto = getCreateChallengeDto()
+        val challenge = Challenge.toEntity(dto)
+        return challengeRepository.save(challenge)
     }
 
-    private fun getCreateMissionDto(): CreateMissionDto {
-        return CreateMissionDto(
+    private fun getCreateChallengeDto(): CreateChallengeDto {
+        return CreateChallengeDto(
             "챌린지 이름",
             true,
             "챌린지 목표입니다.",
@@ -90,13 +90,13 @@ class ReportRepositoryTest(
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
             listOf(
-                CreateMissionRuleDto("챌린지 인증 룰1"),
-                CreateMissionRuleDto("챌린지 인증 룰2"),
-                CreateMissionRuleDto("챌린지 인증 룰3"),
+                CreateChallengeRuleDto("챌린지 인증 룰1"),
+                CreateChallengeRuleDto("챌린지 인증 룰2"),
+                CreateChallengeRuleDto("챌린지 인증 룰3"),
             ),
             listOf(
-                CreateMissionHashtagDto("해시태그 1"),
-                CreateMissionHashtagDto("해시태그 2"),
+                CreateChallengeHashtagDto("해시태그 1"),
+                CreateChallengeHashtagDto("해시태그 2"),
             )
         )
     }

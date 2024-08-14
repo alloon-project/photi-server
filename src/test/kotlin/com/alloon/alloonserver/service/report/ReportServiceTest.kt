@@ -3,12 +3,12 @@ package com.alloon.alloonserver.service.report
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
+import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.FeedRepository
-import com.alloon.alloonserver.domain.mission.Mission
-import com.alloon.alloonserver.domain.mission.MissionMember
-import com.alloon.alloonserver.domain.mission.MissionMemberRepository
-import com.alloon.alloonserver.domain.mission.MissionRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.report.ReportCategory
 import com.alloon.alloonserver.domain.report.ReportCategoryRepository
 import com.alloon.alloonserver.domain.report.ReportCategoryType
@@ -18,9 +18,9 @@ import com.alloon.alloonserver.domain.user.*
 import com.alloon.alloonserver.domain.user.Role.ADMIN
 import com.alloon.alloonserver.domain.user.Role.USER
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
-import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeHashtagDto
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
 import com.alloon.alloonserver.service.report.dto.ReportCreateServiceDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -47,8 +47,8 @@ class ReportServiceTest(
     @Autowired private val userRoleRepository: UserRoleRepository,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val contactRepository: ContactRepository,
-    @Autowired private val missionRepository: MissionRepository,
-    @Autowired private val missionMemberRepository: MissionMemberRepository,
+    @Autowired private val challengeRepository: ChallengeRepository,
+    @Autowired private val challengeMemberRepository: ChallengeMemberRepository,
     @Autowired private val feedRepository: FeedRepository,
     @Autowired private val passwordUtility: PasswordUtility,
 ) {
@@ -76,8 +76,8 @@ class ReportServiceTest(
         val adminRole = createAndSaveUserWithContact("tester1@alloon.com", "tester1", ADMIN)
         val reportCategory = createAndSaveReportCategory(adminRole.user, type, "항목", 1)
         val reportTargetId = when (type) {
-            MISSION -> createAndSaveMission().id
-            MISSION_MEMBER -> createAndSaveMissionMember().id
+            CHALLENGE -> createAndSaveChallenge().id
+            CHALLENGE_MEMBER -> createAndSaveChallengeMember().id
             FEED -> createAndSaveFeed().id
         }
         val request = createValidReportCreateServiceRequest(reportTargetId!!, type, reportCategory.id!!)
@@ -99,7 +99,7 @@ class ReportServiceTest(
         // given
         val adminRole = createAndSaveUserWithContact("tester1@alloon.com", "tester1", ADMIN)
 
-        val type = MISSION
+        val type = CHALLENGE
         val reportCategory = createAndSaveReportCategory(adminRole.user, type, "항목", 1)
         val request = createValidReportCreateServiceRequest(1L, type, reportCategory.id!!)
 
@@ -116,7 +116,7 @@ class ReportServiceTest(
         // given
         val adminRole = createAndSaveUserWithContact("tester1@alloon.com", "tester1", ADMIN)
 
-        val type = MISSION
+        val type = CHALLENGE
         val request = createValidReportCreateServiceRequest(1L, type, 1)
 
         // when & then
@@ -126,13 +126,13 @@ class ReportServiceTest(
             .isEqualTo(REPORT_CATEGORY_NOT_FOUND)
     }
 
-    @DisplayName("존재하지 않은 미션 신고 대상자로 신고 등록을 하면 예외가 발생한다")
+    @DisplayName("존재하지 않은 챌린지 신고 대상자로 신고 등록을 하면 예외가 발생한다")
     @Test
-    fun givenNonExistingTargetMission_whenCreateReport_thenThrows() {
+    fun givenNonExistingTargetChallenge_whenCreateReport_thenThrows() {
         // given
         val adminRole = createAndSaveUserWithContact("tester1@alloon.com", "tester1", ADMIN)
 
-        val type = MISSION
+        val type = CHALLENGE
         val reportCategory = createAndSaveReportCategory(adminRole.user, type, "항목", 1)
         val request = createValidReportCreateServiceRequest(99L, type, reportCategory.id!!)
 
@@ -140,16 +140,16 @@ class ReportServiceTest(
         assertThatThrownBy { reportService.createReport(adminRole.user.id!!, request) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
-            .isEqualTo(MISSION_NOT_FOUND)
+            .isEqualTo(CHALLENGE_NOT_FOUND)
     }
 
-    @DisplayName("존재하지 않은 미션 멤버 신고 대상자로 신고 등록을 하면 예외가 발생한다")
+    @DisplayName("존재하지 않은 챌린지 멤버 신고 대상자로 신고 등록을 하면 예외가 발생한다")
     @Test
-    fun givenNonExistingTargetMissionMember_whenCreateReport_thenThrows() {
+    fun givenNonExistingTargetChallengeMember_whenCreateReport_thenThrows() {
         // given
         val adminRole = createAndSaveUserWithContact("tester1@alloon.com", "tester1", ADMIN)
 
-        val type = MISSION_MEMBER
+        val type = CHALLENGE_MEMBER
         val reportCategory = createAndSaveReportCategory(adminRole.user, type, "항목", 1)
         val request = createValidReportCreateServiceRequest(99L, type, reportCategory.id!!)
 
@@ -157,7 +157,7 @@ class ReportServiceTest(
         assertThatThrownBy { reportService.createReport(adminRole.user.id!!, request) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
-            .isEqualTo(MISSION_MEMBER_NOT_FOUND)
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
     }
 
     @DisplayName("존재하지 않은 피드 신고 대상자로 신고 등록을 하면 예외가 발생한다")
@@ -186,30 +186,36 @@ class ReportServiceTest(
     }
 
     private fun createAndSaveFeed(): Feed {
-        val missionMember = createAndSaveMissionMember()
+        val challengeMember = createAndSaveChallengeMember()
         return feedRepository.save(
             Feed(
-                missionMember = missionMember,
-                mission = missionMember.mission,
+                challengeMember = challengeMember,
+                challenge = challengeMember.challenge,
                 imageUrl = "https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png"
             )
         )
     }
 
-    private fun createAndSaveMissionMember(): MissionMember {
+    private fun createAndSaveChallengeMember(): ChallengeMember {
         val userRole = createAndSaveUserWithContact("tester2@alloon.com", "tester2", USER)
-        val mission = createAndSaveMission()
-        return missionMemberRepository.save(MissionMember(user = userRole.user, mission = mission, isCreator = false))
+        val challenge = createAndSaveChallenge()
+        return challengeMemberRepository.save(
+            ChallengeMember(
+                user = userRole.user,
+                challenge = challenge,
+                isCreator = false
+            )
+        )
     }
 
-    private fun createAndSaveMission(): Mission {
-        val dto = getCreateMissionDto()
-        val mission = Mission.toEntity(dto)
-        return missionRepository.save(mission)
+    private fun createAndSaveChallenge(): Challenge {
+        val dto = getCreateChallengeDto()
+        val challenge = Challenge.toEntity(dto)
+        return challengeRepository.save(challenge)
     }
 
-    private fun getCreateMissionDto(): CreateMissionDto {
-        return CreateMissionDto(
+    private fun getCreateChallengeDto(): CreateChallengeDto {
+        return CreateChallengeDto(
             "챌린지 이름",
             true,
             "챌린지 목표입니다.",
@@ -217,13 +223,13 @@ class ReportServiceTest(
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
             listOf(
-                CreateMissionRuleDto("챌린지 인증 룰1"),
-                CreateMissionRuleDto("챌린지 인증 룰2"),
-                CreateMissionRuleDto("챌린지 인증 룰3"),
+                CreateChallengeRuleDto("챌린지 인증 룰1"),
+                CreateChallengeRuleDto("챌린지 인증 룰2"),
+                CreateChallengeRuleDto("챌린지 인증 룰3"),
             ),
             listOf(
-                CreateMissionHashtagDto("해시태그 1"),
-                CreateMissionHashtagDto("해시태그 2"),
+                CreateChallengeHashtagDto("해시태그 1"),
+                CreateChallengeHashtagDto("해시태그 2"),
             )
         )
     }

@@ -18,19 +18,19 @@ enum class SuccessCode(
     REPORT_CREATED(CREATED, "신고가 완료 되었습니다."),
 
     /**
-     * Mission Controller
+     * Challenge Controller
      */
     // 200 Ok
-    FOUND_MISSION_TEMPLATE_IMAGES(OK, "미션 예시 이미지를 전체 조회했습니다."),
-    MISSION_IMAGE_UPLOADED(OK, "미션 이미지를 업로드했습니다."),
-    FOUND_POPULAR_MISSIONS(OK, "지금 인기있는 챌린지를 전체 조회했습니다."),
-    NO_POPULAR_MISSIONS(OK, "지금 인기있는 챌린지가 없습니다."),
-    FOUND_MISSION_INFO(OK, "챌린지 소개를 조회했습니다."),
-    MISSION_MEMBER_GOAL_UPDATED(OK, "챌린지 개인목표 작성이 완료되었습니다."),
-    FOUND_MISSION_MEMBERS(OK, "챌린지 파티원을 전체 조회했습니다."),
+    FOUND_CHALLENGE_TEMPLATE_IMAGES(OK, "챌린지 예시 이미지를 전체 조회했습니다."),
+    CHALLENGE_IMAGE_UPLOADED(OK, "챌린지 이미지를 업로드했습니다."),
+    FOUND_POPULAR_CHALLENGES(OK, "지금 인기있는 챌린지를 전체 조회했습니다."),
+    NO_POPULAR_CHALLENGES(OK, "지금 인기있는 챌린지가 없습니다."),
+    FOUND_CHALLENGE_INFO(OK, "챌린지 소개를 조회했습니다."),
+    CHALLENGE_MEMBER_GOAL_UPDATED(OK, "챌린지 개인목표 작성이 완료되었습니다."),
+    FOUND_CHALLENGE_MEMBERS(OK, "챌린지 파티원을 전체 조회했습니다."),
 
     // 201 Created
-    MISSION_CREATED(CREATED, "미션 생성이 완료되었습니다."),
+    CHALLENGE_CREATED(CREATED, "챌린지 생성이 완료되었습니다."),
 
     /**
      * User Controller

@@ -1,8 +1,8 @@
 package com.alloon.alloonserver.domain.feed
 
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
-import com.alloon.alloonserver.domain.mission.Mission
-import com.alloon.alloonserver.domain.mission.MissionMember
+import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import jakarta.persistence.*
 
 @Entity
@@ -14,12 +14,12 @@ class Feed(
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mission_member_id", nullable = false)
-    val missionMember: MissionMember,
+    @JoinColumn(name = "challenge_member_id", nullable = false)
+    val challengeMember: ChallengeMember,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mission_id", nullable = false)
-    val mission: Mission,
+    @JoinColumn(name = "challenge_id", nullable = false)
+    val challenge: Challenge,
 
     @Column(nullable = false, length = 500)
     val imageUrl: String,

@@ -30,10 +30,10 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/api/users/token",
                     "/api/users/password",
-                    "/api/missions",
-                    "/api/missions/{missionId}/info",
-                    "/api/missions/{missionId}/mission-members/goal",
-                    "/api/missions/{missionId}/mission-members",
+                    "/api/challenges",
+                    "/api/challenges/{challengeId}/info",
+                    "/api/challenges/{challengeId}/challenge-members/goal",
+                    "/api/challenges/{challengeId}/challenge-members",
                 ).authenticated()
                 it.anyRequest().permitAll()
             }

@@ -15,11 +15,11 @@ data class ReportCreateRequest(
     @field:NotNull(message = "신고 대상 식별자는 필수 입력입니다.")
     val reportTargetId: Long,
 
-    @Schema(description = "신고 항목", example = "MISSION")
+    @Schema(description = "신고 항목", example = "CHALLENGE")
     @field:NotBlank(message = "신고 타입은 필수 입력입니다.")
     @field:Pattern(
         regexp = REPORT_CATEGORY_TYPE_CHARACTER,
-        message = "신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다."
+        message = "신고 타입은 'CHALLENGE', 'CHALLENGE_MEMBER', 'FEED' 중 하나여야 됩니다."
     )
     val reportType: String,
 

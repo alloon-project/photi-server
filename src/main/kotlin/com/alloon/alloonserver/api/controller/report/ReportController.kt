@@ -41,9 +41,9 @@ class ReportController(
         @RequestParam("type") @NotBlank(message = "신고 항목은 필수 입력입니다.")
         @Pattern(
             regexp = REPORT_CATEGORY_TYPE_CHARACTER,
-            message = "신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다."
+            message = "신고 타입은 'CHALLENGE', 'CHALLENGE_MEMBER', 'FEED' 중 하나여야 됩니다."
         )
-        @Parameter(description = "신고 항목", example = "MISSION")
+        @Parameter(description = "신고 항목", example = "CHALLENGE")
         reportType: String
     ): ResponseEntity<DefaultListResponse<String>> {
         val response = reportService.getAllReportCategoryDescription(reportType)
@@ -63,14 +63,14 @@ class ReportController(
                 description = """
                 1. 존재하지 않는 회원입니다.
                 2. 존재하지 않는 신고 항목입니다.
-                3. 존재하지 않는 미션입니다.
-                4. 존재하지 않는 미션 멤버입니다.
+                3. 존재하지 않는 챌린지입니다.
+                4. 존재하지 않는 챌린지 파티원입니다.
                 5. 존재하지 않는 피드입니다.
                 """
             ),
         ]
     )
-    fun reportMission(
+    fun reportChallenge(
         principal: Principal,
         @RequestBody @Valid request: ReportCreateRequest
     ): ResponseEntity<DefaultResponse> {

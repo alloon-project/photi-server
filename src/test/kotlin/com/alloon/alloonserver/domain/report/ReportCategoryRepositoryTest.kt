@@ -120,10 +120,10 @@ class ReportCategoryRepositoryTest(
         @JvmStatic
         private fun providerExists(): Stream<Arguments> {
             return Stream.of(
-                Arguments.of(MISSION, true),
-                Arguments.of(MISSION, false),
-                Arguments.of(MISSION_MEMBER, true),
-                Arguments.of(MISSION_MEMBER, false),
+                Arguments.of(CHALLENGE, true),
+                Arguments.of(CHALLENGE, false),
+                Arguments.of(CHALLENGE_MEMBER, true),
+                Arguments.of(CHALLENGE_MEMBER, false),
                 Arguments.of(FEED, true),
                 Arguments.of(FEED, false),
             )

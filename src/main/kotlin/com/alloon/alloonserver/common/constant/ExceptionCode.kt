@@ -47,7 +47,7 @@ enum class ExceptionCode(
     USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."),
     PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     NEW_PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
-    REPORT_TYPE_INVALID(BAD_REQUEST, "신고 타입은 'MISSION', 'MISSION_MEMBER', 'FEED' 중 하나여야 됩니다."),
+    REPORT_TYPE_INVALID(BAD_REQUEST, "신고 타입은 'CHALLENGE', 'CHALLENGE_MEMBER', 'FEED' 중 하나여야 됩니다."),
 
     // @Positive, @PositiveOrZero
 
@@ -78,8 +78,8 @@ enum class ExceptionCode(
     USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 회원입니다."),
     EMAIL_NOT_FOUND(NOT_FOUND, "존재하지 않는 이메일입니다."),
     REPORT_CATEGORY_NOT_FOUND(NOT_FOUND, "존재하지 않는 신고 항목입니다."),
-    MISSION_NOT_FOUND(NOT_FOUND, "존재하지 않는 미션입니다."),
-    MISSION_MEMBER_NOT_FOUND(NOT_FOUND, "존재하지 않는 미션 멤버입니다."),
+    CHALLENGE_NOT_FOUND(NOT_FOUND, "존재하지 않는 챌린지입니다."),
+    CHALLENGE_MEMBER_NOT_FOUND(NOT_FOUND, "존재하지 않는 챌린지 파티원입니다."),
     FEED_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드입니다."),
 
     /**
