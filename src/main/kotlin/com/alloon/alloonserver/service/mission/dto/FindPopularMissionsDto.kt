@@ -1,9 +1,9 @@
-package com.alloon.alloonserver.domain.mission.custom.dto
+package com.alloon.alloonserver.service.mission.dto
 
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDate
 
-data class PopularMissionDto @QueryProjection constructor(
+data class FindPopularMissionsDto @QueryProjection constructor(
     val id: Long,
     val name: String,
     val endDate: LocalDate,

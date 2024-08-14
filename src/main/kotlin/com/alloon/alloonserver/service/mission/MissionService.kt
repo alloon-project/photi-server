@@ -3,7 +3,7 @@ package com.alloon.alloonserver.service.mission
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
-import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
+import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.s3.S3Service
@@ -47,7 +47,7 @@ class MissionService(
         return s3Service.uploadFile(file, "users/$userId/missions", UUID.randomUUID().toString())
     }
 
-    fun getPopularMissions(): List<PopularMissionDto> {
+    fun findPopularMissions(): List<FindPopularMissionsDto> {
         return missionRepository.findPopular()
     }
 }

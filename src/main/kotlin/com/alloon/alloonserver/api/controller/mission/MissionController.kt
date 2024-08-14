@@ -2,7 +2,7 @@ package com.alloon.alloonserver.api.controller.mission
 
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
-import com.alloon.alloonserver.api.controller.mission.response.GetPopularMissionsResponse
+import com.alloon.alloonserver.api.controller.mission.response.FindPopularMissionsResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
@@ -91,8 +91,8 @@ class MissionController(
     @GetMapping("/api/missions/popular")
     @Operation(summary = "지금 인기있는 챌린지 조회", description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다.")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "지금 인기있는 챌린지 조회 성공")])
-    fun getPopularMissions(): ResponseEntity<DefaultListResponse<GetPopularMissionsResponse>> {
-        val response = GetPopularMissionsResponse.of(missionService.getPopularMissions())
+    fun findPopularMissions(): ResponseEntity<DefaultListResponse<FindPopularMissionsResponse>> {
+        val response = FindPopularMissionsResponse.of(missionService.findPopularMissions())
         val successCode = if (response.isNotEmpty()) FOUND_POPULAR_MISSIONS else NO_POPULAR_MISSIONS
 
         return DefaultListResponse.toResponseEntity(successCode, response)

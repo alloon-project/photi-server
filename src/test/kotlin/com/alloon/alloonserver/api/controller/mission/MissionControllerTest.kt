@@ -5,7 +5,7 @@ import com.alloon.alloonserver.api.controller.mission.request.CreateMissionHasht
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRuleRequest
 import com.alloon.alloonserver.domain.mission.Mission
-import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
+import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.service.mission.MissionService
 import io.mockk.every
 import io.mockk.mockk
@@ -93,9 +93,9 @@ class MissionControllerTest : RestDocsSupport() {
 
     @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
     @Test
-    fun givenMission_whenGetPopularMissions_thenReturn200() {
+    fun givenMission_whenFindPopularMissions_thenReturn200() {
         // given
-        val mission = PopularMissionDto(
+        val mission = FindPopularMissionsDto(
             1L,
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),
@@ -103,7 +103,7 @@ class MissionControllerTest : RestDocsSupport() {
             listOf("해시태그 1", "해시태그 2")
         )
 
-        every { missionService.getPopularMissions() } returns listOf(mission)
+        every { missionService.findPopularMissions() } returns listOf(mission)
 
         // when
         val resultActions = mockMvc.perform(
@@ -117,9 +117,9 @@ class MissionControllerTest : RestDocsSupport() {
 
     @DisplayName("챌린지가 없는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
     @Test
-    fun givenNoMission_whenGetPopularMissions_thenReturn200() {
+    fun givenNoMission_whenFindPopularMissions_thenReturn200() {
         // given
-        every { missionService.getPopularMissions() } returns listOf()
+        every { missionService.findPopularMissions() } returns listOf()
 
         // when
         val resultActions = mockMvc.perform(

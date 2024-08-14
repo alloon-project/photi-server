@@ -1,15 +1,15 @@
 package com.alloon.alloonserver.api.controller.mission.response
 
-import com.alloon.alloonserver.domain.mission.custom.dto.PopularMissionDto
+import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 @Schema(description = "지금 인기있는 챌린지 응답 객체")
-data class GetPopularMissionsResponse(
+data class FindPopularMissionsResponse(
 
     @Schema(description = "챌린지 id", example = "1")
-    val id: Long?,
+    val id: Long,
 
     @Schema(description = "챌린지 이름", example = "신나게 하는 러닝 챌린지")
     val name: String,
@@ -34,8 +34,8 @@ data class GetPopularMissionsResponse(
 
     companion object {
 
-        fun of(mission: PopularMissionDto): GetPopularMissionsResponse {
-            return GetPopularMissionsResponse(
+        fun of(mission: FindPopularMissionsDto): FindPopularMissionsResponse {
+            return FindPopularMissionsResponse(
                 mission.id,
                 mission.name,
                 mission.imageUrl,
@@ -46,6 +46,6 @@ data class GetPopularMissionsResponse(
             )
         }
 
-        fun of(missions: List<PopularMissionDto>): List<GetPopularMissionsResponse> = missions.map { of(it) }
+        fun of(missions: List<FindPopularMissionsDto>): List<FindPopularMissionsResponse> = missions.map { of(it) }
     }
 }
