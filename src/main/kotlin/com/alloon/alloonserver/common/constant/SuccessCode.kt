@@ -27,6 +27,7 @@ enum class SuccessCode(
     NO_POPULAR_MISSIONS(OK, "지금 인기있는 챌린지가 없습니다."),
     FOUND_MISSION_INFO(OK, "챌린지 소개를 조회했습니다."),
     MISSION_MEMBER_GOAL_UPDATED(OK, "챌린지 개인목표 작성이 완료되었습니다."),
+    FOUND_MISSION_MEMBERS(OK, "챌린지 파티원을 전체 조회했습니다."),
 
     // 201 Created
     MISSION_CREATED(CREATED, "미션 생성이 완료되었습니다."),
