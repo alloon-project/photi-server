@@ -36,6 +36,19 @@ class MissionRepositoryTest(
         assertThat(result).isEqualTo(mission)
     }
 
+    @DisplayName("챌린지 id로 조회하면 일치하는 챌린지를 반환한다")
+    @Test
+    fun givenValid_whenFindInfoById_thenReturnMission() {
+        // given
+        val mission = createAndSaveMission()
+
+        // when
+        val result = mission.id?.let { missionRepository.findInfoById(it) }
+
+        // then
+        assertThat(result).isEqualTo(mission)
+    }
+
     private fun createAndSaveMission(): Mission {
         val dto = getCreateMissionDto()
         val mission = Mission.toEntity(dto)

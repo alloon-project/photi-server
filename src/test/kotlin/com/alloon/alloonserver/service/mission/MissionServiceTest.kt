@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.service.mission
 
+import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_NOT_FOUND
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
@@ -12,6 +13,7 @@ import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.mission.dto.CreateMissionHashtagDto
 import com.alloon.alloonserver.service.mission.dto.CreateMissionRuleDto
+import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
 import com.alloon.alloonserver.service.s3.S3Service
 import io.mockk.every
 import io.mockk.mockk
@@ -153,6 +155,39 @@ class MissionServiceTest : AbstractMailProperties {
         assertThat(result.size).isEqualTo(4)
     }
 
+    @DisplayName("챌린지 멤버가 챌린지 소개 조회를 하면 일치하는 챌린지 소개를 반환한다")
+    @Test
+    fun givenValid_whenFindMissionInfo_thenReturn() {
+        // given
+        mockkObject(Mission)
+        val missionId = 1L
+        val mission = Mission.toEntity(getCreateMissionDto())
+        val dto = getFindMissionInfoDto()
+
+        every { missionRepository.findInfoById(any()) } returns mission
+
+        // when
+        val result = missionService.findMissionInfo(missionId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
+    @DisplayName("등록되지 않은 챌린지를 찾으려고 하면 예외가 발생한다")
+    @Test
+    fun givenNotFoundMission_whenFindMissionInfo_thenThrow() {
+        // given
+        val missionId = 1L
+
+        every { missionRepository.findInfoById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { missionService.findMissionInfo(missionId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(MISSION_NOT_FOUND)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -184,6 +219,20 @@ class MissionServiceTest : AbstractMailProperties {
             startDateTime = now.minusSeconds(1),
             endDateTime = now.plusSeconds(1),
             admin = null
+        )
+    }
+
+    private fun getFindMissionInfoDto(): FindMissionInfoDto {
+        return FindMissionInfoDto(
+            listOf(
+                CreateMissionRuleDto("챌린지 인증 룰1"),
+                CreateMissionRuleDto("챌린지 인증 룰2"),
+                CreateMissionRuleDto("챌린지 인증 룰3"),
+            ),
+            LocalTime.of(13, 0),
+            "챌린지 목표입니다.",
+            LocalDate.now(),
+            LocalDate.of(2024, 12, 1),
         )
     }
 }

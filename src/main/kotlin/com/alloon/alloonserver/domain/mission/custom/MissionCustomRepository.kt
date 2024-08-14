@@ -8,4 +8,6 @@ interface MissionCustomRepository {
     fun find(id: Long): Mission?
 
     fun findPopular(): List<FindPopularMissionsDto>
+
+    fun findInfoById(id: Long): Mission?
 }
