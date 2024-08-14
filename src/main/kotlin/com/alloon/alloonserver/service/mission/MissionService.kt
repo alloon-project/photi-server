@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.service.mission
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_NOT_FOUND
+import com.alloon.alloonserver.common.constant.ExceptionCode.MISSION_MEMBER_NOT_FOUND
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.mission.*
@@ -8,6 +9,7 @@ import com.alloon.alloonserver.service.mission.dto.FindPopularMissionsDto
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.mission.dto.CreateMissionDto
 import com.alloon.alloonserver.service.mission.dto.FindMissionInfoDto
+import com.alloon.alloonserver.service.mission.dto.UpdateMissionMemberGoalDto
 import com.alloon.alloonserver.service.s3.S3Service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -56,5 +58,13 @@ class MissionService(
     fun findMissionInfo(missionId: Long): FindMissionInfoDto {
         val mission = missionRepository.findInfoById(missionId) ?: throw CustomException(MISSION_NOT_FOUND)
         return FindMissionInfoDto.of(mission)
+    }
+
+    @Transactional
+    fun updateMissionMemberGoal(userId: Long, missionId: Long, dto: UpdateMissionMemberGoalDto) {
+        val missionMember = missionMemberRepository.findByUserIdAndMissionId(userId, missionId)
+            ?: throw CustomException(MISSION_MEMBER_NOT_FOUND)
+
+        missionMember.updateGoal(dto.goal)
     }
 }

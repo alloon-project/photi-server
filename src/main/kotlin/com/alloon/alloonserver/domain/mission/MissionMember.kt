@@ -20,6 +20,9 @@ class MissionMember(
     @JoinColumn(name = "mission_id", nullable = false)
     val mission: Mission,
 
+    @Column(length = 16)
+    var goal: String? = null,
+
     @Column(nullable = false, length = 15)
     @Enumerated(value = EnumType.STRING)
     val status: MissionMemberStatus = MissionMemberStatus.PROGRESS,
@@ -27,4 +30,8 @@ class MissionMember(
     @Column(nullable = false)
     val isCreator: Boolean = true,
 ) : BasePermanentEntity() {
+
+    fun updateGoal(goal: String) {
+        this.goal = goal
+    }
 }

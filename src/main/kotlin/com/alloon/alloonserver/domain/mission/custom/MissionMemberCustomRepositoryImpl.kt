@@ -22,6 +22,19 @@ class MissionMemberCustomRepositoryImpl(
             ).fetchFirst()
     }
 
+    override fun findByUserIdAndMissionId(userId: Long, missionId: Long): MissionMember? {
+        return queryFactory
+            .selectFrom(missionMember)
+            .join(missionMember.user).fetchJoin()
+            .join(missionMember.mission).fetchJoin()
+            .where(
+                missionMember.user.id.eq(userId),
+                missionMember.mission.id.eq(missionId),
+                eqServiceStatus(ACTIVE)
+            )
+            .fetchFirst()
+    }
+
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { missionMember.serviceStatus.eq(serviceStatus) }
 }

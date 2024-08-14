@@ -1,16 +1,19 @@
 package com.alloon.alloonserver.api.controller.mission
 
 import com.alloon.alloonserver.api.controller.mission.request.CreateMissionRequest
+import com.alloon.alloonserver.api.controller.mission.request.UpdateMissionMemberGoalRequest
 import com.alloon.alloonserver.api.controller.mission.response.CreateMissionResponse
 import com.alloon.alloonserver.api.controller.mission.response.FindPopularMissionsResponse
 import com.alloon.alloonserver.api.controller.mission.response.FindMissionInfoResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.DefaultListResponse
+import com.alloon.alloonserver.common.response.DefaultResponse
 import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.mission.MissionService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -116,5 +119,29 @@ class MissionController(
         val missionInfo = missionService.findMissionInfo(missionId)
         val response = FindMissionInfoResponse.of(missionInfo)
         return DefaultSingleResponse.toResponseEntity(FOUND_MISSION_INFO, response)
+    }
+
+    @PatchMapping("/api/missions/{missionId}/mission-members/goal")
+    @Operation(summary = "챌린지 개인목표 작성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "챌린지 개인목표 작성 성공"),
+            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
+            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
+            ApiResponse(responseCode = "404", description = "존재하지 않는 미션 멤버입니다."),
+        ]
+    )
+    fun updateMissionMemberGoal(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") missionId: Long,
+        @RequestBody @Valid request: UpdateMissionMemberGoalRequest,
+    ): ResponseEntity<DefaultResponse> {
+        missionService.updateMissionMemberGoal(
+            UserUtility.getUserId(principal),
+            missionId,
+            request.toServiceDto()
+        )
+
+        return DefaultResponse.toResponseEntity(MISSION_MEMBER_GOAL_UPDATED)
     }
 }

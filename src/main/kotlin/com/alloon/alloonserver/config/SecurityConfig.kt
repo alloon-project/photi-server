@@ -31,7 +31,8 @@ class SecurityConfig(
                     "/api/users/token",
                     "/api/users/password",
                     "/api/missions",
-                    "/api/missions/{missionId}/info"
+                    "/api/missions/{missionId}/info",
+                    "/api/missions/{missionId}/mission-members/goal"
                 ).authenticated()
                 it.anyRequest().permitAll()
             }

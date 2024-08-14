@@ -1,6 +1,5 @@
 package com.alloon.alloonserver.domain.mission
 
-import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.User
@@ -29,7 +28,6 @@ class MissionMemberRepositoryTest(
     @Autowired private val missionRepository: MissionRepository,
     @Autowired private val contactRepository: ContactRepository,
     @Autowired private val userRepository: UserRepository,
-    @Autowired private val passwordUtility: PasswordUtility,
 ) {
 
     @DisplayName("미션 멤버 식별자로 미션 멤버 조회가 정상 작동한다")
@@ -45,27 +43,44 @@ class MissionMemberRepositoryTest(
         assertThat(result).isEqualTo(result)
     }
 
+    @DisplayName("사용자 id와 챌린지 id로 조회하면 일치하는 챌린지 멤버를 반환한다")
+    @Test
+    fun givenValid_whenFindByUserIdAndMissionId_thenReturnMissionMember() {
+        // given
+        val missionMember = createAndSaveMissionMember()
+        val userId = missionMember.user?.id
+        val missionId = missionMember.mission.id
+
+        // when
+        val result = userId?.let { uid ->
+            missionId?.let { mid ->
+                missionMemberRepository.findByUserIdAndMissionId(uid, mid)
+            }
+        }
+
+        // then
+        assertThat(result).isEqualTo(missionMember)
+    }
+
     private fun createAndSaveMissionMember(): MissionMember {
         val mission = createAndSaveMission()
         val contact = contactRepository.save(
             Contact(
-                email = "tester@alloon.com",
+                email = "tester@photi.com",
                 verificationCode = "000000",
                 verifyYn = true
             )
         )
-
-        val encryptedPassword = passwordUtility.encryptPassword("password1!")
         val user = userRepository.save(
             User(
                 contact = contact,
                 username = "tester",
-                password = encryptedPassword,
+                password = "password1!",
                 imageUrl = ""
             )
         )
 
-        return missionMemberRepository.save(MissionMember(user = user, mission = mission, isCreator = true))
+        return missionMemberRepository.save(MissionMember(user = user, mission = mission))
     }
 
     private fun createAndSaveMission(): Mission {
