@@ -4,7 +4,6 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
 import com.alloon.alloonserver.common.response.ExceptionResponse
-import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
@@ -34,22 +33,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     protected fun handleUndefinedException(ex: RuntimeException): ResponseEntity<ExceptionResponse> {
         logger.info("Exception : ${ex.message}")
         return ExceptionResponse.toResponseEntity(CustomException(SERVER_ERROR, ex.cause))
-    }
-
-    override fun handleHttpMessageNotReadable(
-        ex: HttpMessageNotReadableException,
-        headers: HttpHeaders,
-        status: HttpStatusCode,
-        request: WebRequest
-    ): ResponseEntity<Any>? {
-        logger.error("${ex.message}")
-
-        val message = when (val cause = ex.cause) {
-            is MismatchedInputException -> "${cause.path.joinToString { it.fieldName }} 필드는 null이 될 수 없습니다."
-            else -> "유효하지 않은 요청입니다."
-        }
-
-        return ResponseEntity.status(BAD_REQUEST).body(ExceptionResponse(BAD_REQUEST.name, message))
     }
 
     override fun handleServletRequestBindingException(
@@ -96,6 +79,21 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         val path = request.requestURL.toString()
 
         val response = ErrorResponse(BAD_REQUEST.value(), BAD_REQUEST.name, message, path)
+
+        return ResponseEntity.status(BAD_REQUEST).body(response)
+    }
+
+    override fun handleHttpMessageNotReadable(
+        ex: HttpMessageNotReadableException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        val message = ex.mostSpecificCause.message.toString()
+        val httpServletRequest = (request as ServletWebRequest).request
+        val path = httpServletRequest.requestURL.toString()
+
+        val response = ErrorResponse(status.value(), status.toString().split(" ")[1], message, path)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
