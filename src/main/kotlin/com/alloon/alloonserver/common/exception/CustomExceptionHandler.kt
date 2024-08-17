@@ -2,6 +2,7 @@ package com.alloon.alloonserver.common.exception
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.common.response.ErrorResponse
 import com.alloon.alloonserver.common.response.ExceptionResponse
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import io.sentry.Sentry
@@ -17,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
@@ -70,16 +72,15 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        var responseCode = ex.fieldError?.field?.uppercase()
-        val responseMessage = ex.fieldError?.defaultMessage
+        val message = ex.bindingResult.fieldErrors.map {
+            mapOf(it.field to it.defaultMessage)
+        }
+        val httpServletRequest = (request as ServletWebRequest).request
+        val path = httpServletRequest.requestURL.toString()
 
-        responseCode?.let { responseCode -> formatIfInnerDto(responseCode) }.also { responseCode = it }
-        responseCode += responseMessage?.let { formatResponseCode(it) }
+        val response = ErrorResponse(status.value(), status.toString().split(" ")[1], message, path)
 
-        return ResponseEntity.status(BAD_REQUEST)
-            .body(responseMessage?.let {
-                responseCode?.let { it1 -> ExceptionResponse(it1, it) }
-            })
+        return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
