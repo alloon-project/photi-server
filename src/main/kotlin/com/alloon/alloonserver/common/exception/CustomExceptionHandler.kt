@@ -8,7 +8,7 @@ import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.*
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -107,25 +107,20 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        return ResponseEntity.status(FILE_SIZE_EXCEED.httpStatus)
-            .body(ExceptionResponse(FILE_SIZE_EXCEED))
+        val httpServletRequest = (request as ServletWebRequest).request
+        val path = httpServletRequest.requestURL.toString()
+        val response = ErrorResponse.of(FILE_SIZE_EXCEED, path)
+        return ResponseEntity.status(PAYLOAD_TOO_LARGE).body(response)
     }
 
     /**
      * 500 Internal Server Error
      */
     @ExceptionHandler(Exception::class)
-    protected fun handleException(ex: Exception): ResponseEntity<ExceptionResponse> {
+    protected fun handleException(ex: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
         Sentry.captureException(ex)
-        return ExceptionResponse.toResponseEntity(SERVER_ERROR)
-    }
-
-    /**
-     * 500 Internal Server Error
-     */
-    @ExceptionHandler(InterruptedException::class)
-    protected fun handleInterruptedException(ex: InterruptedException): ResponseEntity<ExceptionResponse> {
-        Sentry.captureException(ex)
-        return ExceptionResponse.toResponseEntity(SERVER_ERROR)
+        val path = request.requestURL.toString()
+        val response = ErrorResponse.of(SERVER_ERROR, path)
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
 }
