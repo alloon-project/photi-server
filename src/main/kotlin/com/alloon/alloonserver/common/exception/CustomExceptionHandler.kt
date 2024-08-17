@@ -3,7 +3,6 @@ package com.alloon.alloonserver.common.exception
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
-import com.alloon.alloonserver.common.response.ExceptionResponse
 import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.ServletWebRequest
@@ -25,24 +23,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(CustomException::class)
-    protected fun handleCustomException(ex: CustomException): ResponseEntity<ExceptionResponse> {
-        return ExceptionResponse.toResponseEntity(ex)
+    protected fun handleCustomException(
+        ex: CustomException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val path = request.requestURL.toString()
+        val response = ErrorResponse.of(ex.exceptionCode, path)
+        return ResponseEntity.status(ex.exceptionCode.httpStatus).body(response)
     }
 
     @ExceptionHandler(RuntimeException::class)
-    protected fun handleUndefinedException(ex: RuntimeException): ResponseEntity<ExceptionResponse> {
+    protected fun handleUndefinedException(
+        ex: RuntimeException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
         logger.info("Exception : ${ex.message}")
-        return ExceptionResponse.toResponseEntity(CustomException(SERVER_ERROR, ex.cause))
-    }
-
-    override fun handleServletRequestBindingException(
-        ex: ServletRequestBindingException,
-        headers: HttpHeaders,
-        status: HttpStatusCode,
-        request: WebRequest
-    ): ResponseEntity<Any>? {
-        logger.error("${ex.message}")
-        return super.handleServletRequestBindingException(ex, headers, status, request)
+        val path = request.requestURL.toString()
+        val response = ErrorResponse.of(SERVER_ERROR, path)
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
 
     /**
