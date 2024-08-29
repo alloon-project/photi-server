@@ -39,11 +39,6 @@ data class CreateChallengeRequest(
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
 
-    @Schema(description = "챌린지 대표 이미지", example = "https://url.kr/5MhHhD")
-    @field:NotBlank(message = "대표 이미지는 필수 입력입니다.")
-    @field:Size(min = 1, max = 500, message = "대표 이미지는 1~500자만 가능합니다.")
-    val imageUrl: String,
-
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
         [
@@ -77,7 +72,6 @@ data class CreateChallengeRequest(
             goal,
             proveTime,
             endDate,
-            imageUrl,
             rules.map {
                 CreateChallengeRuleDto(it.rule)
             },
