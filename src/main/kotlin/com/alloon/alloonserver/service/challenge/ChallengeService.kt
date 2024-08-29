@@ -27,7 +27,7 @@ class ChallengeService(
         userId: Long,
         dto: CreateChallengeDto,
         imageFile: MultipartFile
-    ): Challenge {
+    ): CreateChallengeDto {
         val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
@@ -38,7 +38,7 @@ class ChallengeService(
         challengeRepository.save(challenge)
         challengeMemberRepository.save(challengeMember)
 
-        return challenge
+        return CreateChallengeDto.of(challenge)
     }
 
     fun getAllChallengeTemplateImages(now: LocalDateTime): List<String> {
