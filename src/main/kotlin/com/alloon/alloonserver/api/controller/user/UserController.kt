@@ -56,7 +56,7 @@ class UserController(
     )
     fun uploadImage(
         principal: Principal,
-        @RequestPart(required = false) file: MultipartFile?
+        @RequestPart file: MultipartFile
     ): ResponseEntity<DefaultSingleResponse> {
         val response = userService.uploadImage(UserUtility.getUserId(principal), file)
 
