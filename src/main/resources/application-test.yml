@@ -55,6 +55,11 @@ cloud:
       static: ${AWS_REGION:}
     s3:
       bucket: ${AWS_BUCKET:}
+      folder:
+        folderName1: users/
+        folderName2: challenges/
+    stack:
+      auto: false
 
 api:
   name: "Alloon Test"

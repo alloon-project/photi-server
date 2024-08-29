@@ -1,8 +1,6 @@
 package com.alloon.alloonserver.service.challenge
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.CHALLENGE_NOT_FOUND
-import com.alloon.alloonserver.common.constant.ExceptionCode.CHALLENGE_MEMBER_NOT_FOUND
-import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
+import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
 import com.alloon.alloonserver.domain.user.Contact
@@ -14,11 +12,8 @@ import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.S3Service
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkAll
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockMultipartFile
@@ -48,40 +43,28 @@ class ChallengeServiceTest : AbstractMailProperties {
         s3Service
     )
 
-    @BeforeEach
-    fun beforeEach() {
-        unmockkAll()
-    }
-
-//    @MockBean
-//    private lateinit var amazonS3Client: AmazonS3Client
-//
-//    @BeforeEach
-//    fun beforeEach() {
-//        `when`(amazonS3Client.getUrl(any(), any()))
-//            .thenReturn(URL("https://localhost:8080/api/image/mission-service"))
-//    }
-
     @DisplayName("챌린지 생성을 하면 정상 작동한다")
     @Test
     fun givenValid_whenCreateChallenge_thenReturn() {
         // given
-        mockkObject(Challenge)
         val dto = getCreateChallengeDto()
         val user = getUser()
-        val challenge = Challenge.toEntity(dto)
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = dto.toEntity(imageUrl)
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
         every { userRepository.find(any()) } returns user
-        every { Challenge.toEntity(any()) } returns challenge
+        every { s3Service.uploadImage(any(), any()) } returns ""
+        every { s3Service.getImageUrl(any()) } returns imageUrl
         every { challengeRepository.save(any()) } returns challenge
         every { challengeMemberRepository.save(any()) } returns challengeMember
 
         // when
-        val result = challengeService.createChallenge(1L, dto)
+        val result = challengeService.createChallenge(1L, dto, multipartFile)
 
         // then
-        assertThat(result).isEqualTo(challenge)
+        assertThat(result).isEqualTo(dto)
     }
 
     @DisplayName("존재하지 않은 회원으로 챌린지 생성을 하면 예외가 발생한다")
@@ -90,11 +73,12 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val userId = 1L
         val dto = getCreateChallengeDto()
+        val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
         every { userRepository.find(any()) } returns null
 
         // when & then
-        assertThatThrownBy { challengeService.createChallenge(userId, dto) }
+        assertThatThrownBy { challengeService.createChallenge(userId, dto, multipartFile) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)
@@ -116,21 +100,6 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(response).containsExactly(challengeTemplateImage.imageUrl)
     }
 
-    @DisplayName("챌린지 이미지 업로드가 정상 작동한다")
-    @Test
-    fun givenValid_whenUploadChallengeImage_thenReturn() {
-        // given
-        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
-
-        every { s3Service.uploadFile(any(), any(), any()) } returns ""
-
-        // when
-        val response = challengeService.uploadChallengeImage(1L, file)
-
-        // then
-        assertThat(response).isNotNull()
-    }
-
     @DisplayName("지금 인기있는 챌린지 조회가 정상 작동한다")
     @Test
     fun givenValid_whenFindPopularChallenges_thenReturn() {
@@ -143,7 +112,9 @@ class ChallengeServiceTest : AbstractMailProperties {
             listOf("해시태그 1", "해시태그 2")
         )
 
-        every { challengeRepository.findPopular() } returns listOf(challenge, challenge, challenge, challenge)
+        every { challengeRepository.findPopular() } returns listOf(
+            challenge, challenge, challenge, challenge
+        )
 
         // when
         val result = challengeService.findPopularChallenges()
@@ -156,9 +127,8 @@ class ChallengeServiceTest : AbstractMailProperties {
     @Test
     fun givenValid_whenFindChallengeInfo_thenReturn() {
         // given
-        mockkObject(Challenge)
         val challengeId = 1L
-        val challenge = Challenge.toEntity(getCreateChallengeDto())
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
         val dto = getFindChallengeInfoDto()
 
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -193,11 +163,12 @@ class ChallengeServiceTest : AbstractMailProperties {
         val challengeId = 1L
         val dto = UpdateChallengeMemberGoalDto("개인목표")
 
-        mockkObject(Challenge)
-        val challenge = Challenge.toEntity(getCreateChallengeDto())
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
         val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
 
-        every { challengeMemberRepository.findByUserIdAndChallengeId(any(), any()) } returns challengeMember
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
 
         // when
         challengeService.updateChallengeMemberGoal(userId, challengeId, dto)
@@ -248,21 +219,21 @@ class ChallengeServiceTest : AbstractMailProperties {
 
     private fun getCreateChallengeDto(): CreateChallengeDto {
         return CreateChallengeDto(
-            "챌린지 이름",
-            true,
-            "챌린지 목표입니다.",
-            LocalTime.of(13, 0),
-            LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
-            listOf(
+            name = "챌린지 이름",
+            isPublic = true,
+            goal = "챌린지 목표입니다.",
+            proveTime = LocalTime.of(13, 0),
+            endDate = LocalDate.of(2024, 12, 1),
+            rules = listOf(
                 CreateChallengeRuleDto("챌린지 인증 룰1"),
                 CreateChallengeRuleDto("챌린지 인증 룰2"),
                 CreateChallengeRuleDto("챌린지 인증 룰3"),
             ),
-            listOf(
+            hashtags = listOf(
                 CreateChallengeHashtagDto("해시태그 1"),
                 CreateChallengeHashtagDto("해시태그 2"),
-            )
+            ),
+            imageUrl = "https://url.kr/5MhHhD"
         )
     }
 

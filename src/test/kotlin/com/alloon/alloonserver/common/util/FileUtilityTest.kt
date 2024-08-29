@@ -1,6 +1,5 @@
 package com.alloon.alloonserver.common.util
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.FILE_FIELD_REQUIRED
 import com.alloon.alloonserver.common.constant.ExceptionCode.IMAGE_TYPE_UNSUPPORTED
 import com.alloon.alloonserver.common.response.CustomException
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -21,20 +20,7 @@ class FileUtilityTest {
     @DisplayName("이미지 파일 타입 검증을 하면 정상 작동한다")
     fun givenValid_whenValidateImageFile_thenReturn(file: MultipartFile) {
         // when & then
-        assertDoesNotThrow { FileUtility.validateImageFileType(file) }
-    }
-
-    @DisplayName("파일 미입력시 이미지 파일 타입 검증을 하면 예외가 발생한다")
-    @Test
-    fun givenBlankFile_whenValidateImageFileType_thenThrow() {
-        // given
-        val file = null
-
-        // when & then
-        assertThatThrownBy { FileUtility.validateImageFileType(file) }
-            .isInstanceOf(CustomException::class.java)
-            .extracting("exceptionCode")
-            .isEqualTo(FILE_FIELD_REQUIRED)
+        assertDoesNotThrow { file.validateFile() }
     }
 
     @DisplayName("잘못된 파일 타입으로 이미지 파일 타입 검증을 하면 예외가 발생한다")
@@ -44,7 +30,7 @@ class FileUtilityTest {
         val file = MockMultipartFile("file", "file.txt", "text/plain", ByteArray(1))
 
         // when & then
-        assertThatThrownBy { FileUtility.validateImageFileType(file) }
+        assertThatThrownBy { file.validateFile() }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(IMAGE_TYPE_UNSUPPORTED)

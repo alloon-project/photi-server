@@ -80,7 +80,8 @@ class ReportServiceTest(
             CHALLENGE_MEMBER -> createAndSaveChallengeMember().id
             FEED -> createAndSaveFeed().id
         }
-        val request = createValidReportCreateServiceRequest(reportTargetId!!, type, reportCategory.id!!)
+        val request =
+            createValidReportCreateServiceRequest(reportTargetId!!, type, reportCategory.id!!)
 
         // when
         reportService.createReport(adminRole.user.id!!, request)
@@ -210,7 +211,7 @@ class ReportServiceTest(
 
     private fun createAndSaveChallenge(): Challenge {
         val dto = getCreateChallengeDto()
-        val challenge = Challenge.toEntity(dto)
+        val challenge = dto.toEntity("https://url.kr/5MhHhD")
         return challengeRepository.save(challenge)
     }
 
@@ -221,7 +222,6 @@ class ReportServiceTest(
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
             listOf(
                 CreateChallengeRuleDto("챌린지 인증 룰1"),
                 CreateChallengeRuleDto("챌린지 인증 룰2"),
@@ -250,7 +250,11 @@ class ReportServiceTest(
         )
     }
 
-    private fun createAndSaveUserWithContact(email: String, username: String, role: Role): UserRole {
+    private fun createAndSaveUserWithContact(
+        email: String,
+        username: String,
+        role: Role
+    ): UserRole {
         val contact = contactRepository.save(
             Contact(
                 email = email,
