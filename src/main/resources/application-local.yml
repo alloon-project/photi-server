@@ -2,7 +2,7 @@ spring:
   config:
     activate:
       on-profile: local
-    import:  optional:file:.env[.properties]
+    import: optional:file:.env[.properties]
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -33,12 +33,17 @@ sentry:
 cloud:
   aws:
     credentials:
-      access-key: ${AWS_ACCESS_KEY:}
-      secret-key: ${AWS_SECRET_KEY:}
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
     region:
-      static: ${AWS_REGION:}
+      static: ${AWS_REGION}
     s3:
-      bucket: ${AWS_BUCKET:}
+      bucket: ${AWS_BUCKET}
+      folder:
+        folderName1: users/
+        folderName2: challenges/
+    stack:
+      auto: false
 
 api:
   name: "Alloon Test"
