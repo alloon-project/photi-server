@@ -13,6 +13,8 @@ data class CreateChallengeDto(
     val endDate: LocalDate,
     val rules: List<CreateChallengeRuleDto>,
     val hashtags: List<CreateChallengeHashtagDto>,
+    val id: Long? = null,
+    val imageUrl: String? = null,
 ) {
 
     fun toEntity(imageUrl: String): Challenge {
@@ -29,5 +31,22 @@ data class CreateChallengeDto(
             challenge.addChallengeRule(ChallengeRule(rule = it.rule))
         }
         return challenge
+    }
+
+    companion object {
+
+        fun of(challenge: Challenge): CreateChallengeDto {
+            return CreateChallengeDto(
+                challenge.name,
+                challenge.isPublic,
+                challenge.goal,
+                challenge.proveTime,
+                challenge.endDate,
+                CreateChallengeRuleDto.of(challenge.rules),
+                CreateChallengeHashtagDto.of(challenge.hashtags),
+                challenge.id,
+                challenge.imageUrl,
+            )
+        }
     }
 }
