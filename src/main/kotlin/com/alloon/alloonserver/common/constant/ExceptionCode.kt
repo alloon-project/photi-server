@@ -57,7 +57,7 @@ enum class ExceptionCode(
     EMAIL_VERIFICATION_CODE_INVALID(BAD_REQUEST, "이메일 인증코드가 틀렸습니다."),
     PASSWORD_MATCH_INVALID(BAD_REQUEST, "비밀번호와 비밀번호 재입력이 동일하지 않습니다."),
     EMAIL_VALIDATION_INVALID(BAD_REQUEST, "이메일 인증을 먼저 해주세요."),
-    FILE_FIELD_REQUIRED(BAD_REQUEST, "파일은 필수 입력입니다."),
+    EMPTY_FILE_INVALID(BAD_REQUEST, "비어있는 파일은 저장할 수 없습니다."),
 
     /**
      * 401 Unauthorized
@@ -103,7 +103,7 @@ enum class ExceptionCode(
     /**
      * 415 Unsupported Media Type
      */
-    IMAGE_TYPE_UNSUPPORTED(UNSUPPORTED_MEDIA_TYPE, "이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."),
+    IMAGE_TYPE_UNSUPPORTED(UNSUPPORTED_MEDIA_TYPE, "이미지는 '.jpeg', '.jpg', '.png', '.gif' 타입만 가능합니다."),
 
     /**
      * 500 Internal Server Error
