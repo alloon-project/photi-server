@@ -1,7 +1,6 @@
 package com.alloon.alloonserver.domain.challenge
 
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalTime
@@ -57,24 +56,5 @@ class Challenge(
     fun addChallengeRule(rule: ChallengeRule) {
         rules.add(rule)
         rule.challenge = this
-    }
-
-    companion object {
-
-        fun toEntity(dto: CreateChallengeDto): Challenge {
-            val challenge = Challenge(
-                name = dto.name,
-                isPublic = dto.isPublic,
-                goal = dto.goal,
-                proveTime = dto.proveTime,
-                endDate = dto.endDate,
-                imageUrl = dto.imageUrl,
-                hashtags = dto.hashtags.map { it.hashtag },
-            )
-            dto.rules.forEach {
-                challenge.addChallengeRule(ChallengeRule(rule = it.rule))
-            }
-            return challenge
-        }
     }
 }

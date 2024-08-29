@@ -1,5 +1,7 @@
 package com.alloon.alloonserver.service.challenge.dto
 
+import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.domain.challenge.ChallengeRule
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -9,7 +11,23 @@ data class CreateChallengeDto(
     val goal: String,
     val proveTime: LocalTime,
     val endDate: LocalDate,
-    val imageUrl: String,
     val rules: List<CreateChallengeRuleDto>,
     val hashtags: List<CreateChallengeHashtagDto>,
-)
+) {
+
+    fun toEntity(imageUrl: String): Challenge {
+        val challenge = Challenge(
+            name = name,
+            isPublic = isPublic,
+            goal = goal,
+            proveTime = proveTime,
+            endDate = endDate,
+            imageUrl = imageUrl,
+            hashtags = hashtags.map { it.hashtag },
+        )
+        rules.forEach {
+            challenge.addChallengeRule(ChallengeRule(rule = it.rule))
+        }
+        return challenge
+    }
+}
