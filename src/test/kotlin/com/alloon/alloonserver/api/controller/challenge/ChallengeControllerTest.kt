@@ -31,23 +31,6 @@ class ChallengeControllerTest : RestDocsSupport() {
         return ChallengeController(challengeService)
     }
 
-    @DisplayName("챌린지 예시 이미지 전체 조회를 하면 200을 반환한다")
-    @Test
-    fun givenValid_whenGetAllChallengeTemplateImages_thenReturn200() {
-        // given
-        every { challengeService.getAllChallengeTemplateImages(any()) } returns listOf("https://alloon.s3.us-east-2.amazonaws.com/alloon-logo.png")
-
-        // when
-        val resultActions = mockMvc.perform(
-            get("/api/challenges/image/templates")
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-        )
-
-        // then
-        resultActions.andExpect(status().isOk)
-    }
-
     @DisplayName("챌린지 생성을 하면 201을 반환한다")
     @Test
     fun givenValid_whenCreateChallenge_thenReturn201() {
@@ -78,6 +61,19 @@ class ChallengeControllerTest : RestDocsSupport() {
         // then
         resultActions.andExpect(status().isCreated)
             .andExpect(jsonPath("$.message").value("챌린지 생성이 완료되었습니다."))
+    }
+
+    @DisplayName("챌린지 예시 이미지 전체 조회를 하면 200을 반환한다")
+    @Test
+    fun givenValid_whenGetChallengeExampleImages_thenReturn200() {
+        // given
+        every { challengeService.getChallengeExampleImages() } returns listOf("https://url.kr/5MhHhD")
+
+        // when
+        val resultActions = mockMvc.perform(get("/api/challenges/example-images"))
+
+        // then
+        resultActions.andExpect(status().isOk)
     }
 
     @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
