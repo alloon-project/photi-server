@@ -24,7 +24,6 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
-import java.time.LocalDateTime
 
 @Validated
 @RestController
@@ -32,21 +31,6 @@ import java.time.LocalDateTime
 class ChallengeController(
     private val challengeService: ChallengeService
 ) {
-
-    @GetMapping("/api/challenges/image/templates")
-    @Operation(summary = "챌린지 예시 이미지 리스트 조회")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "챌린지 예시 이미지 리스트 조회 성공"),
-            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
-            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
-        ]
-    )
-    fun getAllChallengeTemplateImages(): ResponseEntity<DefaultListResponse<String>> {
-        val response = challengeService.getAllChallengeTemplateImages(LocalDateTime.now())
-
-        return DefaultListResponse.toResponseEntity(FOUND_CHALLENGE_TEMPLATE_IMAGES, response)
-    }
 
     @PostMapping("/api/challenges", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @Operation(summary = "챌린지 생성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
@@ -75,6 +59,15 @@ class ChallengeController(
         val response = CreateChallengeResponse.of(challenge)
 
         return DefaultSingleResponse.toResponseEntity(CHALLENGE_CREATED, response)
+    }
+
+    @GetMapping("/api/challenges/example-images")
+    @Operation(summary = "챌린지 예시 이미지 리스트 조회")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "챌린지 예시 이미지 리스트 조회 성공")])
+    fun getChallengeExampleImages(): ResponseEntity<DefaultListResponse<String>> {
+        val response = challengeService.getChallengeExampleImages()
+
+        return DefaultListResponse.toResponseEntity(FOUND_CHALLENGE_TEMPLATE_IMAGES, response)
     }
 
     @GetMapping("/api/challenges/popular")
