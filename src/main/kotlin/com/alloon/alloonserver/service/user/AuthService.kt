@@ -5,6 +5,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
+import com.alloon.alloonserver.common.util.VerificationCodeUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.domain.user.UserRoleRepository
@@ -32,7 +33,7 @@ class AuthService(
 
     @Transactional
     fun sendVerificationCode(@Valid request: ContactServiceSendVerificationDto) {
-        val verificationCode = PasswordUtility.generateRandomCode(6)
+        val verificationCode = VerificationCodeUtility.getVerificationCode()
 
         contactRepository.findByEmail(request.email)
             ?.let { foundContact ->
@@ -104,7 +105,9 @@ class AuthService(
     }
 
     fun login(request: UserServiceLoginDto): UserLoginResponse {
-        val user = userRepository.findByUsername(request.username) ?: throw CustomException(LOGIN_UNAUTHENTICATED)
+        val user = userRepository.findByUsername(request.username) ?: throw CustomException(
+            LOGIN_UNAUTHENTICATED
+        )
 
         passwordUtility.verifyPassword(request.password, user.password)
 
