@@ -15,7 +15,7 @@ data class ContactVerifyRequest(
     @field:Email(message = "올바른 이메일 형식을 입력해 주세요.")
     val email: String,
 
-    @Schema(description = "이메일 인증코드", example = "111111")
+    @Schema(description = "이메일 인증코드", example = "1111")
     @field:NotBlank(message = "이메일 인증코드는 필수 입력입니다.")
     val verificationCode: String,
 ) {
