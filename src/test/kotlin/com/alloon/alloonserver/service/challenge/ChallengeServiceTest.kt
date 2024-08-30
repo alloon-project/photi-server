@@ -31,14 +31,12 @@ class ChallengeServiceTest : AbstractMailProperties {
 
     private val challengeRepository = mockk<ChallengeRepository>()
     private val challengeMemberRepository = mockk<ChallengeMemberRepository>()
-    private val challengeTemplateImageRepository = mockk<ChallengeTemplateImageRepository>()
     private val userRepository = mockk<UserRepository>()
     private val s3Service = mockk<S3Service>()
 
     private val challengeService = ChallengeService(
         challengeRepository,
         challengeMemberRepository,
-        challengeTemplateImageRepository,
         userRepository,
         s3Service
     )
@@ -84,20 +82,17 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isEqualTo(USER_NOT_FOUND)
     }
 
-    @DisplayName("챌린 예시 이미지 전체 조회가 정상 작동한다")
+    @DisplayName("챌린지 예시 이미지 전체 조회가 정상 작동한다")
     @Test
-    fun givenValid_whenGetAllChallengeTemplateImages_thenReturn() {
+    fun givenValid_whenGetChallengeExampleImages_thenReturn() {
         // given
-        val now = LocalDateTime.now()
-        val challengeTemplateImage = getChallengeTemplateImage(now)
-
-        every { challengeTemplateImageRepository.findAllImageUrl(any()) } returns mutableListOf("image")
+        every { s3Service.getChallengeExampleImages() } returns listOf("https://url.kr/5MhHhD")
 
         // when
-        val response = challengeService.getAllChallengeTemplateImages(now)
+        val response = challengeService.getChallengeExampleImages()
 
         // then
-        assertThat(response).containsExactly(challengeTemplateImage.imageUrl)
+        assertThat(response.size).isEqualTo(1)
     }
 
     @DisplayName("지금 인기있는 챌린지 조회가 정상 작동한다")
@@ -234,15 +229,6 @@ class ChallengeServiceTest : AbstractMailProperties {
                 CreateChallengeHashtagDto("해시태그 2"),
             ),
             imageUrl = "https://url.kr/5MhHhD"
-        )
-    }
-
-    private fun getChallengeTemplateImage(now: LocalDateTime): ChallengeTemplateImage {
-        return ChallengeTemplateImage(
-            imageUrl = "image",
-            startDateTime = now.minusSeconds(1),
-            endDateTime = now.plusSeconds(1),
-            admin = null
         )
     }
 
