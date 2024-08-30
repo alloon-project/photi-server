@@ -4,6 +4,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.createFileName
 import com.alloon.alloonserver.common.util.validateFile
+import com.alloon.alloonserver.service.s3.FolderType.*
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList.PublicRead
 import com.amazonaws.services.s3.model.ObjectMetadata
@@ -50,10 +51,19 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
         return amazonS3Client.getUrl(bucket, fileName).toString()
     }
 
+    fun getChallengeExampleImages(): List<String> {
+        return amazonS3Client.listObjects(bucket, getRoot(CHALLENGE_EXAMPLES))
+            .objectSummaries
+            .map { it.key }
+            .filter { it.endsWith(".jpg") }
+            .map { getImageUrl(it) }
+    }
+
     private fun getRoot(folderType: FolderType): String {
         return when (folderType) {
-            FolderType.USERS -> userFolder
-            FolderType.CHALLENGES -> challengeFolder
+            USERS -> userFolder
+            CHALLENGES -> challengeFolder
+            CHALLENGE_EXAMPLES -> challengeFolder + "examples"
         }
     }
 }
