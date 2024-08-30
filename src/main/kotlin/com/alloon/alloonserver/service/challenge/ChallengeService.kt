@@ -10,14 +10,12 @@ import com.alloon.alloonserver.service.s3.S3Service
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
 
 @Service
 @Transactional(readOnly = true)
 class ChallengeService(
     private val challengeRepository: ChallengeRepository,
     private val challengeMemberRepository: ChallengeMemberRepository,
-    private val challengeTemplateImageRepository: ChallengeTemplateImageRepository,
     private val userRepository: UserRepository,
     private val s3Service: S3Service,
 ) {
@@ -41,8 +39,8 @@ class ChallengeService(
         return CreateChallengeDto.of(challenge)
     }
 
-    fun getAllChallengeTemplateImages(now: LocalDateTime): List<String> {
-        return challengeTemplateImageRepository.findAllImageUrl(now)
+    fun getChallengeExampleImages(): List<String> {
+        return s3Service.getChallengeExampleImages()
     }
 
     fun findPopularChallenges(): List<FindPopularChallengesDto> {
