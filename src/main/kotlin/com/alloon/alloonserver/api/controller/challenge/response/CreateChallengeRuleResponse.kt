@@ -1,6 +1,6 @@
 package com.alloon.alloonserver.api.controller.challenge.response
 
-import com.alloon.alloonserver.domain.challenge.ChallengeRule
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "챌린지 인증 룰 응답 객체")
@@ -12,7 +12,7 @@ data class CreateChallengeRuleResponse(
 
     companion object {
 
-        fun of(challengeRule: ChallengeRule): CreateChallengeRuleResponse {
+        fun of(challengeRule: CreateChallengeRuleDto): CreateChallengeRuleResponse {
             return CreateChallengeRuleResponse(challengeRule.rule)
         }
     }

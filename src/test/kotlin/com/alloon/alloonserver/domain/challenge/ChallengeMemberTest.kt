@@ -17,9 +17,11 @@ class ChallengeMemberTest {
     @Test
     fun givenValid_whenUpdateGoal_thenReturn() {
         // given
-        val contact = Contact(email = "tester@photi.com", verificationCode = "000000", verifyYn = true)
-        val user = User(contact = contact, username = "tester", password = "password1!", imageUrl = "")
-        val challenge = Challenge.toEntity(getCreateChallengeDto())
+        val contact =
+            Contact(email = "tester@photi.com", verificationCode = "000000", verifyYn = true)
+        val user =
+            User(contact = contact, username = "tester", password = "password1!", imageUrl = "")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
 
         val goal = "개인목표"
@@ -38,7 +40,6 @@ class ChallengeMemberTest {
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
             listOf(
                 CreateChallengeRuleDto("챌린지 인증 룰1"),
                 CreateChallengeRuleDto("챌린지 인증 룰2"),

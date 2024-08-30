@@ -2,7 +2,8 @@ package com.alloon.alloonserver.service.s3
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.common.util.FileUtility
+import com.alloon.alloonserver.common.util.createFileName
+import com.alloon.alloonserver.common.util.validateFile
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList.PublicRead
 import com.amazonaws.services.s3.model.ObjectMetadata
@@ -13,25 +14,22 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 
 @Service
-class S3Service(
-    private val amazonS3Client: AmazonS3Client,
-) {
+class S3Service(private val amazonS3Client: AmazonS3Client) {
+
     @Value("\${cloud.aws.s3.bucket}")
     private lateinit var bucket: String
 
-    /**
-     * S3에 이미지 업로드 후 이미지 URL을 반환한다.
-     *
-     * @param file 업로드할 이미지 파일
-     * @param pathName 파일이 저장될 경로
-     * @param fileName 저장될 파일 이름
-     * @return 업로드된 이미지 URL
-     * @throws CustomException 서버 오류가 났을 때 발생한다 ([SERVER_ERROR] 500)
-     */
-    fun uploadFile(file: MultipartFile?, pathName: String, fileName: String): String {
-        FileUtility.validateImageFileType(file)
+    @Value("\${cloud.aws.s3.folder.folderName1}")
+    private lateinit var userFolder: String
 
-        val inputStream = file!!.inputStream
+    @Value("\${cloud.aws.s3.folder.folderName2}")
+    private lateinit var challengeFolder: String
+
+    fun uploadImage(file: MultipartFile, folderType: FolderType): String {
+        file.validateFile()
+
+        val fileName = getRoot(folderType) + file.createFileName()
+
         val objectMetadata = ObjectMetadata().apply {
             contentLength = file.size
             contentType = file.contentType
@@ -39,12 +37,23 @@ class S3Service(
 
         return try {
             amazonS3Client.putObject(
-                PutObjectRequest(bucket, "$pathName/$fileName", inputStream, objectMetadata)
+                PutObjectRequest(bucket, fileName, file.inputStream, objectMetadata)
                     .withCannedAcl(PublicRead)
             )
-            amazonS3Client.getUrl(bucket, "$pathName/$fileName").toExternalForm()
+            fileName
         } catch (e: IOException) {
-            throw CustomException(SERVER_ERROR, e.cause)
+            throw CustomException(SERVER_ERROR, e)
+        }
+    }
+
+    fun getImageUrl(fileName: String): String {
+        return amazonS3Client.getUrl(bucket, fileName).toString()
+    }
+
+    private fun getRoot(folderType: FolderType): String {
+        return when (folderType) {
+            FolderType.USERS -> userFolder
+            FolderType.CHALLENGES -> challengeFolder
         }
     }
 }

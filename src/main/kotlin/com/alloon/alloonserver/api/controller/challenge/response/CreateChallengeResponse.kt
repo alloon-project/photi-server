@@ -1,6 +1,6 @@
 package com.alloon.alloonserver.api.controller.challenge.response
 
-import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
@@ -27,7 +27,7 @@ data class CreateChallengeResponse(
     val endDate: LocalDate,
 
     @Schema(description = "챌린지 대표 이미지", example = "https://url.kr/5MhHhD")
-    val imageUrl: String,
+    val imageUrl: String?,
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
@@ -53,7 +53,7 @@ data class CreateChallengeResponse(
 
     companion object {
 
-        fun of(challenge: Challenge): CreateChallengeResponse {
+        fun of(challenge: CreateChallengeDto): CreateChallengeResponse {
             return CreateChallengeResponse(
                 challenge.id,
                 challenge.name,

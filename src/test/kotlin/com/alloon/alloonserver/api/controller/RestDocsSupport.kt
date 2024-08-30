@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import java.security.Principal
 
 @ActiveProfiles("test")
@@ -33,6 +34,7 @@ abstract class RestDocsSupport {
         objectMapper.registerModule(JavaTimeModule())
 
         mockMvc = MockMvcBuilders.standaloneSetup(initController())
+            .alwaysDo<StandaloneMockMvcBuilder>(print())
             .apply<StandaloneMockMvcBuilder>(documentationConfiguration(provider))
             .build()
     }

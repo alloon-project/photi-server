@@ -51,7 +51,7 @@ class ChallengeRepositoryTest(
 
     private fun createAndSaveChallenge(): Challenge {
         val dto = getCreateChallengeDto()
-        val challenge = Challenge.toEntity(dto)
+        val challenge = dto.toEntity("https://url.kr/5MhHhD")
         return challengeRepository.save(challenge)
     }
 
@@ -62,7 +62,6 @@ class ChallengeRepositoryTest(
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
             listOf(
                 CreateChallengeRuleDto("챌린지 인증 룰1"),
                 CreateChallengeRuleDto("챌린지 인증 룰2"),

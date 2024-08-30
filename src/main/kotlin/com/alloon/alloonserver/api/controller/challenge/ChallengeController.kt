@@ -3,9 +3,9 @@ package com.alloon.alloonserver.api.controller.challenge
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
 import com.alloon.alloonserver.api.controller.challenge.response.CreateChallengeResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeInfoResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeMembersResponse
+import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
 import com.alloon.alloonserver.common.constant.SuccessCode.*
 import com.alloon.alloonserver.common.response.*
 import com.alloon.alloonserver.common.util.UserUtility
@@ -48,7 +48,7 @@ class ChallengeController(
         return DefaultListResponse.toResponseEntity(FOUND_CHALLENGE_TEMPLATE_IMAGES, response)
     }
 
-    @PostMapping("/api/challenges")
+    @PostMapping("/api/challenges", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @Operation(summary = "챌린지 생성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponses(
         value = [
@@ -56,47 +56,37 @@ class ChallengeController(
             ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
             ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
             ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다."),
+            ApiResponse(
+                responseCode = "415",
+                description = "이미지는 '.jpeg', '.jpg', '.png', '.gif' 타입만 가능합니다."
+            ),
         ]
     )
     fun createChallenge(
         principal: Principal,
-        @RequestBody @Valid request: CreateChallengeRequest
+        @RequestPart @Valid request: CreateChallengeRequest,
+        @RequestPart imageFile: MultipartFile
     ): ResponseEntity<DefaultSingleResponse> {
-        val challenge = challengeService.createChallenge(UserUtility.getUserId(principal), request.toServiceDto())
+        val challenge = challengeService.createChallenge(
+            UserUtility.getUserId(principal),
+            request.toServiceDto(),
+            imageFile
+        )
         val response = CreateChallengeResponse.of(challenge)
 
         return DefaultSingleResponse.toResponseEntity(CHALLENGE_CREATED, response)
     }
 
-    @PostMapping(
-        "/api/challenges/image",
-        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE],
-        produces = [MediaType.APPLICATION_JSON_VALUE]
-    )
-    @Operation(summary = "챌린지 이미지 업로드")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "챌린지 이미지 업로드 성공"),
-            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
-            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
-            ApiResponse(responseCode = "415", description = "이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."),
-        ]
-    )
-    fun uploadChallengeImage(
-        principal: Principal,
-        @RequestPart(required = false) file: MultipartFile?
-    ): ResponseEntity<DefaultSingleResponse> {
-        val response = challengeService.uploadChallengeImage(UserUtility.getUserId(principal), file)
-
-        return DefaultSingleResponse.toResponseEntity(CHALLENGE_IMAGE_UPLOADED, response)
-    }
-
     @GetMapping("/api/challenges/popular")
-    @Operation(summary = "지금 인기있는 챌린지 조회", description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다.")
+    @Operation(
+        summary = "지금 인기있는 챌린지 조회",
+        description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다."
+    )
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "지금 인기있는 챌린지 조회 성공")])
     fun findPopularChallenges(): ResponseEntity<DefaultListResponse<FindPopularChallengesResponse>> {
         val response = FindPopularChallengesResponse.of(challengeService.findPopularChallenges())
-        val successCode = if (response.isNotEmpty()) FOUND_POPULAR_CHALLENGES else NO_POPULAR_CHALLENGES
+        val successCode =
+            if (response.isNotEmpty()) FOUND_POPULAR_CHALLENGES else NO_POPULAR_CHALLENGES
 
         return DefaultListResponse.toResponseEntity(successCode, response)
     }
@@ -161,8 +151,12 @@ class ChallengeController(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
     ): ResponseEntity<DefaultPageResponse<FindChallengeMembersResponse>> {
-        val challengeMembers = challengeService.findChallengeMembers(UserUtility.getUserId(principal), challengeId)
+        val challengeMembers =
+            challengeService.findChallengeMembers(UserUtility.getUserId(principal), challengeId)
         val response = FindChallengeMembersResponse.of(challengeMembers)
-        return DefaultPageResponse.toResponseEntity(FOUND_CHALLENGE_MEMBERS, PageData(response, response.size.toLong()))
+        return DefaultPageResponse.toResponseEntity(
+            FOUND_CHALLENGE_MEMBERS,
+            PageData(response, response.size.toLong())
+        )
     }
 }

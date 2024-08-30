@@ -10,8 +10,7 @@ import org.mockito.Mockito.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -54,11 +53,11 @@ class UserControllerTest : RestDocsSupport() {
 
         // when & then
         mockMvc.perform(
-            post("/api/users/image")
+            multipart("/api/users/image")
+                .file(MockMultipartFile("file", "file.png", "image/png", ByteArray(1)))
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MULTIPART_FORM_DATA_VALUE)
-                .param("file", file.toString())
         ).andDo(print()).andExpect(status().isOk)
     }
 }

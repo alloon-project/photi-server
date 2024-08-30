@@ -5,12 +5,8 @@ import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeH
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
-import com.alloon.alloonserver.domain.challenge.Challenge
-import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
 import com.alloon.alloonserver.service.challenge.ChallengeService
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
-import com.alloon.alloonserver.service.challenge.dto.FindChallengeInfoDto
-import com.alloon.alloonserver.service.challenge.dto.FindChallengeMembersDto
+import com.alloon.alloonserver.service.challenge.dto.*
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -18,8 +14,7 @@ import io.mockk.runs
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
+import org.springframework.http.MediaType.*
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -58,43 +53,31 @@ class ChallengeControllerTest : RestDocsSupport() {
     fun givenValid_whenCreateChallenge_thenReturn201() {
         // given
         val request = getCreateChallengeRequest()
-        val challenge = Challenge.toEntity(request.toServiceDto())
+        val challenge = request.toServiceDto()
 
-        every { challengeService.createChallenge(any(), any()) } returns challenge
+        every { challengeService.createChallenge(any(), any(), any()) } returns challenge
 
         // when
+        val requestMultipartFile = MockMultipartFile(
+            "request",
+            "request.json",
+            "application/json",
+            objectMapper.writeValueAsBytes(request)
+        )
+        val imageMultipartFile =
+            MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
         val resultActions = mockMvc.perform(
-            post("/api/challenges")
+            multipart("/api/challenges")
+                .file(requestMultipartFile)
+                .file(imageMultipartFile)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .contentType(MULTIPART_FORM_DATA_VALUE)
         )
 
         // then
         resultActions.andExpect(status().isCreated)
             .andExpect(jsonPath("$.message").value("챌린지 생성이 완료되었습니다."))
-    }
-
-    @DisplayName("챌린지 이미지 업로드를 하면 200을 반환한다")
-    @Test
-    fun givenValid_whenUploadChallengeImage_thenReturn200() {
-        // given
-        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
-
-        every { challengeService.uploadChallengeImage(any(), any()) } returns "https://www.google.com"
-
-        // when
-        val resultActions = mockMvc.perform(
-            post("/api/challenges/image")
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-                .contentType(MULTIPART_FORM_DATA_VALUE)
-                .param("file", file.toString())
-        )
-
-        // then
-        resultActions.andExpect(status().isOk)
     }
 
     @DisplayName("챌린지가 있는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
@@ -207,7 +190,6 @@ class ChallengeControllerTest : RestDocsSupport() {
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
             listOf(
                 CreateChallengeRuleRequest("챌린지 인증 룰1"),
                 CreateChallengeRuleRequest("챌린지 인증 룰2"),
