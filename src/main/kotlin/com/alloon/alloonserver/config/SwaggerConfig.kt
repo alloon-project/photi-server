@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.Operation
+import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.security.SecurityScheme
+import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -40,6 +43,30 @@ class SwaggerConfig {
             .addSecuritySchemes(REFRESH_TOKEN_KEY, refreshTokenSecurityScheme)
 
         return OpenAPI().components(components)
+    }
+
+    @Bean
+    fun operationCustomizer(): OperationCustomizer {
+        return OperationCustomizer { operation, _ ->
+            addResponseBodySchemaExample(operation)
+            operation
+        }
+    }
+
+    private fun addResponseBodySchemaExample(operation: Operation) {
+        val filterKeys = operation.responses.filterKeys { it.startsWith("2") }
+
+        filterKeys.forEach { (code, response) ->
+            response.content.forEach { (_, mediaType) ->
+                val data = mediaType.schema
+                val schema = Schema<String>().apply {
+                    addProperty("code", Schema<String>().example(code))
+                    addProperty("message", Schema<String>().example("성공"))
+                    addProperty("data", data)
+                }
+                mediaType.schema = schema
+            }
+        }
     }
 
     companion object {
