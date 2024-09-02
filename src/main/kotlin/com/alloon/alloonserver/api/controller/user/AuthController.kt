@@ -2,15 +2,15 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.common.constant.RegexPatternConstants
-import com.alloon.alloonserver.common.constant.SuccessCode.*
-import com.alloon.alloonserver.common.response.DefaultResponse
-import com.alloon.alloonserver.common.response.DefaultSingleResponse
+import com.alloon.alloonserver.common.response.StringResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.REFRESH_TOKEN_KEY
 import com.alloon.alloonserver.config.auth.JwtProvider
 import com.alloon.alloonserver.service.user.AuthService
 import com.alloon.alloonserver.service.user.dto.UserServiceValidateUsernameDto
+import com.alloon.alloonserver.service.user.response.UserLoginResponse
+import com.alloon.alloonserver.service.user.response.UserRegisterResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -21,6 +21,8 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -42,10 +44,11 @@ class AuthController(
             ApiResponse(responseCode = "409", description = "이미 사용중인 이메일입니다."),
         ]
     )
-    fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<DefaultResponse> {
+    fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<StringResponse> {
         authService.sendVerificationCode(request.toServiceDto())
 
-        return DefaultResponse.toResponseEntity(EMAIL_VERIFICATION_CODE_SENT)
+        return ResponseEntity.status(CREATED)
+            .body(StringResponse("이메일 인증코드를 보냈습니다."))
     }
 
     @PatchMapping("/api/contacts/verify")
@@ -57,10 +60,10 @@ class AuthController(
             ApiResponse(responseCode = "404", description = "존재하지 않는 이메일입니다."),
         ]
     )
-    fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<DefaultResponse> {
+    fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<StringResponse> {
         authService.verifyEmailVerificationCode(request.toServiceDto())
 
-        return DefaultResponse.toResponseEntity(EMAIL_VERIFICATION_CODE_VERIFIED)
+        return ResponseEntity.ok(StringResponse("이메일 인증코드가 확인 되었습니다."))
     }
 
     @GetMapping("/api/users/username")
@@ -86,10 +89,10 @@ class AuthController(
         )
         @Parameter(description = "아이디", example = "photi_123")
         username: String
-    ): ResponseEntity<DefaultResponse> {
+    ): ResponseEntity<StringResponse> {
         authService.validateUsername(UserServiceValidateUsernameDto(username))
 
-        return DefaultResponse.toResponseEntity(USERNAME_AVAILABLE)
+        return ResponseEntity.ok(StringResponse("사용 가능한 아이디입니다."))
     }
 
     @PostMapping("/api/users/register")
@@ -114,12 +117,11 @@ class AuthController(
             ),
         ]
     )
-    fun registerUser(@RequestBody @Valid request: UserRegisterRequest): ResponseEntity<DefaultSingleResponse> {
+    fun registerUser(@RequestBody @Valid request: UserRegisterRequest): ResponseEntity<UserRegisterResponse> {
         val response = authService.registerUser(request.toServiceDto())
-
         val headers = jwtProvider.createToken(response.userId)
 
-        return DefaultSingleResponse.toResponseEntity(headers, USER_REGISTERED, response)
+        return ResponseEntity.status(CREATED).headers(headers).body(response)
     }
 
     @PostMapping("/api/users/find-username")
@@ -130,10 +132,10 @@ class AuthController(
             ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다."),
         ]
     )
-    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<DefaultResponse> {
+    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<StringResponse> {
         authService.findUsername(request.toServiceDto())
 
-        return DefaultResponse.toResponseEntity(USERNAME_SENT)
+        return ResponseEntity.ok(StringResponse("아이디를 이메일로 전송했습니다."))
     }
 
     @PostMapping("/api/users/find-password")
@@ -144,10 +146,10 @@ class AuthController(
             ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다."),
         ]
     )
-    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<DefaultResponse> {
+    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<StringResponse> {
         authService.findPassword(request.toServiceDto())
 
-        return DefaultResponse.toResponseEntity(PASSWORD_SENT)
+        return ResponseEntity.ok(StringResponse("임시 비밀번호를 이메일로 전송했습니다."))
     }
 
     @PostMapping("/api/users/login")
@@ -158,12 +160,11 @@ class AuthController(
             ApiResponse(responseCode = "401", description = "아이디 또는 비밀번호가 틀렸습니다."),
         ]
     )
-    fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<DefaultSingleResponse> {
+    fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<UserLoginResponse> {
         val response = authService.login(request.toServiceDto())
-
         val headers = jwtProvider.createToken(response.userId)
 
-        return DefaultSingleResponse.toResponseEntity(headers, USER_LOGIN, response)
+        return ResponseEntity.status(OK).headers(headers).body(response)
     }
 
     @PatchMapping("/api/users/password")
@@ -185,10 +186,10 @@ class AuthController(
     fun changePassword(
         principal: Principal,
         @RequestBody @Valid request: UserChangePasswordRequest
-    ): ResponseEntity<DefaultResponse> {
+    ): ResponseEntity<StringResponse> {
         authService.changePassword(UserUtility.getUserId(principal), request.toServiceDto())
 
-        return DefaultResponse.toResponseEntity(PASSWORD_CHANGED)
+        return ResponseEntity.ok(StringResponse("비밀번호가 변경되었습니다."))
     }
 
     @PostMapping("/api/users/token")
@@ -200,9 +201,11 @@ class AuthController(
             ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
         ]
     )
-    fun refreshToken(principal: Principal): ResponseEntity<DefaultResponse> {
+    fun refreshToken(principal: Principal): ResponseEntity<StringResponse> {
         val headers = jwtProvider.createToken(UserUtility.getUserId(principal))
 
-        return DefaultResponse.toResponseEntity(headers, TOKEN_REFRESHED)
+        return ResponseEntity.status(OK)
+            .headers(headers)
+            .body(StringResponse("토큰이 재발급 됐습니다."))
     }
 }
