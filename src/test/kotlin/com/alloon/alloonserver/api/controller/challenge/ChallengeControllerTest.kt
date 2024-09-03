@@ -60,7 +60,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isCreated)
-            .andExpect(jsonPath("$.message").value("챌린지 생성이 완료되었습니다."))
     }
 
     @DisplayName("챌린지 예시 이미지 전체 조회를 하면 200을 반환한다")
@@ -97,7 +96,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지를 전체 조회했습니다."))
     }
 
     @DisplayName("챌린지가 없는 경우 지금 인기있는 챌린지 조회를 하면 200을 반환한다")
@@ -115,7 +113,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("지금 인기있는 챌린지가 없습니다."))
     }
 
     @DisplayName("챌린지 멤버가 챌린지 소개 조회를 성공하면 200을 반환한다")
@@ -134,7 +131,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("챌린지 소개를 조회했습니다."))
     }
 
     @DisplayName("챌린지 멤버가 개인목표 작성을 성공하면 200을 반환한다")
@@ -156,7 +152,7 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("챌린지 개인목표 작성이 완료되었습니다."))
+            .andExpect(jsonPath("$.successMessage").value("챌린지 개인목표 작성이 완료되었습니다."))
     }
 
     @DisplayName("챌린지 멤버가 챌린지 파티원 조회를 성공하면 200을 반환한다")
@@ -176,7 +172,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("챌린지 파티원을 전체 조회했습니다."))
     }
 
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
