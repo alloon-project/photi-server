@@ -22,8 +22,7 @@ class CustomAuthenticationEntryPoint(
         response: HttpServletResponse?,
         authException: AuthenticationException?
     ) {
-        val path = request?.requestURL.toString()
-        val errorResponse = ErrorResponse.of(TOKEN_UNAUTHENTICATED, path)
+        val errorResponse = ErrorResponse.of(TOKEN_UNAUTHENTICATED)
 
         response?.apply {
             status = UNAUTHORIZED.value()
