@@ -4,7 +4,7 @@ import com.alloon.alloonserver.api.controller.user.request.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
 import com.alloon.alloonserver.common.response.ApiErrorResponses
-import com.alloon.alloonserver.common.response.StringResponse
+import com.alloon.alloonserver.common.response.StringSuccessResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.REFRESH_TOKEN_KEY
@@ -41,21 +41,21 @@ class AuthController(
     @Operation(summary = "이메일 인증코드 전송")
     @ApiResponse(responseCode = "201")
     @ApiErrorResponses([EXISTING_EMAIL])
-    fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<StringResponse> {
+    fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<StringSuccessResponse> {
         authService.sendVerificationCode(request.toServiceDto())
 
         return ResponseEntity.status(CREATED)
-            .body(StringResponse("이메일 인증코드를 보냈습니다."))
+            .body(StringSuccessResponse("이메일 인증코드를 보냈습니다."))
     }
 
     @PatchMapping("/api/contacts/verify")
     @Operation(summary = "이메일 인증코드 확인")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([EMAIL_VERIFICATION_CODE_INVALID, EMAIL_NOT_FOUND])
-    fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<StringResponse> {
+    fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<StringSuccessResponse> {
         authService.verifyEmailVerificationCode(request.toServiceDto())
 
-        return ResponseEntity.ok(StringResponse("이메일 인증코드가 확인 되었습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("이메일 인증코드가 확인 되었습니다."))
     }
 
     @GetMapping("/api/users/username")
@@ -67,10 +67,10 @@ class AuthController(
         @Pattern(regexp = LOWERCASE_NUMBER_UNDERSCORE)
         @Parameter(description = "아이디", example = "photi_123")
         username: String
-    ): ResponseEntity<StringResponse> {
+    ): ResponseEntity<StringSuccessResponse> {
         authService.validateUsername(UserServiceValidateUsernameDto(username))
 
-        return ResponseEntity.ok(StringResponse("사용 가능한 아이디입니다."))
+        return ResponseEntity.ok(StringSuccessResponse("사용 가능한 아이디입니다."))
     }
 
     @PostMapping("/api/users/register")
@@ -88,20 +88,20 @@ class AuthController(
     @Operation(summary = "아이디 찾기")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([USER_NOT_FOUND])
-    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<StringResponse> {
+    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<StringSuccessResponse> {
         authService.findUsername(request.toServiceDto())
 
-        return ResponseEntity.ok(StringResponse("아이디를 이메일로 전송했습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("아이디를 이메일로 전송했습니다."))
     }
 
     @PostMapping("/api/users/find-password")
     @Operation(summary = "비밀번호 찾기")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([USER_NOT_FOUND])
-    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<StringResponse> {
+    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<StringSuccessResponse> {
         authService.findPassword(request.toServiceDto())
 
-        return ResponseEntity.ok(StringResponse("임시 비밀번호를 이메일로 전송했습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("임시 비밀번호를 이메일로 전송했습니다."))
     }
 
     @PostMapping("/api/users/login")
@@ -122,21 +122,21 @@ class AuthController(
     fun changePassword(
         principal: Principal,
         @RequestBody @Valid request: UserChangePasswordRequest
-    ): ResponseEntity<StringResponse> {
+    ): ResponseEntity<StringSuccessResponse> {
         authService.changePassword(UserUtility.getUserId(principal), request.toServiceDto())
 
-        return ResponseEntity.ok(StringResponse("비밀번호가 변경되었습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("비밀번호가 변경되었습니다."))
     }
 
     @PostMapping("/api/users/token")
     @Operation(summary = "토큰 재발급", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
-    fun refreshToken(principal: Principal): ResponseEntity<StringResponse> {
+    fun refreshToken(principal: Principal): ResponseEntity<StringSuccessResponse> {
         val headers = jwtProvider.createToken(UserUtility.getUserId(principal))
 
         return ResponseEntity.status(OK)
             .headers(headers)
-            .body(StringResponse("토큰이 재발급 됐습니다."))
+            .body(StringSuccessResponse("토큰이 재발급 됐습니다."))
     }
 }
