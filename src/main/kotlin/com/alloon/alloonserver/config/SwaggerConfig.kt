@@ -1,17 +1,23 @@
 package com.alloon.alloonserver.config
 
 import com.alloon.alloonserver.common.constant.CustomHttpHeaders
+import com.alloon.alloonserver.common.response.ApiErrorResponses
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.Operation
+import io.swagger.v3.oas.models.examples.Example
+import io.swagger.v3.oas.models.media.Content
+import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.media.Schema
+import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
+import org.springframework.web.method.HandlerMethod
 
 @OpenAPIDefinition(
     info = Info(
@@ -47,8 +53,9 @@ class SwaggerConfig {
 
     @Bean
     fun operationCustomizer(): OperationCustomizer {
-        return OperationCustomizer { operation, _ ->
+        return OperationCustomizer { operation, handlerMethod ->
             addResponseBodySchemaExample(operation)
+            addApiErrorResponses(operation, handlerMethod)
             operation
         }
     }
@@ -66,6 +73,30 @@ class SwaggerConfig {
                 }
                 mediaType.schema = schema
             }
+        }
+    }
+
+    private fun addApiErrorResponses(operation: Operation, handlerMethod: HandlerMethod) {
+        val apiErrorResponses = handlerMethod.method.getAnnotation(ApiErrorResponses::class.java)
+
+        apiErrorResponses?.exceptionCodes?.forEach { exceptionCode ->
+            val example = Example().apply {
+                summary = exceptionCode.name
+                value = mapOf("code" to exceptionCode.name, "message" to exceptionCode.message)
+                description = exceptionCode.description
+            }
+            val apiResponse = operation.responses[exceptionCode.httpStatus.value().toString()]
+            val mediaType = apiResponse?.content?.get("application/json") ?: MediaType()
+            val examples = mediaType.examples?.toMutableMap() ?: mutableMapOf()
+
+            examples[exceptionCode.name] = example
+
+            operation.responses.addApiResponse(
+                exceptionCode.httpStatus.value().toString(),
+                ApiResponse().content(
+                    Content().addMediaType("application/json", MediaType().examples(examples))
+                )
+            )
         }
     }
 

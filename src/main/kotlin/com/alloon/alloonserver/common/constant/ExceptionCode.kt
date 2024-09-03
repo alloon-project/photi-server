@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus.*
 enum class ExceptionCode(
     val httpStatus: HttpStatus,
     val message: String,
+    val description: String? = null,
 ) {
 
     /**
@@ -44,7 +45,7 @@ enum class ExceptionCode(
 
     // @Pattern, @Email
     EMAIL_FORMAT_INVALID(BAD_REQUEST, "올바른 이메일 형식을 입력해 주세요."),
-    USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."),
+    USERNAME_FORMAT_INVALID(BAD_REQUEST, "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요.", "아이디는 5~20자만 가능하고, 정규식은 ^[a-z0-9_]+$ 입니다."),
     PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     NEW_PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     REPORT_TYPE_INVALID(BAD_REQUEST, "신고 타입은 'CHALLENGE', 'CHALLENGE_MEMBER', 'FEED' 중 하나여야 됩니다."),
@@ -103,7 +104,10 @@ enum class ExceptionCode(
     /**
      * 415 Unsupported Media Type
      */
-    IMAGE_TYPE_UNSUPPORTED(UNSUPPORTED_MEDIA_TYPE, "이미지는 '.jpeg', '.jpg', '.png', '.gif' 타입만 가능합니다."),
+    IMAGE_TYPE_UNSUPPORTED(
+        UNSUPPORTED_MEDIA_TYPE,
+        "이미지는 '.jpeg', '.jpg', '.png', '.gif' 타입만 가능합니다."
+    ),
 
     /**
      * 500 Internal Server Error
