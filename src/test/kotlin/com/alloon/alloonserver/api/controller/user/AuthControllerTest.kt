@@ -49,16 +49,18 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isCreated)
-            .andExpect(jsonPath("$.message").value("이메일 인증코드를 보냈습니다."))
+            .andExpect(jsonPath("$.successMessage").value("이메일 인증코드를 보냈습니다."))
     }
 
     @DisplayName("회원 가입을 하면 201을 반환한다")
     @Test
     fun givenValid_whenRegister_thenReturn201() {
         // given
-        val request = UserRegisterRequest("tester@photi.com", "000000", "tester", "password1!", "password1!")
+        val request =
+            UserRegisterRequest("tester@photi.com", "000000", "tester", "password1!", "password1!")
+        val response = UserRegisterResponse(1L, request.username)
 
-        every { authService.registerUser(any()) } returns UserRegisterResponse(1L, request.username)
+        every { authService.registerUser(any()) } returns response
         every { jwtProvider.createToken(any()) } returns HttpHeaders().apply {
             set(AUTHORIZATION, "access-token")
             set(REFRESH_TOKEN, "refresh-token")
@@ -73,7 +75,8 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isCreated)
-            .andExpect(jsonPath("$.message").value("회원 가입을 완료했습니다."))
+            .andExpect(jsonPath("$.userId").value(response.userId))
+            .andExpect(jsonPath("$.username").value(response.username))
     }
 
     @DisplayName("아이디 찾기를 하면 200을 반환한다")
@@ -93,7 +96,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("아이디를 이메일로 전송했습니다."))
+            .andExpect(jsonPath("$.successMessage").value("아이디를 이메일로 전송했습니다."))
     }
 
     @DisplayName("비밀번호 찾기를 하면 200을 반환한다")
@@ -113,7 +116,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("임시 비밀번호를 이메일로 전송했습니다."))
+            .andExpect(jsonPath("$.successMessage").value("임시 비밀번호를 이메일로 전송했습니다."))
     }
 
     @DisplayName("회원 로그인을 하면 200을 반환한다")
@@ -121,8 +124,9 @@ class AuthControllerTest : RestDocsSupport() {
     fun givenValid_whenLogin_thenReturn200() {
         // given
         val request = UserLoginRequest("tester", "password1!")
+        val response = UserLoginResponse(1, request.username, "", false)
 
-        every { authService.login(request.toServiceDto()) } returns UserLoginResponse(1, request.username, "", false)
+        every { authService.login(request.toServiceDto()) } returns response
         every { jwtProvider.createToken(any()) } returns HttpHeaders().apply {
             set(AUTHORIZATION, "access-token")
             set(REFRESH_TOKEN, "refresh-token")
@@ -137,7 +141,10 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("로그인을 했습니다."))
+            .andExpect(jsonPath("$.userId").value(response.userId))
+            .andExpect(jsonPath("$.username").value(response.username))
+            .andExpect(jsonPath("$.imageUrl").value(response.imageUrl))
+            .andExpect(jsonPath("$.temporaryPasswordYn").value(response.temporaryPasswordYn))
     }
 
     @DisplayName("비밀번호 변경을 하면 200을 반환한다")
@@ -159,7 +166,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("비밀번호가 변경되었습니다."))
+            .andExpect(jsonPath("$.successMessage").value("비밀번호가 변경되었습니다."))
     }
 
     @DisplayName("토큰을 재발급하면 200을 반환한다")
@@ -180,7 +187,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("토큰이 재발급 됐습니다."))
+            .andExpect(jsonPath("$.successMessage").value("토큰이 재발급 됐습니다."))
     }
 
     @DisplayName("이메일 인증코드 검증을 하면 200을 반환한다")
@@ -200,7 +207,7 @@ class AuthControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-            .andExpect(jsonPath("$.message").value("이메일 인증코드가 확인 되었습니다."))
+            .andExpect(jsonPath("$.successMessage").value("이메일 인증코드가 확인 되었습니다."))
     }
 
     @DisplayName("이메일 미입력시 이메일 인증코드 검증을 하면 400을 반환한다")
@@ -260,7 +267,8 @@ class AuthControllerTest : RestDocsSupport() {
     @Test
     fun givenBlankVerificationCode_whenRegister_thenReturn400() {
         // given
-        val request = UserRegisterRequest("tester@photi.com", "", "tester", "password1!", "password1!")
+        val request =
+            UserRegisterRequest("tester@photi.com", "", "tester", "password1!", "password1!")
 
         every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
 
@@ -279,7 +287,8 @@ class AuthControllerTest : RestDocsSupport() {
     @Test
     fun givenBlankUsername_whenRegister_thenReturn400() {
         // given
-        val request = UserRegisterRequest("tester@photi.com", "000000", "", "password1!", "password1!")
+        val request =
+            UserRegisterRequest("tester@photi.com", "000000", "", "password1!", "password1!")
 
         every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
 

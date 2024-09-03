@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.common.exception
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.ExceptionCode.FILE_SIZE_EXCEED
+import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
 import io.sentry.Sentry
@@ -14,7 +15,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.context.request.ServletWebRequest
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
@@ -27,8 +27,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         ex: CustomException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        val path = request.requestURL.toString()
-        val response = ErrorResponse.of(ex.exceptionCode, path)
+        val response = ErrorResponse.of(ex.exceptionCode)
         return ResponseEntity.status(ex.exceptionCode.httpStatus).body(response)
     }
 
@@ -38,8 +37,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
         logger.info("Exception : ${ex.message}")
-        val path = request.requestURL.toString()
-        val response = ErrorResponse.of(SERVER_ERROR, path)
+        val response = ErrorResponse.of(SERVER_ERROR)
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
 
@@ -55,10 +53,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         val message = ex.bindingResult.fieldErrors.map {
             mapOf(it.field to it.defaultMessage)
         }
-        val httpServletRequest = (request as ServletWebRequest).request
-        val path = httpServletRequest.requestURL.toString()
-
-        val response = ErrorResponse(status.value(), status.toString().split(" ")[1], message, path)
+        val response = ErrorResponse(status.toString().split(" ")[1], message)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
@@ -74,9 +69,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
             val property = propertyPaths.lastOrNull()
             message.add(mapOf(property to it.message))
         }
-        val path = request.requestURL.toString()
-
-        val response = ErrorResponse(BAD_REQUEST.value(), BAD_REQUEST.name, message, path)
+        val response = ErrorResponse(BAD_REQUEST.name, message)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
@@ -88,10 +81,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any>? {
         val message = ex.mostSpecificCause.message.toString()
-        val httpServletRequest = (request as ServletWebRequest).request
-        val path = httpServletRequest.requestURL.toString()
-
-        val response = ErrorResponse(status.value(), status.toString().split(" ")[1], message, path)
+        val response = ErrorResponse(status.toString().split(" ")[1], message)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
@@ -105,9 +95,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        val httpServletRequest = (request as ServletWebRequest).request
-        val path = httpServletRequest.requestURL.toString()
-        val response = ErrorResponse.of(FILE_SIZE_EXCEED, path)
+        val response = ErrorResponse.of(FILE_SIZE_EXCEED)
         return ResponseEntity.status(PAYLOAD_TOO_LARGE).body(response)
     }
 
@@ -115,10 +103,12 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
      * 500 Internal Server Error
      */
     @ExceptionHandler(Exception::class)
-    protected fun handleException(ex: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+    protected fun handleException(
+        ex: Exception,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
         Sentry.captureException(ex)
-        val path = request.requestURL.toString()
-        val response = ErrorResponse.of(SERVER_ERROR, path)
+        val response = ErrorResponse.of(SERVER_ERROR)
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
 }
