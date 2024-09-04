@@ -67,7 +67,7 @@ class SwaggerConfig {
             response.content.forEach { (_, mediaType) ->
                 val data = mediaType.schema
                 val schema = Schema<String>().apply {
-                    addProperty("code", Schema<String>().example(code))
+                    addProperty("code", Schema<String>().example("$code ${response.description}"))
                     addProperty("message", Schema<String>().example("성공"))
                     addProperty("data", data)
                 }
