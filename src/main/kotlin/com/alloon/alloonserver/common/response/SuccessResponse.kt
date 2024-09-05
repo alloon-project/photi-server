@@ -1,7 +1,7 @@
 package com.alloon.alloonserver.common.response
 
 data class SuccessResponse<T>(
-    val code: Int,
+    val code: String,
     val message: String,
     val data: T,
 )

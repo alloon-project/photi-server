@@ -34,7 +34,7 @@ class SuccessResponseBodyAdvice : ResponseBodyAdvice<Any> {
         val resolve = HttpStatus.resolve(status) ?: return body
 
         if (resolve.is2xxSuccessful) {
-            return SuccessResponse(status, "성공", body)
+            return SuccessResponse("$status ${resolve.name}", "성공", body)
         }
 
         return body
