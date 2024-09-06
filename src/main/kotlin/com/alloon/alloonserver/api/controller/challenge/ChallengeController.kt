@@ -9,6 +9,7 @@ import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChal
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
 import com.alloon.alloonserver.common.response.CollectionSuccessResponse
+import com.alloon.alloonserver.common.response.SliceResponse
 import com.alloon.alloonserver.common.response.StringSuccessResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -29,12 +31,13 @@ import java.security.Principal
 
 @Validated
 @RestController
+@RequestMapping("/api/challenges")
 @Tag(name = "Challenge", description = "챌린지 API")
 class ChallengeController(
     private val challengeService: ChallengeService
 ) {
 
-    @PostMapping("/api/challenges", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @Operation(summary = "챌린지 생성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "201")
     @ApiErrorResponses([EMPTY_FILE_INVALID, TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, IMAGE_TYPE_UNSUPPORTED])
@@ -53,7 +56,7 @@ class ChallengeController(
         return ResponseEntity.status(CREATED).body(response)
     }
 
-    @GetMapping("/api/challenges/example-images")
+    @GetMapping("/example-images")
     @Operation(summary = "챌린지 예시 이미지 리스트 조회")
     @ApiResponse(responseCode = "200")
     fun getChallengeExampleImages(): ResponseEntity<CollectionSuccessResponse> {
@@ -62,7 +65,7 @@ class ChallengeController(
         return ResponseEntity.ok(CollectionSuccessResponse(response))
     }
 
-    @GetMapping("/api/challenges/popular")
+    @GetMapping("/popular")
     @Operation(
         summary = "지금 인기있는 챌린지 조회",
         description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다."
@@ -74,7 +77,7 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/api/challenges/{challengeId}/info")
+    @GetMapping("/{challengeId}/info")
     @Operation(summary = "챌린지 소개 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND])
@@ -88,7 +91,7 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @PatchMapping("/api/challenges/{challengeId}/challenge-members/goal")
+    @PatchMapping("/{challengeId}/challenge-members/goal")
     @Operation(summary = "챌린지 개인목표 작성", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND])
@@ -106,7 +109,7 @@ class ChallengeController(
         return ResponseEntity.ok(StringSuccessResponse("챌린지 개인목표 작성이 완료되었습니다."))
     }
 
-    @GetMapping("/api/challenges/{challengeId}/challenge-members")
+    @GetMapping("/{challengeId}/challenge-members")
     @Operation(
         summary = "챌린지 파티원 조회",
         description = "파티장 -> 본인 -> 가입순으로 파티원이 전체 조회됩니다.",
@@ -121,6 +124,19 @@ class ChallengeController(
         val challengeMembers =
             challengeService.findChallengeMembers(UserUtility.getUserId(principal), challengeId)
         val response = FindChallengeMembersResponse.of(challengeMembers)
+
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping
+    @Operation(summary = "모든 챌린지 조회", description = "종료 날짜 최신순으로 모든 챌린지가 조회됩니다.")
+    @ApiResponse(responseCode = "200")
+    fun findAllChallenges(
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<FindPopularChallengesResponse>> {
+        val challenges = challengeService.findAllChallenges(PageRequest.of(page, size))
+        val response = SliceResponse.of(challenges)
 
         return ResponseEntity.ok(response)
     }
