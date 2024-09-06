@@ -4,6 +4,7 @@ import com.alloon.alloonserver.config.auth.CustomAuthenticationEntryPoint
 import com.alloon.alloonserver.config.auth.CustomAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -27,17 +28,20 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
+                it.requestMatchers(POST, "/api/challenges").authenticated()
                 it.requestMatchers(
                     "/api/users/token",
                     "/api/users/password",
-                    "/api/challenges",
                     "/api/challenges/{challengeId}/info",
                     "/api/challenges/{challengeId}/challenge-members/goal",
                     "/api/challenges/{challengeId}/challenge-members",
                 ).authenticated()
                 it.anyRequest().permitAll()
             }
-            .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                customAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter::class.java
+            )
             .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint) }
             .build()
     }

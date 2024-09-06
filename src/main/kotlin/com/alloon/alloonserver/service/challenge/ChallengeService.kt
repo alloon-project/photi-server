@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.service.challenge
 
+import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
@@ -7,6 +8,8 @@ import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
 import com.alloon.alloonserver.service.s3.S3Service
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -69,5 +72,10 @@ class ChallengeService(
 
     fun findChallengeMembers(userId: Long, challengeId: Long): List<FindChallengeMembersDto> {
         return challengeMemberRepository.findAllByChallengeId(userId, challengeId)
+    }
+
+    fun findAllChallenges(pageable: Pageable): Slice<FindPopularChallengesResponse> {
+        return challengeRepository.findAllOrderByEndDate(pageable)
+            .map { FindPopularChallengesResponse.of(it) }
     }
 }

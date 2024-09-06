@@ -2,7 +2,9 @@ package com.alloon.alloonserver.service.challenge
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.domain.challenge.*
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -16,6 +18,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.SliceImpl
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -99,17 +103,9 @@ class ChallengeServiceTest : AbstractMailProperties {
     @Test
     fun givenValid_whenFindPopularChallenges_thenReturn() {
         // given
-        val challenge = FindPopularChallengesDto(
-            1L,
-            "챌린지 이름",
-            LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
-            listOf("해시태그 1", "해시태그 2")
-        )
+        val dto = getFindChallengesDto()
 
-        every { challengeRepository.findPopular() } returns listOf(
-            challenge, challenge, challenge, challenge
-        )
+        every { challengeRepository.findPopular() } returns listOf(dto, dto, dto, dto)
 
         // when
         val result = challengeService.findPopularChallenges()
@@ -207,6 +203,28 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(result.size).isEqualTo(1)
     }
 
+    @DisplayName("모든 챌린지 조회를 하면 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindAllChallenges_thenReturn() {
+        // given
+        val dto = getFindChallengesDto()
+        val content = listOf(dto, dto, dto)
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { challengeRepository.findAllOrderByEndDate(any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val result = challengeService.findAllChallenges(pageable)
+
+        // then
+        assertThat(result.content.size).isEqualTo(3)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -243,6 +261,16 @@ class ChallengeServiceTest : AbstractMailProperties {
             "챌린지 목표입니다.",
             LocalDate.now(),
             LocalDate.of(2024, 12, 1),
+        )
+    }
+
+    private fun getFindChallengesDto(): FindPopularChallengesDto {
+        return FindPopularChallengesDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
         )
     }
 }
