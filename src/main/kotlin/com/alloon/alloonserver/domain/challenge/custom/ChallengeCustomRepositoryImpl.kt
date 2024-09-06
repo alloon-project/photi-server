@@ -8,6 +8,9 @@ import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.QFindPopularChallengesDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.domain.SliceImpl
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -48,6 +51,35 @@ class ChallengeCustomRepositoryImpl(
             .join(challenge.rules).fetchJoin()
             .where(challenge.id.eq(id))
             .fetchFirst()
+    }
+
+    override fun findAllOrderByEndDate(pageable: Pageable): Slice<FindPopularChallengesDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindPopularChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.endDate,
+                    challenge.imageUrl,
+                    challenge.hashtags
+                )
+            )
+            .from(challenge)
+            .where(eqServiceStatus(ACTIVE))
+            .orderBy(challenge.endDate.asc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
     }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
