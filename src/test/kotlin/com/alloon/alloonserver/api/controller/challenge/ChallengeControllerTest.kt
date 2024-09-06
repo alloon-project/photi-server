@@ -5,6 +5,7 @@ import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeH
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
+import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
 import com.alloon.alloonserver.service.challenge.dto.*
 import io.mockk.every
@@ -13,6 +14,8 @@ import io.mockk.mockk
 import io.mockk.runs
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.SliceImpl
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.*
 import org.springframework.mock.web.MockMultipartFile
@@ -79,15 +82,9 @@ class ChallengeControllerTest : RestDocsSupport() {
     @Test
     fun givenChallenge_whenFindPopularChallenges_thenReturn200() {
         // given
-        val challenge = FindPopularChallengesDto(
-            1L,
-            "챌린지 이름",
-            LocalDate.of(2024, 12, 1),
-            "https://url.kr/5MhHhD",
-            listOf("해시태그 1", "해시태그 2")
-        )
+        val dto = getFindChallengesDto()
 
-        every { challengeService.findPopularChallenges() } returns listOf(challenge)
+        every { challengeService.findPopularChallenges() } returns listOf(dto)
 
         // when
         val resultActions = mockMvc.perform(
@@ -174,6 +171,28 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("모든 챌린지 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindAllChallenges_thenReturn200() {
+        // given
+        val dto = getFindChallengesDto()
+        val content = listOf(FindPopularChallengesResponse.of(dto))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { challengeService.findAllChallenges(any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(get("/api/challenges"))
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
@@ -204,6 +223,16 @@ class ChallengeControllerTest : RestDocsSupport() {
             "챌린지 목표입니다.",
             LocalDate.now(),
             LocalDate.of(2024, 12, 1),
+        )
+    }
+
+    private fun getFindChallengesDto(): FindPopularChallengesDto {
+        return FindPopularChallengesDto(
+            1L,
+            "챌린지 이름",
+            LocalDate.of(2024, 12, 1),
+            "https://url.kr/5MhHhD",
+            listOf("해시태그 1", "해시태그 2")
         )
     }
 }
