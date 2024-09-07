@@ -47,7 +47,7 @@ class Challenge(
 
     //TODO redis 사용하면 hyperlog 로 변경 필요함.
     @Column(nullable = false)
-    val visitCnt: Int = 0,
+    var visitCnt: Int = 0,
 
     @Column(nullable = false)
     val isRecruit: Boolean = true,
@@ -56,5 +56,9 @@ class Challenge(
     fun addChallengeRule(rule: ChallengeRule) {
         rules.add(rule)
         rule.challenge = this
+    }
+
+    fun updateVisitCnt() {
+        visitCnt += 1
     }
 }
