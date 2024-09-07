@@ -15,5 +15,9 @@ data class ChallengeHashtagResponse(
         fun of(challengeHashtag: ChallengeHashtagDto): ChallengeHashtagResponse {
             return ChallengeHashtagResponse(challengeHashtag.hashtag)
         }
+
+        fun of(challengeHashtags: List<ChallengeHashtagDto>): List<ChallengeHashtagResponse> {
+            return challengeHashtags.map { of(it) }
+        }
     }
 }
