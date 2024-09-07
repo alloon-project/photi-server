@@ -78,4 +78,14 @@ class ChallengeService(
         return challengeRepository.findAllOrderByEndDate(pageable)
             .map { FindChallengesResponse.of(it) }
     }
+
+    @Transactional
+    fun findChallenge(challengeId: Long): FindChallengeDto {
+        val challenge = challengeRepository.findInfoById(challengeId) ?: throw CustomException(
+            CHALLENGE_NOT_FOUND
+        )
+        challenge.updateVisitCnt()
+
+        return FindChallengeDto.of(challenge)
+    }
 }
