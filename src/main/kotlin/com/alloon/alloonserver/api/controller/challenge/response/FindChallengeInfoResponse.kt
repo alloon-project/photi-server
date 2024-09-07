@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalTime
 
+@Schema(description = "챌린지 소개 조회 응답 객체")
 data class FindChallengeInfoResponse(
 
     @Schema(
@@ -39,9 +40,7 @@ data class FindChallengeInfoResponse(
 
         fun of(challengeInfo: FindChallengeInfoDto): FindChallengeInfoResponse {
             return FindChallengeInfoResponse(
-                challengeInfo.rules.map {
-                    ChallengeRuleResponse.of(it)
-                },
+                ChallengeRuleResponse.of(challengeInfo.rules),
                 challengeInfo.proveTime,
                 challengeInfo.goal,
                 challengeInfo.startDate,

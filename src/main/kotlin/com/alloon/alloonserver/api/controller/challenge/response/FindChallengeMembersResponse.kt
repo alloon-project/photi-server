@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+@Schema(description = "챌린지 파티원 조회 응답 객체")
 data class FindChallengeMembersResponse(
 
     @Schema(description = "파티원 식별자", example = "1")

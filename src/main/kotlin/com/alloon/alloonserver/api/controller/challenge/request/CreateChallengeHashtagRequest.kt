@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-@Schema(description = "챌린지 해시태그")
+@Schema(description = "챌린지 해시태그 요청 객체")
 data class CreateChallengeHashtagRequest(
 
     @field:NotBlank(message = "해시태그는 필수 입력입니다.")

@@ -61,12 +61,8 @@ data class CreateChallengeResponse(
                 challenge.proveTime,
                 challenge.endDate,
                 challenge.imageUrl,
-                challenge.rules.map {
-                    ChallengeRuleResponse.of(it)
-                },
-                challenge.hashtags.map {
-                    ChallengeHashtagResponse.of(it)
-                }
+                ChallengeRuleResponse.of(challenge.rules),
+                ChallengeHashtagResponse.of(challenge.hashtags)
             )
         }
     }
