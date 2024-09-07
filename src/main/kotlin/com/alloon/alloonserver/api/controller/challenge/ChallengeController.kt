@@ -2,10 +2,7 @@ package com.alloon.alloonserver.api.controller.challenge
 
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
-import com.alloon.alloonserver.api.controller.challenge.response.CreateChallengeResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeInfoResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeMembersResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
 import com.alloon.alloonserver.common.response.CollectionSuccessResponse
@@ -137,6 +134,19 @@ class ChallengeController(
     ): ResponseEntity<SliceResponse<FindChallengesResponse>> {
         val challenges = challengeService.findAllChallenges(PageRequest.of(page, size))
         val response = SliceResponse.of(challenges)
+
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/{challengeId}")
+    @Operation(summary = "챌린지 개별 조회")
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([CHALLENGE_NOT_FOUND])
+    fun findChallenge(
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<FindChallengeResponse> {
+        val challenge = challengeService.findChallenge(challengeId)
+        val response = FindChallengeResponse.of(challenge)
 
         return ResponseEntity.ok(response)
     }
