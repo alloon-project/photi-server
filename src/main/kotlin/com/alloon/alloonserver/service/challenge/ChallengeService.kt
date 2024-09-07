@@ -1,6 +1,6 @@
 package com.alloon.alloonserver.service.challenge
 
-import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
@@ -46,7 +46,7 @@ class ChallengeService(
         return s3Service.getChallengeExampleImages()
     }
 
-    fun findPopularChallenges(): List<FindPopularChallengesDto> {
+    fun findPopularChallenges(): List<FindChallengesDto> {
         return challengeRepository.findPopular()
     }
 
@@ -74,8 +74,8 @@ class ChallengeService(
         return challengeMemberRepository.findAllByChallengeId(userId, challengeId)
     }
 
-    fun findAllChallenges(pageable: Pageable): Slice<FindPopularChallengesResponse> {
+    fun findAllChallenges(pageable: Pageable): Slice<FindChallengesResponse> {
         return challengeRepository.findAllOrderByEndDate(pageable)
-            .map { FindPopularChallengesResponse.of(it) }
+            .map { FindChallengesResponse.of(it) }
     }
 }

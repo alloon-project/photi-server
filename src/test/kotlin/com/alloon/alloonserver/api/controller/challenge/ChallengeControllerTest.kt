@@ -5,7 +5,7 @@ import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeH
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
-import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
 import com.alloon.alloonserver.service.challenge.dto.*
 import io.mockk.every
@@ -176,7 +176,7 @@ class ChallengeControllerTest : RestDocsSupport() {
     fun givenValid_whenFindAllChallenges_thenReturn200() {
         // given
         val dto = getFindChallengesDto()
-        val content = listOf(FindPopularChallengesResponse.of(dto))
+        val content = listOf(FindChallengesResponse.of(dto))
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
@@ -215,9 +215,9 @@ class ChallengeControllerTest : RestDocsSupport() {
     private fun getFindChallengeInfoDto(): FindChallengeInfoDto {
         return FindChallengeInfoDto(
             listOf(
-                CreateChallengeRuleDto("챌린지 인증 룰1"),
-                CreateChallengeRuleDto("챌린지 인증 룰2"),
-                CreateChallengeRuleDto("챌린지 인증 룰3"),
+                ChallengeRuleDto("챌린지 인증 룰1"),
+                ChallengeRuleDto("챌린지 인증 룰2"),
+                ChallengeRuleDto("챌린지 인증 룰3"),
             ),
             LocalTime.of(13, 0),
             "챌린지 목표입니다.",
@@ -226,8 +226,8 @@ class ChallengeControllerTest : RestDocsSupport() {
         )
     }
 
-    private fun getFindChallengesDto(): FindPopularChallengesDto {
-        return FindPopularChallengesDto(
+    private fun getFindChallengesDto(): FindChallengesDto {
+        return FindChallengesDto(
             1L,
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),

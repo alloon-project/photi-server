@@ -1,8 +1,8 @@
 package com.alloon.alloonserver.api.controller.challenge.request
 
 import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeHashtagDto
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
+import com.alloon.alloonserver.service.challenge.dto.ChallengeHashtagDto
+import com.alloon.alloonserver.service.challenge.dto.ChallengeRuleDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
@@ -73,10 +73,10 @@ data class CreateChallengeRequest(
             proveTime,
             endDate,
             rules.map {
-                CreateChallengeRuleDto(it.rule)
+                ChallengeRuleDto(it.rule)
             },
             hashtags.map {
-                CreateChallengeHashtagDto(it.hashtag)
+                ChallengeHashtagDto(it.hashtag)
             },
         )
     }

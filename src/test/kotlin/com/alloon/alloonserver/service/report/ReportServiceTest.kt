@@ -19,8 +19,8 @@ import com.alloon.alloonserver.domain.user.Role.ADMIN
 import com.alloon.alloonserver.domain.user.Role.USER
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeHashtagDto
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeRuleDto
+import com.alloon.alloonserver.service.challenge.dto.ChallengeHashtagDto
+import com.alloon.alloonserver.service.challenge.dto.ChallengeRuleDto
 import com.alloon.alloonserver.service.report.dto.ReportCreateServiceDto
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -223,13 +223,13 @@ class ReportServiceTest(
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
             listOf(
-                CreateChallengeRuleDto("챌린지 인증 룰1"),
-                CreateChallengeRuleDto("챌린지 인증 룰2"),
-                CreateChallengeRuleDto("챌린지 인증 룰3"),
+                ChallengeRuleDto("챌린지 인증 룰1"),
+                ChallengeRuleDto("챌린지 인증 룰2"),
+                ChallengeRuleDto("챌린지 인증 룰3"),
             ),
             listOf(
-                CreateChallengeHashtagDto("해시태그 1"),
-                CreateChallengeHashtagDto("해시태그 2"),
+                ChallengeHashtagDto("해시태그 1"),
+                ChallengeHashtagDto("해시태그 2"),
             )
         )
     }

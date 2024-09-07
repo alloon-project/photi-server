@@ -38,7 +38,7 @@ data class CreateChallengeResponse(
         ]
     """
     )
-    val rules: List<CreateChallengeRuleResponse>,
+    val rules: List<ChallengeRuleResponse>,
 
     @Schema(
         description = "챌린지 해시태그 리스트", example = """
@@ -48,7 +48,7 @@ data class CreateChallengeResponse(
         ]
     """
     )
-    val hashtags: List<CreateChallengeHashtagResponse>,
+    val hashtags: List<ChallengeHashtagResponse>,
 ) {
 
     companion object {
@@ -62,10 +62,10 @@ data class CreateChallengeResponse(
                 challenge.endDate,
                 challenge.imageUrl,
                 challenge.rules.map {
-                    CreateChallengeRuleResponse.of(it)
+                    ChallengeRuleResponse.of(it)
                 },
                 challenge.hashtags.map {
-                    CreateChallengeHashtagResponse.of(it)
+                    ChallengeHashtagResponse.of(it)
                 }
             )
         }

@@ -11,8 +11,8 @@ data class CreateChallengeDto(
     val goal: String,
     val proveTime: LocalTime,
     val endDate: LocalDate,
-    val rules: List<CreateChallengeRuleDto>,
-    val hashtags: List<CreateChallengeHashtagDto>,
+    val rules: List<ChallengeRuleDto>,
+    val hashtags: List<ChallengeHashtagDto>,
     val id: Long? = null,
     val imageUrl: String? = null,
 ) {
@@ -42,8 +42,8 @@ data class CreateChallengeDto(
                 challenge.goal,
                 challenge.proveTime,
                 challenge.endDate,
-                CreateChallengeRuleDto.of(challenge.rules),
-                CreateChallengeHashtagDto.of(challenge.hashtags),
+                ChallengeRuleDto.of(challenge.rules),
+                ChallengeHashtagDto.of(challenge.hashtags),
                 challenge.id,
                 challenge.imageUrl,
             )

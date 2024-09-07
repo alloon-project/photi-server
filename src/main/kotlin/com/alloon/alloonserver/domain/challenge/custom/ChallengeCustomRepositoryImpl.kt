@@ -4,8 +4,8 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
-import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.QFindPopularChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.QFindChallengesDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
@@ -27,10 +27,10 @@ class ChallengeCustomRepositoryImpl(
             ).fetchFirst()
     }
 
-    override fun findPopular(): List<FindPopularChallengesDto> {
+    override fun findPopular(): List<FindChallengesDto> {
         return queryFactory
             .select(
-                QFindPopularChallengesDto(
+                QFindChallengesDto(
                     challenge.id,
                     challenge.name,
                     challenge.endDate,
@@ -53,11 +53,11 @@ class ChallengeCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findAllOrderByEndDate(pageable: Pageable): Slice<FindPopularChallengesDto> {
+    override fun findAllOrderByEndDate(pageable: Pageable): Slice<FindChallengesDto> {
         val pageSize = pageable.pageSize
         val content = queryFactory
             .select(
-                QFindPopularChallengesDto(
+                QFindChallengesDto(
                     challenge.id,
                     challenge.name,
                     challenge.endDate,
