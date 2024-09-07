@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 data class FindChallengeInfoDto(
-    val rules: List<CreateChallengeRuleDto>,
+    val rules: List<ChallengeRuleDto>,
     val proveTime: LocalTime,
     val goal: String,
     val startDate: LocalDate,
@@ -16,7 +16,7 @@ data class FindChallengeInfoDto(
 
         fun of(challenge: Challenge): FindChallengeInfoDto {
             return FindChallengeInfoDto(
-                CreateChallengeRuleDto.of(challenge.rules),
+                ChallengeRuleDto.of(challenge.rules),
                 challenge.proveTime,
                 challenge.goal,
                 challenge.startDate,

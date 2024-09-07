@@ -17,7 +17,7 @@ data class FindChallengeInfoResponse(
         ]
     """
     )
-    val rules: List<CreateChallengeRuleResponse>,
+    val rules: List<ChallengeRuleResponse>,
 
     @Schema(description = "챌린지 인증 시간", example = "13:00")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
@@ -40,7 +40,7 @@ data class FindChallengeInfoResponse(
         fun of(challengeInfo: FindChallengeInfoDto): FindChallengeInfoResponse {
             return FindChallengeInfoResponse(
                 challengeInfo.rules.map {
-                    CreateChallengeRuleResponse(it.rule)
+                    ChallengeRuleResponse.of(it)
                 },
                 challengeInfo.proveTime,
                 challengeInfo.goal,

@@ -215,9 +215,9 @@ class ChallengeControllerTest : RestDocsSupport() {
     private fun getFindChallengeInfoDto(): FindChallengeInfoDto {
         return FindChallengeInfoDto(
             listOf(
-                CreateChallengeRuleDto("챌린지 인증 룰1"),
-                CreateChallengeRuleDto("챌린지 인증 룰2"),
-                CreateChallengeRuleDto("챌린지 인증 룰3"),
+                ChallengeRuleDto("챌린지 인증 룰1"),
+                ChallengeRuleDto("챌린지 인증 룰2"),
+                ChallengeRuleDto("챌린지 인증 룰3"),
             ),
             LocalTime.of(13, 0),
             "챌린지 목표입니다.",

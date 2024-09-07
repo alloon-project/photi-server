@@ -29,7 +29,7 @@ data class FindChallengesResponse(
         ]
     """
     )
-    val hashtags: List<CreateChallengeHashtagResponse>,
+    val hashtags: List<ChallengeHashtagResponse>,
 ) {
 
     companion object {
@@ -40,8 +40,8 @@ data class FindChallengesResponse(
                 challenge.name,
                 challenge.imageUrl,
                 challenge.endDate,
-                challenge.hashtags.map { it ->
-                    CreateChallengeHashtagResponse(it)
+                challenge.hashtags.map {
+                    ChallengeHashtagResponse(it)
                 }
             )
         }
