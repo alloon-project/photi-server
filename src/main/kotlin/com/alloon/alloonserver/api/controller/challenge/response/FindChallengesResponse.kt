@@ -1,12 +1,12 @@
 package com.alloon.alloonserver.api.controller.challenge.response
 
-import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
-@Schema(description = "지금 인기있는 챌린지 응답 객체")
-data class FindPopularChallengesResponse(
+@Schema(description = "챌린지 응답 객체")
+data class FindChallengesResponse(
 
     @Schema(description = "챌린지 id", example = "1")
     val id: Long,
@@ -34,8 +34,8 @@ data class FindPopularChallengesResponse(
 
     companion object {
 
-        fun of(challenge: FindPopularChallengesDto): FindPopularChallengesResponse {
-            return FindPopularChallengesResponse(
+        fun of(challenge: FindChallengesDto): FindChallengesResponse {
+            return FindChallengesResponse(
                 challenge.id,
                 challenge.name,
                 challenge.imageUrl,
@@ -46,7 +46,7 @@ data class FindPopularChallengesResponse(
             )
         }
 
-        fun of(challenges: List<FindPopularChallengesDto>): List<FindPopularChallengesResponse> =
+        fun of(challenges: List<FindChallengesDto>): List<FindChallengesResponse> =
             challenges.map { of(it) }
     }
 }

@@ -5,7 +5,7 @@ import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeH
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
-import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
 import com.alloon.alloonserver.service.challenge.dto.*
 import io.mockk.every
@@ -176,7 +176,7 @@ class ChallengeControllerTest : RestDocsSupport() {
     fun givenValid_whenFindAllChallenges_thenReturn200() {
         // given
         val dto = getFindChallengesDto()
-        val content = listOf(FindPopularChallengesResponse.of(dto))
+        val content = listOf(FindChallengesResponse.of(dto))
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
@@ -226,8 +226,8 @@ class ChallengeControllerTest : RestDocsSupport() {
         )
     }
 
-    private fun getFindChallengesDto(): FindPopularChallengesDto {
-        return FindPopularChallengesDto(
+    private fun getFindChallengesDto(): FindChallengesDto {
+        return FindChallengesDto(
             1L,
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),

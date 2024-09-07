@@ -5,7 +5,7 @@ import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeM
 import com.alloon.alloonserver.api.controller.challenge.response.CreateChallengeResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeInfoResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeMembersResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindPopularChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
 import com.alloon.alloonserver.common.response.CollectionSuccessResponse
@@ -71,8 +71,8 @@ class ChallengeController(
         description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
-    fun findPopularChallenges(): ResponseEntity<List<FindPopularChallengesResponse>> {
-        val response = FindPopularChallengesResponse.of(challengeService.findPopularChallenges())
+    fun findPopularChallenges(): ResponseEntity<List<FindChallengesResponse>> {
+        val response = FindChallengesResponse.of(challengeService.findPopularChallenges())
 
         return ResponseEntity.ok(response)
     }
@@ -134,7 +134,7 @@ class ChallengeController(
     fun findAllChallenges(
         @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
         @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
-    ): ResponseEntity<SliceResponse<FindPopularChallengesResponse>> {
+    ): ResponseEntity<SliceResponse<FindChallengesResponse>> {
         val challenges = challengeService.findAllChallenges(PageRequest.of(page, size))
         val response = SliceResponse.of(challenges)
 

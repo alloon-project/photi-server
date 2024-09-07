@@ -264,8 +264,8 @@ class ChallengeServiceTest : AbstractMailProperties {
         )
     }
 
-    private fun getFindChallengesDto(): FindPopularChallengesDto {
-        return FindPopularChallengesDto(
+    private fun getFindChallengesDto(): FindChallengesDto {
+        return FindChallengesDto(
             1L,
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),
