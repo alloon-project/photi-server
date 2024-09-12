@@ -59,7 +59,7 @@ jobs:
         run: echo "${{ steps.jacoco_reporter.outputs.coverageSummary }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Code Coverage Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report-html
           path: build/reports/jacoco/test/html
