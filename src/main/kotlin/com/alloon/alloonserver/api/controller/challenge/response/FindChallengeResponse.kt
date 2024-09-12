@@ -52,6 +52,17 @@ data class FindChallengeResponse(
     """
     )
     val hashtags: List<ChallengeHashtagResponse>,
+
+    @Schema(
+        description = "챌린지 파티원 이미지 리스트", example = """
+        [
+            {"memberImage": "https://url.kr/5MhHhD"},
+            {"memberImage": "https://url.kr/5MhHhD"},
+            {"memberImage": "https://url.kr/5MhHhD"}
+        ]
+    """
+    )
+    val memberImages: List<ChallengeMemberImageResponse>,
 ) {
 
     companion object {
@@ -67,6 +78,7 @@ data class FindChallengeResponse(
                 challenge.endDate,
                 ChallengeRuleResponse.of(challenge.rules),
                 ChallengeHashtagResponse.of(challenge.hashtags),
+                ChallengeMemberImageResponse.of(challenge.memberImages),
             )
         }
     }
