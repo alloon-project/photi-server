@@ -139,7 +139,7 @@ class ChallengeController(
     }
 
     @GetMapping("/{challengeId}")
-    @Operation(summary = "챌린지 개별 조회")
+    @Operation(summary = "챌린지 개별 조회", description = "챌린지 파티원 이미지는 최대 3개 조회됩니다.")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([CHALLENGE_NOT_FOUND])
     fun findChallenge(
