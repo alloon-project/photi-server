@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-@Schema(description = "챌린지 인증 룰")
+@Schema(description = "챌린지 인증 룰 요청 객체")
 data class CreateChallengeRuleRequest(
 
     @field:NotBlank(message = "인증 룰은 필수 입력입니다.")

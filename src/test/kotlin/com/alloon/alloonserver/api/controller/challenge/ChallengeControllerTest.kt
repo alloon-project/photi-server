@@ -193,6 +193,21 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 개별 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindAllChallenge_thenReturn200() {
+        // given
+        every { challengeService.findChallenge(any()) } returns getFindChallengeDto()
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}", 1)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
@@ -233,6 +248,32 @@ class ChallengeControllerTest : RestDocsSupport() {
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
             listOf("해시태그 1", "해시태그 2")
+        )
+    }
+
+    private fun getFindChallengeDto(): FindChallengeDto {
+        return FindChallengeDto(
+            "챌린지 이름",
+            "챌린지 목표입니다.",
+            "https://url.kr/5MhHhD",
+            5,
+            true,
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf(
+                ChallengeRuleDto("챌린지 인증 룰1"),
+                ChallengeRuleDto("챌린지 인증 룰2"),
+                ChallengeRuleDto("챌린지 인증 룰3"),
+            ),
+            listOf(
+                ChallengeHashtagDto("해시태그 1"),
+                ChallengeHashtagDto("해시태그 2"),
+            ),
+            listOf(
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+            )
         )
     }
 }

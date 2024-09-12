@@ -15,5 +15,9 @@ data class ChallengeRuleResponse(
         fun of(challengeRule: ChallengeRuleDto): ChallengeRuleResponse {
             return ChallengeRuleResponse(challengeRule.rule)
         }
+
+        fun of(challengeRules: List<ChallengeRuleDto>): List<ChallengeRuleResponse> {
+            return challengeRules.map { of(it) }
+        }
     }
 }

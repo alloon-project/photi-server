@@ -225,6 +225,28 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(result.content.size).isEqualTo(3)
     }
 
+    @DisplayName("챌린지 개별 조회를 하면 일치하는 챌린지를 반환한다.")
+    @Test
+    fun givenValid_whenFindAllChallenge_thenReturn() {
+        // given
+        val challengeId = 1L
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val dto = getFindChallengeDto()
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every { challengeMemberRepository.findImagesByChallengeId(any()) } returns listOf(
+            ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+            ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+            ChallengeMemberImageDto("https://url.kr/5MhHhD")
+        )
+
+        // when
+        val result = challengeService.findChallenge(challengeId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -271,6 +293,32 @@ class ChallengeServiceTest : AbstractMailProperties {
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
             listOf("해시태그 1", "해시태그 2")
+        )
+    }
+
+    private fun getFindChallengeDto(): FindChallengeDto {
+        return FindChallengeDto(
+            "챌린지 이름",
+            "챌린지 목표입니다.",
+            "https://url.kr/5MhHhD",
+            1,
+            true,
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf(
+                ChallengeRuleDto("챌린지 인증 룰1"),
+                ChallengeRuleDto("챌린지 인증 룰2"),
+                ChallengeRuleDto("챌린지 인증 룰3"),
+            ),
+            listOf(
+                ChallengeHashtagDto("해시태그 1"),
+                ChallengeHashtagDto("해시태그 2"),
+            ),
+            listOf(
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+                ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+            )
         )
     }
 }

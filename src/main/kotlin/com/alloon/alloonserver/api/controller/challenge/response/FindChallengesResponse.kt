@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
-@Schema(description = "챌린지 응답 객체")
+@Schema(description = "챌린지 조회 응답 객체")
 data class FindChallengesResponse(
 
     @Schema(description = "챌린지 id", example = "1")
