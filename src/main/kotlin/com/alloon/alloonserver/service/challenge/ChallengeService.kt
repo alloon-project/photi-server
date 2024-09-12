@@ -84,8 +84,9 @@ class ChallengeService(
         val challenge = challengeRepository.findInfoById(challengeId) ?: throw CustomException(
             CHALLENGE_NOT_FOUND
         )
+        val memberImages = challengeMemberRepository.findImagesByChallengeId(challengeId)
         challenge.updateVisitCnt()
 
-        return FindChallengeDto.of(challenge)
+        return FindChallengeDto.of(challenge, memberImages)
     }
 }
