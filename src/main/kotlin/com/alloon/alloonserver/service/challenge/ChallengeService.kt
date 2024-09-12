@@ -75,7 +75,7 @@ class ChallengeService(
     }
 
     fun findAllChallenges(pageable: Pageable): Slice<FindChallengesResponse> {
-        return challengeRepository.findAllOrderByEndDate(pageable)
+        return challengeRepository.findAllOrderByStartDate(pageable)
             .map { FindChallengesResponse.of(it) }
     }
 
