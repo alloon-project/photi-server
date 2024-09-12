@@ -14,11 +14,15 @@ data class FindChallengeDto(
     val endDate: LocalDate,
     val rules: List<ChallengeRuleDto>,
     val hashtags: List<ChallengeHashtagDto>,
+    val memberImages: List<ChallengeMemberImageDto>,
 ) {
 
     companion object {
 
-        fun of(challenge: Challenge): FindChallengeDto {
+        fun of(
+            challenge: Challenge,
+            memberImages: List<ChallengeMemberImageDto>
+        ): FindChallengeDto {
             return FindChallengeDto(
                 challenge.name,
                 challenge.goal,
@@ -29,6 +33,7 @@ data class FindChallengeDto(
                 challenge.endDate,
                 ChallengeRuleDto.of(challenge.rules),
                 ChallengeHashtagDto.of(challenge.hashtags),
+                memberImages,
             )
         }
     }
