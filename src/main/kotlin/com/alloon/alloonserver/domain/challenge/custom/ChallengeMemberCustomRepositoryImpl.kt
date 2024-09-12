@@ -4,7 +4,9 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
+import com.alloon.alloonserver.service.challenge.dto.ChallengeMemberImageDto
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeMembersDto
+import com.alloon.alloonserver.service.challenge.dto.QChallengeMemberImageDto
 import com.alloon.alloonserver.service.challenge.dto.QFindChallengeMembersDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
@@ -38,7 +40,10 @@ class ChallengeMemberCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findAllByChallengeId(userId: Long, challengeId: Long): List<FindChallengeMembersDto> {
+    override fun findAllByChallengeId(
+        userId: Long,
+        challengeId: Long
+    ): List<FindChallengeMembersDto> {
         val spec = CaseBuilder()
             .`when`(challengeMember.isCreator.isTrue).then(1)
             .`when`(challengeMember.user.id.eq(userId)).then(2)
@@ -61,6 +66,16 @@ class ChallengeMemberCustomRepositoryImpl(
                 spec.asc(),
                 challengeMember.createDateTime.asc()
             )
+            .fetch()
+    }
+
+    override fun findImagesByChallengeId(challengeId: Long): List<ChallengeMemberImageDto> {
+        return queryFactory
+            .select(QChallengeMemberImageDto(challengeMember.user.imageUrl))
+            .from(challengeMember)
+            .where(challengeMember.challenge.id.eq(challengeId))
+            .orderBy(challengeMember.createDateTime.desc())
+            .limit(3)
             .fetch()
     }
 
