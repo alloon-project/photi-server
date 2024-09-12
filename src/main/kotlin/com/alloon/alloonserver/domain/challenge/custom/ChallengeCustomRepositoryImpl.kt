@@ -53,7 +53,7 @@ class ChallengeCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findAllOrderByEndDate(pageable: Pageable): Slice<FindChallengesDto> {
+    override fun findAllOrderByStartDate(pageable: Pageable): Slice<FindChallengesDto> {
         val pageSize = pageable.pageSize
         val content = queryFactory
             .select(
@@ -67,7 +67,7 @@ class ChallengeCustomRepositoryImpl(
             )
             .from(challenge)
             .where(eqServiceStatus(ACTIVE))
-            .orderBy(challenge.endDate.asc())
+            .orderBy(challenge.startDate.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()

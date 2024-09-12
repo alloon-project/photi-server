@@ -13,5 +13,5 @@ interface ChallengeCustomRepository {
 
     fun findInfoById(id: Long): Challenge?
 
-    fun findAllOrderByEndDate(pageable: Pageable): Slice<FindChallengesDto>
+    fun findAllOrderByStartDate(pageable: Pageable): Slice<FindChallengesDto>
 }

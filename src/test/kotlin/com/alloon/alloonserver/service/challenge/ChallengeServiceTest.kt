@@ -212,7 +212,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
-        every { challengeRepository.findAllOrderByEndDate(any()) } returns SliceImpl(
+        every { challengeRepository.findAllOrderByStartDate(any()) } returns SliceImpl(
             content,
             pageable,
             hasNext
