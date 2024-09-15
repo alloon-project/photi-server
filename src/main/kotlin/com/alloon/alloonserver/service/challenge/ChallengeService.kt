@@ -51,9 +51,7 @@ class ChallengeService(
     }
 
     fun findChallengeInfo(challengeId: Long): FindChallengeInfoDto {
-        val challenge = challengeRepository.findInfoById(challengeId) ?: throw CustomException(
-            CHALLENGE_NOT_FOUND
-        )
+        val challenge = validateChallenge(challengeId)
         return FindChallengeInfoDto.of(challenge)
     }
 
@@ -63,9 +61,7 @@ class ChallengeService(
         challengeId: Long,
         dto: UpdateChallengeMemberGoalDto
     ) {
-        val challengeMember =
-            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
-                ?: throw CustomException(CHALLENGE_MEMBER_NOT_FOUND)
+        val challengeMember = validateChallengeMember(userId, challengeId)
 
         challengeMember.updateGoal(dto.goal)
     }
@@ -81,12 +77,35 @@ class ChallengeService(
 
     @Transactional
     fun findChallenge(challengeId: Long): FindChallengeDto {
-        val challenge = challengeRepository.findInfoById(challengeId) ?: throw CustomException(
-            CHALLENGE_NOT_FOUND
-        )
+        val challenge = validateChallenge(challengeId)
         val memberImages = challengeMemberRepository.findImagesByChallengeId(challengeId)
         challenge.updateVisitCnt()
 
         return FindChallengeDto.of(challenge, memberImages)
+    }
+
+    @Transactional
+    fun updateChallengeName(userId: Long, challengeId: Long, dto: UpdateChallengeNameDto) {
+        val challenge = validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        validateChallengeCreator(challengeMember)
+
+        challenge.updateName(dto.name)
+    }
+
+    private fun validateChallenge(challengeId: Long): Challenge {
+        return challengeRepository.findInfoById(challengeId)
+            ?: throw CustomException(CHALLENGE_NOT_FOUND)
+    }
+
+    private fun validateChallengeMember(userId: Long, challengeId: Long): ChallengeMember {
+        return challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+            ?: throw CustomException(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    private fun validateChallengeCreator(challengeMember: ChallengeMember) {
+        if (!challengeMember.isCreator) {
+            throw CustomException(CHALLENGE_CREATOR_FORBIDDEN)
+        }
     }
 }
