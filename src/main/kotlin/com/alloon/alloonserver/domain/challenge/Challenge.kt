@@ -14,7 +14,7 @@ class Challenge(
     val id: Long? = null,
 
     @Column(nullable = false, length = 16)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
     val isPublic: Boolean,
@@ -60,5 +60,9 @@ class Challenge(
 
     fun updateVisitCnt() {
         visitCnt += 1
+    }
+
+    fun updateName(name: String) {
+        this.name = name
     }
 }
