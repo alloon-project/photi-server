@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.api.controller.challenge
 
 import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
+import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeInfoRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
 import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeNameRequest
 import com.alloon.alloonserver.api.controller.challenge.response.*
@@ -161,8 +162,30 @@ class ChallengeController(
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @RequestBody @Valid request: UpdateChallengeNameRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.updateChallengeName(UserUtility.getUserId(principal), challengeId, request.toServiceDto())
+        challengeService.updateChallengeName(
+            UserUtility.getUserId(principal),
+            challengeId,
+            request.toServiceDto()
+        )
 
         return ResponseEntity.ok(StringSuccessResponse("챌린지 이름 수정이 완료되었습니다."))
+    }
+
+    @PatchMapping("/{challengeId}/info")
+    @Operation(summary = "챌린지 소개 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN, CHALLENGE_NOT_FOUND])
+    fun updateChallengeInfo(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestBody @Valid request: UpdateChallengeInfoRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.updateChallengeInfo(
+            UserUtility.getUserId(principal),
+            challengeId,
+            request.toServiceDto()
+        )
+
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 소개 수정이 완료되었습니다."))
     }
 }
