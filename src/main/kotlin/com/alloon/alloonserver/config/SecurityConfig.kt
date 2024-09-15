@@ -4,7 +4,7 @@ import com.alloon.alloonserver.config.auth.CustomAuthenticationEntryPoint
 import com.alloon.alloonserver.config.auth.CustomAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.*
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -29,6 +29,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers(POST, "/api/challenges").authenticated()
+                it.requestMatchers(PATCH, "/api/challenges/{challengeId}/name").authenticated()
                 it.requestMatchers(
                     "/api/users/token",
                     "/api/users/password",
