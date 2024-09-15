@@ -93,6 +93,15 @@ class ChallengeService(
         challenge.updateName(dto.name)
     }
 
+    @Transactional
+    fun updateChallengeInfo(userId: Long, challengeId: Long, dto: UpdateChallengeInfoDto) {
+        val challenge = validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        validateChallengeCreator(challengeMember)
+
+        challenge.updateInfo(dto.goal, dto.proveTime, dto.endDate)
+    }
+
     private fun validateChallenge(challengeId: Long): Challenge {
         return challengeRepository.findInfoById(challengeId)
             ?: throw CustomException(CHALLENGE_NOT_FOUND)
