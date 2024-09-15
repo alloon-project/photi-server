@@ -20,13 +20,13 @@ class Challenge(
     val isPublic: Boolean,
 
     @Column(nullable = false, length = 120)
-    val goal: String,
+    var goal: String,
 
     @Column(nullable = false)
-    val proveTime: LocalTime,
+    var proveTime: LocalTime,
 
     @Column(nullable = false)
-    val endDate: LocalDate,
+    var endDate: LocalDate,
 
     @Column(nullable = false, length = 500)
     val imageUrl: String,
@@ -64,5 +64,11 @@ class Challenge(
 
     fun updateName(name: String) {
         this.name = name
+    }
+
+    fun updateInfo(goal: String, proveTime: LocalTime, endDate: LocalDate) {
+        this.goal = goal
+        this.proveTime = proveTime
+        this.endDate = endDate
     }
 }
