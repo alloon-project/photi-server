@@ -56,8 +56,7 @@ class AuthControllerTest : RestDocsSupport() {
     @Test
     fun givenValid_whenRegister_thenReturn201() {
         // given
-        val request =
-            UserRegisterRequest("tester@photi.com", "000000", "tester", "password1!", "password1!")
+        val request = UserRegisterRequest("tester@photi.com", "tester", "password1!")
         val response = UserRegisterResponse(1L, request.username)
 
         every { authService.registerUser(any()) } returns response
@@ -248,27 +247,7 @@ class AuthControllerTest : RestDocsSupport() {
     @Test
     fun givenBlankEmail_whenRegister_thenReturn400() {
         // given
-        val request = UserRegisterRequest("", "000000", "tester", "password1!", "password1!")
-
-        every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
-
-        // when
-        val resultActions = mockMvc.perform(
-            post("/api/users/register")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(request))
-        )
-
-        // then
-        resultActions.andExpect(status().isBadRequest)
-    }
-
-    @DisplayName("인증코드 미입력시 회원 가입을 하면 400을 반환한다")
-    @Test
-    fun givenBlankVerificationCode_whenRegister_thenReturn400() {
-        // given
-        val request =
-            UserRegisterRequest("tester@photi.com", "", "tester", "password1!", "password1!")
+        val request = UserRegisterRequest("", "tester", "password1!")
 
         every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
 
@@ -288,7 +267,7 @@ class AuthControllerTest : RestDocsSupport() {
     fun givenBlankUsername_whenRegister_thenReturn400() {
         // given
         val request =
-            UserRegisterRequest("tester@photi.com", "000000", "", "password1!", "password1!")
+            UserRegisterRequest("tester@photi.com", "", "password1!")
 
         every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
 
@@ -307,26 +286,7 @@ class AuthControllerTest : RestDocsSupport() {
     @Test
     fun givenBlankPassword_whenRegister_thenReturn400() {
         // given
-        val request = UserRegisterRequest("tester@photi.com", "000000", "tester", "", "password1!")
-
-        every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
-
-        // when
-        val resultActions = mockMvc.perform(
-            post("/api/users/register")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(request))
-        )
-
-        // then
-        resultActions.andExpect(status().isBadRequest)
-    }
-
-    @DisplayName("비밀번호 재입력 미입력시 회원 가입을 하면 400을 반환한다")
-    @Test
-    fun givenBlankPasswordReEnter_whenRegister_thenReturn400() {
-        // given
-        val request = UserRegisterRequest("tester@photi.com", "000000", "tester", "password1!", "")
+        val request = UserRegisterRequest("tester@photi.com", "tester", "")
 
         every { authService.registerUser(any()) } returns UserRegisterResponse(1, request.username)
 
