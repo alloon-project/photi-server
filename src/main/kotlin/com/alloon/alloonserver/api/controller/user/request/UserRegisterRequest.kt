@@ -18,28 +18,26 @@ data class UserRegisterRequest(
     @field:Email(message = "올바른 이메일 형식을 입력해 주세요.")
     val email: String,
 
-    @Schema(description = "이메일 인증코드", example = "111111")
-    @field:NotBlank(message = "인증코드는 필수 입력입니다.")
-    val verificationCode: String,
-
     @Schema(description = "아이디", example = "photi")
     @field:NotBlank(message = "아이디는 필수 입력입니다.")
     @field:Size(min = 5, max = 20, message = "아이디는 5~20자만 가능합니다.")
-    @field:Pattern(regexp = LOWERCASE_NUMBER_UNDERSCORE, message = "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요.")
+    @field:Pattern(
+        regexp = LOWERCASE_NUMBER_UNDERSCORE,
+        message = "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요."
+    )
     val username: String,
 
     @Schema(description = "비밀번호", example = "password1!")
     @field:NotBlank(message = "비밀번호는 필수 입력입니다.")
     @field:Size(min = 8, max = 30, message = "비밀번호는 8~30자만 가능합니다.")
-    @field:Pattern(regexp = LETTER_NUMBER_SPECIAL_CHARACTER, message = "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요.")
+    @field:Pattern(
+        regexp = LETTER_NUMBER_SPECIAL_CHARACTER,
+        message = "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."
+    )
     val password: String,
-
-    @Schema(description = "비밀번호 재입력", example = "password1!")
-    @field:NotBlank(message = "비밀번호 재입력은 필수 입력입니다.")
-    val passwordReEnter: String,
 ) {
 
     fun toServiceDto(): UserServiceRegisterDto {
-        return UserServiceRegisterDto(email, verificationCode, username, password, passwordReEnter)
+        return UserServiceRegisterDto(email, username, password)
     }
 }
