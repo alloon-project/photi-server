@@ -248,7 +248,13 @@ class AuthServiceTest(
             {
                 assertThat(foundUser)
                     .extracting("contact")
-                    .extracting("email", "verificationCode", "verifyYn", "createDateTime", "updateDateTime")
+                    .extracting(
+                        "email",
+                        "verificationCode",
+                        "verifyYn",
+                        "createDateTime",
+                        "updateDateTime"
+                    )
                     .containsExactly(
                         contact.email, contact.verificationCode, contact.verifyYn,
                         contact.createDateTime, contact.updateDateTime
@@ -388,7 +394,7 @@ class AuthServiceTest(
     }
 
     private fun createValidUserServiceRegisterRequest(): UserServiceRegisterDto {
-        return UserServiceRegisterDto("tester@alloon.com", "000000", "tester", "password1!", "password1!")
+        return UserServiceRegisterDto("tester@alloon.com", "tester", "password1!")
     }
 
     private fun createValidUserServiceValidateUsernameRequest(): UserServiceValidateUsernameDto {
@@ -404,13 +410,19 @@ class AuthServiceTest(
     }
 
     private fun createAndSaveContact(): Contact {
-        val contact = Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = false)
+        val contact =
+            Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = false)
         return contactRepository.save(contact)
     }
 
     private fun createAndSaveUser(contact: Contact): User {
         val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = User(contact = contact, username = "tester", password = encryptedPassword, imageUrl = "")
+        val user = User(
+            contact = contact,
+            username = "tester",
+            password = encryptedPassword,
+            imageUrl = ""
+        )
         return userRepository.save(user)
     }
 }
