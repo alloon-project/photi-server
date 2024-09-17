@@ -30,6 +30,7 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(POST, "/api/challenges").authenticated()
                 it.requestMatchers(
+                    "/api/users",
                     "/api/users/token",
                     "/api/users/password",
                     "/api/challenges/{challengeId}/info",
