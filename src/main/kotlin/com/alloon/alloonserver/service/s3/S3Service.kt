@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets.UTF_8
 
 @Service
 class S3Service(private val amazonS3Client: AmazonS3Client) {
@@ -57,6 +59,16 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
             .map { it.key }
             .filter { it.endsWith(".jpg") }
             .map { getImageUrl(it) }
+    }
+
+    fun deleteImage(imageUrl: String, folderType: FolderType) {
+        try {
+            val fileName = imageUrl.substringAfter(getRoot(folderType))
+            val decodedFileName = URLDecoder.decode(fileName, UTF_8.toString())
+            amazonS3Client.deleteObject(bucket, userFolder + decodedFileName)
+        } catch (e: IOException) {
+            throw CustomException(SERVER_ERROR, e)
+        }
     }
 
     private fun getRoot(folderType: FolderType): String {
