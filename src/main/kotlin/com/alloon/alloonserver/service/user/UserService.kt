@@ -6,14 +6,11 @@ import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
-import com.alloon.alloonserver.service.user.response.UserUploadImageResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
 import org.springframework.web.multipart.MultipartFile
 
 @Service
-@Validated
 @Transactional(readOnly = true)
 class UserService(
     private val userRepository: UserRepository,
@@ -25,13 +22,23 @@ class UserService(
     }
 
     @Transactional
-    fun uploadImage(userId: Long, file: MultipartFile): UserUploadImageResponse {
-        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
-        val fileName = s3Service.uploadImage(file, USERS)
+    fun updateUserImage(userId: Long, imageFile: MultipartFile): FindUserInfoDto {
+        val user = userRepository.findById(userId).orElseThrow {
+            throw CustomException(USER_NOT_FOUND)
+        }
+
+        deleteOriginalImage(user.imageUrl)
+        val fileName = s3Service.uploadImage(imageFile, USERS)
         val imageUrl = s3Service.getImageUrl(fileName)
 
         user.changeImageUrl(imageUrl)
 
-        return UserUploadImageResponse(user)
+        return FindUserInfoDto.of(user)
+    }
+
+    private fun deleteOriginalImage(imageUrl: String) {
+        if (imageUrl.isNotEmpty()) {
+            s3Service.deleteImage(imageUrl, USERS)
+        }
     }
 }
