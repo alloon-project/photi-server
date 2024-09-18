@@ -7,7 +7,7 @@ import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.s3.S3Service
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -106,8 +106,8 @@ class UserServiceTest {
         return User(1L, contact, "tester", "password1!", "")
     }
 
-    private fun getUserInfoDto(): FindUserInfoDto {
-        return FindUserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
+    private fun getUserInfoDto(): UserInfoDto {
+        return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
 
     private fun getMultipartFile(): MockMultipartFile {

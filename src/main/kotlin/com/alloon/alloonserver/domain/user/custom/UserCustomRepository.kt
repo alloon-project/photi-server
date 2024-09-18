@@ -1,7 +1,7 @@
 package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 
 interface UserCustomRepository {
 
@@ -9,5 +9,5 @@ interface UserCustomRepository {
 
     fun find(userId: Long): User?
 
-    fun findInfoById(userId: Long): FindUserInfoDto?
+    fun findInfoById(userId: Long): UserInfoDto?
 }

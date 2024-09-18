@@ -1,6 +1,6 @@
 package com.alloon.alloonserver.api.controller.user
 
-import com.alloon.alloonserver.api.controller.user.response.FindUserInfoResponse
+import com.alloon.alloonserver.api.controller.user.response.UserInfoResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
 import com.alloon.alloonserver.common.util.UserUtility
@@ -31,9 +31,9 @@ class UserController(
     @Operation(summary = "사용자 정보 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
-    fun findUserInfo(principal: Principal): ResponseEntity<FindUserInfoResponse> {
+    fun findUserInfo(principal: Principal): ResponseEntity<UserInfoResponse> {
         val user = userService.findUserInfo(UserUtility.getUserId(principal))
-        val response = FindUserInfoResponse.of(user)
+        val response = UserInfoResponse.of(user)
 
         return ResponseEntity.ok(response)
     }
@@ -48,9 +48,9 @@ class UserController(
     fun updateUserImage(
         principal: Principal,
         @RequestPart imageFile: MultipartFile
-    ): ResponseEntity<FindUserInfoResponse> {
+    ): ResponseEntity<UserInfoResponse> {
         val user = userService.updateUserImage(UserUtility.getUserId(principal), imageFile)
-        val response = FindUserInfoResponse.of(user)
+        val response = UserInfoResponse.of(user)
 
         return ResponseEntity.ok(response)
     }

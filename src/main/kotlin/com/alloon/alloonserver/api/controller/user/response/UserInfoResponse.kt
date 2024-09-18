@@ -1,10 +1,10 @@
 package com.alloon.alloonserver.api.controller.user.response
 
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "사용자 정보 응답 객체")
-data class FindUserInfoResponse(
+data class UserInfoResponse(
 
     @Schema(description = "사용자 프로필 이미지", example = "https://url.kr/5MhHhD")
     val imageUrl: String,
@@ -18,8 +18,8 @@ data class FindUserInfoResponse(
 
     companion object {
 
-        fun of(userInfo: FindUserInfoDto): FindUserInfoResponse {
-            return FindUserInfoResponse(
+        fun of(userInfo: UserInfoDto): UserInfoResponse {
+            return UserInfoResponse(
                 userInfo.imageUrl,
                 userInfo.username,
                 userInfo.email

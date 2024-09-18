@@ -5,7 +5,7 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -17,12 +17,12 @@ class UserService(
     private val s3Service: S3Service,
 ) {
 
-    fun findUserInfo(userId: Long): FindUserInfoDto {
+    fun findUserInfo(userId: Long): UserInfoDto {
         return userRepository.findInfoById(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
 
     @Transactional
-    fun updateUserImage(userId: Long, imageFile: MultipartFile): FindUserInfoDto {
+    fun updateUserImage(userId: Long, imageFile: MultipartFile): UserInfoDto {
         val user = userRepository.findById(userId).orElseThrow {
             throw CustomException(USER_NOT_FOUND)
         }
@@ -33,7 +33,7 @@ class UserService(
 
         user.changeImageUrl(imageUrl)
 
-        return FindUserInfoDto.of(user)
+        return UserInfoDto.of(user)
     }
 
     private fun deleteOriginalImage(imageUrl: String) {

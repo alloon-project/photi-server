@@ -2,7 +2,7 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.service.user.UserService
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.DisplayName
@@ -62,7 +62,7 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
-    private fun getUserInfoDto(): FindUserInfoDto {
-        return FindUserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
+    private fun getUserInfoDto(): UserInfoDto {
+        return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
 }
