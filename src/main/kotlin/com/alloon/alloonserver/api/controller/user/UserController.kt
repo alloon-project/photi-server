@@ -2,18 +2,14 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.user.response.FindUserInfoResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
-import com.alloon.alloonserver.common.constant.SuccessCode
 import com.alloon.alloonserver.common.response.ApiErrorResponses
-import com.alloon.alloonserver.common.response.DefaultSingleResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.user.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -42,30 +38,20 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @PostMapping(
-        "/api/users/image",
-        consumes = [MULTIPART_FORM_DATA_VALUE],
-        produces = [APPLICATION_JSON_VALUE]
+    @PostMapping("/api/users/image", consumes = [MULTIPART_FORM_DATA_VALUE])
+    @Operation(
+        summary = "사용자 프로필 이미지 업로드",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
     )
-    @Operation(summary = "사용자 프로필 이미지 업로드")
-    @ApiResponses(
-        value = [
-            ApiResponse(responseCode = "200", description = "사용자 프로필 이미지 업로드 성공"),
-            ApiResponse(responseCode = "401", description = "승인되지 않은 요청입니다. 다시 로그인 해주세요."),
-            ApiResponse(responseCode = "403", description = "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
-            ApiResponse(responseCode = "404", description = "존재하지 않는 회원입니다."),
-            ApiResponse(
-                responseCode = "415",
-                description = "이미지는 '.jpeg', '.jpg', 또는 '.png'만 가능합니다."
-            ),
-        ]
-    )
-    fun uploadImage(
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, FILE_SIZE_EXCEED, IMAGE_TYPE_UNSUPPORTED])
+    fun updateUserImage(
         principal: Principal,
-        @RequestPart file: MultipartFile
-    ): ResponseEntity<DefaultSingleResponse> {
-        val response = userService.uploadImage(UserUtility.getUserId(principal), file)
+        @RequestPart imageFile: MultipartFile
+    ): ResponseEntity<FindUserInfoResponse> {
+        val user = userService.updateUserImage(UserUtility.getUserId(principal), imageFile)
+        val response = FindUserInfoResponse.of(user)
 
-        return DefaultSingleResponse.toResponseEntity(SuccessCode.USER_IMAGE_UPLOADED, response)
+        return ResponseEntity.ok(response)
     }
 }
