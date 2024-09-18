@@ -33,6 +33,7 @@ class SecurityConfig(
                     "/api/users",
                     "/api/users/token",
                     "/api/users/password",
+                    "/api/users/image",
                     "/api/challenges/{challengeId}/info",
                     "/api/challenges/{challengeId}/challenge-members/goal",
                     "/api/challenges/{challengeId}/challenge-members",

@@ -3,8 +3,8 @@ package com.alloon.alloonserver.domain.user.custom
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.service.user.dto.FindUserInfoDto
-import com.alloon.alloonserver.service.user.dto.QFindUserInfoDto
+import com.alloon.alloonserver.service.user.dto.QUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -33,10 +33,10 @@ class UserCustomRepositoryImpl(
             .fetchOne()
     }
 
-    override fun findInfoById(userId: Long): FindUserInfoDto? {
+    override fun findInfoById(userId: Long): UserInfoDto? {
         return queryFactory
             .select(
-                QFindUserInfoDto(
+                QUserInfoDto(
                     user.imageUrl,
                     user.username,
                     user.contact.email
