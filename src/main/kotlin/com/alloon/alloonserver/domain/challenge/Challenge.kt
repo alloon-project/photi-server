@@ -29,7 +29,7 @@ class Challenge(
     var endDate: LocalDate,
 
     @Column(nullable = false, length = 500)
-    val imageUrl: String,
+    var imageUrl: String,
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -37,7 +37,7 @@ class Challenge(
 
     @Column(nullable = false, columnDefinition = "TEXT")
     @Convert(converter = ChallengeListStringConverter::class)
-    val hashtags: List<String> = listOf(),
+    var hashtags: List<String> = listOf(),
 
     @Column(nullable = false)
     val startDate: LocalDate = LocalDate.now(),
@@ -60,15 +60,5 @@ class Challenge(
 
     fun updateVisitCnt() {
         visitCnt += 1
-    }
-
-    fun updateName(name: String) {
-        this.name = name
-    }
-
-    fun updateInfo(goal: String, proveTime: LocalTime, endDate: LocalDate) {
-        this.goal = goal
-        this.proveTime = proveTime
-        this.endDate = endDate
     }
 }
