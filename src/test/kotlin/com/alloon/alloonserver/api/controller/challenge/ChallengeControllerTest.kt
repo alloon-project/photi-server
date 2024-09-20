@@ -241,13 +241,13 @@ class ChallengeControllerTest : RestDocsSupport() {
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
             listOf(
-                CreateChallengeRuleRequest("챌린지 인증 룰1"),
-                CreateChallengeRuleRequest("챌린지 인증 룰2"),
-                CreateChallengeRuleRequest("챌린지 인증 룰3"),
+                ChallengeRuleRequest("챌린지 인증 룰1"),
+                ChallengeRuleRequest("챌린지 인증 룰2"),
+                ChallengeRuleRequest("챌린지 인증 룰3"),
             ),
             listOf(
-                CreateChallengeHashtagRequest("해시태그 1"),
-                CreateChallengeHashtagRequest("해시태그 2"),
+                ChallengeHashtagRequest("해시태그 1"),
+                ChallengeHashtagRequest("해시태그 2"),
             )
         )
     }
@@ -309,13 +309,13 @@ class ChallengeControllerTest : RestDocsSupport() {
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
             listOf(
-                CreateChallengeRuleRequest("챌린지 인증 룰1"),
-                CreateChallengeRuleRequest("챌린지 인증 룰2"),
-                CreateChallengeRuleRequest("챌린지 인증 룰3"),
+                ChallengeRuleRequest("챌린지 인증 룰1"),
+                ChallengeRuleRequest("챌린지 인증 룰2"),
+                ChallengeRuleRequest("챌린지 인증 룰3"),
             ),
             listOf(
-                CreateChallengeHashtagRequest("해시태그 1"),
-                CreateChallengeHashtagRequest("해시태그 2"),
+                ChallengeHashtagRequest("해시태그 1"),
+                ChallengeHashtagRequest("해시태그 2"),
             )
         )
     }
