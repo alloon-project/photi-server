@@ -1,7 +1,6 @@
 package com.alloon.alloonserver.api.controller.challenge
 
-import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
-import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
+import com.alloon.alloonserver.api.controller.challenge.request.*
 import com.alloon.alloonserver.api.controller.challenge.response.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
@@ -149,5 +148,25 @@ class ChallengeController(
         val response = FindChallengeResponse.of(challenge)
 
         return ResponseEntity.ok(response)
+    }
+
+    @PatchMapping("/{challengeId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @Operation(summary = "챌린지 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN, CHALLENGE_NOT_FOUND, IMAGE_TYPE_UNSUPPORTED])
+    fun updateChallenge(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestPart @Valid request: UpdateChallengeRequest,
+        @RequestPart imageFile: MultipartFile,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.updateChallenge(
+            UserUtility.getUserId(principal),
+            challengeId,
+            request.toServiceDto(),
+            imageFile
+        )
+
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 수정이 완료되었습니다."))
     }
 }

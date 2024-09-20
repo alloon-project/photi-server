@@ -1,29 +1,24 @@
 package com.alloon.alloonserver.api.controller.challenge.request
 
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
 import com.alloon.alloonserver.service.challenge.dto.ChallengeHashtagDto
 import com.alloon.alloonserver.service.challenge.dto.ChallengeRuleDto
+import com.alloon.alloonserver.service.challenge.dto.UpdateChallengeDto
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Schema(description = "챌린지 생성 요청 객체")
-data class CreateChallengeRequest(
+@Schema(description = "챌린지 수정 요청 객체")
+data class UpdateChallengeRequest(
 
     @Schema(description = "챌린지 이름", example = "신나게 하는 러닝 챌린지")
     @field:NotBlank(message = "이름은 필수 입력입니다.")
     @field:Size(min = 2, max = 16, message = "이름은 2~16자만 가능합니다.")
     val name: String,
-
-    @Schema(description = "챌린지 공개 여부", defaultValue = "true")
-    @field:NotNull(message = "공개 여부는 필수 입력입니다.")
-    val isPublic: Boolean,
 
     @Schema(description = "챌린지 목표", example = "하루에 한 번씩 꼭 러닝을 하는 것이 우리 챌린지의 목표입니다.")
     @field:NotBlank(message = "목표는 필수 입력입니다.")
@@ -35,7 +30,7 @@ data class CreateChallengeRequest(
     val proveTime: LocalTime,
 
     @Schema(description = "챌린지 종료 날짜", example = "2024-12-01")
-    @field:Future(message = "종료 날짜는 시작 날짜보다 앞설 수 없습니다.")
+    @field:Future(message = "종료 날짜는 당일 날짜보다 앞설 수 없습니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
 
@@ -65,10 +60,9 @@ data class CreateChallengeRequest(
     val hashtags: List<ChallengeHashtagRequest>,
 ) {
 
-    fun toServiceDto(): CreateChallengeDto {
-        return CreateChallengeDto(
+    fun toServiceDto(): UpdateChallengeDto {
+        return UpdateChallengeDto(
             name,
-            isPublic,
             goal,
             proveTime,
             endDate,
@@ -77,7 +71,7 @@ data class CreateChallengeRequest(
             },
             hashtags.map {
                 ChallengeHashtagDto(it.hashtag)
-            },
+            }
         )
     }
 }

@@ -14,22 +14,22 @@ class Challenge(
     val id: Long? = null,
 
     @Column(nullable = false, length = 16)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false)
     val isPublic: Boolean,
 
     @Column(nullable = false, length = 120)
-    val goal: String,
+    var goal: String,
 
     @Column(nullable = false)
-    val proveTime: LocalTime,
+    var proveTime: LocalTime,
 
     @Column(nullable = false)
-    val endDate: LocalDate,
+    var endDate: LocalDate,
 
     @Column(nullable = false, length = 500)
-    val imageUrl: String,
+    var imageUrl: String,
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -37,7 +37,7 @@ class Challenge(
 
     @Column(nullable = false, columnDefinition = "TEXT")
     @Convert(converter = ChallengeListStringConverter::class)
-    val hashtags: List<String> = listOf(),
+    var hashtags: List<String> = listOf(),
 
     @Column(nullable = false)
     val startDate: LocalDate = LocalDate.now(),

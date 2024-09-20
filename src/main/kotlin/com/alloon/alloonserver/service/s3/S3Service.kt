@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.net.URLDecoder
-import java.nio.charset.StandardCharsets.UTF_8
+import kotlin.text.Charsets.UTF_8
 
 @Service
 class S3Service(private val amazonS3Client: AmazonS3Client) {
@@ -63,9 +63,10 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
 
     fun deleteImage(imageUrl: String, folderType: FolderType) {
         try {
-            val fileName = imageUrl.substringAfter(getRoot(folderType))
+            val root = getRoot(folderType)
+            val fileName = imageUrl.substringAfter(root)
             val decodedFileName = URLDecoder.decode(fileName, UTF_8.toString())
-            amazonS3Client.deleteObject(bucket, userFolder + decodedFileName)
+            amazonS3Client.deleteObject(bucket, root + decodedFileName)
         } catch (e: IOException) {
             throw CustomException(SERVER_ERROR, e)
         }
