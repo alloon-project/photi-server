@@ -18,14 +18,16 @@ class User(
 
     @Column(nullable = false, length = 20, unique = true)
     val username: String,
+
     @Column(nullable = false)
     var password: String,
+
     @Column(nullable = false, length = 500)
     var imageUrl: String,
 
     @Column(nullable = false)
     var temporaryPasswordYn: Boolean = false,
-    ) : BaseEntity() {
+) : BaseEntity() {
 
     fun resetPassword(password: String) {
         this.password = password

@@ -74,7 +74,6 @@ class AuthService(
             throw CustomException(EXISTING_USER)
 
         validateUsername(UserServiceValidateUsernameDto(request.username))
-        PasswordUtility.validateMatchPassword(request.password, request.passwordReEnter)
         request.password = passwordUtility.encryptPassword(request.password)
 
         val userTemplateImage = getUserTemplateImage()

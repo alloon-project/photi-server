@@ -2,62 +2,67 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.service.user.UserService
-import com.alloon.alloonserver.service.user.response.UserGetInfoResponse
-import com.alloon.alloonserver.service.user.response.UserUploadImageResponse
+import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
+import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class UserControllerTest : RestDocsSupport() {
 
-    private val userService = mock(UserService::class.java)
+    private val userService = mockk<UserService>()
 
     override fun initController(): Any {
         return UserController(userService)
     }
 
-    @DisplayName("내 회원 정보를 조회하면 200을 반환한다")
+    @DisplayName("사용자 정보 조회를 성공하면 200을 반환한다")
     @Test
-    fun givenValid_whenGetMyInfo_thenReturn200() {
+    fun givenValid_whenFindUserInfo_thenReturn200() {
         // given
-        `when`(userService.getInfo(anyLong()))
-            .thenReturn(UserGetInfoResponse(1, "tester", "", "tester@alloon.com"))
+        val dto = getUserInfoDto()
 
-        // when & then
-        mockMvc.perform(
+        every { userService.findUserInfo(any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
             get("/api/users")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-        ).andDo(print()).andExpect(status().isOk)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
     }
 
-    @DisplayName("회원 이미지 업로드를 하면 200을 반환한다")
+    @DisplayName("사용자 프로필 이미지 업로드를 성공하면 200을 반환한다.")
     @Test
-    fun givenValid_whenUploadImage_thenReturn200() {
+    fun givenValid_whenUpdateUserImage_thenReturn200() {
         // given
-        val file = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+        val dto = getUserInfoDto()
+        val multipartFile = MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
 
-        `when`(userService.uploadImage(anyLong(), any()))
-            .thenReturn(
-                UserUploadImageResponse(
-                    1, "tester", "https://www.google.com",
-                    "tester@alloon.com"
-                )
-            )
+        every { userService.updateUserImage(any(), any()) } returns dto
 
-        // when & then
-        mockMvc.perform(
+        // when
+        val resultActions = mockMvc.perform(
             multipart("/api/users/image")
-                .file(MockMultipartFile("file", "file.png", "image/png", ByteArray(1)))
+                .file(multipartFile)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
-                .contentType(MULTIPART_FORM_DATA_VALUE)
-        ).andDo(print()).andExpect(status().isOk)
+                .contentType(MULTIPART_FORM_DATA)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    private fun getUserInfoDto(): UserInfoDto {
+        return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
 }

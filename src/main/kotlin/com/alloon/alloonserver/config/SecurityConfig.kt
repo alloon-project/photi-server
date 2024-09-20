@@ -31,8 +31,10 @@ class SecurityConfig(
                 it.requestMatchers(POST, "/api/challenges").authenticated()
                 it.requestMatchers(PATCH, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(
+                    "/api/users",
                     "/api/users/token",
                     "/api/users/password",
+                    "/api/users/image",
                     "/api/challenges/{challengeId}/info",
                     "/api/challenges/{challengeId}/challenge-members/goal",
                     "/api/challenges/{challengeId}/challenge-members",
