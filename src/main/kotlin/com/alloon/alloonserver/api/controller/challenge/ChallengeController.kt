@@ -1,9 +1,6 @@
 package com.alloon.alloonserver.api.controller.challenge
 
-import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
-import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeInfoRequest
-import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
-import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeNameRequest
+import com.alloon.alloonserver.api.controller.challenge.request.*
 import com.alloon.alloonserver.api.controller.challenge.response.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
@@ -153,39 +150,23 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @PatchMapping("/{challengeId}/name")
-    @Operation(summary = "챌린지 이름 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @PatchMapping("/{challengeId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @Operation(summary = "챌린지 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN, CHALLENGE_NOT_FOUND])
-    fun updateChallengeName(
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN, CHALLENGE_NOT_FOUND, IMAGE_TYPE_UNSUPPORTED])
+    fun updateChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody @Valid request: UpdateChallengeNameRequest,
+        @RequestPart @Valid request: UpdateChallengeRequest,
+        @RequestPart imageFile: MultipartFile,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.updateChallengeName(
+        challengeService.updateChallenge(
             UserUtility.getUserId(principal),
             challengeId,
-            request.toServiceDto()
+            request.toServiceDto(),
+            imageFile
         )
 
-        return ResponseEntity.ok(StringSuccessResponse("챌린지 이름 수정이 완료되었습니다."))
-    }
-
-    @PatchMapping("/{challengeId}/info")
-    @Operation(summary = "챌린지 소개 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
-    @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN, CHALLENGE_NOT_FOUND])
-    fun updateChallengeInfo(
-        principal: Principal,
-        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody @Valid request: UpdateChallengeInfoRequest,
-    ): ResponseEntity<StringSuccessResponse> {
-        challengeService.updateChallengeInfo(
-            UserUtility.getUserId(principal),
-            challengeId,
-            request.toServiceDto()
-        )
-
-        return ResponseEntity.ok(StringSuccessResponse("챌린지 소개 수정이 완료되었습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 수정이 완료되었습니다."))
     }
 }

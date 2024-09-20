@@ -29,11 +29,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers(POST, "/api/challenges").authenticated()
-                it.requestMatchers(
-                    PATCH,
-                    "/api/challenges/{challengeId}/name",
-                    "/api/challenges/{challengeId}/info"
-                ).authenticated()
+                it.requestMatchers(PATCH, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(
                     "/api/users/token",
                     "/api/users/password",
