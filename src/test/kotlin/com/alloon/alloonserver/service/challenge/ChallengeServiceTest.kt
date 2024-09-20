@@ -2,6 +2,7 @@ package com.alloon.alloonserver.service.challenge
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
 import com.alloon.alloonserver.domain.challenge.ChallengeRepository
@@ -12,7 +13,9 @@ import com.alloon.alloonserver.framework.AbstractMailProperties
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.S3Service
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -247,6 +250,38 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(result).isEqualTo(dto)
     }
 
+    @DisplayName("파티장이 챌린지 수정을 하면 챌린지가 수정된다.")
+    @Test
+    fun givenValid_whenUpdateChallenge_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val dto = getUpdateChallengeDto()
+        val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+        val imageUrl = "https://url.kr/5MhHhD2345"
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
+        every { s3Service.deleteImage(any(), any()) } just Runs
+        every { s3Service.uploadImage(any(), any()) } returns ""
+        every { s3Service.getImageUrl(any()) } returns imageUrl
+
+        // when
+        challengeService.updateChallenge(userId, challengeId, dto, multipartFile)
+
+        // then
+        assertThat(challenge.name).isEqualTo(dto.name)
+        assertThat(challenge.goal).isEqualTo(dto.goal)
+        assertThat(challenge.proveTime).isEqualTo(dto.proveTime)
+        assertThat(challenge.endDate).isEqualTo(dto.endDate)
+        assertThat(challenge.rules[0].rule).isEqualTo(dto.rules[0].rule)
+        assertThat(challenge.hashtags[0]).isEqualTo(dto.hashtags[0].hashtag)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -319,6 +354,24 @@ class ChallengeServiceTest : AbstractMailProperties {
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
             )
+        )
+    }
+
+    private fun getUpdateChallengeDto(): UpdateChallengeDto {
+        return UpdateChallengeDto(
+            "챌린지 이름!!",
+            "챌린지 목표입니다!!",
+            LocalTime.of(11, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf(
+                ChallengeRuleDto("챌린지 인증 룰4"),
+                ChallengeRuleDto("챌린지 인증 룰5"),
+                ChallengeRuleDto("챌린지 인증 룰6"),
+            ),
+            listOf(
+                ChallengeHashtagDto("해시태그 3"),
+                ChallengeHashtagDto("해시태그 4"),
+            ),
         )
     }
 }
