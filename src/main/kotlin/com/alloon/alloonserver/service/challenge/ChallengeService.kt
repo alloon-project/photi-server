@@ -85,21 +85,16 @@ class ChallengeService(
     }
 
     @Transactional
-    fun updateChallengeName(userId: Long, challengeId: Long, dto: UpdateChallengeNameDto) {
+    fun updateChallenge(userId: Long, challengeId: Long, dto: UpdateChallengeDto, imageFile: MultipartFile) {
         val challenge = validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
         validateChallengeCreator(challengeMember)
 
-        challenge.updateName(dto.name)
-    }
+        s3Service.deleteImage(challenge.imageUrl, CHALLENGES)
+        val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
+        val imageUrl = s3Service.getImageUrl(fileName)
 
-    @Transactional
-    fun updateChallengeInfo(userId: Long, challengeId: Long, dto: UpdateChallengeInfoDto) {
-        val challenge = validateChallenge(challengeId)
-        val challengeMember = validateChallengeMember(userId, challengeId)
-        validateChallengeCreator(challengeMember)
-
-        challenge.updateInfo(dto.goal, dto.proveTime, dto.endDate)
+        dto.updateChallenge(challenge, imageUrl)
     }
 
     private fun validateChallenge(challengeId: Long): Challenge {
