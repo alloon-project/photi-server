@@ -1,22 +1,17 @@
 package com.alloon.alloonserver.api.controller.challenge
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
-import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeHashtagRequest
-import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRequest
-import com.alloon.alloonserver.api.controller.challenge.request.CreateChallengeRuleRequest
-import com.alloon.alloonserver.api.controller.challenge.request.UpdateChallengeMemberGoalRequest
+import com.alloon.alloonserver.api.controller.challenge.request.*
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
 import com.alloon.alloonserver.service.challenge.dto.*
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
+import io.mockk.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.MediaType.*
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -208,6 +203,36 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 수정을 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenUpdateChallenge_thenReturn200() {
+        // given
+        val request = getUpdateChallengeRequest()
+
+        every { challengeService.updateChallenge(any(), any(), any(), any()) } just Runs
+
+        // when
+        val requestMultipartFile = MockMultipartFile(
+            "request",
+            "request.json",
+            "application/json",
+            objectMapper.writeValueAsBytes(request)
+        )
+        val imageMultipartFile =
+            MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
+        val resultActions = mockMvc.perform(
+            multipart(PATCH, "/api/challenges/{challengeId}", 1)
+                .file(requestMultipartFile)
+                .file(imageMultipartFile)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
@@ -273,6 +298,24 @@ class ChallengeControllerTest : RestDocsSupport() {
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
+            )
+        )
+    }
+
+    private fun getUpdateChallengeRequest(): UpdateChallengeRequest {
+        return UpdateChallengeRequest(
+            "챌린지 이름",
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf(
+                CreateChallengeRuleRequest("챌린지 인증 룰1"),
+                CreateChallengeRuleRequest("챌린지 인증 룰2"),
+                CreateChallengeRuleRequest("챌린지 인증 룰3"),
+            ),
+            listOf(
+                CreateChallengeHashtagRequest("해시태그 1"),
+                CreateChallengeHashtagRequest("해시태그 2"),
             )
         )
     }
