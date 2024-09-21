@@ -169,4 +169,17 @@ class ChallengeController(
 
         return ResponseEntity.ok(StringSuccessResponse("챌린지 수정이 완료되었습니다."))
     }
+
+    @DeleteMapping("/{challengeId}")
+    @Operation(summary = "챌린지 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND])
+    fun deleteChallenge(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.deleteChallenge(UserUtility.getUserId(principal), challengeId)
+
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 탈퇴가 완료되었습니다."))
+    }
 }
