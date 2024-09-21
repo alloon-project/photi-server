@@ -43,7 +43,7 @@ class Challenge(
     val startDate: LocalDate = LocalDate.now(),
 
     @Column(nullable = false)
-    val currentMemberCnt: Int = 1,
+    var currentMemberCnt: Int = 1,
 
     //TODO redis 사용하면 hyperlog 로 변경 필요함.
     @Column(nullable = false)
@@ -60,5 +60,9 @@ class Challenge(
 
     fun updateVisitCnt() {
         visitCnt += 1
+    }
+
+    fun decreaseCurrentMemberCnt() {
+        currentMemberCnt -= 1
     }
 }

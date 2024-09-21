@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.MediaType.*
 import org.springframework.mock.web.MockMultipartFile
@@ -227,6 +228,24 @@ class ChallengeControllerTest : RestDocsSupport() {
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(MULTIPART_FORM_DATA_VALUE)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지 탈퇴를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenDeleteChallenge_thenReturn200() {
+        // given
+        every { challengeService.deleteChallenge(any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            delete("/api/challenges/{challengeId}", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
         )
 
         // then
