@@ -4,15 +4,21 @@ import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesR
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
+import com.alloon.alloonserver.domain.feed.Feed
+import com.alloon.alloonserver.domain.feed.FeedRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
+import com.alloon.alloonserver.service.s3.FolderType.FEEDS
 import com.alloon.alloonserver.service.s3.S3Service
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Service
 @Transactional(readOnly = true)
@@ -20,6 +26,7 @@ class ChallengeService(
     private val challengeRepository: ChallengeRepository,
     private val challengeMemberRepository: ChallengeMemberRepository,
     private val userRepository: UserRepository,
+    private val feedRepository: FeedRepository,
     private val s3Service: S3Service,
 ) {
 
@@ -117,6 +124,23 @@ class ChallengeService(
         }
     }
 
+    @Transactional
+    fun createChallengeFeed(userId: Long, challengeId: Long, imageFile: MultipartFile) {
+        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
+        val challenge = validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        validateChallengeMemberFeed(challengeMember)
+
+        val fileName = s3Service.uploadImage(imageFile, FEEDS, challengeId)
+        val imageUrl = s3Service.getImageUrl(fileName)
+        val feed = Feed(
+            challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl
+        )
+
+        feedRepository.save(feed)
+        user.updateFeedCnt()
+    }
+
     private fun validateChallenge(challengeId: Long): Challenge {
         return challengeRepository.findInfoById(challengeId)
             ?: throw CustomException(CHALLENGE_NOT_FOUND)
@@ -130,6 +154,20 @@ class ChallengeService(
     private fun validateChallengeCreator(challengeMember: ChallengeMember) {
         if (!challengeMember.isCreator) {
             throw CustomException(CHALLENGE_CREATOR_FORBIDDEN)
+        }
+    }
+
+    private fun validateChallengeMemberFeed(challengeMember: ChallengeMember) {
+        val startOfDay = LocalDate.now().atStartOfDay()
+        val endOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MAX)
+        val isFeedCreated = feedRepository.existsByChallengeMemberAndCreateDateTimeBetween(
+            challengeMember,
+            startOfDay,
+            endOfDay
+        )
+
+        if (isFeedCreated) {
+            throw CustomException(EXISTING_FEED)
         }
     }
 }
