@@ -5,6 +5,8 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
 import com.alloon.alloonserver.domain.challenge.ChallengeRepository
+import com.alloon.alloonserver.domain.feed.Feed
+import com.alloon.alloonserver.domain.feed.FeedRepository
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -36,12 +38,14 @@ class ChallengeServiceTest : AbstractMailProperties {
     private val challengeRepository = mockk<ChallengeRepository>()
     private val challengeMemberRepository = mockk<ChallengeMemberRepository>()
     private val userRepository = mockk<UserRepository>()
+    private val feedRepository = mockk<FeedRepository>()
     private val s3Service = mockk<S3Service>()
 
     private val challengeService = ChallengeService(
         challengeRepository,
         challengeMemberRepository,
         userRepository,
+        feedRepository,
         s3Service
     )
 
@@ -332,6 +336,63 @@ class ChallengeServiceTest : AbstractMailProperties {
         verify { challengeMemberRepository.delete(challengeMember) }
         verify { challengeRepository.deleteById(challengeId) }
         verify { s3Service.deleteImage(challenge.imageUrl, CHALLENGES) }
+    }
+
+    @DisplayName("챌린지 피드 인증을 하면 피드가 저장되고, 사용자의 피드 인증 횟수가 업데이트된다.")
+    @Test
+    fun givenChallengeMember_whenCreateChallengeFeed_thenSaveFeedAndUpdateFeedCnt() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
+
+        every { userRepository.find(any()) } returns user
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
+        every {
+            feedRepository.existsByChallengeMemberAndCreateDateTimeBetween(any(), any(), any())
+        } returns false
+        every { s3Service.uploadImage(any(), any(), any()) } returns ""
+        every { s3Service.getImageUrl(any()) } returns imageUrl
+        every { feedRepository.save(any()) } returns feed
+
+        // when
+        challengeService.createChallengeFeed(1L, 1L, multipartFile)
+
+        // then
+        assertThat(user.feedCnt).isEqualTo(1)
+    }
+
+    @DisplayName("챌린지 파티원이 이미 오늘 챌린지 피드 인증을 했으면 예외가 발생한다.")
+    @Test
+    fun givenChallengeMemberExistingFeed_whenCreateChallengeFeed_thenThrow() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
+
+        every { userRepository.find(any()) } returns user
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
+        every {
+            feedRepository.existsByChallengeMemberAndCreateDateTimeBetween(any(), any(), any())
+        } returns true
+
+        // when & then
+        assertThatThrownBy { challengeService.createChallengeFeed(1L, 1L, multipartFile) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EXISTING_FEED)
     }
 
     private fun getUser(): User {
