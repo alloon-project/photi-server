@@ -27,6 +27,9 @@ class User(
 
     @Column(nullable = false)
     var temporaryPasswordYn: Boolean = false,
+
+    @Column(nullable = false)
+    var feedCnt: Int = 0,
 ) : BaseEntity() {
 
     fun resetPassword(password: String) {
@@ -41,5 +44,9 @@ class User(
 
     fun changeImageUrl(imageUrl: String) {
         this.imageUrl = imageUrl
+    }
+
+    fun updateFeedCnt() {
+        feedCnt += 1
     }
 }
