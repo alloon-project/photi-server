@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.MediaType.*
 import org.springframework.mock.web.MockMultipartFile
@@ -250,6 +249,27 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지 피드 인증을 성공하면 201을 반환한다.")
+    @Test
+    fun givenValid_whenCreateChallengeFeed_thenReturn201() {
+        // given
+        val multipartFile = MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
+
+        every { challengeService.createChallengeFeed(any(), any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            multipart("/api/challenges/{challengeId}/feeds", 1)
+                .file(multipartFile)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(MULTIPART_FORM_DATA_VALUE)
+        )
+
+        // then
+        resultActions.andExpect(status().isCreated)
     }
 
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
