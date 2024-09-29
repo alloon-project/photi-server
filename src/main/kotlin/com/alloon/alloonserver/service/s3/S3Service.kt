@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.net.URLDecoder
+import java.time.LocalDate
 import kotlin.text.Charsets.UTF_8
 
 @Service
@@ -28,10 +29,17 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
     @Value("\${cloud.aws.s3.folder.folderName2}")
     private lateinit var challengeFolder: String
 
-    fun uploadImage(file: MultipartFile, folderType: FolderType): String {
+    @Value("\${cloud.aws.s3.folder.folderName3}")
+    private lateinit var feedFolder: String
+
+    fun uploadImage(
+        file: MultipartFile,
+        folderType: FolderType,
+        subFolder: Long? = null
+    ): String {
         file.validateFile()
 
-        val fileName = getRoot(folderType) + file.createFileName()
+        val fileName = getRoot(folderType, subFolder) + file.createFileName()
 
         val objectMetadata = ObjectMetadata().apply {
             contentLength = file.size
@@ -72,11 +80,12 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
         }
     }
 
-    private fun getRoot(folderType: FolderType): String {
+    private fun getRoot(folderType: FolderType, subFolder: Long? = null): String {
         return when (folderType) {
             USERS -> userFolder
             CHALLENGES -> challengeFolder
             CHALLENGE_EXAMPLES -> challengeFolder + "examples"
+            FEEDS -> feedFolder + "$subFolder/${LocalDate.now()}/"
         }
     }
 }
