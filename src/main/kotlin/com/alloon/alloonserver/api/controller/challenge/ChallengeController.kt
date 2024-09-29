@@ -182,4 +182,22 @@ class ChallengeController(
 
         return ResponseEntity.ok(StringSuccessResponse("챌린지 탈퇴가 완료되었습니다."))
     }
+
+    @PostMapping("/{challengeId}/feeds", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @Operation(summary = "챌린지 피드 인증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "201")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_FEED, FILE_SIZE_EXCEED, IMAGE_TYPE_UNSUPPORTED])
+    fun createChallengeFeed(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestPart imageFile: MultipartFile,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.createChallengeFeed(
+            UserUtility.getUserId(principal),
+            challengeId,
+            imageFile
+        )
+
+        return ResponseEntity.status(CREATED).body(StringSuccessResponse("챌린지 피드 인증이 완료되었습니다."))
+    }
 }
