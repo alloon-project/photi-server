@@ -19,6 +19,7 @@ CREATE TABLE users
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     contact_id                  BIGINT                    NOT NULL,
+    feed_cnt                    INT                       NOT NULL,
     CONSTRAINT fk_user_contact FOREIGN KEY (contact_id) REFERENCES contact (contact_id),
     CONSTRAINT uq_users UNIQUE (username)
 );

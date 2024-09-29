@@ -58,6 +58,7 @@ cloud:
       folder:
         folderName1: users/
         folderName2: challenges/
+        folderName3: feeds/
     stack:
       auto: false
 
