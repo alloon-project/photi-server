@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.s3.S3Service
+import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.Runs
 import io.mockk.every
@@ -101,6 +102,37 @@ class UserServiceTest {
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("사용자 챌린지 기록 조회를 하면 일치하는 사용자 챌린지 기록을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallengeHistory_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = getUserChallengeHistoryDto()
+
+        every { userRepository.findChallengeHistoryById(any()) } returns dto
+
+        // when
+        val result = userService.findUserChallengeHistory(userId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
+    @DisplayName("존재하지 않은 사용자로 챌린지 기록 조회를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundUser_whenFindUserChallengeHistory_thenThrow() {
+        // given
+        val userId = 1L
+
+        every { userRepository.findChallengeHistoryById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { userService.findUserChallengeHistory(userId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -112,5 +144,9 @@ class UserServiceTest {
 
     private fun getMultipartFile(): MockMultipartFile {
         return MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
+    }
+
+    private fun getUserChallengeHistoryDto(): UserChallengeHistoryDto {
+        return UserChallengeHistoryDto("tester", "https://url.kr/5MhHhD", 99, 2)
     }
 }
