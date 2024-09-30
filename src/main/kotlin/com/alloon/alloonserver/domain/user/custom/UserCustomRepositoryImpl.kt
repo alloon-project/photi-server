@@ -1,11 +1,16 @@
 package com.alloon.alloonserver.domain.user.custom
 
+import com.alloon.alloonserver.domain.base.ServiceStatus.END
+import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
+import com.alloon.alloonserver.service.user.dto.QUserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.QUserInfoDto
+import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
 
@@ -40,6 +45,32 @@ class UserCustomRepositoryImpl(
                     user.imageUrl,
                     user.username,
                     user.contact.email
+                )
+            )
+            .from(user)
+            .where(user.id.eq(userId))
+            .fetchOne()
+    }
+
+    override fun findChallengeHistoryById(userId: Long): UserChallengeHistoryDto? {
+        val endedChallengeCnt = queryFactory
+            .select(challengeMember.count())
+            .from(challengeMember)
+            .join(challengeMember.user)
+            .join(challengeMember.challenge)
+            .where(
+                challengeMember.user.id.eq(userId)
+                    .and(challengeMember.challenge.serviceStatus.eq(END))
+            )
+            .fetchOne()?.toInt() ?: 0
+
+        return queryFactory
+            .select(
+                QUserChallengeHistoryDto(
+                    user.username,
+                    user.imageUrl,
+                    user.feedCnt,
+                    Expressions.constant(endedChallengeCnt),
                 )
             )
             .from(user)
