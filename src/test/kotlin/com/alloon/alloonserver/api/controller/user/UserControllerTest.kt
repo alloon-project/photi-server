@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.service.user.UserService
+import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.every
 import io.mockk.mockk
@@ -62,7 +63,30 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("사용자 챌린지 기록 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallengeHistory_thenReturn200() {
+        // given
+        val dto = getUserChallengeHistoryDto()
+
+        every { userService.findUserChallengeHistory(any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/challenge-history")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getUserInfoDto(): UserInfoDto {
         return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
+    }
+
+    private fun getUserChallengeHistoryDto(): UserChallengeHistoryDto {
+        return UserChallengeHistoryDto("tester", "https://url.kr/5MhHhD", 99, 2)
     }
 }
