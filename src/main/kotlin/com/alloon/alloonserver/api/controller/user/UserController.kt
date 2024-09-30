@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.api.controller.user
 
+import com.alloon.alloonserver.api.controller.user.response.UserChallengeHistoryResponse
 import com.alloon.alloonserver.api.controller.user.response.UserInfoResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
@@ -51,6 +52,17 @@ class UserController(
     ): ResponseEntity<UserInfoResponse> {
         val user = userService.updateUserImage(UserUtility.getUserId(principal), imageFile)
         val response = UserInfoResponse.of(user)
+
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/api/users/challenge-history")
+    @Operation(summary = "사용자 챌린지 기록 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
+    fun findUserChallengeHistory(principal: Principal): ResponseEntity<UserChallengeHistoryResponse> {
+        val challengeHistory = userService.findUserChallengeHistory(UserUtility.getUserId(principal))
+        val response = UserChallengeHistoryResponse.of(challengeHistory)
 
         return ResponseEntity.ok(response)
     }
