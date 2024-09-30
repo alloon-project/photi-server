@@ -4,6 +4,6 @@ enum class ServiceStatus(
     val text: String,
 ) {
     ACTIVE("활성화"),
-    USER_DEL("사용자 삭제"),
+    END("종료"),
     ADMIN_DEL("관리자 삭제"),
 }
