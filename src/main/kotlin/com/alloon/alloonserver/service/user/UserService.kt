@@ -5,6 +5,7 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
+import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,6 +35,11 @@ class UserService(
         user.changeImageUrl(imageUrl)
 
         return UserInfoDto.of(user)
+    }
+
+    fun findUserChallengeHistory(userId: Long): UserChallengeHistoryDto {
+        return userRepository.findChallengeHistoryById(userId)
+            ?: throw CustomException(USER_NOT_FOUND)
     }
 
     private fun deleteOriginalImage(imageUrl: String) {
