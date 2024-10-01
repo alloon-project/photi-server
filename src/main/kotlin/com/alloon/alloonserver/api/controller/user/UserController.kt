@@ -4,6 +4,7 @@ import com.alloon.alloonserver.api.controller.user.response.UserChallengeHistory
 import com.alloon.alloonserver.api.controller.user.response.UserInfoResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
+import com.alloon.alloonserver.common.response.CollectionSuccessResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.user.UserService
@@ -14,21 +15,19 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
 @Validated
 @RestController
+@RequestMapping("/api/users")
 @Tag(name = "User", description = "사용자 API")
 class UserController(
     private val userService: UserService,
 ) {
 
-    @GetMapping("/api/users")
+    @GetMapping
     @Operation(summary = "사용자 정보 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
@@ -39,7 +38,7 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @PostMapping("/api/users/image", consumes = [MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("/image", consumes = [MULTIPART_FORM_DATA_VALUE])
     @Operation(
         summary = "사용자 프로필 이미지 업로드",
         security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
@@ -56,14 +55,28 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/api/users/challenge-history")
+    @GetMapping("/challenge-history")
     @Operation(summary = "사용자 챌린지 기록 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
     fun findUserChallengeHistory(principal: Principal): ResponseEntity<UserChallengeHistoryResponse> {
-        val challengeHistory = userService.findUserChallengeHistory(UserUtility.getUserId(principal))
+        val challengeHistory =
+            userService.findUserChallengeHistory(UserUtility.getUserId(principal))
         val response = UserChallengeHistoryResponse.of(challengeHistory)
 
         return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/feeds")
+    @Operation(
+        summary = "사용자 피드 인증 날짜 리스트 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
+    fun findUserFeeds(principal: Principal): ResponseEntity<CollectionSuccessResponse> {
+        val response = userService.findUserFeeds(UserUtility.getUserId(principal))
+
+        return ResponseEntity.ok(CollectionSuccessResponse(response))
     }
 }
