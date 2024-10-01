@@ -13,4 +13,6 @@ interface UserCustomRepository {
     fun findInfoById(userId: Long): UserInfoDto?
 
     fun findChallengeHistoryById(userId: Long): UserChallengeHistoryDto?
+
+    fun findFeedsById(userId: Long): List<String>?
 }
