@@ -6,6 +6,7 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.FeedRepository
+import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
@@ -36,7 +37,7 @@ class ChallengeService(
         dto: CreateChallengeDto,
         imageFile: MultipartFile
     ): CreateChallengeDto {
-        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
+        val user = validateUser(userId)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
 
@@ -126,7 +127,7 @@ class ChallengeService(
 
     @Transactional
     fun createChallengeFeed(userId: Long, challengeId: Long, imageFile: MultipartFile) {
-        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
+        val user = validateUser(userId)
         val challenge = validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
         validateChallengeMemberFeed(challengeMember)
@@ -139,6 +140,25 @@ class ChallengeService(
 
         feedRepository.save(feed)
         user.updateFeedCnt()
+    }
+
+    @Transactional
+    fun deleteChallengeFeed(userId: Long, challengeId: Long, feedId: Long) {
+        val user = validateUser(userId)
+        validateChallenge(challengeId)
+        val challengeMemberId = validateChallengeMember(userId, challengeId).id
+        val feed = feedRepository.findByIdAndChallengeMemberId(feedId, challengeMemberId)
+            ?: throw CustomException(FEED_NOT_FOUND)
+
+        feedRepository.delete(feed)
+        s3Service.deleteImage(feed.imageUrl, FEEDS, challengeId)
+        user.decreaseFeedCnt()
+
+        // TODO 댓글, 좋아요 삭제
+    }
+
+    private fun validateUser(userId: Long): User {
+        return userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
 
     private fun validateChallenge(challengeId: Long): Challenge {
