@@ -80,7 +80,7 @@ jacocoTestReport {
     reports {
         html.required = true
         csv.required = false
-        xml.required = false
+        xml.required = true
     }
 
     def qDomains = []
