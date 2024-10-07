@@ -82,6 +82,25 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("사용자 피드 인증 날짜 리스트 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeeds_thenReturn200() {
+        // given
+        val response = listOf("2024-10-02", "2024-10-05", "2024-10-07")
+
+        every { userService.findUserFeeds(any()) } returns response
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/feeds")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getUserInfoDto(): UserInfoDto {
         return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
