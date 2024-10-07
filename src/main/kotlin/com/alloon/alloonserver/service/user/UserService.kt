@@ -42,6 +42,11 @@ class UserService(
             ?: throw CustomException(USER_NOT_FOUND)
     }
 
+    fun findUserFeeds(userId: Long): List<String> {
+        return userRepository.findFeedsById(userId)?.distinct()
+            ?: throw CustomException(USER_NOT_FOUND)
+    }
+
     private fun deleteOriginalImage(imageUrl: String) {
         if (imageUrl.isNotEmpty()) {
             s3Service.deleteImage(imageUrl, USERS)

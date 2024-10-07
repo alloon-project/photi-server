@@ -2,6 +2,7 @@ package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.base.ServiceStatus.END
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
+import com.alloon.alloonserver.domain.feed.QFeed.feed
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
@@ -73,6 +74,22 @@ class UserCustomRepositoryImpl(
                     Expressions.constant(endedChallengeCnt),
                 )
             )
+            .from(user)
+            .where(user.id.eq(userId))
+            .fetchOne()
+    }
+
+    override fun findFeedsById(userId: Long): List<String>? {
+        val feeds = queryFactory
+            .select(feed.createDateTime)
+            .from(feed)
+            .join(feed.challengeMember.user)
+            .where(feed.challengeMember.user.id.eq(userId))
+            .fetch()
+            .map { it.toLocalDate().toString() }
+
+        return queryFactory
+            .select(Expressions.constant(feeds))
             .from(user)
             .where(user.id.eq(userId))
             .fetchOne()
