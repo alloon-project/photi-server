@@ -58,8 +58,42 @@ class UserTest {
         assertThat(user.imageUrl).isEqualTo(imageUrl)
     }
 
+    @DisplayName("피드 인증 횟수가 0보다 크면 피드 인증 횟수가 감소한다.")
+    @Test
+    fun givenFeedCntGreaterThanZero_whenDecreaseFeedCnt_thenReturn() {
+        // given
+        val contact = createContact()
+        val user = createUser(contact)
+
+        // when
+        user.decreaseFeedCnt()
+
+        // then
+        assertThat(user.feedCnt).isEqualTo(3)
+    }
+
+    @DisplayName("피드 인증 횟수가 0이면 피드 인증 횟수가 감소하지 않는다.")
+    @Test
+    fun givenFeedCntZero_whenDecreaseFeedCnt_thenReturn() {
+        // given
+        val contact = createContact()
+        val user = createUser(contact).apply { feedCnt = 0 }
+
+        // when
+        user.decreaseFeedCnt()
+
+        // then
+        assertThat(user.feedCnt).isEqualTo(0)
+    }
+
     private fun createUser(contact: Contact): User {
-        return User(contact = contact, username = "tester", password = "password1!", imageUrl = "")
+        return User(
+            contact = contact,
+            username = "tester",
+            password = "password1!",
+            imageUrl = "",
+            feedCnt = 4
+        )
     }
 
     private fun createContact(): Contact {
