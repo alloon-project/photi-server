@@ -12,4 +12,6 @@ interface FeedRepository : JpaRepository<Feed, Long>, FeedCustomRepository {
         startOfDay: LocalDateTime,
         endOfDay: LocalDateTime
     ): Boolean
+
+    fun findByIdAndChallengeMemberId(feedId: Long, challengeMemberId: Long?): Feed?
 }
