@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.net.URLDecoder
-import java.time.LocalDate
 import kotlin.text.Charsets.UTF_8
 
 @Service
@@ -69,9 +68,9 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
             .map { getImageUrl(it) }
     }
 
-    fun deleteImage(imageUrl: String, folderType: FolderType) {
+    fun deleteImage(imageUrl: String, folderType: FolderType, subFolder: Long? = null) {
         try {
-            val root = getRoot(folderType)
+            val root = getRoot(folderType, subFolder)
             val fileName = imageUrl.substringAfter(root)
             val decodedFileName = URLDecoder.decode(fileName, UTF_8.toString())
             amazonS3Client.deleteObject(bucket, root + decodedFileName)
@@ -85,7 +84,7 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
             USERS -> userFolder
             CHALLENGES -> challengeFolder
             CHALLENGE_EXAMPLES -> challengeFolder + "examples"
-            FEEDS -> feedFolder + "$subFolder/${LocalDate.now()}/"
+            FEEDS -> "$feedFolder$subFolder/"
         }
     }
 }
