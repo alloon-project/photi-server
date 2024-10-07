@@ -133,6 +133,37 @@ class UserServiceTest {
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("사용자 피드 인증 날짜 리스트 조회를 하면 일치하는 사용자 피드 인증 날짜 리스트를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeeds_thenReturn() {
+        // given
+        val userId = 1L
+        val feeds = listOf("2024-10-02", "2024-10-05", "2024-10-07")
+
+        every { userRepository.findFeedsById(any()) } returns feeds
+
+        // when
+        val result = userService.findUserFeeds(userId)
+
+        // then
+        assertThat(result).isEqualTo(feeds)
+    }
+
+    @DisplayName("존재하지 않은 사용자로 피드 인증 날짜 리스트 조회를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundUser_whenFindUserFeeds_thenThrow() {
+        // given
+        val userId = 1L
+
+        every { userRepository.findFeedsById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { userService.findUserFeeds(userId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
