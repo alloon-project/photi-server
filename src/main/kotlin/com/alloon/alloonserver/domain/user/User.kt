@@ -49,4 +49,8 @@ class User(
     fun updateFeedCnt() {
         feedCnt += 1
     }
+
+    fun decreaseFeedCnt() {
+        feedCnt -= 1
+    }
 }
