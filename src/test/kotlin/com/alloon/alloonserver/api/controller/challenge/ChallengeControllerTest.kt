@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.challenge
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.challenge.request.*
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
 import com.alloon.alloonserver.service.challenge.dto.*
@@ -290,6 +291,32 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 피드 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeFeeds_thenReturn200() {
+        // given
+        val feeds = listOf(getFindChallengeFeedsDto())
+        val content = listOf(FindChallengeFeedsByDateResponse.of(LocalDate.now(), feeds))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { challengeService.findChallengeFeeds(any(), any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}/feeds", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .contentType(APPLICATION_JSON)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
@@ -374,6 +401,16 @@ class ChallengeControllerTest : RestDocsSupport() {
                 ChallengeHashtagRequest("해시태그 1"),
                 ChallengeHashtagRequest("해시태그 2"),
             )
+        )
+    }
+
+    private fun getFindChallengeFeedsDto(): FindChallengeFeedsDto {
+        return FindChallengeFeedsDto(
+            1L,
+            "tester",
+            "https://url.kr/5MhHhD",
+            LocalDateTime.now(),
+            LocalTime.of(13, 0),
         )
     }
 }
