@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.service.challenge
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
@@ -511,6 +512,30 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isEqualTo(FEED_NOT_FOUND)
     }
 
+    @DisplayName("챌린지 피드 조회를 하면 정렬 기준으로 정렬된 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeFeeds_thenReturn() {
+        // given
+        val challengeId = 1L
+        val sort = SortTypeConstants.LATEST
+        val dto = getFindChallengeFeedsDto()
+        val content = listOf(
+            Pair(LocalDate.of(2024, 10, 9), listOf(dto, dto, dto)),
+            Pair(LocalDate.of(2024, 10, 8), listOf(dto, dto, dto))
+        )
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { feedRepository.findAllByChallengeId(any(), any(), any()) } returns
+                SliceImpl(content, pageable, hasNext)
+
+        // when
+        val result = challengeService.findChallengeFeeds(challengeId, pageable, sort)
+
+        // then
+        assertThat(result.content.size).isEqualTo(2)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -601,6 +626,16 @@ class ChallengeServiceTest : AbstractMailProperties {
                 ChallengeHashtagDto("해시태그 3"),
                 ChallengeHashtagDto("해시태그 4"),
             ),
+        )
+    }
+
+    private fun getFindChallengeFeedsDto(): FindChallengeFeedsDto {
+        return FindChallengeFeedsDto(
+            1L,
+            "tester",
+            "https://url.kr/5MhHhD",
+            LocalDateTime.now(),
+            LocalTime.of(13, 0),
         )
     }
 }

@@ -1,12 +1,23 @@
 package com.alloon.alloonserver.domain.feed.custom
 
+import com.alloon.alloonserver.common.constant.SortTypeConstants
+import com.alloon.alloonserver.common.constant.SortTypeConstants.LATEST
+import com.alloon.alloonserver.common.constant.SortTypeConstants.POPULAR
 import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.QFeed.feed
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedsDto
+import com.alloon.alloonserver.service.challenge.dto.QFindChallengeFeedsDto
+import com.querydsl.core.types.Order.DESC
+import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.domain.SliceImpl
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class FeedCustomRepositoryImpl(
@@ -22,6 +33,50 @@ class FeedCustomRepositoryImpl(
             ).fetchFirst()
     }
 
+    override fun findAllByChallengeId(
+        challengeId: Long,
+        pageable: Pageable,
+        sort: SortTypeConstants
+    ): Slice<Pair<LocalDate, List<FindChallengeFeedsDto>>> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindChallengeFeedsDto(
+                    feed.id,
+                    feed.challengeMember.user.username,
+                    feed.imageUrl,
+                    feed.createDateTime,
+                    feed.challenge.proveTime,
+                )
+            )
+            .from(feed)
+            .join(feed.challenge)
+            .join(feed.challengeMember.user)
+            .where(feed.challenge.id.eq(challengeId))
+            .orderBy(getOrderSpecifier(sort))
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        val groupedContent = content.groupBy { it.createdDateTime.toLocalDate() }.toList()
+
+        return SliceImpl(groupedContent, pageable, hasNext)
+    }
+
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { feed.serviceStatus.eq(serviceStatus) }
+
+    private fun getOrderSpecifier(sort: SortTypeConstants): OrderSpecifier<*> {
+        return when (sort) {
+            LATEST -> OrderSpecifier(DESC, feed.createDateTime)
+            POPULAR -> OrderSpecifier(DESC, feed.likeCnt.add(feed.likeCnt)) // TODO 댓글 수로 변경
+        }
+    }
 }
