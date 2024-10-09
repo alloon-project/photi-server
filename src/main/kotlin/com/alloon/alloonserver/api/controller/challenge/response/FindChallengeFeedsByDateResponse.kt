@@ -10,6 +10,9 @@ data class FindChallengeFeedsByDateResponse(
     @Schema(description = "피드 인증 날짜", example = "2024-10-09")
     val createdDate: LocalDate,
 
+    @Schema(description = "피드 인증한 파티원 수", example = "5")
+    val feedMemberCnt: Int,
+
     @Schema(description = "피드 목록")
     val feeds: List<FindChallengeFeedsResponse>
 ) {
@@ -22,6 +25,7 @@ data class FindChallengeFeedsByDateResponse(
         ): FindChallengeFeedsByDateResponse {
             return FindChallengeFeedsByDateResponse(
                 createdDate,
+                feeds.count(),
                 FindChallengeFeedsResponse.of(feeds)
             )
         }
