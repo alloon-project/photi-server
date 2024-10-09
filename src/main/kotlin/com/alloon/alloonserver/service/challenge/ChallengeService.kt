@@ -1,7 +1,9 @@
 package com.alloon.alloonserver.service.challenge
 
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
 import com.alloon.alloonserver.domain.feed.Feed
@@ -155,6 +157,17 @@ class ChallengeService(
         user.decreaseFeedCnt()
 
         // TODO 댓글, 좋아요 삭제
+    }
+
+    fun findChallengeFeeds(
+        challengeId: Long,
+        pageable: Pageable,
+        sort: SortTypeConstants,
+    ): Slice<FindChallengeFeedsByDateResponse> {
+        return feedRepository.findAllByChallengeId(challengeId, pageable, sort)
+            .map { (createdDate, feeds) ->
+                FindChallengeFeedsByDateResponse.of(createdDate, feeds)
+            }
     }
 
     private fun validateUser(userId: Long): User {
