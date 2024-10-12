@@ -7,6 +7,7 @@ import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.*
 import com.alloon.alloonserver.domain.feed.Feed
+import com.alloon.alloonserver.domain.feed.FeedCommentRepository
 import com.alloon.alloonserver.domain.feed.FeedRepository
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -30,6 +31,7 @@ class ChallengeService(
     private val challengeMemberRepository: ChallengeMemberRepository,
     private val userRepository: UserRepository,
     private val feedRepository: FeedRepository,
+    private val feedCommentRepository: FeedCommentRepository,
     private val s3Service: S3Service,
 ) {
 
@@ -168,6 +170,21 @@ class ChallengeService(
             .map { (createdDate, feeds) ->
                 FindChallengeFeedsByDateResponse.of(createdDate, feeds)
             }
+    }
+
+    @Transactional
+    fun createChallengeFeedComment(
+        userId: Long,
+        challengeId: Long,
+        feedId: Long,
+        dto: CreateChallengeFeedCommentDto
+    ) {
+        validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        val feed = feedRepository.findById(feedId).orElseThrow { CustomException(FEED_NOT_FOUND) }
+        val feedComment = dto.toEntity(challengeMember, feed)
+
+        feedCommentRepository.save(feedComment)
     }
 
     private fun validateUser(userId: Long): User {
