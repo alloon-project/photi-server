@@ -562,7 +562,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedRepository.findById(any()) } returns Optional.of(feed)
+        every { feedRepository.findByFeedId(any()) } returns feed
         every { feedCommentRepository.save(any()) } returns feedComment
 
         // when
@@ -637,7 +637,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedRepository.findById(any()) } returns Optional.empty()
+        every { feedRepository.findByFeedId(any()) } returns null
 
         // when & then
         assertThatThrownBy {
