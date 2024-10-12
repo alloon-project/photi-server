@@ -236,4 +236,25 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @PostMapping("/{challengeId}/feeds/{feedId}/comments")
+    @Operation(summary = "챌린지 피드 댓글 등록", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "201")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND, FEED_NOT_FOUND])
+    fun createChallengeFeedComment(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @PathVariable @Parameter(description = "피드 id", example = "1") feedId: Long,
+        @RequestBody @Valid request: CreateChallengeFeedCommentRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.createChallengeFeedComment(
+            UserUtility.getUserId(principal),
+            challengeId,
+            feedId,
+            request.toServiceDto(),
+        )
+
+        return ResponseEntity.status(CREATED)
+            .body(StringSuccessResponse("챌린지 피드 댓글 등록이 완료되었습니다."))
+    }
 }
