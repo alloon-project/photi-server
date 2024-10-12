@@ -84,7 +84,7 @@ class FeedCustomRepositoryImpl(
     private fun getOrderSpecifier(sort: SortTypeConstants): OrderSpecifier<*> {
         return when (sort) {
             LATEST -> OrderSpecifier(DESC, feed.createDateTime)
-            POPULAR -> OrderSpecifier(DESC, feed.likeCnt.add(feed.likeCnt)) // TODO 댓글 수로 변경
+            POPULAR -> OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt))
         }
     }
 }

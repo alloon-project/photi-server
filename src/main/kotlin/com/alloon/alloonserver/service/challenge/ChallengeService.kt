@@ -15,7 +15,6 @@ import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
 import com.alloon.alloonserver.service.s3.FolderType.FEEDS
 import com.alloon.alloonserver.service.s3.S3Service
-import io.sentry.MeasurementUnit.Custom
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
@@ -186,18 +185,20 @@ class ChallengeService(
         val feedComment = dto.toEntity(challengeMember, feed)
 
         feedCommentRepository.save(feedComment)
+        feed.updateCommentCnt()
     }
 
     @Transactional
     fun deleteChallengeFeedComment(userId: Long, challengeId: Long, feedId: Long) {
         validateChallenge(challengeId)
-        validateChallengeFeed(feedId)
+        val feed = validateChallengeFeed(feedId)
         val challengeMemberId = validateChallengeMember(userId, challengeId).id
         val feedComment =
             feedCommentRepository.findByChallengeMemberIdAndFeedId(challengeMemberId, feedId)
                 ?: throw CustomException(FEED_COMMENT_NOT_FOUND)
 
         feedCommentRepository.delete(feedComment)
+        feed.decreaseCommentCnt()
     }
 
     private fun validateUser(userId: Long): User {

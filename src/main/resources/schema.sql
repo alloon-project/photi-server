@@ -129,6 +129,7 @@ CREATE TABLE feed
 (
     feed_id                     BIGSERIAL PRIMARY KEY,
     like_cnt                    INT                       NOT NULL,
+    comment_cnt                 INT                       NOT NULL,
     image_url                   VARCHAR(500)              NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,

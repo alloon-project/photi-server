@@ -26,5 +26,18 @@ class Feed(
 
     @Column(nullable = false)
     val likeCnt: Int = 0,
+
+    @Column(nullable = false)
+    var commentCnt: Int = 0,
 ) : BasePermanentEntity() {
+
+    fun updateCommentCnt() {
+        commentCnt += 1
+    }
+
+    fun decreaseCommentCnt() {
+        if (commentCnt > 0) {
+            commentCnt -= 1
+        }
+    }
 }
