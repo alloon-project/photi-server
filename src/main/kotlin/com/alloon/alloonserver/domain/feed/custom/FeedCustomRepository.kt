@@ -11,6 +11,8 @@ interface FeedCustomRepository {
 
     fun find(id: Long): Feed?
 
+    fun findByFeedId(id: Long): Feed?
+
     fun findAllByChallengeId(
         challengeId: Long,
         pageable: Pageable,
