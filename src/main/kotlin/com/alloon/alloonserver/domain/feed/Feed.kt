@@ -36,6 +36,8 @@ class Feed(
     }
 
     fun decreaseCommentCnt() {
-        commentCnt -= 1
+        if (commentCnt > 0) {
+            commentCnt -= 1
+        }
     }
 }
