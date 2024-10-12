@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.*
 
 @Transactional
 @ActiveProfiles("test")
@@ -537,6 +538,113 @@ class ChallengeServiceTest : AbstractMailProperties {
 
         // then
         assertThat(result.content.size).isEqualTo(2)
+    }
+
+    @DisplayName("챌린지 피드 댓글 등록을 하면 피드 댓글이 저장된다.")
+    @Test
+    fun givenValid_whenCreateChallengeFeedComment_thenReturn() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
+        val comment = "피드 댓글"
+        val dto = CreateChallengeFeedCommentDto(comment)
+        val feedComment = dto.toEntity(challengeMember, feed)
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedRepository.findById(any()) } returns Optional.of(feed)
+        every { feedCommentRepository.save(any()) } returns feedComment
+
+        // when
+        challengeService.createChallengeFeedComment(userId, challengeId, feedId, dto)
+
+        // then
+        assertThat(feedComment.comment).isEqualTo(comment)
+    }
+
+    @DisplayName("등록되지 않은 챌린지에 피드 댓글 등록을 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallenge_whenCreateChallengeFeedComment_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val comment = "피드 댓글"
+        val dto = CreateChallengeFeedCommentDto(comment)
+
+        every { challengeRepository.findInfoById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.createChallengeFeedComment(userId, challengeId, feedId, dto)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 파티원이 댓글 등록을 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallengeMember_whenCreateChallengeFeedComment_thenThrow() {
+        // given
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val comment = "피드 댓글"
+        val dto = CreateChallengeFeedCommentDto(comment)
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.createChallengeFeedComment(userId, challengeId, feedId, dto)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 피드에 댓글 등록을 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundFeed_whenCreateChallengeFeedComment_thenThrow() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val comment = "피드 댓글"
+        val dto = CreateChallengeFeedCommentDto(comment)
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedRepository.findById(any()) } returns Optional.empty()
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.createChallengeFeedComment(userId, challengeId, feedId, dto)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(FEED_NOT_FOUND)
     }
 
     private fun getUser(): User {
