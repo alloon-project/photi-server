@@ -257,4 +257,22 @@ class ChallengeController(
         return ResponseEntity.status(CREATED)
             .body(StringSuccessResponse("챌린지 피드 댓글 등록이 완료되었습니다."))
     }
+
+    @DeleteMapping("/{challengeId}/feeds/{feedId}/comments")
+    @Operation(summary = "챌린지 피드 댓글 삭제", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND, FEED_NOT_FOUND, FEED_COMMENT_NOT_FOUND])
+    fun deleteChallengeFeedComment(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @PathVariable @Parameter(description = "피드 id", example = "1") feedId: Long,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.deleteChallengeFeedComment(
+            UserUtility.getUserId(principal),
+            challengeId,
+            feedId,
+        )
+
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 피드 댓글 삭제가 완료되었습니다."))
+    }
 }
