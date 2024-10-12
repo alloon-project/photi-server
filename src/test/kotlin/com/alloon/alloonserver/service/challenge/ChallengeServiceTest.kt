@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
 import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.feed.Feed
+import com.alloon.alloonserver.domain.feed.FeedComment
 import com.alloon.alloonserver.domain.feed.FeedCommentRepository
 import com.alloon.alloonserver.domain.feed.FeedRepository
 import com.alloon.alloonserver.domain.user.Contact
@@ -645,6 +646,136 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(FEED_NOT_FOUND)
+    }
+
+    @DisplayName("챌린지 피드 댓글 삭제를 하면 해당 챌린지 파티원의 댓글이 삭제된다.")
+    @Test
+    fun givenValid_whenDeleteChallengeFeedComment_thenReturn() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
+        val feedComment = FeedComment(1L, challengeMember, feed, "피드 댓글")
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every { feedRepository.findByFeedId(any()) } returns feed
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedCommentRepository.findByChallengeMemberIdAndFeedId(any(), any()) } returns feedComment
+        every { feedCommentRepository.delete(any()) } just Runs
+
+        // when
+        challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+
+        // then
+        verify { feedCommentRepository.delete(feedComment) }
+    }
+
+    @DisplayName("등록되지 않은 챌린지의 피드 댓글 삭제를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallenge_whenDeleteChallengeFeedComment_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 피드의 댓글 삭제를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundFeed_whenDeleteChallengeFeedComment_thenThrow() {
+        // given
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every { feedRepository.findByFeedId(any()) } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(FEED_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 파티원이 댓글 삭제를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallengeMember_whenDeleteChallengeFeedComment_thenThrow() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every { feedRepository.findByFeedId(any()) } returns feed
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 댓글 삭제를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundFeedComment_whenDeleteChallengeFeedComment_thenThrow() {
+        // given
+        val user = getUser()
+        val imageUrl = "https://url.kr/5MhHhD"
+        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every { feedRepository.findByFeedId(any()) } returns feed
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedCommentRepository.findByChallengeMemberIdAndFeedId(any(), any()) } returns null
+
+        // when & then
+        assertThatThrownBy {
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+        }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(FEED_COMMENT_NOT_FOUND)
     }
 
     private fun getUser(): User {
