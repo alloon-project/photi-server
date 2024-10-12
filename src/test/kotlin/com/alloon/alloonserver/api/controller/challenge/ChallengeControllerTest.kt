@@ -317,6 +317,27 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 피드 댓글 등록을 성공하면 201을 반환한다.")
+    @Test
+    fun givenValid_whenCreateChallengeFeedComment_thenReturn201() {
+        // given
+        val request = CreateChallengeFeedCommentRequest("피드 댓글")
+
+        every { challengeService.createChallengeFeedComment(any(), any(), any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            post("/api/challenges/{challengeId}/feeds/{feedId}/comments", 1, 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+
+        // then
+        resultActions.andExpect(status().isCreated)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
