@@ -15,6 +15,7 @@ import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
 import com.alloon.alloonserver.service.s3.FolderType.FEEDS
 import com.alloon.alloonserver.service.s3.S3Service
+import io.sentry.MeasurementUnit.Custom
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
@@ -181,10 +182,22 @@ class ChallengeService(
     ) {
         validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
-        val feed = feedRepository.findById(feedId).orElseThrow { CustomException(FEED_NOT_FOUND) }
+        val feed = validateChallengeFeed(feedId)
         val feedComment = dto.toEntity(challengeMember, feed)
 
         feedCommentRepository.save(feedComment)
+    }
+
+    @Transactional
+    fun deleteChallengeFeedComment(userId: Long, challengeId: Long, feedId: Long) {
+        validateChallenge(challengeId)
+        validateChallengeFeed(feedId)
+        val challengeMemberId = validateChallengeMember(userId, challengeId).id
+        val feedComment =
+            feedCommentRepository.findByChallengeMemberIdAndFeedId(challengeMemberId, feedId)
+                ?: throw CustomException(FEED_COMMENT_NOT_FOUND)
+
+        feedCommentRepository.delete(feedComment)
     }
 
     private fun validateUser(userId: Long): User {
@@ -219,5 +232,9 @@ class ChallengeService(
         if (isFeedCreated) {
             throw CustomException(EXISTING_FEED)
         }
+    }
+
+    private fun validateChallengeFeed(feedId: Long): Feed {
+        return feedRepository.findByFeedId(feedId) ?: throw CustomException(FEED_NOT_FOUND)
     }
 }

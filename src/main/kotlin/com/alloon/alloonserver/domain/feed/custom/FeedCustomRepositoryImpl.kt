@@ -33,6 +33,14 @@ class FeedCustomRepositoryImpl(
             ).fetchFirst()
     }
 
+    override fun findByFeedId(id: Long): Feed? {
+        return queryFactory
+            .selectFrom(feed)
+            .join(feed.challengeMember).fetchJoin()
+            .where(feed.id.eq(id))
+            .fetchFirst()
+    }
+
     override fun findAllByChallengeId(
         challengeId: Long,
         pageable: Pageable,

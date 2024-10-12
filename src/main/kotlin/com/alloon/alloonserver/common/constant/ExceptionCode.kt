@@ -87,6 +87,7 @@ enum class ExceptionCode(
     CHALLENGE_NOT_FOUND(NOT_FOUND, "존재하지 않는 챌린지입니다."),
     CHALLENGE_MEMBER_NOT_FOUND(NOT_FOUND, "존재하지 않는 챌린지 파티원입니다."),
     FEED_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드입니다."),
+    FEED_COMMENT_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드 댓글입니다."),
 
     /**
      * 405 Method Not Allowed

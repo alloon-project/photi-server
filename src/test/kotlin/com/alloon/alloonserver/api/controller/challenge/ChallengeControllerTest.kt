@@ -338,6 +338,24 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isCreated)
     }
 
+    @DisplayName("챌린지 피드 댓글 삭제를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenDeleteChallengeFeedComment_thenReturn200() {
+        // given
+        every { challengeService.deleteChallengeFeedComment(any(), any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            delete("/api/challenges/{challengeId}/feeds/{feedId}/comments", 1, 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
