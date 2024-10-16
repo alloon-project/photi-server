@@ -78,7 +78,7 @@ class ChallengeControllerTest : RestDocsSupport() {
     @Test
     fun givenChallenge_whenFindPopularChallenges_thenReturn200() {
         // given
-        val dto = getFindChallengesDto()
+        val dto = getFindPopularChallengesDto()
 
         every { challengeService.findPopularChallenges() } returns listOf(dto)
 
@@ -415,6 +415,18 @@ class ChallengeControllerTest : RestDocsSupport() {
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
             listOf("해시태그 1", "해시태그 2")
+        )
+    }
+
+    private fun getFindPopularChallengesDto(): FindPopularChallengesDto {
+        return FindPopularChallengesDto(
+            1L,
+            "챌린지 이름",
+            "https://url.kr/5MhHhD",
+            "챌린지 목표입니다.",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf("해시태그 1", "해시태그 2"),
         )
     }
 

@@ -58,7 +58,7 @@ class ChallengeService(
         return s3Service.getChallengeExampleImages()
     }
 
-    fun findPopularChallenges(): List<FindChallengesDto> {
+    fun findPopularChallenges(): List<FindPopularChallengesDto> {
         return challengeRepository.findPopular()
     }
 

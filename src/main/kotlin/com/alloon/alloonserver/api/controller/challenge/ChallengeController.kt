@@ -68,8 +68,8 @@ class ChallengeController(
         description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
-    fun findPopularChallenges(): ResponseEntity<List<FindChallengesResponse>> {
-        val response = FindChallengesResponse.of(challengeService.findPopularChallenges())
+    fun findPopularChallenges(): ResponseEntity<List<FindPopularChallengesResponse>> {
+        val response = FindPopularChallengesResponse.of(challengeService.findPopularChallenges())
 
         return ResponseEntity.ok(response)
     }
