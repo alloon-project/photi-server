@@ -5,7 +5,9 @@ import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
 import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.QFindChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.QFindPopularChallengesDto
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
@@ -27,15 +29,17 @@ class ChallengeCustomRepositoryImpl(
             ).fetchFirst()
     }
 
-    override fun findPopular(): List<FindChallengesDto> {
+    override fun findPopular(): List<FindPopularChallengesDto> {
         return queryFactory
             .select(
-                QFindChallengesDto(
+                QFindPopularChallengesDto(
                     challenge.id,
                     challenge.name,
-                    challenge.endDate,
                     challenge.imageUrl,
-                    challenge.hashtags
+                    challenge.goal,
+                    challenge.proveTime,
+                    challenge.endDate,
+                    challenge.hashtags,
                 )
             )
             .from(challenge)
