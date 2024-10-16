@@ -277,4 +277,23 @@ class ChallengeController(
 
         return ResponseEntity.ok(StringSuccessResponse("챌린지 피드 댓글 삭제가 완료되었습니다."))
     }
+
+    @GetMapping("/{challengeId}/feeds/{feedId}")
+    @Operation(summary = "챌린지 피드 개별 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND, FEED_NOT_FOUND])
+    fun findChallengeFeed(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @PathVariable @Parameter(description = "피드 id", example = "1") feedId: Long,
+    ): ResponseEntity<FindChallengeFeedResponse> {
+        val challengeFeed = challengeService.findChallengeFeed(
+            UserUtility.getUserId(principal),
+            challengeId,
+            feedId
+        )
+        val response = FindChallengeFeedResponse.of(challengeFeed)
+
+        return ResponseEntity.ok(response)
+    }
 }

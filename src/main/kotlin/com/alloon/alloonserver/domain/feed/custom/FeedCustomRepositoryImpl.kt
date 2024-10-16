@@ -7,7 +7,9 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.QFeed.feed
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedDto
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedsDto
+import com.alloon.alloonserver.service.challenge.dto.QFindChallengeFeedDto
 import com.alloon.alloonserver.service.challenge.dto.QFindChallengeFeedsDto
 import com.querydsl.core.types.Order.DESC
 import com.querydsl.core.types.OrderSpecifier
@@ -37,6 +39,23 @@ class FeedCustomRepositoryImpl(
         return queryFactory
             .selectFrom(feed)
             .join(feed.challengeMember).fetchJoin()
+            .where(feed.id.eq(id))
+            .fetchFirst()
+    }
+
+    override fun findContentById(id: Long): FindChallengeFeedDto? {
+        return queryFactory
+            .select(
+                QFindChallengeFeedDto(
+                    feed.challengeMember.user.username,
+                    feed.challengeMember.user.imageUrl,
+                    feed.imageUrl,
+                    feed.createDateTime,
+                    feed.likeCnt,
+                )
+            )
+            .from(feed)
+            .join(feed.challengeMember)
             .where(feed.id.eq(id))
             .fetchFirst()
     }

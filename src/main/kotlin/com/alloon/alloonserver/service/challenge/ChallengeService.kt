@@ -200,6 +200,12 @@ class ChallengeService(
         feed.decreaseCommentCnt()
     }
 
+    fun findChallengeFeed(userId: Long, challengeId: Long, feedId: Long): FindChallengeFeedDto {
+        validateChallenge(challengeId)
+        validateChallengeMember(userId, challengeId)
+        return feedRepository.findContentById(feedId) ?: throw CustomException(FEED_NOT_FOUND)
+    }
+
     private fun validateUser(userId: Long): User {
         return userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
