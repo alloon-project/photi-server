@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.user.User
+import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 
@@ -15,4 +16,6 @@ interface UserCustomRepository {
     fun findChallengeHistoryById(userId: Long): UserChallengeHistoryDto?
 
     fun findFeedsById(userId: Long): List<String>?
+
+    fun findChallengeCntById(userId: Long): FindUserChallengeCntDto?
 }
