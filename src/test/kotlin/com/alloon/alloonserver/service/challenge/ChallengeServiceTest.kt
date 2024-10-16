@@ -668,22 +668,18 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
+        val commentId = 1L
 
         every { challengeRepository.findInfoById(any()) } returns challenge
         every { feedRepository.findByFeedId(any()) } returns feed
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every {
-            feedCommentRepository.findByChallengeMemberIdAndFeedId(
-                any(),
-                any()
-            )
-        } returns feedComment
+        every { feedCommentRepository.findByCommentId(any()) } returns feedComment
         every { feedCommentRepository.delete(any()) } just Runs
 
         // when
-        challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+        challengeService.deleteChallengeFeedComment(userId, challengeId, feedId, commentId)
 
         // then
         verify { feedCommentRepository.delete(feedComment) }
@@ -696,12 +692,13 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
+        val commentId = 1L
 
         every { challengeRepository.findInfoById(any()) } returns null
 
         // when & then
         assertThatThrownBy {
-            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId, commentId)
         }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
@@ -717,13 +714,14 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
+        val commentId = 1L
 
         every { challengeRepository.findInfoById(any()) } returns challenge
         every { feedRepository.findByFeedId(any()) } returns null
 
         // when & then
         assertThatThrownBy {
-            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId, commentId)
         }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
@@ -743,6 +741,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
+        val commentId = 1L
 
         every { challengeRepository.findInfoById(any()) } returns challenge
         every { feedRepository.findByFeedId(any()) } returns feed
@@ -752,7 +751,7 @@ class ChallengeServiceTest : AbstractMailProperties {
 
         // when & then
         assertThatThrownBy {
-            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId, commentId)
         }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
@@ -772,17 +771,18 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
+        val commentId = 1L
 
         every { challengeRepository.findInfoById(any()) } returns challenge
         every { feedRepository.findByFeedId(any()) } returns feed
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedCommentRepository.findByChallengeMemberIdAndFeedId(any(), any()) } returns null
+        every { feedCommentRepository.findByCommentId(any()) } returns null
 
         // when & then
         assertThatThrownBy {
-            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId)
+            challengeService.deleteChallengeFeedComment(userId, challengeId, feedId, commentId)
         }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")

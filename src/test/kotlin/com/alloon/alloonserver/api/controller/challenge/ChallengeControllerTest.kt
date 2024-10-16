@@ -342,11 +342,11 @@ class ChallengeControllerTest : RestDocsSupport() {
     @Test
     fun givenValid_whenDeleteChallengeFeedComment_thenReturn200() {
         // given
-        every { challengeService.deleteChallengeFeedComment(any(), any(), any()) } just Runs
+        every { challengeService.deleteChallengeFeedComment(any(), any(), any(), any()) } just Runs
 
         // when
         val resultActions = mockMvc.perform(
-            delete("/api/challenges/{challengeId}/feeds/{feedId}/comments", 1, 1)
+            delete("/api/challenges/{challengeId}/feeds/{feedId}/comments/{commentId}", 1, 1, 1)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON)

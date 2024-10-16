@@ -189,13 +189,12 @@ class ChallengeService(
     }
 
     @Transactional
-    fun deleteChallengeFeedComment(userId: Long, challengeId: Long, feedId: Long) {
+    fun deleteChallengeFeedComment(userId: Long, challengeId: Long, feedId: Long, commentId: Long) {
         validateChallenge(challengeId)
         val feed = validateChallengeFeed(feedId)
-        val challengeMemberId = validateChallengeMember(userId, challengeId).id
-        val feedComment =
-            feedCommentRepository.findByChallengeMemberIdAndFeedId(challengeMemberId, feedId)
-                ?: throw CustomException(FEED_COMMENT_NOT_FOUND)
+        validateChallengeMember(userId, challengeId)
+        val feedComment = feedCommentRepository.findByCommentId(commentId)
+            ?: throw CustomException(FEED_COMMENT_NOT_FOUND)
 
         feedCommentRepository.delete(feedComment)
         feed.decreaseCommentCnt()
