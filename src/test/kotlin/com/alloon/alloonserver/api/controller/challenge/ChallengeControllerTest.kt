@@ -356,6 +356,25 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 피드 개별 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeFeed_thenReturn200() {
+        // given
+        val dto = getFindChallengeFeedDto()
+        every { challengeService.findChallengeFeed(any(), any(), any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}/feeds/{feedId}", 1, 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",
@@ -450,6 +469,16 @@ class ChallengeControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
             LocalTime.of(13, 0),
+        )
+    }
+
+    private fun getFindChallengeFeedDto(): FindChallengeFeedDto {
+        return FindChallengeFeedDto(
+            "tester",
+            "https://url.kr/5MhHhD",
+            "https://url.kr/5MhHhD",
+            LocalDateTime.now(),
+            10
         )
     }
 }
