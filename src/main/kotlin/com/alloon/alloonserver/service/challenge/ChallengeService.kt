@@ -153,12 +153,12 @@ class ChallengeService(
         val challengeMemberId = validateChallengeMember(userId, challengeId).id
         val feed = feedRepository.findByIdAndChallengeMemberId(feedId, challengeMemberId)
             ?: throw CustomException(FEED_NOT_FOUND)
+        val feedComments = feedCommentRepository.findAllByFeedId(feedId)
 
+        feedCommentRepository.deleteAllInBatch(feedComments)
         feedRepository.delete(feed)
         s3Service.deleteImage(feed.imageUrl, FEEDS, challengeId)
         user.decreaseFeedCnt()
-
-        // TODO 댓글, 좋아요 삭제
     }
 
     fun findChallengeFeeds(
