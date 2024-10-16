@@ -789,6 +789,93 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isEqualTo(FEED_COMMENT_NOT_FOUND)
     }
 
+    @DisplayName("챌린지 피드 개별 조회를 하면 일치하는 피드를 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeFeed_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val dto = getFindChallengeFeedDto()
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedRepository.findContentById(any()) } returns dto
+
+        // when
+        val result = challengeService.findChallengeFeed(userId, challengeId, feedId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
+    @DisplayName("등록되지 않은 챌린지의 피드를 개별 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallenge_whenFindChallengeFeed_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+
+        every { challengeRepository.findInfoById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeFeed(userId, challengeId, feedId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 파티원이 피드를 개별 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallengeMember_whenFindChallengeFeed_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeFeed(userId, challengeId, feedId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 피드를 개별 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundFeed_whenFindChallengeFeed_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val feedId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+
+        every { challengeRepository.findInfoById(any()) } returns challenge
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { feedRepository.findContentById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeFeed(userId, challengeId, feedId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(FEED_NOT_FOUND)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -889,6 +976,16 @@ class ChallengeServiceTest : AbstractMailProperties {
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
             LocalTime.of(13, 0),
+        )
+    }
+
+    private fun getFindChallengeFeedDto(): FindChallengeFeedDto {
+        return FindChallengeFeedDto(
+            "tester",
+            "https://url.kr/5MhHhD",
+            "https://url.kr/5MhHhD",
+            LocalDateTime.now(),
+            10
         )
     }
 }
