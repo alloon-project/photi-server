@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.*
 
 @Transactional
 @ActiveProfiles("test")
@@ -402,7 +401,7 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isEqualTo(EXISTING_FEED)
     }
 
-    @DisplayName("챌린지 피드 삭제를 하면 연관된 피드, 댓글, 좋아요가 모두 삭제되고, 사용자의 피드 인증 횟수가 감소한다.")
+    @DisplayName("챌린지 피드 삭제를 하면 연관된 피드, 댓글이 모두 삭제되고, 사용자의 피드 인증 횟수가 감소한다.")
     @Test
     fun givenValid_whenDeleteChallengeFeed_thenDeleteFeedAndCommentsAndLike() {
         // given
@@ -414,6 +413,10 @@ class ChallengeServiceTest : AbstractMailProperties {
         val challenge = getCreateChallengeDto().toEntity(imageUrl)
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val feed = Feed(1L, challengeMember, challenge, imageUrl, 1)
+        val feedComments = listOf(
+            FeedComment(1L, challengeMember, feed, "피드 댓글"),
+            FeedComment(2L, challengeMember, feed, "피드 댓글")
+        )
 
         every { userRepository.find(any()) } returns user
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -421,6 +424,8 @@ class ChallengeServiceTest : AbstractMailProperties {
             challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
         } returns challengeMember
         every { feedRepository.findByIdAndChallengeMemberId(any(), any()) } returns feed
+        every { feedCommentRepository.findAllByFeedId(any()) } returns feedComments
+        every { feedCommentRepository.deleteAllInBatch(any()) } just Runs
         every { feedRepository.delete(any()) } just Runs
         every { s3Service.deleteImage(any(), any(), any()) } just Runs
 
@@ -428,6 +433,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         challengeService.deleteChallengeFeed(userId, challengeId, feedId)
 
         // then
+        verify { feedCommentRepository.deleteAllInBatch(feedComments) }
         verify { feedRepository.delete(feed) }
         verify { s3Service.deleteImage(feed.imageUrl, FEEDS, challengeId) }
         assertThat(user.feedCnt).isEqualTo(0)
@@ -668,7 +674,12 @@ class ChallengeServiceTest : AbstractMailProperties {
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedCommentRepository.findByChallengeMemberIdAndFeedId(any(), any()) } returns feedComment
+        every {
+            feedCommentRepository.findByChallengeMemberIdAndFeedId(
+                any(),
+                any()
+            )
+        } returns feedComment
         every { feedCommentRepository.delete(any()) } just Runs
 
         // when
