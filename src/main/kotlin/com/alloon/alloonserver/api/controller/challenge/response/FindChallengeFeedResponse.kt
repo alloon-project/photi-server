@@ -1,0 +1,38 @@
+package com.alloon.alloonserver.api.controller.challenge.response
+
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedDto
+import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDateTime
+
+@Schema(description = "챌린지 피드 개별 조회 응답 객체")
+data class FindChallengeFeedResponse(
+
+    @Schema(description = "사용자 아이디", example = "photi")
+    val username: String,
+
+    @Schema(description = "사용자 이미지", example = "https://url.kr/5MhHhD")
+    val userImageUrl: String,
+
+    @Schema(description = "피드 이미지", example = "https://url.kr/5MhHhD")
+    val feedImageUrl: String,
+
+    @Schema(description = "피드 인증 날짜 시간")
+    val createdDateTime: LocalDateTime,
+
+    @Schema(description = "피드 하트 수", example = "10")
+    val likeCnt: Int,
+) {
+
+    companion object {
+
+        fun of(feed: FindChallengeFeedDto): FindChallengeFeedResponse {
+            return FindChallengeFeedResponse(
+                feed.username,
+                feed.userImageUrl,
+                feed.feedImageUrl,
+                feed.createdDateTime,
+                feed.likeCnt,
+            )
+        }
+    }
+}
