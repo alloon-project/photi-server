@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.api.controller.user
 
+import com.alloon.alloonserver.api.controller.user.response.FindUserChallengeCntResponse
 import com.alloon.alloonserver.api.controller.user.response.UserChallengeHistoryResponse
 import com.alloon.alloonserver.api.controller.user.response.UserInfoResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
@@ -78,5 +79,19 @@ class UserController(
         val response = userService.findUserFeeds(UserUtility.getUserId(principal))
 
         return ResponseEntity.ok(CollectionSuccessResponse(response))
+    }
+
+    @GetMapping("/challenges")
+    @Operation(
+        summary = "사용자 참여 중인 챌린지 갯수 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND])
+    fun findUserChallengeCnt(principal: Principal): ResponseEntity<FindUserChallengeCntResponse> {
+        val userChallenge = userService.findUserChallengeCnt(UserUtility.getUserId(principal))
+        val response = FindUserChallengeCntResponse.of(userChallenge)
+
+        return ResponseEntity.ok(response)
     }
 }

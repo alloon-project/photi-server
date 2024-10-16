@@ -5,6 +5,7 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
+import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import org.springframework.stereotype.Service
@@ -45,6 +46,10 @@ class UserService(
     fun findUserFeeds(userId: Long): List<String> {
         return userRepository.findFeedsById(userId)?.distinct()
             ?: throw CustomException(USER_NOT_FOUND)
+    }
+
+    fun findUserChallengeCnt(userId: Long): FindUserChallengeCntDto {
+        return userRepository.findChallengeCntById(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
 
     private fun deleteOriginalImage(imageUrl: String) {

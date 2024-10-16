@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.s3.S3Service
+import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.Runs
@@ -159,6 +160,37 @@ class UserServiceTest {
 
         // when & then
         assertThatThrownBy { userService.findUserFeeds(userId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
+    @DisplayName("사용자 참여 중인 챌린지 갯수 조회를 하면 일치하는 사용자 챌린지 갯수를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallengeCnt_thenReturn() {
+        // given
+        val userId = 1L
+        val userChallenge = FindUserChallengeCntDto("tester", 5)
+
+        every { userRepository.findChallengeCntById(any()) } returns userChallenge
+
+        // when
+        val result = userService.findUserChallengeCnt(userId)
+
+        // then
+        assertThat(result).isEqualTo(userChallenge)
+    }
+
+    @DisplayName("존재하지 않은 사용자로 참여 중인 챌린지 갯수 조회를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundUser_whenFindUserChallengeCnt_thenThrow() {
+        // given
+        val userId = 1L
+
+        every { userRepository.findChallengeCntById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { userService.findUserChallengeCnt(userId) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)

@@ -6,10 +6,7 @@ import com.alloon.alloonserver.domain.feed.QFeed.feed
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.service.user.dto.QUserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.QUserInfoDto
-import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import com.alloon.alloonserver.service.user.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -90,6 +87,21 @@ class UserCustomRepositoryImpl(
 
         return queryFactory
             .select(Expressions.constant(feeds))
+            .from(user)
+            .where(user.id.eq(userId))
+            .fetchOne()
+    }
+
+    override fun findChallengeCntById(userId: Long): FindUserChallengeCntDto? {
+        val challengeCnt = queryFactory
+            .select(challengeMember.count())
+            .from(challengeMember)
+            .join(challengeMember.user)
+            .where(challengeMember.user.id.eq(userId))
+            .fetchOne()?.toInt() ?: 0
+
+        return queryFactory
+            .select(QFindUserChallengeCntDto(user.username, Expressions.constant(challengeCnt)))
             .from(user)
             .where(user.id.eq(userId))
             .fetchOne()

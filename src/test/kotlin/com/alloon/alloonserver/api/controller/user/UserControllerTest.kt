@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.service.user.UserService
+import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.every
@@ -93,6 +94,25 @@ class UserControllerTest : RestDocsSupport() {
         // when
         val resultActions = mockMvc.perform(
             get("/api/users/feeds")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("사용자 참여 중인 챌린지 갯수 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallengeCnt_thenReturn200() {
+        // given
+        val dto = FindUserChallengeCntDto("tester", 5)
+
+        every { userService.findUserChallengeCnt(any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/challenges")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
         )
