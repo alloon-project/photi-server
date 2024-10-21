@@ -20,6 +20,9 @@ data class FindPopularChallengesResponse(
     @Schema(description = "챌린지 목표", example = "하루에 한 번씩 꼭 러닝을 하는 것이 우리 챌린지의 목표입니다.")
     val goal: String,
 
+    @Schema(description = "챌린지 파티원 수", example = "5")
+    val currentMemberCnt: Int,
+
     @Schema(description = "챌린지 인증 시간", example = "13:00")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
@@ -37,6 +40,17 @@ data class FindPopularChallengesResponse(
     """
     )
     val hashtags: List<ChallengeHashtagResponse>,
+
+    @Schema(
+        description = "챌린지 파티원 이미지 리스트", example = """
+        [
+            {"memberImage": "https://url.kr/5MhHhD"},
+            {"memberImage": "https://url.kr/5MhHhD"},
+            {"memberImage": "https://url.kr/5MhHhD"}
+        ]
+    """
+    )
+    val memberImages: List<ChallengeMemberImageResponse>,
 ) {
 
     companion object {
@@ -47,9 +61,11 @@ data class FindPopularChallengesResponse(
                 challenge.name,
                 challenge.imageUrl,
                 challenge.goal,
+                challenge.currentMemberCnt,
                 challenge.proveTime,
                 challenge.endDate,
-                challenge.hashtags.map { ChallengeHashtagResponse(it) }
+                challenge.hashtags.map { ChallengeHashtagResponse(it) },
+                challenge.memberImages.map { ChallengeMemberImageResponse(it) },
             )
         }
 
