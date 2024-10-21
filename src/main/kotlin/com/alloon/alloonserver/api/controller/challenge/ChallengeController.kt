@@ -65,7 +65,7 @@ class ChallengeController(
     @GetMapping("/popular")
     @Operation(
         summary = "지금 인기있는 챌린지 조회",
-        description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다."
+        description = "공개, 비공개 및 종료되지 않은 챌린지가 방문순으로 최대 5개 조회됩니다. 챌린지 파티원 이미지는 최근 가입순으로 최대 3개 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     fun findPopularChallenges(): ResponseEntity<List<FindPopularChallengesResponse>> {
