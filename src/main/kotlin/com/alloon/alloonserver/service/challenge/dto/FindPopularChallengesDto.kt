@@ -9,7 +9,9 @@ data class FindPopularChallengesDto @QueryProjection constructor(
     val name: String,
     val imageUrl: String,
     val goal: String,
+    val currentMemberCnt: Int,
     val proveTime: LocalTime,
     val endDate: LocalDate,
     val hashtags: List<String>,
+    var memberImages: List<String>,
 )
