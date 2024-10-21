@@ -4,11 +4,13 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
+import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.QFindChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.QFindPopularChallengesDto
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -30,16 +32,18 @@ class ChallengeCustomRepositoryImpl(
     }
 
     override fun findPopular(): List<FindPopularChallengesDto> {
-        return queryFactory
+        val popularChallenges = queryFactory
             .select(
                 QFindPopularChallengesDto(
                     challenge.id,
                     challenge.name,
                     challenge.imageUrl,
                     challenge.goal,
+                    challenge.currentMemberCnt,
                     challenge.proveTime,
                     challenge.endDate,
                     challenge.hashtags,
+                    Expressions.constant(emptyList()),
                 )
             )
             .from(challenge)
@@ -47,6 +51,18 @@ class ChallengeCustomRepositoryImpl(
             .orderBy(challenge.visitCnt.desc())
             .limit(5)
             .fetch()
+
+        popularChallenges.forEach {
+            it.memberImages = queryFactory
+                .select(challengeMember.user.imageUrl)
+                .from(challengeMember)
+                .where(challengeMember.challenge.id.eq(it.id))
+                .orderBy(challengeMember.createDateTime.desc())
+                .limit(3)
+                .fetch()
+        }
+
+        return popularChallenges
     }
 
     override fun findInfoById(id: Long): Challenge? {
