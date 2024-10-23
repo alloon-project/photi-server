@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.service.user
 
+import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -9,6 +10,8 @@ import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
 import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -56,6 +59,11 @@ class UserService(
 
     fun findUserFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto> {
         return userRepository.findFeedsByDate(userId, date)
+    }
+
+    fun findUserFeedHistory(userId: Long, pageable: Pageable): Slice<FindUserFeedHistoryResponse> {
+        return userRepository.findFeedHistoryById(userId, pageable)
+            .map { FindUserFeedHistoryResponse.of(it) }
     }
 
     private fun deleteOriginalImage(imageUrl: String) {
