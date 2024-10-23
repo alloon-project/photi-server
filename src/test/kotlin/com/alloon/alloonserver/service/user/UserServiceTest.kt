@@ -8,6 +8,7 @@ import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
+import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.Runs
@@ -22,6 +23,8 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 
 @ActiveProfiles("test")
@@ -196,6 +199,24 @@ class UserServiceTest {
             .isEqualTo(USER_NOT_FOUND)
     }
 
+    @DisplayName("사용자 피드 인증 개별 날짜 조회를 하면 일치하는 날짜의 인증 피드 리스트를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeedsByDate_thenReturn() {
+        // given
+        val userId = 1L
+        val date = LocalDate.now()
+        val dto = getFindUserFeedsByDateDto()
+        val userFeeds = listOf(dto, dto, dto)
+
+        every { userRepository.findFeedsByDate(any(), any()) } returns userFeeds
+
+        // when
+        val result = userService.findUserFeedsByDate(userId, date)
+
+        // then
+        assertThat(result.size).isEqualTo(3)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -211,5 +232,14 @@ class UserServiceTest {
 
     private fun getUserChallengeHistoryDto(): UserChallengeHistoryDto {
         return UserChallengeHistoryDto("tester", "https://url.kr/5MhHhD", 99, 2)
+    }
+
+    private fun getFindUserFeedsByDateDto(): FindUserFeedsByDateDto {
+        return FindUserFeedsByDateDto(
+            1L,
+            "https://url.kr/5MhHhD",
+            "챌린지 이름",
+            LocalTime.of(13, 0)
+        )
     }
 }
