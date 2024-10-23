@@ -7,10 +7,7 @@ import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.s3.S3Service
-import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
-import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
-import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -19,11 +16,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.SliceImpl
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
@@ -215,6 +215,29 @@ class UserServiceTest {
 
         // then
         assertThat(result.size).isEqualTo(3)
+    }
+
+    @DisplayName("사용자 피드 인증 횟수 모아보기 조회를 하면 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeedHistory_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = FindUserFeedHistoryDto(1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
+        val content = listOf(dto, dto, dto)
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userRepository.findFeedHistoryById(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val result = userService.findUserFeedHistory(userId, pageable)
+
+        // then
+        assertThat(result.content.size).isEqualTo(3)
     }
 
     private fun getUser(): User {
