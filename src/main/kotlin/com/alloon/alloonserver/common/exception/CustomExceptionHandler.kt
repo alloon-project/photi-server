@@ -1,6 +1,5 @@
 package com.alloon.alloonserver.common.exception
 
-import com.alloon.alloonserver.common.constant.ExceptionCode
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
@@ -17,11 +16,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import java.time.format.DateTimeParseException
-
 
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
