@@ -10,6 +10,9 @@ import com.alloon.alloonserver.service.user.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.domain.SliceImpl
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 
@@ -129,6 +132,39 @@ class UserCustomRepositoryImpl(
             )
             .orderBy(feed.challenge.proveTime.asc())
             .fetch()
+    }
+
+    override fun findFeedHistoryById(
+        userId: Long,
+        pageable: Pageable
+    ): Slice<FindUserFeedHistoryDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindUserFeedHistoryDto(
+                    feed.id,
+                    feed.imageUrl,
+                    feed.createDateTime,
+                    feed.challenge.name
+                )
+            )
+            .from(feed)
+            .join(feed.challenge)
+            .join(feed.challengeMember.user)
+            .where(feed.challengeMember.user.id.eq(userId))
+            .orderBy(feed.createDateTime.desc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
     }
 
     private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }

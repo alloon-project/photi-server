@@ -1,10 +1,9 @@
 package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
-import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
-import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import com.alloon.alloonserver.service.user.dto.*
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import java.time.LocalDate
 
 interface UserCustomRepository {
@@ -22,4 +21,6 @@ interface UserCustomRepository {
     fun findChallengeCntById(userId: Long): FindUserChallengeCntDto?
 
     fun findFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto>
+
+    fun findFeedHistoryById(userId: Long, pageable: Pageable): Slice<FindUserFeedHistoryDto>
 }
