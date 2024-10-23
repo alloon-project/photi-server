@@ -3,6 +3,7 @@ package com.alloon.alloonserver.api.controller.user
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.service.user.UserService
 import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
+import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import io.mockk.every
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalTime
 
 class UserControllerTest : RestDocsSupport() {
 
@@ -121,11 +124,40 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("사용자 피드 인증 개별 날짜 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeedsByDate_thenReturn200() {
+        // given
+        val userFeeds = listOf(getFindUserFeedsByDateDto())
+
+        every { userService.findUserFeedsByDate(any(), any()) } returns userFeeds
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/feeds/date")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .param("date", "2024-10-23")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getUserInfoDto(): UserInfoDto {
         return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
 
     private fun getUserChallengeHistoryDto(): UserChallengeHistoryDto {
         return UserChallengeHistoryDto("tester", "https://url.kr/5MhHhD", 99, 2)
+    }
+
+    private fun getFindUserFeedsByDateDto(): FindUserFeedsByDateDto {
+        return FindUserFeedsByDateDto(
+            1L,
+            "https://url.kr/5MhHhD",
+            "챌린지 이름",
+            LocalTime.of(13, 0)
+        )
     }
 }

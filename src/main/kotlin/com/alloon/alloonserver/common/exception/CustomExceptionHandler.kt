@@ -1,12 +1,12 @@
 package com.alloon.alloonserver.common.exception
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.FILE_SIZE_EXCEED
-import com.alloon.alloonserver.common.constant.ExceptionCode.SERVER_ERROR
+import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
 import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
+import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus.*
 import org.springframework.http.HttpStatusCode
@@ -83,6 +83,16 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         val message = ex.mostSpecificCause.message.toString()
         val response = ErrorResponse(status.toString().split(" ")[1], message)
 
+        return ResponseEntity.status(BAD_REQUEST).body(response)
+    }
+
+    override fun handleTypeMismatch(
+        ex: TypeMismatchException,
+        headers: HttpHeaders,
+        status: HttpStatusCode,
+        request: WebRequest
+    ): ResponseEntity<Any>? {
+        val response = ErrorResponse(DATE_FORMAT_INVALID.name, DATE_FORMAT_INVALID.message)
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 

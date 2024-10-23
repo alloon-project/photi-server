@@ -53,6 +53,7 @@ enum class ExceptionCode(
     PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     NEW_PASSWORD_FORMAT_INVALID(BAD_REQUEST, "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."),
     REPORT_TYPE_INVALID(BAD_REQUEST, "신고 타입은 'CHALLENGE', 'CHALLENGE_MEMBER', 'FEED' 중 하나여야 됩니다."),
+    DATE_FORMAT_INVALID(BAD_REQUEST, "올바르지 않은 날짜 형식입니다."),
 
     // @Positive, @PositiveOrZero
 

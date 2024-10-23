@@ -6,11 +6,13 @@ import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
+import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
 import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
 import com.alloon.alloonserver.service.user.dto.UserInfoDto
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
 
 @Service
 @Transactional(readOnly = true)
@@ -50,6 +52,10 @@ class UserService(
 
     fun findUserChallengeCnt(userId: Long): FindUserChallengeCntDto {
         return userRepository.findChallengeCntById(userId) ?: throw CustomException(USER_NOT_FOUND)
+    }
+
+    fun findUserFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto> {
+        return userRepository.findFeedsByDate(userId, date)
     }
 
     private fun deleteOriginalImage(imageUrl: String) {
