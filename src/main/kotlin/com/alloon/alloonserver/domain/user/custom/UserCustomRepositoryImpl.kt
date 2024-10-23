@@ -11,6 +11,7 @@ import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class UserCustomRepositoryImpl(
@@ -105,6 +106,28 @@ class UserCustomRepositoryImpl(
             .from(user)
             .where(user.id.eq(userId))
             .fetchOne()
+    }
+
+    override fun findFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto> {
+        return queryFactory
+            .select(
+                QFindUserFeedsByDateDto(
+                    feed.id,
+                    feed.imageUrl,
+                    feed.challenge.name,
+                    feed.challenge.proveTime
+                )
+            )
+            .from(feed)
+            .join(feed.challenge)
+            .join(feed.challengeMember.user)
+            .where(
+                feed.challengeMember.user.id.eq(userId),
+                feed.createDateTime.year().eq(date.year),
+                feed.createDateTime.month().eq(date.monthValue),
+                feed.createDateTime.dayOfMonth().eq(date.dayOfMonth)
+            )
+            .fetch()
     }
 
     private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }
