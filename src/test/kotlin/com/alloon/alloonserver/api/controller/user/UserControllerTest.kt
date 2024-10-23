@@ -136,7 +136,7 @@ class UserControllerTest : RestDocsSupport() {
 
         // when
         val resultActions = mockMvc.perform(
-            get("/api/users/feeds/date")
+            get("/api/users/feeds-by-date")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .param("date", "2024-10-23")

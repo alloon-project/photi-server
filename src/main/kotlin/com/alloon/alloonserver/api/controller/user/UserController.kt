@@ -97,10 +97,11 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/feeds/date")
+    @GetMapping("/feeds-by-date")
     @Operation(
         summary = "사용자 피드 인증 개별 날짜 조회",
-        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "챌린지 인증 시간 빠른순으로 정렬되어 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, DATE_FORMAT_INVALID])
@@ -117,7 +118,8 @@ class UserController(
     @GetMapping("/feed-history")
     @Operation(
         summary = "사용자 피드 인증 횟수 모아보기 조회",
-        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "피드 인증 날짜 최신순으로 정렬되어 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
