@@ -1,12 +1,10 @@
 package com.alloon.alloonserver.api.controller.user
 
-import com.alloon.alloonserver.api.controller.user.response.FindUserChallengeCntResponse
-import com.alloon.alloonserver.api.controller.user.response.FindUserFeedsByDateResponse
-import com.alloon.alloonserver.api.controller.user.response.UserChallengeHistoryResponse
-import com.alloon.alloonserver.api.controller.user.response.UserInfoResponse
+import com.alloon.alloonserver.api.controller.user.response.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.ApiErrorResponses
 import com.alloon.alloonserver.common.response.CollectionSuccessResponse
+import com.alloon.alloonserver.common.response.SliceResponse
 import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.service.user.UserService
@@ -15,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -98,10 +97,11 @@ class UserController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/feeds/date")
+    @GetMapping("/feeds-by-date")
     @Operation(
         summary = "사용자 피드 인증 개별 날짜 조회",
-        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "챌린지 인증 시간 빠른순으로 정렬되어 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, DATE_FORMAT_INVALID])
@@ -111,6 +111,26 @@ class UserController(
     ): ResponseEntity<List<FindUserFeedsByDateResponse>> {
         val userFeeds = userService.findUserFeedsByDate(UserUtility.getUserId(principal), date)
         val response = FindUserFeedsByDateResponse.of(userFeeds)
+
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/feed-history")
+    @Operation(
+        summary = "사용자 피드 인증 횟수 모아보기 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "피드 인증 날짜 최신순으로 정렬되어 조회됩니다."
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun findUserFeedHistory(
+        principal: Principal,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<FindUserFeedHistoryResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val userFeeds = userService.findUserFeedHistory(UserUtility.getUserId(principal), pageable)
+        val response = SliceResponse.of(userFeeds)
 
         return ResponseEntity.ok(response)
     }

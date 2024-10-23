@@ -1,21 +1,23 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
+import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
 import com.alloon.alloonserver.service.user.UserService
-import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
-import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
-import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.SliceImpl
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.MULTIPART_FORM_DATA
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 class UserControllerTest : RestDocsSupport() {
@@ -134,10 +136,36 @@ class UserControllerTest : RestDocsSupport() {
 
         // when
         val resultActions = mockMvc.perform(
-            get("/api/users/feeds/date")
+            get("/api/users/feeds-by-date")
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .param("date", "2024-10-23")
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("사용자 피드 인증 횟수 모아보기 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserFeedHistory_thenReturn200() {
+        // given
+        val dto = FindUserFeedHistoryDto(1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
+        val content = listOf(FindUserFeedHistoryResponse.of(dto))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userService.findUserFeedHistory(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/feed-history")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
         )
 
         // then
