@@ -41,6 +41,7 @@ class SecurityConfig(
                     "/api/users/challenges",
                     "/api/users/feeds-by-date",
                     "/api/users/feed-history",
+                    "/api/users/ended-challenges",
                     "/api/challenges/{challengeId}/info",
                     "/api/challenges/{challengeId}/invitation-code",
                     "/api/challenges/{challengeId}/challenge-members/goal",

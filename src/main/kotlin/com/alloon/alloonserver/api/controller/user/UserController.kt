@@ -134,4 +134,25 @@ class UserController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/ended-challenges")
+    @Operation(
+        summary = "사용자 종료된 챌린지 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "챌린지 종료 날짜 최신순으로 정렬되어 조회됩니다. 챌린지 파티원 이미지는 최근 가입순으로 최대 3개 조회됩니다."
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun findUserEndedChallenges(
+        principal: Principal,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<FindUserEndedChallengesResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val userFeeds =
+            userService.findUserEndedChallenges(UserUtility.getUserId(principal), pageable)
+        val response = SliceResponse.of(userFeeds)
+
+        return ResponseEntity.ok(response)
+    }
 }
