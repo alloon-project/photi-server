@@ -17,7 +17,7 @@ data class CreateChallengeDto(
     val imageUrl: String? = null,
 ) {
 
-    fun toEntity(imageUrl: String): Challenge {
+    fun toEntity(imageUrl: String, invitationCode: String): Challenge {
         val challenge = Challenge(
             name = name,
             isPublic = isPublic,
@@ -26,6 +26,7 @@ data class CreateChallengeDto(
             endDate = endDate,
             imageUrl = imageUrl,
             hashtags = hashtags.map { it.hashtag },
+            invitationCode = invitationCode,
         )
         rules.forEach {
             challenge.addChallengeRule(ChallengeRule(rule = it.rule))
