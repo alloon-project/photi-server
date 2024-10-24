@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.domain.report
+package com.alloon.alloonserver.domain.inquiry
 
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.user.User
