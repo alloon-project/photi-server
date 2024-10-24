@@ -78,7 +78,7 @@ CREATE TABLE challenge
     start_date                  DATE                      NOT NULL,
     current_member_cnt          INT                       NOT NULL,
     visit_cnt                   INT                       NOT NULL,
-    is_recruit                  BOOLEAN                   NOT NULL,
+    invitation_code             VARCHAR(5)                NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
     service_status              VARCHAR(10)               NOT NULL,
