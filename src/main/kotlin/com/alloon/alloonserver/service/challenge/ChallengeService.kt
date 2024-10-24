@@ -217,6 +217,15 @@ class ChallengeService(
             .map { FindChallengeFeedCommentsResponse.of(it) }
     }
 
+    fun findChallengeInvitationCode(
+        userId: Long,
+        challengeId: Long
+    ): FindChallengeInvitationCodeDto {
+        validateChallengeMember(userId, challengeId)
+        return challengeRepository.findInvitationCodeById(challengeId)
+            ?: throw CustomException(CHALLENGE_NOT_FOUND)
+    }
+
     private fun validateUser(userId: Long): User {
         return userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
