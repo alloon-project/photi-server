@@ -876,6 +876,29 @@ class ChallengeServiceTest : AbstractMailProperties {
             .isEqualTo(FEED_NOT_FOUND)
     }
 
+    @DisplayName("챌린지 피드 댓글 리스트 조회를 하면 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeFeedComments_thenReturn() {
+        // given
+        val feedId = 1L
+        val dto = FindChallengeFeedCommentsDto(1L, "tester", "피드 댓글")
+        val content = listOf(dto, dto, dto)
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { feedCommentRepository.findAllByFeedId(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val result = challengeService.findChallengeFeedComments(feedId, pageable)
+
+        // then
+        assertThat(result.content.size).isEqualTo(3)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
