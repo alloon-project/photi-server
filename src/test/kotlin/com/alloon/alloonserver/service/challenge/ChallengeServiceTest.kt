@@ -899,6 +899,67 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(result.content.size).isEqualTo(3)
     }
 
+    @DisplayName("챌린지 초대코드를 조회하면 일치하는 초대코드를 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeInvitationCode_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val dto = FindChallengeInvitationCodeDto("챌린지 이름", "ABC12")
+
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { challengeRepository.findInvitationCodeById(any()) } returns dto
+
+        // when
+        val result = challengeService.findChallengeInvitationCode(userId, challengeId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 파티원이 챌린지 초대코드를 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallengeMember_whenFindChallengeInvitationCode_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+
+        every { challengeMemberRepository.findByUserIdAndChallengeId(any(), any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeInvitationCode(userId, challengeId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 초대코드를 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallenge_whenFindChallengeInvitationCode_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
+        every { challengeRepository.findInvitationCodeById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeInvitationCode(userId, challengeId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_NOT_FOUND)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
