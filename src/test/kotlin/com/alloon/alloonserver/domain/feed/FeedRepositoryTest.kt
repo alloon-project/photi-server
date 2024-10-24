@@ -73,7 +73,7 @@ class FeedRepositoryTest(
 
     private fun createAndSaveChallenge(): Challenge {
         val dto = getCreateChallengeDto()
-        val challenge = dto.toEntity("https://url.kr/5MhHhD")
+        val challenge = dto.toEntity("https://url.kr/5MhHhD", "ABC12")
         return challengeRepository.save(challenge)
     }
 

@@ -19,7 +19,7 @@ class FeedTest {
     fun givenValid_whenUpdateCommentCnt_thenReturn() {
         // given
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(1L, getUser(getContact()), challenge)
         val feed = Feed(1L, challengeMember, challenge, imageUrl, 10, 5)
 
@@ -35,7 +35,7 @@ class FeedTest {
     fun givenCommentCntGreaterThanZero_whenDecreaseCommentCnt_thenReturn() {
         // given
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(1L, getUser(getContact()), challenge)
         val feed = Feed(1L, challengeMember, challenge, imageUrl, 10, 5)
 
@@ -51,7 +51,7 @@ class FeedTest {
     fun givenCommentCntZero_whenDecreaseCommentCnt_thenReturn() {
         // given
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(1L, getUser(getContact()), challenge)
         val feed = Feed(1L, challengeMember, challenge, imageUrl, 10, 0)
 

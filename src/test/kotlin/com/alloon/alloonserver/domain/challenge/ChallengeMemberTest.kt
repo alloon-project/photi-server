@@ -21,7 +21,7 @@ class ChallengeMemberTest {
             Contact(email = "tester@photi.com", verificationCode = "000000", verifyYn = true)
         val user =
             User(contact = contact, username = "tester", password = "password1!", imageUrl = "")
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
 
         val goal = "개인목표"
