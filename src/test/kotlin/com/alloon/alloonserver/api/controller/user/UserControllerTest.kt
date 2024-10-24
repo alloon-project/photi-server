@@ -1,8 +1,9 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
+import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
+import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.user.UserService
 import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.every
@@ -17,6 +18,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -172,6 +174,32 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("사용자 종료된 챌린지 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserEndedChallenges_thenReturn200() {
+        // given
+        val dto = getFindUserEndedChallengesDto()
+        val content = listOf(FindUserEndedChallengesResponse.of(dto))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userService.findUserEndedChallenges(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/ended-challenges")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getUserInfoDto(): UserInfoDto {
         return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
@@ -186,6 +214,21 @@ class UserControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             "챌린지 이름",
             LocalTime.of(13, 0)
+        )
+    }
+
+    private fun getFindUserEndedChallengesDto(): FindUserEndedChallengesDto {
+        return FindUserEndedChallengesDto(
+            1L,
+            "챌린지 이름",
+            "https://url.kr/5MhHhD",
+            LocalDate.of(2024, 12, 1),
+            3,
+            listOf(
+                UserImageDto(1L, "https://url.kr/5MhHhD"),
+                UserImageDto(1L, "https://url.kr/5MhHhE"),
+                UserImageDto(1L, "https://url.kr/5MhHhF")
+            )
         )
     }
 }

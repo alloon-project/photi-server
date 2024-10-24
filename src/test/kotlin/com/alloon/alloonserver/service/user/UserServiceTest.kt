@@ -6,6 +6,7 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
+import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.Runs
@@ -240,6 +241,29 @@ class UserServiceTest {
         assertThat(result.content.size).isEqualTo(3)
     }
 
+    @DisplayName("사용자 종료된 챌린지 조회를 하면 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserEndedChallenges_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = getFindUserEndedChallengesDto()
+        val content = listOf(dto, dto, dto)
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userRepository.findEndedChallengesById(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val result = userService.findUserEndedChallenges(userId, pageable)
+
+        // then
+        assertThat(result.content.size).isEqualTo(3)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -263,6 +287,21 @@ class UserServiceTest {
             "https://url.kr/5MhHhD",
             "챌린지 이름",
             LocalTime.of(13, 0)
+        )
+    }
+
+    private fun getFindUserEndedChallengesDto(): FindUserEndedChallengesDto {
+        return FindUserEndedChallengesDto(
+            1L,
+            "챌린지 이름",
+            "https://url.kr/5MhHhD",
+            LocalDate.of(2024, 12, 1),
+            3,
+            listOf(
+                UserImageDto(1L, "https://url.kr/5MhHhD"),
+                UserImageDto(1L, "https://url.kr/5MhHhE"),
+                UserImageDto(1L, "https://url.kr/5MhHhF")
+            )
         )
     }
 }
