@@ -6,6 +6,7 @@ import com.alloon.alloonserver.domain.feed.QFeed.feed
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
+import com.alloon.alloonserver.service.challenge.dto.QUserImageDto
 import com.alloon.alloonserver.service.user.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
@@ -156,6 +157,58 @@ class UserCustomRepositoryImpl(
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
+    }
+
+    override fun findEndedChallengesById(
+        userId: Long,
+        pageable: Pageable
+    ): Slice<FindUserEndedChallengesDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindUserEndedChallengesDto(
+                    challengeMember.challenge.id,
+                    challengeMember.challenge.name,
+                    challengeMember.challenge.imageUrl,
+                    challengeMember.challenge.endDate,
+                    challengeMember.challenge.currentMemberCnt,
+                    Expressions.constant(emptyList())
+                )
+            )
+            .from(challengeMember)
+            .join(challengeMember.user)
+            .join(challengeMember.challenge)
+            .where(
+                challengeMember.user.id.eq(userId),
+                challengeMember.challenge.serviceStatus.eq(END)
+            )
+            .orderBy(challengeMember.challenge.endDate.desc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val challengeIds = content.map { it.id }
+        val memberImages = queryFactory
+            .select(QUserImageDto(challengeMember.challenge.id, challengeMember.user.imageUrl))
+            .from(challengeMember)
+            .where(challengeMember.challenge.id.`in`(challengeIds))
+            .orderBy(challengeMember.createDateTime.desc())
+            .limit(3)
+            .fetch()
+            .groupBy { it.challengeId }
+
+        content.forEach {
+            it.memberImages = memberImages[it.id] ?: emptyList()
+        }
 
         val hasNext = if (content.size > pageSize) {
             content.removeAt(pageSize)

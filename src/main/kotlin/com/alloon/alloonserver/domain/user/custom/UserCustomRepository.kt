@@ -23,4 +23,6 @@ interface UserCustomRepository {
     fun findFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto>
 
     fun findFeedHistoryById(userId: Long, pageable: Pageable): Slice<FindUserFeedHistoryDto>
+
+    fun findEndedChallengesById(userId: Long, pageable: Pageable): Slice<FindUserEndedChallengesDto>
 }
