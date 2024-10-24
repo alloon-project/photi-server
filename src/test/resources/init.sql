@@ -161,12 +161,11 @@ CREATE TABLE inquiry_category
 CREATE TABLE inquiry
 (
     inquiry_id                  BIGSERIAL PRIMARY KEY,
-    content                     VARCHAR(100)              NOT NULL,
+    type                        VARCHAR(15)               NOT NULL,
+    content                     VARCHAR(120)              NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
-    inquiry_category_id         INT                       NOT NULL,
     user_id                     BIGINT,
-    CONSTRAINT fk_inquiry_inquiry_category FOREIGN KEY (inquiry_category_id) REFERENCES inquiry_category (inquiry_category_id),
     CONSTRAINT fk_inquiry_category_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
