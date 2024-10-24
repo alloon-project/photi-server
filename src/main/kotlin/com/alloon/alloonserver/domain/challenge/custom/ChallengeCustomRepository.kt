@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.domain.challenge.custom
 
 import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeInvitationCodeDto
 import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
 import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
 import org.springframework.data.domain.Pageable
@@ -15,4 +16,6 @@ interface ChallengeCustomRepository {
     fun findInfoById(id: Long): Challenge?
 
     fun findAllOrderByStartDate(pageable: Pageable): Slice<FindChallengesDto>
+
+    fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto?
 }
