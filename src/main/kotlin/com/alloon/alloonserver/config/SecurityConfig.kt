@@ -48,6 +48,7 @@ class SecurityConfig(
                     "/api/challenges/{challengeId}/feeds/{feedId}",
                     "/api/challenges/{challengeId}/feeds/{feedId}/comments",
                     "/api/challenges/feeds/{feedId}/comments",
+                    "/api/inquiries",
                 ).authenticated()
                 it.anyRequest().permitAll()
             }

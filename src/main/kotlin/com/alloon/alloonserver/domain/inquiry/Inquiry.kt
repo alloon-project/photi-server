@@ -1,7 +1,6 @@
-package com.alloon.alloonserver.domain.report
+package com.alloon.alloonserver.domain.inquiry
 
 import com.alloon.alloonserver.domain.base.BaseEntity
-import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import com.alloon.alloonserver.domain.user.User
 import jakarta.persistence.*
 
@@ -12,15 +11,15 @@ class Inquiry(
     @Column(name = "inquiry_id")
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inquiry_category_id", nullable = false)
-    val inquiryCategory: InquiryCategory,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 15)
+    val type: InquiryCategoryType,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User?,
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 120)
     val content: String
 ) : BaseEntity() {
 }
