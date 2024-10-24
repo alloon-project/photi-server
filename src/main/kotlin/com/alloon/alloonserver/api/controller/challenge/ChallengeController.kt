@@ -296,4 +296,25 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/feeds/{feedId}/comments")
+    @Operation(
+        summary = "챌린지 피드 댓글 리스트 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "댓글 작성 오래된 순으로 정렬되어 조회됩니다."
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun findChallengeFeedComments(
+        principal: Principal,
+        @PathVariable @Parameter(description = "피드 id", example = "1") feedId: Long,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<FindChallengeFeedCommentsResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val feedComments = challengeService.findChallengeFeedComments(feedId, pageable)
+        val response = SliceResponse.of(feedComments)
+
+        return ResponseEntity.ok(response)
+    }
 }

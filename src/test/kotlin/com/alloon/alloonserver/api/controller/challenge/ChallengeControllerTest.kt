@@ -2,6 +2,7 @@ package com.alloon.alloonserver.api.controller.challenge
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.challenge.request.*
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedCommentsResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.service.challenge.ChallengeService
@@ -366,6 +367,33 @@ class ChallengeControllerTest : RestDocsSupport() {
         // when
         val resultActions = mockMvc.perform(
             get("/api/challenges/{challengeId}/feeds/{feedId}", 1, 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
+    @DisplayName("챌린지 피드 댓글 리스트 조회를 성공하면 200을 반환한다")
+    @Test
+    fun givenValid_whenFindChallengeFeedComments_thenReturn200() {
+        // given
+        val dto = FindChallengeFeedCommentsDto(1L, "tester", "피드 댓글")
+        val content = listOf(FindChallengeFeedCommentsResponse.of(dto))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { challengeService.findChallengeFeedComments(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/feeds/{feedId}/comments", 1)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON)

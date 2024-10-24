@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.service.challenge
 
+import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedCommentsResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
@@ -204,6 +205,14 @@ class ChallengeService(
         validateChallenge(challengeId)
         validateChallengeMember(userId, challengeId)
         return feedRepository.findContentById(feedId) ?: throw CustomException(FEED_NOT_FOUND)
+    }
+
+    fun findChallengeFeedComments(
+        feedId: Long,
+        pageable: Pageable
+    ): Slice<FindChallengeFeedCommentsResponse> {
+        return feedCommentRepository.findAllByFeedId(feedId, pageable)
+            .map { FindChallengeFeedCommentsResponse.of(it) }
     }
 
     private fun validateUser(userId: Long): User {
