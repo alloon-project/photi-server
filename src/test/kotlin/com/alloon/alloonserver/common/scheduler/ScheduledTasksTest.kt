@@ -40,7 +40,7 @@ class ScheduledTasksTest(
 
     private fun createAndSaveChallenge(endDate: LocalDate): Challenge {
         val dto = getCreateChallengeDto(endDate)
-        val challenge = dto.toEntity("https://url.kr/5MhHhD")
+        val challenge = dto.toEntity("https://url.kr/5MhHhD", "ABC12")
         return challengeRepository.save(challenge)
     }
 

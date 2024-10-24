@@ -317,4 +317,21 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/{challengeId}/invitation-code")
+    @Operation(summary = "챌린지 초대코드 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND])
+    fun findChallengeInvitationCode(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<FindChallengeInvitationCodeResponse> {
+        val invitationCode = challengeService.findChallengeInvitationCode(
+            UserUtility.getUserId(principal),
+            challengeId
+        )
+        val response = FindChallengeInvitationCodeResponse.of(invitationCode)
+
+        return ResponseEntity.ok(response)
+    }
 }

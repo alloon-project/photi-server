@@ -6,6 +6,7 @@ import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesR
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.common.util.CodeUtility
 import com.alloon.alloonserver.domain.challenge.*
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.FeedCommentRepository
@@ -45,8 +46,9 @@ class ChallengeService(
         val user = validateUser(userId)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
+        val invitationCode = CodeUtility.getInvitationCode()
 
-        val challenge = dto.toEntity(imageUrl)
+        val challenge = dto.toEntity(imageUrl, invitationCode)
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
 
         challengeRepository.save(challenge)
@@ -213,6 +215,15 @@ class ChallengeService(
     ): Slice<FindChallengeFeedCommentsResponse> {
         return feedCommentRepository.findAllByFeedId(feedId, pageable)
             .map { FindChallengeFeedCommentsResponse.of(it) }
+    }
+
+    fun findChallengeInvitationCode(
+        userId: Long,
+        challengeId: Long
+    ): FindChallengeInvitationCodeDto {
+        validateChallengeMember(userId, challengeId)
+        return challengeRepository.findInvitationCodeById(challengeId)
+            ?: throw CustomException(CHALLENGE_NOT_FOUND)
     }
 
     private fun validateUser(userId: Long): User {

@@ -15,7 +15,7 @@ class ChallengeTest {
     @Test
     fun givenValid_whenUpdateVisitCnt_thenReturn() {
         // given
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
 
         // when
         challenge.updateVisitCnt()

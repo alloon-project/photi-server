@@ -403,6 +403,25 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("챌린지 초대코드 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeInvitationCode_thenReturn200() {
+        // given
+        val dto = FindChallengeInvitationCodeDto("챌린지 이름", "ABC12")
+        every { challengeService.findChallengeInvitationCode(any(), any()) } returns dto
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/challenges/{challengeId}/invitation-code", 1)
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getCreateChallengeRequest(): CreateChallengeRequest {
         return CreateChallengeRequest(
             "챌린지 이름",

@@ -62,7 +62,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val dto = getCreateChallengeDto()
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = dto.toEntity(imageUrl)
+        val challenge = dto.toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
@@ -129,7 +129,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     fun givenValid_whenFindChallengeInfo_thenReturn() {
         // given
         val challengeId = 1L
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val dto = getFindChallengeInfoDto()
 
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -164,7 +164,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val challengeId = 1L
         val dto = UpdateChallengeMemberGoalDto("개인목표")
 
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
 
         every {
@@ -240,7 +240,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     fun givenValid_whenFindAllChallenge_thenReturn() {
         // given
         val challengeId = 1L
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val dto = getFindChallengeDto()
 
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -266,7 +266,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val dto = getUpdateChallengeDto()
         val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
         val imageUrl = "https://url.kr/5MhHhD2345"
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
 
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -296,7 +296,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val challenge = getCreateChallengeDto()
-            .toEntity("https://url.kr/5MhHhD")
+            .toEntity("https://url.kr/5MhHhD", "ABC12")
             .apply { currentMemberCnt = 3 }
         val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
 
@@ -323,7 +323,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val challenge = getCreateChallengeDto()
-            .toEntity("https://url.kr/5MhHhD")
+            .toEntity("https://url.kr/5MhHhD", "ABC12")
             .apply { currentMemberCnt = 1 }
         val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
 
@@ -350,7 +350,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
         val feed =
@@ -381,7 +381,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val multipartFile = MockMultipartFile("file", "file.png", "image/png", ByteArray(1))
 
@@ -410,7 +410,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val feedId = 1L
         val imageUrl = "https://url.kr/5MhHhD"
         val user = getUser()
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val feed = Feed(1L, challengeMember, challenge, imageUrl, 1)
         val feedComments = listOf(
@@ -481,7 +481,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
@@ -503,7 +503,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val userId = 1L
         val challengeId = 1L
@@ -553,7 +553,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val userId = 1L
         val challengeId = 1L
@@ -604,7 +604,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     fun givenNotFoundChallengeMember_whenCreateChallengeFeedComment_thenThrow() {
         // given
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
@@ -631,7 +631,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val userId = 1L
         val challengeId = 1L
@@ -660,7 +660,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val feed =
             Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
@@ -710,7 +710,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     fun givenNotFoundFeed_whenDeleteChallengeFeedComment_thenThrow() {
         // given
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
@@ -734,7 +734,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val feed =
             Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
@@ -764,7 +764,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         // given
         val user = getUser()
         val imageUrl = "https://url.kr/5MhHhD"
-        val challenge = getCreateChallengeDto().toEntity(imageUrl)
+        val challenge = getCreateChallengeDto().toEntity(imageUrl, "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val feed =
             Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
@@ -797,7 +797,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val challengeId = 1L
         val feedId = 1L
         val user = getUser()
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
         val dto = getFindChallengeFeedDto()
 
@@ -838,7 +838,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val userId = 1L
         val challengeId = 1L
         val feedId = 1L
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
 
         every { challengeRepository.findInfoById(any()) } returns challenge
         every {
@@ -860,7 +860,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         val challengeId = 1L
         val feedId = 1L
         val user = getUser()
-        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD")
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
 
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -897,6 +897,67 @@ class ChallengeServiceTest : AbstractMailProperties {
 
         // then
         assertThat(result.content.size).isEqualTo(3)
+    }
+
+    @DisplayName("챌린지 초대코드를 조회하면 일치하는 초대코드를 반환한다.")
+    @Test
+    fun givenValid_whenFindChallengeInvitationCode_thenReturn() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+        val dto = FindChallengeInvitationCodeDto("챌린지 이름", "ABC12")
+
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        } returns challengeMember
+        every { challengeRepository.findInvitationCodeById(any()) } returns dto
+
+        // when
+        val result = challengeService.findChallengeInvitationCode(userId, challengeId)
+
+        // then
+        assertThat(result).isEqualTo(dto)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 파티원이 챌린지 초대코드를 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallengeMember_whenFindChallengeInvitationCode_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+
+        every { challengeMemberRepository.findByUserIdAndChallengeId(any(), any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeInvitationCode(userId, challengeId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
+    }
+
+    @DisplayName("등록되지 않은 챌린지 초대코드를 조회하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundChallenge_whenFindChallengeInvitationCode_thenThrow() {
+        // given
+        val userId = 1L
+        val challengeId = 1L
+        val user = getUser()
+        val challenge = getCreateChallengeDto().toEntity("https://url.kr/5MhHhD", "ABC12")
+        val challengeMember = ChallengeMember(user = user, challenge = challenge)
+
+        every {
+            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
+        } returns challengeMember
+        every { challengeRepository.findInvitationCodeById(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { challengeService.findChallengeInvitationCode(userId, challengeId) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(CHALLENGE_NOT_FOUND)
     }
 
     private fun getUser(): User {

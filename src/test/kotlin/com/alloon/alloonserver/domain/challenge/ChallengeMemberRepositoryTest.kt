@@ -71,7 +71,8 @@ class ChallengeMemberRepositoryTest(
 
         val contact = contactRepository.save(getContact("tester2@photi.com"))
         val user = userRepository.save(getUser(contact, "tester2"))
-        val tester2 = challenge?.let { ChallengeMember(user = user, challenge = it, isCreator = false) }
+        val tester2 =
+            challenge?.let { ChallengeMember(user = user, challenge = it, isCreator = false) }
 
         val challengeMember = tester2?.let { challengeMemberRepository.save(it) }
         val userId = challengeMember?.user?.id
@@ -105,7 +106,7 @@ class ChallengeMemberRepositoryTest(
 
     private fun createAndSaveChallenge(): Challenge {
         val dto = getCreateChallengeDto()
-        val challenge = dto.toEntity( "https://url.kr/5MhHhD")
+        val challenge = dto.toEntity("https://url.kr/5MhHhD", "ABC12")
         return challengeRepository.save(challenge)
     }
 

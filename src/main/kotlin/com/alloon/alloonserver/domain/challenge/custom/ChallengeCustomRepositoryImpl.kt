@@ -5,10 +5,7 @@ import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
-import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.QFindChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.QFindPopularChallengesDto
+import com.alloon.alloonserver.service.challenge.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -100,6 +97,19 @@ class ChallengeCustomRepositoryImpl(
         }
 
         return SliceImpl(content, pageable, hasNext)
+    }
+
+    override fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto? {
+        return queryFactory
+            .select(
+                QFindChallengeInvitationCodeDto(
+                    challenge.name,
+                    challenge.invitationCode
+                )
+            )
+            .from(challenge)
+            .where(challenge.id.eq(id))
+            .fetchOne()
     }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
