@@ -31,6 +31,9 @@ class Challenge(
     @Column(nullable = false, length = 500)
     var imageUrl: String,
 
+    @Column(length = 5)
+    val invitationCode: String,
+
     @Column(nullable = false)
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
     val rules: MutableList<ChallengeRule> = mutableListOf(),
@@ -48,9 +51,6 @@ class Challenge(
     //TODO redis 사용하면 hyperlog 로 변경 필요함.
     @Column(nullable = false)
     var visitCnt: Int = 0,
-
-    @Column(nullable = false)
-    val isRecruit: Boolean = true,
 ) : BasePermanentEntity() {
 
     fun addChallengeRule(rule: ChallengeRule) {
