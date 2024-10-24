@@ -5,7 +5,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.common.util.VerificationCodeUtility
+import com.alloon.alloonserver.common.util.CodeUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.domain.user.UserRoleRepository
@@ -33,7 +33,7 @@ class AuthService(
 
     @Transactional
     fun sendVerificationCode(@Valid request: ContactServiceSendVerificationDto) {
-        val verificationCode = VerificationCodeUtility.getVerificationCode()
+        val verificationCode = CodeUtility.getVerificationCode()
 
         contactRepository.findByEmail(request.email)
             ?.let { foundContact ->
