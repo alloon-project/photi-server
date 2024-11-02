@@ -155,4 +155,25 @@ class UserController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/my-challenges")
+    @Operation(
+        summary = "사용자 참여 중인 챌린지 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "챌린지 인증시간이 빠른 순(ex. 4시 -> 18시 -> 20시)으로 정렬되어 조회됩니다."
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun findUserChallenges(
+        principal: Principal,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<FindUserChallengesResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val userChallenges =
+            userService.findUserChallenges(UserUtility.getUserId(principal), pageable)
+        val response = SliceResponse.of(userChallenges)
+
+        return ResponseEntity.ok(response)
+    }
 }

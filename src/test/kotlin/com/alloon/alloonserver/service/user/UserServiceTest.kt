@@ -264,6 +264,29 @@ class UserServiceTest {
         assertThat(result.content.size).isEqualTo(3)
     }
 
+    @DisplayName("사용자 참여 중인 챌린지 조회를 하면 페이징 객체를 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallenges_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = getFindUserChallengesDto()
+        val content = listOf(dto, dto, dto)
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userRepository.findUserChallengesById(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val result = userService.findUserChallenges(userId, pageable)
+
+        // then
+        assertThat(result.content.size).isEqualTo(3)
+    }
+
     private fun getUser(): User {
         val contact = Contact(1L, "tester@photi.com", "000000", true)
         return User(1L, contact, "tester", "password1!", "")
@@ -302,6 +325,18 @@ class UserServiceTest {
                 UserImageDto(1L, "https://url.kr/5MhHhE"),
                 UserImageDto(1L, "https://url.kr/5MhHhF")
             )
+        )
+    }
+
+    private fun getFindUserChallengesDto(): FindUserChallengesDto {
+        return FindUserChallengesDto(
+            1L,
+            "챌린지 이름",
+            "https://url.kr/5MhHhD",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf("러닝", "건강"),
+            "https://url.kr/5MhHhD",
         )
     }
 }

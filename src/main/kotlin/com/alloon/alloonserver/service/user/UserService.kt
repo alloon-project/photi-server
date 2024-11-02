@@ -1,5 +1,6 @@
 package com.alloon.alloonserver.service.user
 
+import com.alloon.alloonserver.api.controller.user.response.FindUserChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
@@ -73,6 +74,11 @@ class UserService(
     ): Slice<FindUserEndedChallengesResponse> {
         return userRepository.findEndedChallengesById(userId, pageable)
             .map { FindUserEndedChallengesResponse.of(it) }
+    }
+
+    fun findUserChallenges(userId: Long, pageable: Pageable): Slice<FindUserChallengesResponse> {
+        return userRepository.findUserChallengesById(userId, pageable)
+            .map { FindUserChallengesResponse.of(it) }
     }
 
     private fun deleteOriginalImage(imageUrl: String) {

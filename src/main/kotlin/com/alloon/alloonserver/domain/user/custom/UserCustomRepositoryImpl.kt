@@ -220,6 +220,55 @@ class UserCustomRepositoryImpl(
         return SliceImpl(content, pageable, hasNext)
     }
 
+    override fun findUserChallengesById(
+        userId: Long,
+        pageable: Pageable
+    ): Slice<FindUserChallengesDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindUserChallengesDto(
+                    challengeMember.challenge.id,
+                    challengeMember.challenge.name,
+                    challengeMember.challenge.imageUrl,
+                    challengeMember.challenge.proveTime,
+                    challengeMember.challenge.endDate,
+                    challengeMember.challenge.hashtags,
+                    Expressions.constant(""),
+                )
+            )
+            .from(challengeMember)
+            .join(challengeMember.challenge)
+            .join(challengeMember.user)
+            .where(challengeMember.user.id.eq(userId))
+            .orderBy(challengeMember.challenge.proveTime.asc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val challengeIds = content.map { it.id }
+        val feedImageUrls = queryFactory
+            .select(QUserImageDto(feed.challenge.id, feed.imageUrl))
+            .from(feed)
+            .join(feed.challengeMember)
+            .where(feed.challengeMember.user.id.eq(userId), feed.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
+
+        content.forEach {
+            it.feedImageUrl = feedImageUrls[it.id]?.first()?.imageUrl ?: ""
+        }
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
+    }
+
     private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }
 
     private fun eqEmail(email: String?): BooleanExpression? = email?.let { contact.email.eq(it) }

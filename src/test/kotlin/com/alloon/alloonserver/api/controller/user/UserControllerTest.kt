@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
+import com.alloon.alloonserver.api.controller.user.response.FindUserChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
 import com.alloon.alloonserver.service.challenge.dto.UserImageDto
@@ -200,6 +201,32 @@ class UserControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
+    @DisplayName("사용자 참여 중인 챌린지 조회를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenFindUserChallenges_thenReturn200() {
+        // given
+        val dto = getFindUserChallengesDto()
+        val content = listOf(FindUserChallengesResponse.of(dto))
+        val pageable = PageRequest.of(0, 10)
+        val hasNext = true
+
+        every { userService.findUserChallenges(any(), any()) } returns SliceImpl(
+            content,
+            pageable,
+            hasNext
+        )
+
+        // when
+        val resultActions = mockMvc.perform(
+            get("/api/users/my-challenges")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
+
     private fun getUserInfoDto(): UserInfoDto {
         return UserInfoDto("https://url.kr/5MhHhD", "tester", "tester@photi.com")
     }
@@ -229,6 +256,18 @@ class UserControllerTest : RestDocsSupport() {
                 UserImageDto(1L, "https://url.kr/5MhHhE"),
                 UserImageDto(1L, "https://url.kr/5MhHhF")
             )
+        )
+    }
+
+    private fun getFindUserChallengesDto(): FindUserChallengesDto {
+        return FindUserChallengesDto(
+            1L,
+            "챌린지 이름",
+            "https://url.kr/5MhHhD",
+            LocalTime.of(13, 0),
+            LocalDate.of(2024, 12, 1),
+            listOf("러닝", "건강"),
+            "https://url.kr/5MhHhD",
         )
     }
 }
