@@ -25,4 +25,6 @@ interface UserCustomRepository {
     fun findFeedHistoryById(userId: Long, pageable: Pageable): Slice<FindUserFeedHistoryDto>
 
     fun findEndedChallengesById(userId: Long, pageable: Pageable): Slice<FindUserEndedChallengesDto>
+
+    fun findUserChallengesById(userId: Long, pageable: Pageable): Slice<FindUserChallengesDto>
 }
