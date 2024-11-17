@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.service.user
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
+import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.*
@@ -15,7 +16,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
@@ -32,59 +32,63 @@ class AuthServiceTest {
     private val emailService = mockk<EmailService>()
     private val passwordUtility = mockk<PasswordUtility>()
 
-    private val authService =
-        AuthService(
-            contactRepository,
-            userRepository,
-            userRoleRepository,
-            userTemplateImageRepository,
-            emailService,
-            passwordUtility
-        )
+    private val authService = AuthService(
+        contactRepository,
+        userRepository,
+        userRoleRepository,
+        userTemplateImageRepository,
+        emailService,
+        passwordUtility
+    )
 
     @DisplayName("이메일 인증코드 전송이 정상 작동한다")
     @Test
     fun givenValid_whenSendVerificationCode_thenReturn() {
         // given
-        val request = createValidContactServiceSendVerificationDto()
+        val contact = getContact()
+        val dto = ContactServiceSendVerificationDto("tester@photi.com")
+
+        every { contactRepository.findByEmail(any()) } returns contact
+        every { userRepository.existsByContact(any()) } returns false
+        every { emailService.sendEmail(any(), any(), any()) } just Runs
 
         // when
-        authService.sendVerificationCode(request)
+        authService.sendVerificationCode(dto)
 
         // then
-        val contact = contactRepository.findByEmail(request.email)
-
-        assertThat(contact).extracting("email").isEqualTo(request.email)
+        assertThat(contact.email).isEqualTo(dto.email)
     }
 
-    @DisplayName("존재하는 이메일로 이메일 인증코드를 전송하면 정상 작동한다")
+    @DisplayName("탈퇴한 회원이 이메일 인증코드 전송을 하면 예외가 발생한다.")
     @Test
-    fun givenExistingEmail_whenSendVerificationCode_thenReturn() {
+    fun givenDeletedUser_whenSendVerificationCode_thenThrow() {
         // given
-        val verificationCode = createAndSaveContact().verificationCode
-        val request = createValidContactServiceSendVerificationDto()
+        val contact = getContact().apply {
+            isDeleted = true
+        }
+        val dto = ContactServiceSendVerificationDto("tester@photi.com")
 
-        // when
-        authService.sendVerificationCode(request)
-
-        // then
-        val foundContact = contactRepository.findByEmail(request.email)
-        assertAll(
-            { assertThat(foundContact?.email).isEqualTo(request.email) },
-            { assertThat(foundContact?.verificationCode).isNotEqualTo(verificationCode) }
-        )
-    }
-
-    @DisplayName("가입된 이메일로 이메일 인증코드를 전송하면 예외가 발생한다")
-    @Test
-    fun givenRegisteredEmail_whenSendVerificationCode_thenThrow() {
-        // given
-        val contact = createAndSaveContact()
-        createAndSaveUser(contact)
-        val request = createValidContactServiceSendVerificationDto()
+        every { contactRepository.findByEmail(any()) } returns contact
 
         // when & then
-        assertThatThrownBy { authService.sendVerificationCode(request) }
+        assertThatThrownBy { authService.sendVerificationCode(dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(DELETED_USER)
+    }
+
+    @DisplayName("가입된 이메일로 이메일 인증코드를 전송하면 예외가 발생한다.")
+    @Test
+    fun givenExistingEmail_whenSendVerificationCode_thenThrow() {
+        // given
+        val contact = getContact()
+        val dto = ContactServiceSendVerificationDto("tester@photi.com")
+
+        every { contactRepository.findByEmail(any()) } returns contact
+        every { userRepository.existsByContact(any()) } returns true
+
+        // when & then
+        assertThatThrownBy { authService.sendVerificationCode(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_EMAIL)
@@ -94,24 +98,45 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenVerifyEmailVerificationCode_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        val request = createValidContactServiceVerifyRequest()
+        val contact = getContact()
+        val dto = ContactServiceVerifyDto("tester@photi.com", "000000")
+
+        every { contactRepository.findByEmail(any()) } returns contact
 
         // when
-        authService.verifyEmailVerificationCode(request)
+        authService.verifyEmailVerificationCode(dto)
 
         // then
         assertThat(contact.verifyYn).isTrue()
     }
 
-    @DisplayName("존재하지 않는 이메일로 인증코드를 검증하면 예외가 발생한다")
+    @DisplayName("입력한 이메일 인증코드와 저장된 인증코드가 다를때 인증코드를 검증하면 예외가 발생한다.")
     @Test
-    fun givenNonExistingEmail_whenVerifyEmailVerificationCode_thenThrow() {
+    fun givenDifferentEmailVerificationCode_whenVerifyEmailVerificationCode_thenThrow() {
         // given
-        val request = createValidContactServiceVerifyRequest()
+        val dto = ContactServiceVerifyDto("tester@photi.com", "000000")
+
+        every { contactRepository.findByEmail(any())?.verify(any()) } throws CustomException(
+            EMAIL_VERIFICATION_CODE_INVALID
+        )
 
         // when & then
-        assertThatThrownBy { authService.verifyEmailVerificationCode(request) }
+        assertThatThrownBy { authService.verifyEmailVerificationCode(dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(EMAIL_VERIFICATION_CODE_INVALID)
+    }
+
+    @DisplayName("존재하지 않는 이메일로 인증코드를 검증하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundEmail_whenVerifyEmailVerificationCode_thenThrow() {
+        // given
+        val dto = ContactServiceVerifyDto("tester@photi.com", "000000")
+
+        every { contactRepository.findByEmail(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { authService.verifyEmailVerificationCode(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EMAIL_NOT_FOUND)
@@ -121,23 +146,25 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenValidateUsername_thenReturn() {
         // given
-        val request = createValidUserServiceValidateUsernameRequest()
+        val dto = UserServiceValidateUsernameDto("tester")
+
+        every { userRepository.existsByUsername(any()) } returns false
 
         // when
-        authService.validateUsername(request)
+        authService.validateUsername(dto)
 
         // then
-        assertThat(userRepository.existsByUsername(request.username)).isFalse()
+        assertThat(dto.username).isNotIn(UNAVAILABLE_USERNAMES)
     }
 
     @DisplayName("사용 불가능한 아이디로 아이디 검증을 하면 예외가 발생한다")
     @Test
     fun givenUnavailableUsername_whenValidateUsername_thenThrow() {
         // given
-        val request = UserServiceValidateUsernameDto("photi")
+        val dto = UserServiceValidateUsernameDto("photi")
 
         // when & then
-        assertThatThrownBy { authService.validateUsername(request) }
+        assertThatThrownBy { authService.validateUsername(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(UNAVAILABLE_USERNAME)
@@ -147,13 +174,12 @@ class AuthServiceTest {
     @Test
     fun givenExistingUsername_whenValidateUsername_thenThrow() {
         // given
-        val contact = createAndSaveContact()
-        createAndSaveUser(contact)
+        val dto = UserServiceValidateUsernameDto("tester")
 
-        val request = createValidUserServiceValidateUsernameRequest()
+        every { userRepository.existsByUsername(any()) } returns true
 
         // when & then
-        assertThatThrownBy { authService.validateUsername(request) }
+        assertThatThrownBy { authService.validateUsername(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_USERNAME)
@@ -163,32 +189,38 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenRegisterUser_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify(contact.verificationCode)
-        contactRepository.save(contact)
+        val contact = getContact()
+        val dto = getUserServiceRegisterDto()
+        val password = "encryptedPassword"
+        val user = getUser()
+        val userRole = UserRole(1L, user, Role.USER)
 
-        val request = createValidUserServiceRegisterRequest()
+        every { contactRepository.findByEmail(any()) } returns contact
+        every { userRepository.existsByContact(any()) } returns false
+        every { userRepository.existsByUsername(any()) } returns false
+        every { passwordUtility.encryptPassword(any()) } returns password
+        every { userTemplateImageRepository.findAll() } returns listOf()
+        every { userRepository.save(any()) } returns user
+        every { userRoleRepository.save(any()) } returns userRole
 
         // when
-        val response = authService.registerUser(request)
+        val response = authService.registerUser(dto)
 
         // then
-        val user = userRepository.findByUsername(request.username)
-            ?: throw CustomException(USER_NOT_FOUND)
-
-        assertThat(response)
-            .extracting("userId", "username")
-            .containsExactly(user.id, request.username)
+        assertThat(response.userId).isEqualTo(user.id)
+        assertThat(response.username).isEqualTo(dto.username)
     }
 
     @DisplayName("인증을 하지 않은 이메일로 회원 가입을 하면 예외가 발생한다")
     @Test
     fun givenInvalidEmail_whenRegisterUser_thenThrow() {
         // given
-        val request = createValidUserServiceRegisterRequest()
+        val dto = getUserServiceRegisterDto()
+
+        every { contactRepository.findByEmail(any()) } returns null
 
         // when & then
-        assertThatThrownBy { authService.registerUser(request) }
+        assertThatThrownBy { authService.registerUser(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EMAIL_VALIDATION_INVALID)
@@ -198,12 +230,15 @@ class AuthServiceTest {
     @Test
     fun givenUnverifiedEmail_whenRegisterUser_thenThrow() {
         // given
-        createAndSaveContact()
+        val contact = getContact().apply {
+            verifyYn = false
+        }
+        val dto = getUserServiceRegisterDto()
 
-        val request = createValidUserServiceRegisterRequest()
+        every { contactRepository.findByEmail(any()) } returns contact
 
         // when & then
-        assertThatThrownBy { authService.registerUser(request) }
+        assertThatThrownBy { authService.registerUser(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EMAIL_VALIDATION_INVALID)
@@ -213,14 +248,14 @@ class AuthServiceTest {
     @Test
     fun givenRegisteredEmail_whenRegisterUser_thenThrow() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify(contact.verificationCode)
-        createAndSaveUser(contact)
+        val contact = getContact()
+        val dto = getUserServiceRegisterDto()
 
-        val request = createValidUserServiceRegisterRequest()
+        every { contactRepository.findByEmail(any()) } returns contact
+        every { userRepository.existsByContact(any()) } returns true
 
         // when & then
-        assertThatThrownBy { authService.registerUser(request) }
+        assertThatThrownBy { authService.registerUser(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(EXISTING_USER)
@@ -230,56 +265,29 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenFindUsername_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify(contact.verificationCode)
-        val user = createAndSaveUser(contact)
+        val user = getUser()
+        val dto = UserServiceFindUsernameDto("tester@photi.com")
 
-        val request = createValidUserServiceFindUsernameRequest()
+        every { userRepository.findFetchContact(any(), any(), any()) } returns user
+        every { emailService.sendEmail(any(), any(), any()) } just Runs
 
         // when
-        authService.findUsername(request)
+        authService.findUsername(dto)
 
         // then
-        val foundUser = userRepository.findFetchContact(contact.email, null, null)
-
-        assertAll(
-            {
-                assertThat(foundUser)
-                    .extracting(
-                        "username", "password", "imageUrl", "temporaryPasswordYn", "createDateTime",
-                        "updateDateTime", "contact"
-                    )
-                    .containsExactly(
-                        user.username, user.password, user.imageUrl, user.temporaryPasswordYn,
-                        user.createDateTime, user.updateDateTime, user.contact
-                    )
-            },
-            {
-                assertThat(foundUser)
-                    .extracting("contact")
-                    .extracting(
-                        "email",
-                        "verificationCode",
-                        "verifyYn",
-                        "createDateTime",
-                        "updateDateTime"
-                    )
-                    .containsExactly(
-                        contact.email, contact.verificationCode, contact.verifyYn,
-                        contact.createDateTime, contact.updateDateTime
-                    )
-            }
-        )
+        assertThat(user.contact.email).isEqualTo(dto.email)
     }
 
     @DisplayName("가입되지 않은 이메일로 아이디 찾기를 하면 예외가 발생한다")
     @Test
     fun givenNonExistingUser_whenFindUsername_thenThrow() {
         // given
-        val request = createValidUserServiceFindUsernameRequest()
+        val dto = UserServiceFindUsernameDto("tester@photi.com")
+
+        every { userRepository.findFetchContact(any(), any(), any()) } returns null
 
         // when & then
-        assertThatThrownBy { authService.findUsername(request) }
+        assertThatThrownBy { authService.findUsername(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)
@@ -289,34 +297,31 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenFindPassword_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify("000000")
-        val user = createAndSaveUser(contact)
+        val user = getUser()
+        val dto = UserServiceFindPasswordDto("tester@photi.com", "tester")
+        val password = "encryptPassword"
 
-        val previousPassword = user.password
-
-        val request = createValidUserServiceFindPasswordRequest()
+        every { userRepository.findFetchContact(any(), any(), any()) } returns user
+        every { passwordUtility.encryptPassword(any()) } returns password
+        every { emailService.sendEmail(any(), any(), any()) } just Runs
 
         // when
-        authService.findPassword(request)
+        authService.findPassword(dto)
 
         // then
-        val foundUser = userRepository.findFetchContact(contact.email, null, null)!!
-
-        assertAll(
-            { assertThat(foundUser.password).isNotEqualTo(previousPassword) },
-            { assertThat(foundUser.temporaryPasswordYn).isTrue() }
-        )
+        assertThat(user.password).isEqualTo(password)
     }
 
     @DisplayName("존재하지 않은 회원 정보로 비밀번호 찾기를 하면 예외가 발생한다")
     @Test
-    fun givenNonExistingUser_whenFindPassword_thenThrow() {
+    fun givenNotFoundUser_whenFindPassword_thenThrow() {
         // given
-        val request = createValidUserServiceFindPasswordRequest()
+        val dto = UserServiceFindPasswordDto("tester@photi.com", "tester")
+
+        every { userRepository.findFetchContact(any(), any(), any()) } returns null
 
         // when & then
-        assertThatThrownBy { authService.findPassword(request) }
+        assertThatThrownBy { authService.findPassword(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(USER_NOT_FOUND)
@@ -326,50 +331,73 @@ class AuthServiceTest {
     @Test
     fun givenValid_whenLogin_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify(contact.verificationCode)
-        val user = createAndSaveUser(contact)
+        val user = getUser()
+        val dto = UserServiceLoginDto("tester", "password1!")
 
-        val request = createValidUserServiceLoginRequest()
+        every { userRepository.findByUsername(any()) } returns user
+        every { passwordUtility.verifyPassword(any(), any()) } just Runs
 
         // when
-        val response = authService.login(request)
+        val response = authService.login(dto)
 
         // then
-        assertThat(response)
-            .extracting("userId", "username", "imageUrl", "temporaryPasswordYn")
-            .containsExactly(user.id, user.username, user.imageUrl, user.temporaryPasswordYn)
+        assertThat(response.userId).isEqualTo(user.id)
+        assertThat(response.username).isEqualTo(user.username)
+        assertThat(response.imageUrl).isEqualTo(user.imageUrl)
+        assertThat(response.temporaryPasswordYn).isEqualTo(user.temporaryPasswordYn)
     }
 
     @DisplayName("가입하지 않은 아이디로 로그인을 하면 예외가 발생한다")
     @Test
     fun givenNonRegisteredUsername_whenLogin_thenThrow() {
         // given
-        val request = createValidUserServiceLoginRequest()
+        val dto = UserServiceLoginDto("tester", "password1!")
+
+        every { userRepository.findByUsername(any()) } returns null
 
         // when & then
-        assertThatThrownBy { authService.login(request) }
+        assertThatThrownBy { authService.login(dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(LOGIN_UNAUTHENTICATED)
+    }
+
+    @DisplayName("탈퇴한 회원이 로그인을 하면 예외가 발생한다.")
+    @Test
+    fun givenDeletedUser_whenLogin_thenThrow() {
+        // given
+        val user = getUser().apply {
+            contact.isDeleted = true
+        }
+        val dto = UserServiceLoginDto("tester", "password1!")
+
+        every { userRepository.findByUsername(any()) } returns user
+
+        // when & then
+        assertThatThrownBy { authService.login(dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(DELETED_USER)
     }
 
     @DisplayName("비밀번호 변경이 정상 작동한다")
     @Test
     fun givenValid_whenChangePassword_thenReturn() {
         // given
-        val contact = createAndSaveContact()
-        contact.verify(contact.verificationCode)
-        val user = createAndSaveUser(contact)
-        val encryptedPassword = user.password
+        val userId = 1L
+        val dto = getUserServiceChangePasswordDto()
+        val user = getUser()
+        val password = "encryptedPassword"
 
-        val request = createValidUserServiceChangePasswordRequest()
+        every { userRepository.find(any()) } returns user
+        every { passwordUtility.verifyPassword(any(), any()) } just Runs
+        every { passwordUtility.encryptPassword(any()) } returns password
 
         // when
-        authService.changePassword(user.id!!, request)
+        authService.changePassword(userId, dto)
 
         // then
-        assertThat(user.password).isNotEqualTo(encryptedPassword)
+        assertThat(user.password).isEqualTo(password)
     }
 
     @DisplayName("존재하지 않은 회원 식별자로 비밀번호 변경을 하면 예외가 발생한다")
@@ -377,10 +405,12 @@ class AuthServiceTest {
     fun givenNonExistingUserId_whenChangePassword_thenThrow() {
         // given
         val userId = 1L
-        val request = createValidUserServiceChangePasswordRequest()
+        val dto = getUserServiceChangePasswordDto()
+
+        every { userRepository.find(any()) } returns null
 
         // when & then
-        assertThatThrownBy { authService.changePassword(userId, request) }
+        assertThatThrownBy { authService.changePassword(userId, dto) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
             .isEqualTo(LOGIN_UNAUTHENTICATED)
@@ -441,57 +471,19 @@ class AuthServiceTest {
             .isEqualTo(LOGIN_UNAUTHENTICATED)
     }
 
-    private fun createValidUserServiceChangePasswordRequest(): UserServiceChangePasswordDto {
+    private fun getUserServiceChangePasswordDto(): UserServiceChangePasswordDto {
         return UserServiceChangePasswordDto("password1!", "password2!", "password2!")
     }
 
-    private fun createValidUserServiceLoginRequest(): UserServiceLoginDto {
-        return UserServiceLoginDto("tester", "password1!")
-    }
-
-    private fun createValidUserServiceFindPasswordRequest(): UserServiceFindPasswordDto {
-        return UserServiceFindPasswordDto("tester@alloon.com", "tester")
-    }
-
-    private fun createValidUserServiceFindUsernameRequest(): UserServiceFindUsernameDto {
-        return UserServiceFindUsernameDto("tester@alloon.com")
-    }
-
-    private fun createValidUserServiceRegisterRequest(): UserServiceRegisterDto {
+    private fun getUserServiceRegisterDto(): UserServiceRegisterDto {
         return UserServiceRegisterDto("tester@alloon.com", "tester", "password1!")
     }
 
-    private fun createValidUserServiceValidateUsernameRequest(): UserServiceValidateUsernameDto {
-        return UserServiceValidateUsernameDto("tester")
-    }
-
-    private fun createValidContactServiceVerifyRequest(): ContactServiceVerifyDto {
-        return ContactServiceVerifyDto("tester@alloon.com", "000000")
-    }
-
-    private fun createValidContactServiceSendVerificationDto(): ContactServiceSendVerificationDto {
-        return ContactServiceSendVerificationDto("tester@alloon.com")
-    }
-
-    private fun createAndSaveContact(): Contact {
-        val contact =
-            Contact(email = "tester@alloon.com", verificationCode = "000000", verifyYn = false)
-        return contactRepository.save(contact)
-    }
-
-    private fun createAndSaveUser(contact: Contact): User {
-        val encryptedPassword = passwordUtility.encryptPassword("password1!")
-        val user = User(
-            contact = contact,
-            username = "tester",
-            password = encryptedPassword,
-            imageUrl = ""
-        )
-        return userRepository.save(user)
+    private fun getContact(): Contact {
+        return Contact(1L, "tester@photi.com", "000000", true, isDeleted = false)
     }
 
     private fun getUser(): User {
-        val contact = Contact(1L, "tester@photi.com", "000000", true)
-        return User(1L, contact, "tester", "password1!", "")
+        return User(1L, getContact(), "tester", "password1!", "")
     }
 }
