@@ -4,8 +4,8 @@ import com.alloon.alloonserver.common.constant.EmailConstants.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.common.util.CodeUtility
+import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.domain.user.UserRoleRepository
@@ -32,20 +32,23 @@ class AuthService(
 ) {
 
     @Transactional
-    fun sendVerificationCode(@Valid request: ContactServiceSendVerificationDto) {
+    fun sendVerificationCode(dto: ContactServiceSendVerificationDto) {
         val verificationCode = CodeUtility.getVerificationCode()
+        val contact = contactRepository.findByEmail(dto.email)
 
-        contactRepository.findByEmail(request.email)
-            ?.let { foundContact ->
-                if (userRepository.existsByContact(foundContact))
-                    throw CustomException(EXISTING_EMAIL)
-
-                foundContact.changeVerificationCode(verificationCode)
-            } ?: run {
-            contactRepository.save(request.toEntity(verificationCode))
+        contact?.let {
+            if (it.isDeleted) {
+                throw CustomException(DELETED_USER)
+            }
+            if (userRepository.existsByContact(it)) {
+                throw CustomException(EXISTING_EMAIL)
+            }
+            it.changeVerificationCode(verificationCode)
+        } ?: run {
+            contactRepository.save(dto.toEntity(verificationCode))
         }
 
-        emailService.sendEmail(request.email, verificationCode, REGISTER_VERIFICATION_CODE)
+        emailService.sendEmail(dto.email, verificationCode, REGISTER_VERIFICATION_CODE)
     }
 
     @Transactional
@@ -107,6 +110,9 @@ class AuthService(
         val user = userRepository.findByUsername(request.username) ?: throw CustomException(
             LOGIN_UNAUTHENTICATED
         )
+        if (user.contact.isDeleted) {
+            throw CustomException(DELETED_USER)
+        }
 
         passwordUtility.verifyPassword(request.password, user.password)
 
@@ -122,6 +128,15 @@ class AuthService(
         val encryptedPassword = passwordUtility.encryptPassword(request.newPassword)
 
         user.changePassword(encryptedPassword)
+    }
+
+    @Transactional
+    fun deleteUser(userId: Long, dto: DeleteUserDto) {
+        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
+
+        passwordUtility.verifyPassword(dto.password, user.password)
+
+        user.contact.softDelete()
     }
 
     private fun getUserTemplateImage(): String {

@@ -53,6 +53,20 @@ class ContactTest {
             .isEqualTo(EMAIL_VERIFICATION_CODE_INVALID)
     }
 
+    @DisplayName("회원 탈퇴를 하면 탈퇴 여부와 탈퇴 날짜가 변경된다.")
+    @Test
+    fun givenDeleteUser_whenSoftDelete_thenReturn() {
+        // given
+        val contact = createContact()
+
+        // when
+        contact.softDelete()
+
+        // then
+        assertThat(contact.isDeleted).isTrue()
+        assertThat(contact.deletedDate).isNotNull()
+    }
+
     private fun createContact(): Contact {
         return Contact(email = "test@photi.com", verificationCode = "000000")
     }

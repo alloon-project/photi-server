@@ -4,8 +4,10 @@ CREATE TABLE contact
     email	                    VARCHAR(100)	          NOT NULL,
     verification_code	        VARCHAR(6)	              NOT NULL,
     verify_yn	                BOOLEAN	                  NOT NULL,
+    is_deleted                  BOOLEAN                   NOT NULL,
     create_date_time	        TIMESTAMP(6)	          NOT NULL,
     update_date_time	        TIMESTAMP(6)	          NOT NULL,
+    deleted_date                TIMESTAMP(6)              NULL,
     CONSTRAINT uq_contact UNIQUE (email)
 );
 
