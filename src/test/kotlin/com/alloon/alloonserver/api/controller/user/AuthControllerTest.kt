@@ -436,4 +436,25 @@ class AuthControllerTest : RestDocsSupport() {
         // then
         resultActions.andExpect(status().isBadRequest)
     }
+
+    @DisplayName("회원 탈퇴를 성공하면 200을 반환한다.")
+    @Test
+    fun givenValid_whenDeleteUser_thenReturn200() {
+        // given
+        val request = DeleteUserRequest("password1!")
+
+        every { authService.deleteUser(any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            patch("/api/users")
+                .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request))
+        )
+
+        // then
+        resultActions.andExpect(status().isOk)
+    }
 }
