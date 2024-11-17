@@ -4,6 +4,7 @@ import com.alloon.alloonserver.common.constant.ExceptionCode
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.base.BaseEntity
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 class Contact(
@@ -15,12 +16,19 @@ class Contact(
 
     @Column(nullable = false, unique = true, length = 100)
     val email: String,
+
     @Column(nullable = false, length = 6)
     var verificationCode: String,
 
     @Column(nullable = false)
     var verifyYn: Boolean = false,
-    ) : BaseEntity() {
+
+    @Column(nullable = false)
+    var isDeleted: Boolean = false,
+
+    @Column(nullable = true)
+    var deletedDate: LocalDateTime? = null,
+) : BaseEntity() {
 
     /**
      * 인증코드 변경
@@ -40,5 +48,10 @@ class Contact(
         if (this.verificationCode != verificationCode)
             throw CustomException(ExceptionCode.EMAIL_VERIFICATION_CODE_INVALID)
         this.verifyYn = true
+    }
+
+    fun softDelete() {
+        isDeleted = true
+        deletedDate = LocalDateTime.now()
     }
 }
