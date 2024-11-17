@@ -4,8 +4,8 @@ import com.alloon.alloonserver.common.constant.EmailConstants.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
 import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.common.util.CodeUtility
+import com.alloon.alloonserver.common.util.PasswordUtility
 import com.alloon.alloonserver.domain.user.ContactRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.domain.user.UserRoleRepository
@@ -122,6 +122,15 @@ class AuthService(
         val encryptedPassword = passwordUtility.encryptPassword(request.newPassword)
 
         user.changePassword(encryptedPassword)
+    }
+
+    @Transactional
+    fun deleteUser(userId: Long, dto: DeleteUserDto) {
+        val user = userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
+
+        passwordUtility.verifyPassword(dto.password, user.password)
+
+        user.contact.softDelete()
     }
 
     private fun getUserTemplateImage(): String {
