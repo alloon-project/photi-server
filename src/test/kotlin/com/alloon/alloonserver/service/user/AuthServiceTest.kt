@@ -3,35 +3,44 @@ package com.alloon.alloonserver.service.user
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.user.Contact
-import com.alloon.alloonserver.domain.user.ContactRepository
-import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.domain.user.UserRepository
+import com.alloon.alloonserver.domain.user.*
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.email.EmailService
 import com.alloon.alloonserver.service.user.dto.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 
 @ActiveProfiles("test")
-@SpringBootTest
 @Transactional
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
-class AuthServiceTest(
-    @Autowired private val authService: AuthService,
-    @Autowired private val contactRepository: ContactRepository,
-    @Autowired private val userRepository: UserRepository,
-    @Autowired private val emailService: EmailService,
-    @Autowired private val passwordUtility: PasswordUtility,
-) {
+class AuthServiceTest {
+
+    private val contactRepository = mockk<ContactRepository>()
+    private val userRepository = mockk<UserRepository>()
+    private val userRoleRepository = mockk<UserRoleRepository>()
+    private val userTemplateImageRepository = mockk<UserTemplateImageRepository>()
+    private val emailService = mockk<EmailService>()
+    private val passwordUtility = mockk<PasswordUtility>()
+
+    private val authService =
+        AuthService(
+            contactRepository,
+            userRepository,
+            userRoleRepository,
+            userTemplateImageRepository,
+            emailService,
+            passwordUtility
+        )
 
     @DisplayName("이메일 인증코드 전송이 정상 작동한다")
     @Test
@@ -377,6 +386,61 @@ class AuthServiceTest(
             .isEqualTo(LOGIN_UNAUTHENTICATED)
     }
 
+    @DisplayName("회원 탈퇴를 하면 탈퇴 여부와 탈퇴 날짜가 변경된다.")
+    @Test
+    fun givenPassword_whenDeleteUser_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = DeleteUserDto("password1!")
+        val user = getUser()
+
+        every { userRepository.find(any()) } returns user
+        every { passwordUtility.verifyPassword(any(), any()) } just Runs
+
+        // when
+        authService.deleteUser(userId, dto)
+
+        // then
+        assertThat(user.contact.isDeleted).isTrue()
+        assertThat(user.contact.deletedDate).isNotNull()
+    }
+
+    @DisplayName("존재하지 않는 회원으로 회원 탈퇴를 하면 예외가 발생한다.")
+    @Test
+    fun givenNotFoundUser_whenDeleteUser_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = DeleteUserDto("password1!")
+
+        every { userRepository.find(any()) } returns null
+
+        // when & then
+        assertThatThrownBy { authService.deleteUser(userId, dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(USER_NOT_FOUND)
+    }
+
+    @DisplayName("입력한 비밀번호와 저장된 비밀번호가 다를때 회원 탈퇴를 하면 예외가 발생한다.")
+    @Test
+    fun givenDifferentPassword_whenDeleteUser_thenReturn() {
+        // given
+        val userId = 1L
+        val dto = DeleteUserDto("password1!")
+        val user = getUser()
+
+        every { userRepository.find(any()) } returns user
+        every { passwordUtility.verifyPassword(any(), any()) } throws CustomException(
+            LOGIN_UNAUTHENTICATED
+        )
+
+        // when & then
+        assertThatThrownBy { authService.deleteUser(userId, dto) }
+            .isInstanceOf(CustomException::class.java)
+            .extracting("exceptionCode")
+            .isEqualTo(LOGIN_UNAUTHENTICATED)
+    }
+
     private fun createValidUserServiceChangePasswordRequest(): UserServiceChangePasswordDto {
         return UserServiceChangePasswordDto("password1!", "password2!", "password2!")
     }
@@ -424,5 +488,10 @@ class AuthServiceTest(
             imageUrl = ""
         )
         return userRepository.save(user)
+    }
+
+    private fun getUser(): User {
+        val contact = Contact(1L, "tester@photi.com", "000000", true)
+        return User(1L, contact, "tester", "password1!", "")
     }
 }
