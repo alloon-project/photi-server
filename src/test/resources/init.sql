@@ -187,17 +187,11 @@ CREATE TABLE report_category
 CREATE TABLE report
 (
     report_id                   BIGSERIAL PRIMARY KEY,
-    reason                      VARCHAR(120),
+    reporter_id                 BIGINT                    NOT NULL,
+    target_id                   BIGINT                    NOT NULL,
+    category                    VARCHAR(15)               NOT NULL,
+    reason                      VARCHAR(15)               NOT NULL,
+    content                     VARCHAR(120)              NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
-    update_date_time            TIMESTAMP(6)              NOT NULL,
-    reporter_id                 BIGINT,
-    challenge_member_id         BIGINT,
-    challenge_id                BIGINT,
-    feed_id                     BIGINT,
-    report_category_id          INT                       NOT NULL,
-    CONSTRAINT fk_report_reporter FOREIGN KEY (reporter_id) REFERENCES users (user_id),
-    CONSTRAINT fk_report_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id),
-    CONSTRAINT fk_report_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
-    CONSTRAINT fk_report_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_report_report_category FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id)
+    update_date_time            TIMESTAMP(6)              NOT NULL
 );
