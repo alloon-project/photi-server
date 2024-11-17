@@ -1,91 +1,45 @@
 package com.alloon.alloonserver.api.controller.report
 
 import com.alloon.alloonserver.api.controller.RestDocsSupport
-import com.alloon.alloonserver.api.controller.report.request.ReportCreateRequest
-import com.alloon.alloonserver.domain.report.ReportCategoryType
-import com.alloon.alloonserver.domain.report.ReportCategoryType.FEED
+import com.alloon.alloonserver.api.controller.report.request.CreateReportRequest
 import com.alloon.alloonserver.service.report.ReportService
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
-import org.mockito.Mockito.mock
 import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class ReportControllerTest : RestDocsSupport() {
 
-    private val reportService = mock(ReportService::class.java)
+    private val reportService = mockk<ReportService>()
 
     override fun initController(): Any {
         return ReportController(reportService)
     }
 
-    @ParameterizedTest(name = "[{index}] {0} 신고 항목 종류 전체 조회를 하면 200을 반환한다")
-    @EnumSource(ReportCategoryType::class)
-    @DisplayName("신고 항목 전체 조회를 하면 200을 반환한다")
-    fun givenEnum_whenGetAllReportCategories_thenReturn200(reportType: ReportCategoryType) {
-        // when & then
-        mockMvc.perform(
-            get("/api/reports/category")
-                .queryParam("type", reportType.name)
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-        ).andDo(print()).andExpect(status().isOk)
-    }
-
-    @DisplayName("신고 등록을 하면 201을 반환한다")
+    @DisplayName("신고 등록을 성공하면 201을 반환한다.")
     @Test
     fun givenValid_whenCreateReport_thenReturn201() {
         // given
-        val request = createReportCreateRequest()
+        val request = CreateReportRequest("CHALLENGE", "DANGEROUS", "신고 내용")
 
-        // when & then
-        mockMvc.perform(
-            post("/api/reports")
+        every { reportService.createReport(any(), any(), any()) } just Runs
+
+        // when
+        val resultActions = mockMvc.perform(
+            post("/api/reports/{targetId}", 1)
                 .header(AUTHORIZATION, "Bearer access-token")
                 .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request))
-        ).andDo(print()).andExpect(status().isCreated)
-    }
+        )
 
-    @DisplayName("신고 항목 종류 미입력시 신고 항목 전체 조회를 하면 400을 반환한다")
-    @Test
-    fun givenBlankReportType_whenGetAllReportCategories_thenReturn400() {
-        // given
-        val reportType = null
-
-        // when & then
-        mockMvc.perform(
-            get("/api/reports/category")
-                .queryParam("type", reportType)
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-        ).andDo(print()).andExpect(status().isBadRequest)
-    }
-
-    @DisplayName("신고 타입 미입력시 신고 등록을 하면 400을 반환한다")
-    @Test
-    fun givenBlankReportTarget_whenCreateReport_thenReturn400() {
-        // given
-        val request = ReportCreateRequest(1L, "", 1, "신고 사유")
-
-        // when & then
-        mockMvc.perform(
-            post("/api/reports")
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(request))
-        ).andDo(print()).andExpect(status().isBadRequest)
-    }
-
-    private fun createReportCreateRequest(): ReportCreateRequest {
-        return ReportCreateRequest(1L, FEED.name, 1, "신고 사유")
+        // then
+        resultActions.andExpect(status().isCreated)
     }
 }
