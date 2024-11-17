@@ -139,4 +139,17 @@ class AuthController(
             .headers(headers)
             .body(StringSuccessResponse("토큰이 재발급 됐습니다."))
     }
+
+    @DeleteMapping("/api/users")
+    @Operation(summary = "회원 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, LOGIN_UNAUTHENTICATED])
+    fun deleteUser(
+        principal: Principal,
+        @RequestBody @Valid request: DeleteUserRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        authService.deleteUser(UserUtility.getUserId(principal), request.toServiceDto())
+
+        return ResponseEntity.ok(StringSuccessResponse("회원 탈퇴가 완료되었습니다."))
+    }
 }
