@@ -32,20 +32,23 @@ class AuthService(
 ) {
 
     @Transactional
-    fun sendVerificationCode(@Valid request: ContactServiceSendVerificationDto) {
+    fun sendVerificationCode(dto: ContactServiceSendVerificationDto) {
         val verificationCode = CodeUtility.getVerificationCode()
+        val contact = contactRepository.findByEmail(dto.email)
 
-        contactRepository.findByEmail(request.email)
-            ?.let { foundContact ->
-                if (userRepository.existsByContact(foundContact))
-                    throw CustomException(EXISTING_EMAIL)
-
-                foundContact.changeVerificationCode(verificationCode)
-            } ?: run {
-            contactRepository.save(request.toEntity(verificationCode))
+        contact?.let {
+            if (it.isDeleted) {
+                throw CustomException(DELETED_USER)
+            }
+            if (userRepository.existsByContact(it)) {
+                throw CustomException(EXISTING_EMAIL)
+            }
+            it.changeVerificationCode(verificationCode)
+        } ?: run {
+            contactRepository.save(dto.toEntity(verificationCode))
         }
 
-        emailService.sendEmail(request.email, verificationCode, REGISTER_VERIFICATION_CODE)
+        emailService.sendEmail(dto.email, verificationCode, REGISTER_VERIFICATION_CODE)
     }
 
     @Transactional
@@ -107,6 +110,9 @@ class AuthService(
         val user = userRepository.findByUsername(request.username) ?: throw CustomException(
             LOGIN_UNAUTHENTICATED
         )
+        if (user.contact.isDeleted) {
+            throw CustomException(DELETED_USER)
+        }
 
         passwordUtility.verifyPassword(request.password, user.password)
 

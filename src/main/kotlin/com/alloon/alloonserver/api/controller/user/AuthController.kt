@@ -40,7 +40,7 @@ class AuthController(
     @PostMapping("/api/contacts")
     @Operation(summary = "이메일 인증코드 전송")
     @ApiResponse(responseCode = "201")
-    @ApiErrorResponses([EXISTING_EMAIL])
+    @ApiErrorResponses([EXISTING_EMAIL, DELETED_USER])
     fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<StringSuccessResponse> {
         authService.sendVerificationCode(request.toServiceDto())
 
@@ -107,7 +107,7 @@ class AuthController(
     @PostMapping("/api/users/login")
     @Operation(summary = "로그인")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([LOGIN_UNAUTHENTICATED])
+    @ApiErrorResponses([LOGIN_UNAUTHENTICATED, DELETED_USER])
     fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<UserLoginResponse> {
         val response = authService.login(request.toServiceDto())
         val headers = jwtProvider.createToken(response.userId)
@@ -140,7 +140,7 @@ class AuthController(
             .body(StringSuccessResponse("토큰이 재발급 됐습니다."))
     }
 
-    @DeleteMapping("/api/users")
+    @PatchMapping("/api/users")
     @Operation(summary = "회원 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, LOGIN_UNAUTHENTICATED])
