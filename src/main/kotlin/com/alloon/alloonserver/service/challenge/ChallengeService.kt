@@ -35,6 +35,7 @@ class ChallengeService(
     private val feedRepository: FeedRepository,
     private val feedCommentRepository: FeedCommentRepository,
     private val s3Service: S3Service,
+    private val hashtagService: HashtagService,
 ) {
 
     @Transactional
@@ -53,6 +54,7 @@ class ChallengeService(
 
         challengeRepository.save(challenge)
         challengeMemberRepository.save(challengeMember)
+        hashtagService.addHashtags(challenge.hashtags)
 
         return CreateChallengeDto.of(challenge)
     }
@@ -113,6 +115,7 @@ class ChallengeService(
         s3Service.deleteImage(challenge.imageUrl, CHALLENGES)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
+        hashtagService.updateHashtags(challenge.hashtags)
 
         dto.updateChallenge(challenge, imageUrl)
     }
@@ -130,6 +133,8 @@ class ChallengeService(
         } else {
             challenge.decreaseCurrentMemberCnt()
         }
+
+        hashtagService.deleteHashtags(challenge.hashtags)
     }
 
     @Transactional
@@ -224,6 +229,10 @@ class ChallengeService(
         validateChallengeMember(userId, challengeId)
         return challengeRepository.findInvitationCodeById(challengeId)
             ?: throw CustomException(CHALLENGE_NOT_FOUND)
+    }
+
+    fun findPopularChallengeHashtags(): Set<String> {
+        return hashtagService.findPopularChallengeHashtags()
     }
 
     private fun validateUser(userId: Long): User {
