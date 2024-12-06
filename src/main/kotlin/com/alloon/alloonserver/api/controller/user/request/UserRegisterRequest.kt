@@ -32,7 +32,7 @@ data class UserRegisterRequest(
     @field:Size(min = 8, max = 30, message = "비밀번호는 8~30자만 가능합니다.")
     @field:Pattern(
         regexp = LETTER_NUMBER_SPECIAL_CHARACTER,
-        message = "비밀번호는 영어, 숫자, 특수문자(#$@!%&*)의 조합으로 입력해 주세요."
+        message = "비밀번호는 영어, 숫자, 특수문자의 조합으로 입력해 주세요."
     )
     val password: String,
 ) {

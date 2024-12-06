@@ -428,7 +428,7 @@ class ChallengeControllerTest : RestDocsSupport() {
             true,
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
-            LocalDate.of(2024, 12, 1),
+            LocalDate.now().plusDays(1),
             listOf(
                 ChallengeRuleRequest("챌린지 인증 룰1"),
                 ChallengeRuleRequest("챌린지 인증 룰2"),
@@ -510,7 +510,7 @@ class ChallengeControllerTest : RestDocsSupport() {
             "챌린지 이름",
             "챌린지 목표입니다.",
             LocalTime.of(13, 0),
-            LocalDate.of(2024, 12, 1),
+            LocalDate.now().plusDays(1),
             listOf(
                 ChallengeRuleRequest("챌린지 인증 룰1"),
                 ChallengeRuleRequest("챌린지 인증 룰2"),
