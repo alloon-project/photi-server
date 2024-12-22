@@ -334,4 +334,14 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/hashtags")
+    @Operation(summary = "해시태그 리스트 조회", description = "챌린지에 가장 많이 사용된 순으로 정렬되어 최대 10개 조회됩니다.")
+    @ApiResponse(responseCode = "200")
+    fun findPopularChallengeHashtags(): ResponseEntity<List<FindPopularChallengeHashtagsResponse>> {
+        val hashtags = challengeService.findPopularChallengeHashtags()
+        val response = FindPopularChallengeHashtagsResponse.of(hashtags)
+
+        return ResponseEntity.ok(response)
+    }
 }

@@ -45,6 +45,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     private val feedRepository = mockk<FeedRepository>()
     private val feedCommentRepository = mockk<FeedCommentRepository>()
     private val s3Service = mockk<S3Service>()
+    private val hashtagService = mockk<HashtagService>()
 
     private val challengeService = ChallengeService(
         challengeRepository,
@@ -52,7 +53,8 @@ class ChallengeServiceTest : AbstractMailProperties {
         userRepository,
         feedRepository,
         feedCommentRepository,
-        s3Service
+        s3Service,
+        hashtagService,
     )
 
     @DisplayName("챌린지 생성을 하면 정상 작동한다")
@@ -71,6 +73,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every { s3Service.getImageUrl(any()) } returns imageUrl
         every { challengeRepository.save(any()) } returns challenge
         every { challengeMemberRepository.save(any()) } returns challengeMember
+        every { hashtagService.addHashtags(any()) } just Runs
 
         // when
         val result = challengeService.createChallenge(1L, dto, multipartFile)
@@ -276,6 +279,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every { s3Service.deleteImage(any(), any()) } just Runs
         every { s3Service.uploadImage(any(), any()) } returns ""
         every { s3Service.getImageUrl(any()) } returns imageUrl
+        every { hashtagService.updateHashtags(any()) } just Runs
 
         // when
         challengeService.updateChallenge(userId, challengeId, dto, multipartFile)
@@ -305,6 +309,7 @@ class ChallengeServiceTest : AbstractMailProperties {
             challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
         } returns challengeMember
         every { challengeMemberRepository.delete(any()) } just Runs
+        every { hashtagService.deleteHashtags(any()) } just Runs
 
         // when
         challengeService.deleteChallenge(userId, challengeId)
@@ -334,6 +339,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every { challengeMemberRepository.delete(any()) } just Runs
         every { challengeRepository.deleteById(any()) } just Runs
         every { s3Service.deleteImage(any(), any()) } just Runs
+        every { hashtagService.deleteHashtags(any()) } just Runs
 
         // when
         challengeService.deleteChallenge(userId, challengeId)
