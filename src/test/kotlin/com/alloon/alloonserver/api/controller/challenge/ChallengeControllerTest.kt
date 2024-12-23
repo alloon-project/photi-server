@@ -461,7 +461,10 @@ class ChallengeControllerTest : RestDocsSupport() {
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
-            listOf("해시태그 1", "해시태그 2")
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            )
         )
     }
 
@@ -474,7 +477,10 @@ class ChallengeControllerTest : RestDocsSupport() {
             3,
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            listOf("해시태그 1", "해시태그 2"),
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            ),
             listOf("https://url.kr/5MhHhD", "https://url.kr/5MhHhD", "https://url.kr/5MhHhD")
         )
     }

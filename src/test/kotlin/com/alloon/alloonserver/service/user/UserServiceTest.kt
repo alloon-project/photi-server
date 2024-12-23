@@ -6,6 +6,7 @@ import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeHashtagDto
 import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.*
@@ -335,7 +336,10 @@ class UserServiceTest {
             "https://url.kr/5MhHhD",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            listOf("러닝", "건강"),
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            ),
             "https://url.kr/5MhHhD",
         )
     }

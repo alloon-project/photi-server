@@ -4,6 +4,7 @@ import com.alloon.alloonserver.api.controller.RestDocsSupport
 import com.alloon.alloonserver.api.controller.user.response.FindUserChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
+import com.alloon.alloonserver.service.challenge.dto.FindChallengeHashtagDto
 import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.user.UserService
 import com.alloon.alloonserver.service.user.dto.*
@@ -266,7 +267,10 @@ class UserControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            listOf("러닝", "건강"),
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            ),
             "https://url.kr/5MhHhD",
         )
     }
