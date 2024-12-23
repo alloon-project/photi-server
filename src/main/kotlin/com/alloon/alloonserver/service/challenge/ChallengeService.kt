@@ -54,7 +54,7 @@ class ChallengeService(
 
         challengeRepository.save(challenge)
         challengeMemberRepository.save(challengeMember)
-        hashtagService.addHashtags(challenge.hashtags)
+        hashtagService.addHashtags(challenge.hashtags.map { it.hashtag })
 
         return CreateChallengeDto.of(challenge)
     }
@@ -115,7 +115,7 @@ class ChallengeService(
         s3Service.deleteImage(challenge.imageUrl, CHALLENGES)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
-        hashtagService.updateHashtags(challenge.hashtags)
+        hashtagService.updateHashtags(challenge.hashtags.map { it.hashtag })
 
         dto.updateChallenge(challenge, imageUrl)
     }
@@ -134,7 +134,7 @@ class ChallengeService(
             challenge.decreaseCurrentMemberCnt()
         }
 
-        hashtagService.deleteHashtags(challenge.hashtags)
+        hashtagService.deleteHashtags(challenge.hashtags.map { it.hashtag })
     }
 
     @Transactional
@@ -233,6 +233,20 @@ class ChallengeService(
 
     fun findPopularChallengeHashtags(): Set<String> {
         return hashtagService.findPopularChallengeHashtags()
+    }
+
+    fun findChallengesByHashtag(
+        hashtag: String?,
+        pageable: Pageable
+    ): Slice<FindChallengesResponse> {
+        return if (hashtag.isNullOrBlank()) {
+            val hashtags = hashtagService.findPopularChallengeHashtags().map { it }
+            challengeRepository.findAllByHashtag(popularHashtags = hashtags, pageable = pageable)
+                .map { FindChallengesResponse.of(it) }
+        } else {
+            challengeRepository.findAllByHashtag(hashtag = hashtag, pageable = pageable)
+                .map { FindChallengesResponse.of(it) }
+        }
     }
 
     private fun validateUser(userId: Long): User {

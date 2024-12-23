@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS feed_comment;
 DROP TABLE IF EXISTS feed;
 DROP TABLE IF EXISTS challenge_member;
 DROP TABLE IF EXISTS challenge_template_image;
+DROP TABLE IF EXISTS challenge_hashtag;
 DROP TABLE IF EXISTS challenge_rule;
 DROP TABLE IF EXISTS challenge;
 DROP TABLE IF EXISTS user_template_image;
@@ -83,10 +84,8 @@ CREATE TABLE challenge
     invitation_code             VARCHAR(5)                NOT NULL,
     create_date_time            TIMESTAMP(6)              NOT NULL,
     update_date_time            TIMESTAMP(6)              NOT NULL,
-    service_status              VARCHAR(10)               NOT NULL,
-    hashtags                    TEXT                      NOT NULL
+    service_status              VARCHAR(10)               NOT NULL
 );
-CREATE INDEX idx_challenge_hashtags ON challenge USING GIN (to_tsvector('simple', hashtags));
 
 CREATE TABLE challenge_rule
 (
@@ -97,6 +96,17 @@ CREATE TABLE challenge_rule
     service_status              VARCHAR(10)               NOT NULL,
     challenge_id                BIGINT                    NOT NULL,
     CONSTRAINT fk_challenge_rule_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
+);
+
+CREATE TABLE challenge_hashtag
+(
+    challenge_hashtag_id        BIGSERIAL PRIMARY KEY,
+    hashtag                     VARCHAR(6)                NOT NULL,
+    create_date_time            TIMESTAMP(6)              NOT NULL,
+    update_date_time            TIMESTAMP(6)              NOT NULL,
+    service_status              VARCHAR(10)               NOT NULL,
+    challenge_id                BIGINT                    NOT NULL,
+    CONSTRAINT fk_challenge_hashtag_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
 );
 
 CREATE TABLE challenge_template_image

@@ -18,4 +18,10 @@ interface ChallengeCustomRepository {
     fun findAllOrderByStartDate(pageable: Pageable): Slice<FindChallengesDto>
 
     fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto?
+
+    fun findAllByHashtag(
+        hashtag: String? = null,
+        popularHashtags: List<String>? = null,
+        pageable: Pageable,
+    ): Slice<FindChallengesDto>
 }

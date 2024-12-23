@@ -64,7 +64,7 @@ data class FindPopularChallengesResponse(
                 challenge.currentMemberCnt,
                 challenge.proveTime,
                 challenge.endDate,
-                challenge.hashtags.map { ChallengeHashtagResponse(it) },
+                challenge.hashtags.map { ChallengeHashtagResponse(it.hashtag) },
                 challenge.memberImages.map { ChallengeMemberImageResponse(it) },
             )
         }

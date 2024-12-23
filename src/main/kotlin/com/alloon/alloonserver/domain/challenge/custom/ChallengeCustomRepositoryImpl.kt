@@ -4,6 +4,7 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
+import com.alloon.alloonserver.domain.challenge.QChallengeHashtag.challengeHashtag
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -39,7 +40,7 @@ class ChallengeCustomRepositoryImpl(
                     challenge.currentMemberCnt,
                     challenge.proveTime,
                     challenge.endDate,
-                    challenge.hashtags,
+                    Expressions.constant(emptyList()),
                     Expressions.constant(emptyList()),
                 )
             )
@@ -48,8 +49,21 @@ class ChallengeCustomRepositoryImpl(
             .orderBy(challenge.visitCnt.desc())
             .limit(5)
             .fetch()
+        val challengeIds = popularChallenges.map { it.id }
+        val hashtags = queryFactory
+            .select(
+                QFindChallengeHashtagDto(
+                    challengeHashtag.challenge.id,
+                    challengeHashtag.hashtag
+                )
+            )
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
 
         popularChallenges.forEach {
+            it.hashtags = hashtags[it.id] ?: emptyList()
             it.memberImages = queryFactory
                 .select(challengeMember.user.imageUrl)
                 .from(challengeMember)
@@ -79,7 +93,7 @@ class ChallengeCustomRepositoryImpl(
                     challenge.name,
                     challenge.endDate,
                     challenge.imageUrl,
-                    challenge.hashtags
+                    Expressions.constant(emptyList()),
                 )
             )
             .from(challenge)
@@ -88,6 +102,23 @@ class ChallengeCustomRepositoryImpl(
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
+
+        val challengeIds = content.map { it.id }
+        val hashtags = queryFactory
+            .select(
+                QFindChallengeHashtagDto(
+                    challengeHashtag.challenge.id,
+                    challengeHashtag.hashtag
+                )
+            )
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
+
+        content.forEach {
+            it.hashtags = hashtags[it.id] ?: emptyList()
+        }
 
         val hasNext = if (content.size > pageSize) {
             content.removeAt(pageSize)
@@ -110,6 +141,66 @@ class ChallengeCustomRepositoryImpl(
             .from(challenge)
             .where(challenge.id.eq(id))
             .fetchOne()
+    }
+
+    override fun findAllByHashtag(
+        hashtag: String?,
+        popularHashtags: List<String>?,
+        pageable: Pageable
+    ): Slice<FindChallengesDto> {
+        val pageSize = pageable.pageSize
+        val query = queryFactory
+            .select(
+                QFindChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.endDate,
+                    challenge.imageUrl,
+                    Expressions.constant(emptyList()),
+                )
+            )
+            .from(challenge)
+            .join(challengeHashtag).on(challengeHashtag.challenge.id.eq(challenge.id))
+            .where(eqServiceStatus(ACTIVE))
+
+        if (!hashtag.isNullOrBlank()) {
+            query.where(challengeHashtag.hashtag.eq(hashtag))
+        } else {
+            query.where(challengeHashtag.hashtag.`in`(popularHashtags))
+        }
+
+        val content = query
+            .groupBy(challenge.id)
+            .orderBy(challenge.currentMemberCnt.desc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val challengeIds = content.map { it.id }
+        val hashtags = queryFactory
+            .select(
+                QFindChallengeHashtagDto(
+                    challengeHashtag.challenge.id,
+                    challengeHashtag.hashtag
+                )
+            )
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
+
+        content.forEach {
+            it.hashtags = hashtags[it.id] ?: emptyList()
+        }
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
     }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =

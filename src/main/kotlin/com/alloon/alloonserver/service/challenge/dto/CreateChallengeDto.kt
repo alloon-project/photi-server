@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.service.challenge.dto
 
 import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.domain.challenge.ChallengeHashtag
 import com.alloon.alloonserver.domain.challenge.ChallengeRule
 import java.time.LocalDate
 import java.time.LocalTime
@@ -25,11 +26,13 @@ data class CreateChallengeDto(
             proveTime = proveTime,
             endDate = endDate,
             imageUrl = imageUrl,
-            hashtags = hashtags.map { it.hashtag },
             invitationCode = invitationCode,
         )
         rules.forEach {
             challenge.addChallengeRule(ChallengeRule(rule = it.rule))
+        }
+        hashtags.forEach {
+            challenge.addChallengeHashtag(ChallengeHashtag(hashtag = it.hashtag))
         }
         return challenge
     }

@@ -290,7 +290,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(challenge.proveTime).isEqualTo(dto.proveTime)
         assertThat(challenge.endDate).isEqualTo(dto.endDate)
         assertThat(challenge.rules[0].rule).isEqualTo(dto.rules[0].rule)
-        assertThat(challenge.hashtags[0]).isEqualTo(dto.hashtags[0].hashtag)
+        assertThat(challenge.hashtags[0].hashtag).isEqualTo(dto.hashtags[0].hashtag)
     }
 
     @DisplayName("챌린지 파티원이 2명 이상일 때 챌린지를 탈퇴하면, 챌린지 멤버에서 삭제되고 멤버수가 감소한다.")
@@ -1011,7 +1011,10 @@ class ChallengeServiceTest : AbstractMailProperties {
             "챌린지 이름",
             LocalDate.of(2024, 12, 1),
             "https://url.kr/5MhHhD",
-            listOf("해시태그 1", "해시태그 2")
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            )
         )
     }
 
@@ -1024,7 +1027,10 @@ class ChallengeServiceTest : AbstractMailProperties {
             3,
             LocalTime.of(13, 0),
             LocalDate.of(2024, 12, 1),
-            listOf("해시태그 1", "해시태그 2"),
+            listOf(
+                FindChallengeHashtagDto(1L, "해시태그 1"),
+                FindChallengeHashtagDto(1L, "해시태그 2"),
+            ),
             listOf("https://url.kr/5MhHhD", "https://url.kr/5MhHhD", "https://url.kr/5MhHhD")
         )
     }

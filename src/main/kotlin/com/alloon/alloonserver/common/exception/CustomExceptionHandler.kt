@@ -31,16 +31,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         return ResponseEntity.status(ex.exceptionCode.httpStatus).body(response)
     }
 
-    @ExceptionHandler(RuntimeException::class)
-    protected fun handleUndefinedException(
-        ex: RuntimeException,
-        request: HttpServletRequest
-    ): ResponseEntity<ErrorResponse> {
-        logger.info("Exception : ${ex.message}")
-        val response = ErrorResponse.of(SERVER_ERROR)
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
-    }
-
     /**
      * 400 Bad Request
      */
@@ -117,6 +107,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         ex: Exception,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
+        logger.error(ex.message)
         Sentry.captureException(ex)
         val response = ErrorResponse.of(SERVER_ERROR)
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
