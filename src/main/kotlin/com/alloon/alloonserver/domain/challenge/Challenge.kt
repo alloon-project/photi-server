@@ -38,9 +38,9 @@ class Challenge(
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
     val rules: MutableList<ChallengeRule> = mutableListOf(),
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    @Convert(converter = ChallengeListStringConverter::class)
-    var hashtags: List<String> = listOf(),
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val hashtags: MutableList<ChallengeHashtag> = mutableListOf(),
 
     @Column(nullable = false)
     val startDate: LocalDate = LocalDate.now(),
@@ -48,7 +48,6 @@ class Challenge(
     @Column(nullable = false)
     var currentMemberCnt: Int = 1,
 
-    //TODO redis 사용하면 hyperlog 로 변경 필요함.
     @Column(nullable = false)
     var visitCnt: Int = 0,
 ) : BasePermanentEntity() {
@@ -56,6 +55,11 @@ class Challenge(
     fun addChallengeRule(rule: ChallengeRule) {
         rules.add(rule)
         rule.challenge = this
+    }
+
+    fun addChallengeHashtag(hashtag: ChallengeHashtag) {
+        hashtags.add(hashtag)
+        hashtag.challenge = this
     }
 
     fun updateVisitCnt() {
