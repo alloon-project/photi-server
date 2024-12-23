@@ -41,7 +41,7 @@ data class FindChallengesResponse(
                 challenge.imageUrl,
                 challenge.endDate,
                 challenge.hashtags.map {
-                    ChallengeHashtagResponse(it)
+                    ChallengeHashtagResponse(it.hashtag)
                 }
             )
         }
