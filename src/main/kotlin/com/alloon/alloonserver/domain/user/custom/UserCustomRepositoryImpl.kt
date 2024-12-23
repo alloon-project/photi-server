@@ -1,11 +1,13 @@
 package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.base.ServiceStatus.END
+import com.alloon.alloonserver.domain.challenge.QChallengeHashtag.challengeHashtag
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.domain.feed.QFeed.feed
 import com.alloon.alloonserver.domain.user.QContact.contact
 import com.alloon.alloonserver.domain.user.QUser.user
 import com.alloon.alloonserver.domain.user.User
+import com.alloon.alloonserver.service.challenge.dto.QFindChallengeHashtagDto
 import com.alloon.alloonserver.service.challenge.dto.QUserImageDto
 import com.alloon.alloonserver.service.user.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -233,7 +235,7 @@ class UserCustomRepositoryImpl(
                     challengeMember.challenge.imageUrl,
                     challengeMember.challenge.proveTime,
                     challengeMember.challenge.endDate,
-                    challengeMember.challenge.hashtags,
+                    Expressions.constant(emptyList()),
                     Expressions.constant(""),
                 )
             )
@@ -254,8 +256,20 @@ class UserCustomRepositoryImpl(
             .where(feed.challengeMember.user.id.eq(userId), feed.challenge.id.`in`(challengeIds))
             .fetch()
             .groupBy { it.challengeId }
+        val hashtags = queryFactory
+            .select(
+                QFindChallengeHashtagDto(
+                    challengeHashtag.challenge.id,
+                    challengeHashtag.hashtag
+                )
+            )
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
 
         content.forEach {
+            it.hashtags = hashtags[it.id] ?: emptyList()
             it.feedImageUrl = feedImageUrls[it.id]?.first()?.imageUrl ?: ""
         }
 
