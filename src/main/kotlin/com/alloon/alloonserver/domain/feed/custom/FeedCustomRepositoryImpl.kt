@@ -43,7 +43,7 @@ class FeedCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findContentById(id: Long): FindChallengeFeedDto? {
+    override fun findContentById(challengeId: Long, id: Long): FindChallengeFeedDto? {
         return queryFactory
             .select(
                 QFindChallengeFeedDto(
@@ -56,7 +56,8 @@ class FeedCustomRepositoryImpl(
             )
             .from(feed)
             .join(feed.challengeMember)
-            .where(feed.id.eq(id))
+            .join(feed.challenge)
+            .where(feed.id.eq(id), feed.challenge.id.eq(challengeId))
             .fetchFirst()
     }
 

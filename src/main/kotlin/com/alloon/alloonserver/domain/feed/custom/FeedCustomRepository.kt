@@ -14,7 +14,7 @@ interface FeedCustomRepository {
 
     fun findByFeedId(id: Long): Feed?
 
-    fun findContentById(id: Long): FindChallengeFeedDto?
+    fun findContentById(challengeId: Long, id: Long): FindChallengeFeedDto?
 
     fun findAllByChallengeId(
         challengeId: Long,

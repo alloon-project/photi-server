@@ -811,7 +811,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedRepository.findContentById(any()) } returns dto
+        every { feedRepository.findContentById(any(), any()) } returns dto
 
         // when
         val result = challengeService.findChallengeFeed(userId, challengeId, feedId)
@@ -873,7 +873,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         every {
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
         } returns challengeMember
-        every { feedRepository.findContentById(any()) } returns null
+        every { feedRepository.findContentById(any(), any()) } returns null
 
         // when & then
         assertThatThrownBy { challengeService.findChallengeFeed(userId, challengeId, feedId) }
