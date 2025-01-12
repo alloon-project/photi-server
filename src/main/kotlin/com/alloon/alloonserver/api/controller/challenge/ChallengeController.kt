@@ -367,7 +367,7 @@ class ChallengeController(
     @GetMapping("/search/name")
     @Operation(
         summary = "챌린지 이름 검색",
-        description = "[1순위 - 검색어와 완전히 일치하는 이름 / 2순위 - 검색어가 포함된 이름 / 3순위 - 최신순]으로 현재 진행 중인 챌린지만 조회됩니다."
+        description = "[1순위 - 검색어와 완전히 일치하는 이름 / 2순위 - 검색어가 포함된 이름 / 3순위 - 종료 날짜 최신순]으로 현재 진행 중인 챌린지만 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     fun searchChallengeByName(
