@@ -399,4 +399,22 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @PostMapping("/{challengeId}/join/public")
+    @Operation(summary = "공개 챌린지 참여하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER])
+    fun joinPublicChallenge(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestBody(required = false) @Valid request: JoinPublicChallengeRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        challengeService.joinPublicChallenge(
+            UserUtility.getUserId(principal),
+            challengeId,
+            request.toServiceDto()
+        )
+
+        return ResponseEntity.ok(StringSuccessResponse("공개 챌린지 참여하기가 완료되었습니다."))
+    }
 }
