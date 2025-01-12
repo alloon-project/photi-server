@@ -363,4 +363,22 @@ class ChallengeController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/search/name")
+    @Operation(
+        summary = "챌린지 이름 검색",
+        description = "[1순위 - 검색어와 완전히 일치하는 이름 / 2순위 - 검색어가 포함된 이름 / 3순위 - 종료 날짜 최신순]으로 현재 진행 중인 챌린지만 조회됩니다."
+    )
+    @ApiResponse(responseCode = "200")
+    fun searchChallengeByName(
+        @Parameter(description = "챌린지 이름", example = "러닝 챌린지") @RequestParam challengeName: String,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+    ): ResponseEntity<SliceResponse<SearchChallengeByNameResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val challenges = challengeService.searchChallengeByName(challengeName, pageable)
+        val response = SliceResponse.of(challenges)
+
+        return ResponseEntity.ok(response)
+    }
 }

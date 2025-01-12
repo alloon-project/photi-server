@@ -3,6 +3,7 @@ package com.alloon.alloonserver.service.challenge
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedCommentsResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
 import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
+import com.alloon.alloonserver.api.controller.challenge.response.SearchChallengeByNameResponse
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
@@ -88,7 +89,7 @@ class ChallengeService(
     }
 
     fun findAllChallenges(pageable: Pageable): Slice<FindChallengesResponse> {
-        return challengeRepository.findAllOrderByStartDate(pageable)
+        return challengeRepository.findAllOrderByEndDate(pageable)
             .map { FindChallengesResponse.of(it) }
     }
 
@@ -249,6 +250,14 @@ class ChallengeService(
             challengeRepository.findAllByHashtag(hashtag = hashtag, pageable = pageable)
                 .map { FindChallengesResponse.of(it) }
         }
+    }
+
+    fun searchChallengeByName(
+        challengeName: String,
+        pageable: Pageable
+    ): Slice<SearchChallengeByNameResponse> {
+        return challengeRepository.searchByName(challengeName, pageable)
+            .map { SearchChallengeByNameResponse.of(it) }
     }
 
     private fun validateUser(userId: Long): User {

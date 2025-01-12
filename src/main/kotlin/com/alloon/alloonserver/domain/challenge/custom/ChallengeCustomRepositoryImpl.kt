@@ -84,7 +84,7 @@ class ChallengeCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findAllOrderByStartDate(pageable: Pageable): Slice<FindChallengesDto> {
+    override fun findAllOrderByEndDate(pageable: Pageable): Slice<FindChallengesDto> {
         val pageSize = pageable.pageSize
         val content = queryFactory
             .select(
@@ -98,7 +98,7 @@ class ChallengeCustomRepositoryImpl(
             )
             .from(challenge)
             .where(eqServiceStatus(ACTIVE))
-            .orderBy(challenge.startDate.desc())
+            .orderBy(challenge.endDate.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
@@ -191,6 +191,51 @@ class ChallengeCustomRepositoryImpl(
 
         content.forEach {
             it.hashtags = hashtags[it.id] ?: emptyList()
+        }
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
+    }
+
+    override fun searchByName(name: String, pageable: Pageable): Slice<SearchChallengeByNameDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QSearchChallengeByNameDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challenge.currentMemberCnt,
+                    challenge.endDate,
+                    Expressions.constant(emptyList()),
+                )
+            )
+            .from(challenge)
+            .where(eqServiceStatus(ACTIVE), challenge.name.containsIgnoreCase(name))
+            .orderBy(
+                Expressions.numberTemplate(
+                    Int::class.java,
+                    "case when {0} = {1} then 1 when {0} like {2} then 2 else 3 end",
+                    challenge.name, name, "%$name%",
+                ).asc(),
+                challenge.endDate.desc(),
+            )
+            .fetch()
+
+        content.forEach {
+            it.memberImages = queryFactory
+                .select(challengeMember.user.imageUrl)
+                .from(challengeMember)
+                .where(challengeMember.challenge.id.eq(it.id))
+                .orderBy(challengeMember.createDateTime.desc())
+                .limit(3)
+                .fetch()
         }
 
         val hasNext = if (content.size > pageSize) {
