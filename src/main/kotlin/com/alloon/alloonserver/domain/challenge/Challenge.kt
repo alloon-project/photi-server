@@ -1,5 +1,7 @@
 package com.alloon.alloonserver.domain.challenge
 
+import com.alloon.alloonserver.common.constant.ExceptionCode
+import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.base.BasePermanentEntity
 import jakarta.persistence.*
 import java.time.LocalDate
@@ -68,5 +70,11 @@ class Challenge(
 
     fun decreaseCurrentMemberCnt() {
         currentMemberCnt -= 1
+    }
+
+    fun validateInvitationCode(invitationCode: String) {
+        if (invitationCode != this.invitationCode) {
+            throw CustomException(ExceptionCode.CHALLENGE_INVITATION_CODE_INVALID)
+        }
     }
 }
