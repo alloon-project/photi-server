@@ -248,6 +248,70 @@ class ChallengeCustomRepositoryImpl(
         return SliceImpl(content, pageable, hasNext)
     }
 
+    override fun searchByHashtag(
+        hashtag: String,
+        pageable: Pageable
+    ): Slice<SearchChallengeByHashtagDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QSearchChallengeByHashtagDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challenge.currentMemberCnt,
+                    challenge.endDate,
+                    Expressions.constant(emptyList()),
+                    Expressions.constant(emptyList()),
+                )
+            )
+            .from(challenge)
+            .join(challenge.hashtags, challengeHashtag)
+            .where(eqServiceStatus(ACTIVE), challengeHashtag.hashtag.containsIgnoreCase(hashtag))
+            .orderBy(
+                Expressions.numberTemplate(
+                    Int::class.java,
+                    "case when {0} = {1} then 1 when {0} like {2} then 2 else 3 end",
+                    challengeHashtag.hashtag, hashtag, "%$hashtag%"
+                ).asc(),
+                challenge.endDate.desc(),
+            )
+            .fetch()
+
+        val challengeIds = content.map { it.id }
+        val hashtags = queryFactory
+            .select(
+                QFindChallengeHashtagDto(
+                    challengeHashtag.challenge.id,
+                    challengeHashtag.hashtag
+                )
+            )
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.`in`(challengeIds))
+            .fetch()
+            .groupBy { it.challengeId }
+
+        content.forEach {
+            it.hashtags = hashtags[it.id] ?: emptyList()
+            it.memberImages = queryFactory
+                .select(challengeMember.user.imageUrl)
+                .from(challengeMember)
+                .where(challengeMember.challenge.id.eq(it.id))
+                .orderBy(challengeMember.createDateTime.desc())
+                .limit(3)
+                .fetch()
+        }
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
+    }
+
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { challenge.serviceStatus.eq(serviceStatus) }
 }

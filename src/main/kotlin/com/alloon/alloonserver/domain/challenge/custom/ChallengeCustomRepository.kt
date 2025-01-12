@@ -1,10 +1,7 @@
 package com.alloon.alloonserver.domain.challenge.custom
 
 import com.alloon.alloonserver.domain.challenge.Challenge
-import com.alloon.alloonserver.service.challenge.dto.FindChallengeInvitationCodeDto
-import com.alloon.alloonserver.service.challenge.dto.FindChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.FindPopularChallengesDto
-import com.alloon.alloonserver.service.challenge.dto.SearchChallengeByNameDto
+import com.alloon.alloonserver.service.challenge.dto.*
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 
@@ -27,4 +24,6 @@ interface ChallengeCustomRepository {
     ): Slice<FindChallengesDto>
 
     fun searchByName(name: String, pageable: Pageable): Slice<SearchChallengeByNameDto>
+
+    fun searchByHashtag(hashtag: String, pageable: Pageable): Slice<SearchChallengeByHashtagDto>
 }
