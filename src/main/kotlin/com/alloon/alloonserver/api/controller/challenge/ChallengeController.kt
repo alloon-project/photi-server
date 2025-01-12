@@ -407,7 +407,7 @@ class ChallengeController(
     fun joinPublicChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody(required = false) @Valid request: JoinPublicChallengeRequest,
+        @RequestBody @Valid request: JoinPublicChallengeRequest,
     ): ResponseEntity<StringSuccessResponse> {
         challengeService.joinPublicChallenge(
             UserUtility.getUserId(principal),
