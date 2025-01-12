@@ -1,9 +1,6 @@
 package com.alloon.alloonserver.service.challenge
 
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedCommentsResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengeFeedsByDateResponse
-import com.alloon.alloonserver.api.controller.challenge.response.FindChallengesResponse
-import com.alloon.alloonserver.api.controller.challenge.response.SearchChallengeByNameResponse
+import com.alloon.alloonserver.api.controller.challenge.response.*
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
@@ -258,6 +255,14 @@ class ChallengeService(
     ): Slice<SearchChallengeByNameResponse> {
         return challengeRepository.searchByName(challengeName, pageable)
             .map { SearchChallengeByNameResponse.of(it) }
+    }
+
+    fun searchChallengeByHashtag(
+        hashtag: String,
+        pageable: Pageable
+    ): Slice<SearchChallengeByHashtagResponse> {
+        return challengeRepository.searchByHashtag(hashtag, pageable)
+            .map { SearchChallengeByHashtagResponse.of(it) }
     }
 
     private fun validateUser(userId: Long): User {
