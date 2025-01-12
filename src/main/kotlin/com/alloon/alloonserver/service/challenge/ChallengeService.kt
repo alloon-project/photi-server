@@ -282,6 +282,24 @@ class ChallengeService(
         }
     }
 
+    @Transactional
+    fun joinPrivateChallenge(
+        userId: Long,
+        challengeId: Long,
+        dto: JoinPrivateChallengeDto
+    ) {
+        val user = validateUser(userId)
+        val challenge = validateChallenge(challengeId)
+        val challengeMember =
+            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+        if (challengeMember != null) {
+            throw CustomException(EXISTING_CHALLENGE_MEMBER)
+        } else {
+            challenge.validateInvitationCode(dto.invitationCode)
+            challengeMemberRepository.save(dto.toEntity(user, challenge))
+        }
+    }
+
     private fun validateUser(userId: Long): User {
         return userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
