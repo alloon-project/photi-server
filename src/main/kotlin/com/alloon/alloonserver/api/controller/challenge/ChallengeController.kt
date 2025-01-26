@@ -348,12 +348,11 @@ class ChallengeController(
     @GetMapping("/by-hashtags")
     @Operation(
         summary = "해시태그 모아보기 조회",
-        description = "해시태그 파라미터를 지정하면 해당 해시태그가 있는 전체 챌린지 리스트가 조회되고, 파라미터가 없으면 '전체'로 조회됩니다. 파티원 수가 가장 많은 순으로 정렬됩니다."
+        description = "해시태그 파라미터를 지정하면 해당 해시태그가 있는 전체 챌린지 리스트가 조회되고, 파라미터를 '전체'로 지정하면 '전체'로 조회됩니다. 파티원 수가 가장 많은 순으로 정렬됩니다."
     )
     @ApiResponse(responseCode = "200")
     fun findChallengesByHashtag(
-        @Parameter(description = "해시태그", example = "러닝") @RequestParam(required = false)
-        hashtag: String?,
+        @Parameter(description = "해시태그", example = "러닝") @RequestParam hashtag: String,
         @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
         @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
     ): ResponseEntity<SliceResponse<FindChallengesResponse>> {

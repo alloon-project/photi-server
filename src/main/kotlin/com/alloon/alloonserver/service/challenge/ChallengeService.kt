@@ -239,7 +239,7 @@ class ChallengeService(
         hashtag: String?,
         pageable: Pageable
     ): Slice<FindChallengesResponse> {
-        return if (hashtag.isNullOrBlank()) {
+        return if (hashtag == HASHTAG_ALL) {
             val hashtags = hashtagService.findPopularChallengeHashtags().map { it }
             challengeRepository.findAllByHashtag(popularHashtags = hashtags, pageable = pageable)
                 .map { FindChallengesResponse.of(it) }
@@ -336,5 +336,9 @@ class ChallengeService(
 
     private fun validateChallengeFeed(feedId: Long): Feed {
         return feedRepository.findByFeedId(feedId) ?: throw CustomException(FEED_NOT_FOUND)
+    }
+
+    companion object {
+        const val HASHTAG_ALL = "전체"
     }
 }
