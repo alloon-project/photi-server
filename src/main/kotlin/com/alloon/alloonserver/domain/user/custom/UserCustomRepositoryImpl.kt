@@ -198,18 +198,14 @@ class UserCustomRepositoryImpl(
             .limit(pageSize + 1L)
             .fetch()
 
-        val challengeIds = content.map { it.id }
-        val memberImages = queryFactory
-            .select(QUserImageDto(challengeMember.challenge.id, challengeMember.user.imageUrl))
-            .from(challengeMember)
-            .where(challengeMember.challenge.id.`in`(challengeIds))
-            .orderBy(challengeMember.createDateTime.desc())
-            .limit(3)
-            .fetch()
-            .groupBy { it.challengeId }
-
         content.forEach {
-            it.memberImages = memberImages[it.id] ?: emptyList()
+            it.memberImages = queryFactory
+                .select(challengeMember.user.imageUrl)
+                .from(challengeMember)
+                .where(challengeMember.challenge.id.eq(it.id))
+                .orderBy(challengeMember.createDateTime.desc())
+                .limit(3)
+                .fetch()
         }
 
         val hasNext = if (content.size > pageSize) {

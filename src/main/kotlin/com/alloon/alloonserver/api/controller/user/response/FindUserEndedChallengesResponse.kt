@@ -46,7 +46,7 @@ data class FindUserEndedChallengesResponse(
                 challenge.imageUrl,
                 challenge.endDate,
                 challenge.currentMemberCnt,
-                challenge.memberImages.map { ChallengeMemberImageResponse(it.imageUrl) }
+                challenge.memberImages.map { ChallengeMemberImageResponse(it) }
             )
         }
     }
