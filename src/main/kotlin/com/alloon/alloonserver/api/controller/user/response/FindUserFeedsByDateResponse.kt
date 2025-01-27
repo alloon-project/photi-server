@@ -9,7 +9,10 @@ import java.time.LocalTime
 data class FindUserFeedsByDateResponse(
 
     @Schema(description = "피드 id", example = "1")
-    val id: Long,
+    val feedId: Long,
+
+    @Schema(description = "챌린지 id", example = "1")
+    val challengeId: Long,
 
     @Schema(description = "피드 이미지", example = "https://url.kr/5MhHhD")
     val imageUrl: String,
@@ -25,7 +28,13 @@ data class FindUserFeedsByDateResponse(
     companion object {
 
         fun of(feed: FindUserFeedsByDateDto): FindUserFeedsByDateResponse {
-            return FindUserFeedsByDateResponse(feed.id, feed.imageUrl, feed.name, feed.proveTime)
+            return FindUserFeedsByDateResponse(
+                feed.feedId,
+                feed.challengeId,
+                feed.imageUrl,
+                feed.name,
+                feed.proveTime,
+            )
         }
 
         fun of(feeds: List<FindUserFeedsByDateDto>): List<FindUserFeedsByDateResponse> {

@@ -7,7 +7,6 @@ import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeHashtagDto
-import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.s3.S3Service
 import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.Runs
@@ -308,6 +307,7 @@ class UserServiceTest {
     private fun getFindUserFeedsByDateDto(): FindUserFeedsByDateDto {
         return FindUserFeedsByDateDto(
             1L,
+            1L,
             "https://url.kr/5MhHhD",
             "챌린지 이름",
             LocalTime.of(13, 0)
@@ -321,11 +321,7 @@ class UserServiceTest {
             "https://url.kr/5MhHhD",
             LocalDate.of(2024, 12, 1),
             3,
-            listOf(
-                UserImageDto(1L, "https://url.kr/5MhHhD"),
-                UserImageDto(1L, "https://url.kr/5MhHhE"),
-                UserImageDto(1L, "https://url.kr/5MhHhF")
-            )
+            listOf("https://url.kr/5MhHhD", "https://url.kr/5MhHhE", "https://url.kr/5MhHhF"),
         )
     }
 

@@ -119,6 +119,7 @@ class UserCustomRepositoryImpl(
             .select(
                 QFindUserFeedsByDateDto(
                     feed.id,
+                    feed.challenge.id,
                     feed.imageUrl,
                     feed.challenge.name,
                     feed.challenge.proveTime

@@ -5,7 +5,6 @@ import com.alloon.alloonserver.api.controller.user.response.FindUserChallengesRe
 import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeHashtagDto
-import com.alloon.alloonserver.service.challenge.dto.UserImageDto
 import com.alloon.alloonserver.service.user.UserService
 import com.alloon.alloonserver.service.user.dto.*
 import io.mockk.every
@@ -239,6 +238,7 @@ class UserControllerTest : RestDocsSupport() {
     private fun getFindUserFeedsByDateDto(): FindUserFeedsByDateDto {
         return FindUserFeedsByDateDto(
             1L,
+            1L,
             "https://url.kr/5MhHhD",
             "챌린지 이름",
             LocalTime.of(13, 0)
@@ -252,11 +252,7 @@ class UserControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             LocalDate.of(2024, 12, 1),
             3,
-            listOf(
-                UserImageDto(1L, "https://url.kr/5MhHhD"),
-                UserImageDto(1L, "https://url.kr/5MhHhE"),
-                UserImageDto(1L, "https://url.kr/5MhHhF")
-            )
+            listOf("https://url.kr/5MhHhD", "https://url.kr/5MhHhE", "https://url.kr/5MhHhF"),
         )
     }
 
