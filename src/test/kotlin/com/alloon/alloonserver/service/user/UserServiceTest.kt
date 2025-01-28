@@ -223,7 +223,8 @@ class UserServiceTest {
     fun givenValid_whenFindUserFeedHistory_thenReturn() {
         // given
         val userId = 1L
-        val dto = FindUserFeedHistoryDto(1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
+        val dto =
+            FindUserFeedHistoryDto(1L, 1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
         val content = listOf(dto, dto, dto)
         val pageable = PageRequest.of(0, 10)
         val hasNext = true

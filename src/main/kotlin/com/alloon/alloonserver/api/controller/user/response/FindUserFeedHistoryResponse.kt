@@ -4,10 +4,14 @@ import com.alloon.alloonserver.service.user.dto.FindUserFeedHistoryDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
+@Schema(description = "사용자 피드 인증 횟수 모아보기 조회 응답 객체")
 data class FindUserFeedHistoryResponse(
 
     @Schema(description = "피드 id", example = "1")
-    val id: Long,
+    val feedId: Long,
+
+    @Schema(description = "챌린지 id", example = "1")
+    val challengeId: Long,
 
     @Schema(description = "피드 이미지", example = "https://url.kr/5MhHhD")
     val imageUrl: String,
@@ -23,7 +27,8 @@ data class FindUserFeedHistoryResponse(
 
         fun of(feedHistory: FindUserFeedHistoryDto): FindUserFeedHistoryResponse {
             return FindUserFeedHistoryResponse(
-                feedHistory.id,
+                feedHistory.feedId,
+                feedHistory.challengeId,
                 feedHistory.imageUrl,
                 feedHistory.createdDate.toLocalDate(),
                 feedHistory.name

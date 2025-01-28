@@ -153,7 +153,8 @@ class UserControllerTest : RestDocsSupport() {
     @Test
     fun givenValid_whenFindUserFeedHistory_thenReturn200() {
         // given
-        val dto = FindUserFeedHistoryDto(1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
+        val dto =
+            FindUserFeedHistoryDto(1L, 1L, "https://url.kr/5MhHhD", LocalDateTime.now(), "챌린지 이름")
         val content = listOf(FindUserFeedHistoryResponse.of(dto))
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
