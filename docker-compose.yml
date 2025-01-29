@@ -12,13 +12,13 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - mem-db
   db:
     image: postgres:latest
     restart: always
     ports:
       - "5432:5432"
     volumes:
-      ## init sql
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       POSTGRES_USER: postgres
@@ -30,7 +30,5 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - .:/var
-    environment:
-      REDIS_USER:
-      REDIS_PASSWORD:
+      - ./docker/redis-init.sh:/redis-init.sh
+    command: [ "sh", "-c", "redis-server --daemonize yes && sleep 3 && sh /redis-init.sh && tail -f /dev/null" ]
