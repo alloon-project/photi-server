@@ -537,8 +537,8 @@ class ChallengeServiceTest : AbstractMailProperties {
         val sort = SortTypeConstants.LATEST
         val dto = getFindChallengeFeedsDto()
         val content = listOf(
-            Pair(LocalDate.of(2024, 10, 9), listOf(dto, dto, dto)),
-            Pair(LocalDate.of(2024, 10, 8), listOf(dto, dto, dto))
+            Triple(LocalDate.of(2024, 10, 9), listOf(dto, dto, dto), 100),
+            Triple(LocalDate.of(2024, 10, 8), listOf(dto, dto, dto), 100)
         )
         val pageable = PageRequest.of(0, 10)
         val hasNext = true

@@ -297,7 +297,8 @@ class ChallengeControllerTest : RestDocsSupport() {
     fun givenValid_whenFindChallengeFeeds_thenReturn200() {
         // given
         val feeds = listOf(getFindChallengeFeedsDto())
-        val content = listOf(FindChallengeFeedsByDateResponse.of(LocalDate.now(), feeds))
+        val dto = Triple(LocalDate.now(), feeds, 100)
+        val content = listOf(FindChallengeFeedsByDateResponse.of(dto))
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
