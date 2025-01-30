@@ -426,10 +426,8 @@ WITH challenge_member_data AS (SELECT cm.challenge_id,
                           FLOOR(RANDOM() * 100)                                         AS like_cnt,
                           FLOOR(RANDOM() * 30)                                          AS comment_cnt,
                           image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url,
-                          '2025-01-01 00:00:00'::TIMESTAMP +
-                          (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL         AS create_date_time,
-                          '2025-01-01 00:00:00'::TIMESTAMP +
-                          (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL         AS update_date_time,
+                          NOW()                                                         AS create_date_time,
+                          NOW()                                                         AS update_date_time,
                           'ACTIVE'                                                      AS service_status
                    FROM challenge_member_data cmd
                             CROSS JOIN LATERAL (
@@ -454,6 +452,69 @@ SELECT like_cnt,
        challenge_id,
        challenge_member_id
 FROM feed_data;
+
+INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
+                  service_status, challenge_id, challenge_member_id)
+VALUES (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-29 12:00:00', '2025-01-29 12:00:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+        '2025-01-29 12:01:00', '2025-01-29 12:01:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
+        '2025-01-29 12:02:00', '2025-01-29 12:02:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        '2025-01-29 12:03:00', '2025-01-29 12:03:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-29 12:04:00', '2025-01-29 12:04:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+        '2025-01-29 12:05:00', '2025-01-29 12:05:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        '2025-01-29 12:06:00', '2025-01-29 12:06:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
+        '2025-01-29 12:07:00', '2025-01-29 12:07:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-29 12:08:00', '2025-01-29 12:08:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+        '2025-01-29 12:09:00', '2025-01-29 12:09:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        '2025-01-29 12:10:00', '2025-01-29 12:10:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
+        '2025-01-29 12:11:00', '2025-01-29 12:11:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-29 12:12:00', '2025-01-29 12:12:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+        '2025-01-29 12:13:00', '2025-01-29 12:13:00', 'ACTIVE', 1, 1);
+
+INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
+                  service_status, challenge_id, challenge_member_id)
+VALUES (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-02 12:00:00', '2025-01-02 12:00:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+        '2025-01-02 12:01:00', '2025-01-02 12:01:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        '2025-01-02 12:02:00', '2025-01-02 12:02:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
+        '2025-01-02 12:03:00', '2025-01-02 12:03:00', 'ACTIVE', 1, 1),
+       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+        '2025-01-02 12:04:00', '2025-01-02 12:04:00', 'ACTIVE', 1, 1);
 
 -- feed_comment 테이블
 WITH feed_data AS (SELECT f.feed_id, f.challenge_member_id

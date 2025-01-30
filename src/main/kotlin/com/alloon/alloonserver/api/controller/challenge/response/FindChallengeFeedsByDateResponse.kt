@@ -19,13 +19,11 @@ data class FindChallengeFeedsByDateResponse(
 
     companion object {
 
-        fun of(
-            createdDate: LocalDate,
-            feeds: List<FindChallengeFeedsDto>
-        ): FindChallengeFeedsByDateResponse {
+        fun of(dto: Triple<LocalDate, List<FindChallengeFeedsDto>, Int>): FindChallengeFeedsByDateResponse {
+            val (createdDate, feeds, feedMemberCnt) = dto
             return FindChallengeFeedsByDateResponse(
                 createdDate,
-                feeds.count(),
+                feedMemberCnt,
                 FindChallengeFeedsResponse.of(feeds)
             )
         }

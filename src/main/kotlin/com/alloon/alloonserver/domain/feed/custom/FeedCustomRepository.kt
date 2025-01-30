@@ -20,5 +20,5 @@ interface FeedCustomRepository {
         challengeId: Long,
         pageable: Pageable,
         sort: SortTypeConstants
-    ): Slice<Pair<LocalDate, List<FindChallengeFeedsDto>>>
+    ): Slice<Triple<LocalDate, List<FindChallengeFeedsDto>, Int>>
 }

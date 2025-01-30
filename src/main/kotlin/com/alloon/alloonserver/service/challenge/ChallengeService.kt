@@ -173,9 +173,7 @@ class ChallengeService(
         sort: SortTypeConstants,
     ): Slice<FindChallengeFeedsByDateResponse> {
         return feedRepository.findAllByChallengeId(challengeId, pageable, sort)
-            .map { (createdDate, feeds) ->
-                FindChallengeFeedsByDateResponse.of(createdDate, feeds)
-            }
+            .map { FindChallengeFeedsByDateResponse.of(it) }
     }
 
     @Transactional

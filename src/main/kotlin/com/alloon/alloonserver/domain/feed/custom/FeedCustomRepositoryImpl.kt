@@ -65,7 +65,7 @@ class FeedCustomRepositoryImpl(
         challengeId: Long,
         pageable: Pageable,
         sort: SortTypeConstants
-    ): Slice<Pair<LocalDate, List<FindChallengeFeedsDto>>> {
+    ): Slice<Triple<LocalDate, List<FindChallengeFeedsDto>, Int>> {
         val pageSize = pageable.pageSize
         val content = queryFactory
             .select(
@@ -85,6 +85,15 @@ class FeedCustomRepositoryImpl(
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
+        val feeds = queryFactory
+            .select(feed.createDateTime)
+            .from(feed)
+            .join(feed.challenge)
+            .where(feed.challenge.id.eq(challengeId))
+            .fetch()
+        val feedsCountByDate = feeds.map { it.toLocalDate() }
+            .groupingBy { it }
+            .eachCount()
 
         val hasNext = if (content.size > pageSize) {
             content.removeAt(pageSize)
@@ -93,7 +102,13 @@ class FeedCustomRepositoryImpl(
             false
         }
 
-        val groupedContent = content.groupBy { it.createdDateTime.toLocalDate() }.toList()
+        val groupedContent = mutableListOf<Triple<LocalDate, List<FindChallengeFeedsDto>, Int>>()
+        content
+            .groupBy { it.createdDateTime.toLocalDate() }
+            .forEach { (date, feeds) ->
+                val feedMemberCnt = feedsCountByDate[date] ?: 0
+                groupedContent.add(Triple(date, feeds, feedMemberCnt))
+            }
 
         return SliceImpl(groupedContent, pageable, hasNext)
     }
