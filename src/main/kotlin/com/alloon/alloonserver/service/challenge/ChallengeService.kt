@@ -267,7 +267,6 @@ class ChallengeService(
     fun joinPublicChallenge(
         userId: Long,
         challengeId: Long,
-        dto: JoinPublicChallengeDto
     ) {
         val user = validateUser(userId)
         val challenge = validateChallenge(challengeId)
@@ -276,7 +275,8 @@ class ChallengeService(
         if (challengeMember != null) {
             throw CustomException(EXISTING_CHALLENGE_MEMBER)
         } else {
-            challengeMemberRepository.save(dto.toEntity(user, challenge))
+            val newMember = ChallengeMember(user = user, challenge = challenge, isCreator = false)
+            challengeMemberRepository.save(newMember)
         }
     }
 

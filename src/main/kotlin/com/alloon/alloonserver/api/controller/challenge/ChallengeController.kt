@@ -406,13 +406,8 @@ class ChallengeController(
     fun joinPublicChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody @Valid request: JoinPublicChallengeRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.joinPublicChallenge(
-            UserUtility.getUserId(principal),
-            challengeId,
-            request.toServiceDto()
-        )
+        challengeService.joinPublicChallenge(UserUtility.getUserId(principal), challengeId)
 
         return ResponseEntity.ok(StringSuccessResponse("공개 챌린지 참여하기가 완료되었습니다."))
     }
