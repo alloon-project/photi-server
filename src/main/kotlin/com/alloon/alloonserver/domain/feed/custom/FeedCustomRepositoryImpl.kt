@@ -81,7 +81,7 @@ class FeedCustomRepositoryImpl(
             .join(feed.challenge)
             .join(feed.challengeMember.user)
             .where(feed.challenge.id.eq(challengeId))
-            .orderBy(getOrderSpecifier(sort))
+            .orderBy(*getOrderSpecifier(sort))
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
@@ -101,10 +101,13 @@ class FeedCustomRepositoryImpl(
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { feed.serviceStatus.eq(serviceStatus) }
 
-    private fun getOrderSpecifier(sort: SortTypeConstants): OrderSpecifier<*> {
+    private fun getOrderSpecifier(sort: SortTypeConstants): Array<OrderSpecifier<*>> {
         return when (sort) {
-            LATEST -> OrderSpecifier(DESC, feed.createDateTime)
-            POPULAR -> OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt))
+            LATEST -> arrayOf(OrderSpecifier(DESC, feed.createDateTime))
+            POPULAR -> arrayOf(
+                OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt)),
+                OrderSpecifier(DESC, feed.createDateTime),
+            )
         }
     }
 }

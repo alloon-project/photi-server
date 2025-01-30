@@ -426,8 +426,10 @@ WITH challenge_member_data AS (SELECT cm.challenge_id,
                           FLOOR(RANDOM() * 100)                                         AS like_cnt,
                           FLOOR(RANDOM() * 30)                                          AS comment_cnt,
                           image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url,
-                          NOW()                                                         AS create_date_time,
-                          NOW()                                                         AS update_date_time,
+                          '2025-01-01 00:00:00'::TIMESTAMP +
+                          (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL         AS create_date_time,
+                          '2025-01-01 00:00:00'::TIMESTAMP +
+                          (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL         AS update_date_time,
                           'ACTIVE'                                                      AS service_status
                    FROM challenge_member_data cmd
                             CROSS JOIN LATERAL (
