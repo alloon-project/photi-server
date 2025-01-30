@@ -413,6 +413,10 @@ SELECT is_creator,
        goal
 FROM ranked_data;
 
+UPDATE challenge_member
+SET user_id = 1
+WHERE challenge_member_id = 1;
+
 -- feed 테이블
 WITH challenge_member_data AS (SELECT cm.challenge_id,
                                       cm.user_id,
