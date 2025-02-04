@@ -302,7 +302,7 @@ class ChallengeControllerTest : RestDocsSupport() {
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
-        every { challengeService.findChallengeFeeds(any(), any(), any()) } returns SliceImpl(
+        every { challengeService.findChallengeFeeds(any(), any(), any(), any()) } returns SliceImpl(
             content,
             pageable,
             hasNext
@@ -312,6 +312,7 @@ class ChallengeControllerTest : RestDocsSupport() {
         val resultActions = mockMvc.perform(
             get("/api/challenges/{challengeId}/feeds", 1)
                 .header(AUTHORIZATION, "Bearer access-token")
+                .principal(mockPrincipal)
                 .contentType(APPLICATION_JSON)
         )
 
@@ -537,6 +538,7 @@ class ChallengeControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
             LocalTime.of(13, 0),
+            true,
         )
     }
 

@@ -532,6 +532,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     @Test
     fun givenValid_whenFindChallengeFeeds_thenReturn() {
         // given
+        val userId = 1L
         val challengeId = 1L
         val sort = SortTypeConstants.LATEST
         val dto = getFindChallengeFeedsDto()
@@ -542,11 +543,11 @@ class ChallengeServiceTest : AbstractMailProperties {
         val pageable = PageRequest.of(0, 10)
         val hasNext = true
 
-        every { feedRepository.findAllByChallengeId(any(), any(), any()) } returns
+        every { feedRepository.findAllByChallengeId(any(), any(), any(), any()) } returns
                 SliceImpl(content, pageable, hasNext)
 
         // when
-        val result = challengeService.findChallengeFeeds(challengeId, pageable, sort)
+        val result = challengeService.findChallengeFeeds(userId, challengeId, pageable, sort)
 
         // then
         assertThat(result.content.size).isEqualTo(2)
@@ -1085,6 +1086,7 @@ class ChallengeServiceTest : AbstractMailProperties {
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
             LocalTime.of(13, 0),
+            true,
         )
     }
 
