@@ -6,9 +6,7 @@ import com.alloon.alloonserver.common.constant.SortTypeConstants
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.util.CodeUtility
 import com.alloon.alloonserver.domain.challenge.*
-import com.alloon.alloonserver.domain.feed.Feed
-import com.alloon.alloonserver.domain.feed.FeedCommentRepository
-import com.alloon.alloonserver.domain.feed.FeedRepository
+import com.alloon.alloonserver.domain.feed.*
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.challenge.dto.*
@@ -32,6 +30,7 @@ class ChallengeService(
     private val userRepository: UserRepository,
     private val feedRepository: FeedRepository,
     private val feedCommentRepository: FeedCommentRepository,
+    private val feedLikeRepository: FeedLikeRepository,
     private val s3Service: S3Service,
     private val hashtagService: HashtagService,
 ) {
@@ -296,6 +295,15 @@ class ChallengeService(
             challenge.validateInvitationCode(dto.invitationCode)
             challengeMemberRepository.save(dto.toEntity(user, challenge))
         }
+    }
+
+    @Transactional
+    fun likeChallengeFeed(userId: Long, challengeId: Long, feedId: Long) {
+        validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        val feed = validateChallengeFeed(feedId)
+        val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
+        feedLikeRepository.save(feedLike)
     }
 
     private fun validateUser(userId: Long): User {
