@@ -298,13 +298,26 @@ class ChallengeService(
     }
 
     @Transactional
-    fun likeChallengeFeed(userId: Long, challengeId: Long, feedId: Long) {
+    fun createChallengeFeedLike(userId: Long, challengeId: Long, feedId: Long) {
         validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
         val feed = validateChallengeFeed(feedId)
         val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
+
         feedLikeRepository.save(feedLike)
         feed.updateLikeCnt()
+    }
+
+    @Transactional
+    fun deleteChallengeFeedLike(userId: Long, challengeId: Long, feedId: Long) {
+        validateChallenge(challengeId)
+        val challengeMember = validateChallengeMember(userId, challengeId)
+        val feed = validateChallengeFeed(feedId)
+        val feedLike = feedLikeRepository.findByFeedIdAndChallengeMember(feedId, challengeMember)
+            ?: throw CustomException(FEED_LIKE_NOT_FOUND)
+
+        feedLikeRepository.delete(feedLike)
+        feed.decreaseLikeCnt()
     }
 
     private fun validateUser(userId: Long): User {
