@@ -1,6 +1,7 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.user.request.*
+import com.alloon.alloonserver.common.constant.CustomHttpHeaders
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
 import com.alloon.alloonserver.common.response.ApiErrorResponses
@@ -9,6 +10,7 @@ import com.alloon.alloonserver.common.util.UserUtility
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.alloon.alloonserver.config.SwaggerConfig.Companion.REFRESH_TOKEN_KEY
 import com.alloon.alloonserver.config.auth.JwtProvider
+import com.alloon.alloonserver.config.auth.JwtType
 import com.alloon.alloonserver.service.user.AuthService
 import com.alloon.alloonserver.service.user.dto.UserServiceValidateUsernameDto
 import com.alloon.alloonserver.service.user.response.UserLoginResponse
@@ -18,10 +20,12 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
@@ -151,5 +155,27 @@ class AuthController(
         authService.deleteUser(UserUtility.getUserId(principal), request.toServiceDto())
 
         return ResponseEntity.ok(StringSuccessResponse("회원 탈퇴가 완료되었습니다."))
+    }
+
+    @GetMapping("/api/auth/validate/access-token")
+    @Operation(summary = "액세스 토큰 유효성 검증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun validateAccessToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
+        val accessToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+        jwtProvider.verifyToken(accessToken, JwtType.ACCESS)
+
+        return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
+    }
+
+    @GetMapping("/api/auth/validate/refresh-token")
+    @Operation(summary = "리프레시 토큰 유효성 검증", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun validateRefreshToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
+        val refreshToken = request.getHeader(CustomHttpHeaders.REFRESH_TOKEN)
+        jwtProvider.verifyToken(refreshToken, JwtType.REFRESH)
+
+        return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 리프레시 토큰입니다."))
     }
 }

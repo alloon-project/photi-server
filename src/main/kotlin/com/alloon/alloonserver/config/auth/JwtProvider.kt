@@ -35,12 +35,6 @@ class JwtProvider(
 ) {
     private val tokenPrefix: String = "Bearer "
 
-    /**
-     * JWT 토큰 생성
-     * @param userId 회원 식별자
-     * @throws SERVER_ERROR 500
-     * @return HTTP 헤더
-     */
     fun createToken(userId: Long): HttpHeaders {
         val userDetails = getUserDetails(userId)
         val time = System.currentTimeMillis()
@@ -77,59 +71,50 @@ class JwtProvider(
 
         when (val signedJWT = refreshToken.sign(secret)) {
             is Either.Left -> throw CustomException(SERVER_ERROR)
-            is Either.Right -> headers.add(CustomHttpHeaders.REFRESH_TOKEN, signedJWT.value.rendered)
+            is Either.Right -> headers.add(
+                CustomHttpHeaders.REFRESH_TOKEN,
+                signedJWT.value.rendered
+            )
         }
 
         return headers
     }
 
-    /**
-     * JWT 토큰 검증
-     * @param token 토큰
-     * @param jwtType 토큰 타입
-     * @throws TOKEN_UNAUTHENTICATED 401
-     * @throws TOKEN_UNAUTHORIZED 403
-     * @return JWT 토큰
-     */
     fun verifyToken(token: String, jwtType: JwtType): JWT<JWSHMAC256Algorithm> {
-        return when (val jwt = verifySignature<JWSHMAC256Algorithm>(token.removePrefix(tokenPrefix), secret)) {
+        val jwt = when (val result =
+            verifySignature<JWSHMAC256Algorithm>(token.removePrefix(tokenPrefix), secret)) {
             is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
-
-            is Either.Right -> {
-                val user = getUserDetails(jwt.value.subject()
-                    .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
-                    .toLong())
-
-                SecurityContextHolder.getContext().authentication =
-                    UsernamePasswordAuthenticationToken(user.username, user.password, user.authorities)
-                jwt.value
-            }
+            is Either.Right -> result.value
         }
-    }
 
-    /**
-     * 토큰 해독
-     * @param token 토큰
-     * @throws TOKEN_UNAUTHENTICATED 401
-     * @return 해독 JWT 토큰
-     */
-    private fun decodeToken(token: String): DecodedJWT<JWSHMAC256Algorithm> {
-        require(token.isEmpty()) {
+        val expirationTime =
+            jwt.expiresAt().getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
+        val now = Instant.now()
+
+        if (expirationTime.isBefore(now)) {
             throw CustomException(TOKEN_UNAUTHENTICATED)
         }
 
-        return when (val decodedJwt = JWT.decodeT(token.substring(tokenPrefix.length), JWSHMAC256Algorithm)) {
-            is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
-            is Either.Right -> decodedJwt.value
+        val userId = jwt.subject()
+            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+            .toLong()
+
+        return when (jwtType) {
+            JwtType.ACCESS -> {
+                val user = getUserDetails(userId)
+                SecurityContextHolder.getContext().authentication =
+                    UsernamePasswordAuthenticationToken(
+                        user.username,
+                        user.password,
+                        user.authorities
+                    )
+                jwt
+            }
+
+            JwtType.REFRESH -> jwt
         }
     }
 
-    /**
-     * 회원 정보 조회
-     * @param userId 회원 식별자
-     * @throws USER_NOT_FOUND 404
-     * @return 회원 정보
-     */
     private fun getUserDetails(userId: Long): User {
         val userRoles = userRoleRepository.findAllFetchUser(userId)
 
