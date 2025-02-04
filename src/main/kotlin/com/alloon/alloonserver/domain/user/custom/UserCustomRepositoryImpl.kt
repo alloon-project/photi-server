@@ -235,6 +235,7 @@ class UserCustomRepositoryImpl(
                     challengeMember.challenge.endDate,
                     Expressions.constant(emptyList()),
                     Expressions.constant(""),
+                    Expressions.constant(false),
                 )
             )
             .from(challengeMember)
@@ -268,7 +269,9 @@ class UserCustomRepositoryImpl(
 
         content.forEach {
             it.hashtags = hashtags[it.id] ?: emptyList()
-            it.feedImageUrl = feedImageUrls[it.id]?.first()?.imageUrl ?: ""
+            val imageUrl = feedImageUrls[it.id]?.first()?.imageUrl ?: ""
+            it.feedImageUrl = imageUrl
+            it.isProve = imageUrl.isNotEmpty()
         }
 
         val hasNext = if (content.size > pageSize) {

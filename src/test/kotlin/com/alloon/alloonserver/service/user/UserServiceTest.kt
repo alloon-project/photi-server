@@ -338,6 +338,7 @@ class UserServiceTest {
                 FindChallengeHashtagDto(1L, "해시태그 2"),
             ),
             "https://url.kr/5MhHhD",
+            true,
         )
     }
 }

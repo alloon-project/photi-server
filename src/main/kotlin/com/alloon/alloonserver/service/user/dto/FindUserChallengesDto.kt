@@ -13,4 +13,5 @@ data class FindUserChallengesDto @QueryProjection constructor(
     val endDate: LocalDate,
     var hashtags: List<FindChallengeHashtagDto>,
     var feedImageUrl: String,
+    var isProve: Boolean,
 )

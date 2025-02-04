@@ -39,6 +39,9 @@ data class FindUserChallengesResponse(
 
     @Schema(description = "피드 이미지", example = "https://url.kr/5MhHhD")
     val feedImageUrl: String,
+
+    @Schema(description = "챌린지 인증 여부", example = "true")
+    val isProve: Boolean,
 ) {
 
     companion object {
@@ -52,6 +55,7 @@ data class FindUserChallengesResponse(
                 challenge.endDate,
                 challenge.hashtags.map { ChallengeHashtagResponse(it.hashtag) },
                 challenge.feedImageUrl,
+                challenge.isProve,
             )
         }
     }
