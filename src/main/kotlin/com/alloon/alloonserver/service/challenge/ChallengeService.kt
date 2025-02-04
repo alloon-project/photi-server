@@ -167,11 +167,12 @@ class ChallengeService(
     }
 
     fun findChallengeFeeds(
+        userId: Long,
         challengeId: Long,
         pageable: Pageable,
         sort: SortTypeConstants,
     ): Slice<FindChallengeFeedsByDateResponse> {
-        return feedRepository.findAllByChallengeId(challengeId, pageable, sort)
+        return feedRepository.findAllByChallengeId(userId, challengeId, pageable, sort)
             .map { FindChallengeFeedsByDateResponse.of(it) }
     }
 

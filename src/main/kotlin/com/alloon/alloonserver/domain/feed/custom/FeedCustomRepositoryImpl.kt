@@ -7,6 +7,7 @@ import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.feed.Feed
 import com.alloon.alloonserver.domain.feed.QFeed.feed
+import com.alloon.alloonserver.domain.feed.QFeedLike.feedLike
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedDto
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeFeedsDto
 import com.alloon.alloonserver.service.challenge.dto.QFindChallengeFeedDto
@@ -14,6 +15,7 @@ import com.alloon.alloonserver.service.challenge.dto.QFindChallengeFeedsDto
 import com.querydsl.core.types.Order.DESC
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions.cases
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -62,6 +64,7 @@ class FeedCustomRepositoryImpl(
     }
 
     override fun findAllByChallengeId(
+        userId: Long,
         challengeId: Long,
         pageable: Pageable,
         sort: SortTypeConstants
@@ -75,11 +78,17 @@ class FeedCustomRepositoryImpl(
                     feed.imageUrl,
                     feed.createDateTime,
                     feed.challenge.proveTime,
+                    cases()
+                        .`when`(feedLike.id.isNotNull).then(true)
+                        .otherwise(false)
                 )
             )
             .from(feed)
             .join(feed.challenge)
             .join(feed.challengeMember.user)
+            .leftJoin(feedLike).on(
+                feedLike.feed.id.eq(feed.id), feedLike.challengeMember.user.id.eq(userId)
+            )
             .where(feed.challenge.id.eq(challengeId))
             .orderBy(*getOrderSpecifier(sort))
             .offset(pageable.offset)

@@ -24,6 +24,9 @@ data class FindChallengeFeedsResponse(
     @Schema(description = "챌린지 인증 시간", example = "13:00")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
+
+    @Schema(description = "피드 좋아요 여부", example = "true")
+    val isLike: Boolean,
 ) {
 
     companion object {
@@ -35,6 +38,7 @@ data class FindChallengeFeedsResponse(
                 feed.imageUrl,
                 feed.createdDateTime,
                 feed.proveTime,
+                feed.isLike,
             )
         }
 

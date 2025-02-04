@@ -17,6 +17,7 @@ interface FeedCustomRepository {
     fun findContentById(challengeId: Long, id: Long): FindChallengeFeedDto?
 
     fun findAllByChallengeId(
+        userId: Long,
         challengeId: Long,
         pageable: Pageable,
         sort: SortTypeConstants

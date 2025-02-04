@@ -225,13 +225,19 @@ class ChallengeController(
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
     fun findChallengeFeeds(
+        principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
         @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
         @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "LATEST") sort: SortTypeConstants,
     ): ResponseEntity<SliceResponse<FindChallengeFeedsByDateResponse>> {
         val pageable = PageRequest.of(page, size)
-        val challengeFeeds = challengeService.findChallengeFeeds(challengeId, pageable, sort)
+        val challengeFeeds = challengeService.findChallengeFeeds(
+            UserUtility.getUserId(principal),
+            challengeId,
+            pageable,
+            sort
+        )
         val response = SliceResponse.of(challengeFeeds)
 
         return ResponseEntity.ok(response)

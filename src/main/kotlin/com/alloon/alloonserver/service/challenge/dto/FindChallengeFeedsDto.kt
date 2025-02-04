@@ -10,4 +10,5 @@ data class FindChallengeFeedsDto @QueryProjection constructor(
     val imageUrl: String,
     val createdDateTime: LocalDateTime,
     val proveTime: LocalTime,
+    val isLike: Boolean,
 )
