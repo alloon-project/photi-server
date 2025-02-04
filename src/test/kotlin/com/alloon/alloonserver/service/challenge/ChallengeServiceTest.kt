@@ -6,10 +6,7 @@ import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
 import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
 import com.alloon.alloonserver.domain.challenge.ChallengeRepository
-import com.alloon.alloonserver.domain.feed.Feed
-import com.alloon.alloonserver.domain.feed.FeedComment
-import com.alloon.alloonserver.domain.feed.FeedCommentRepository
-import com.alloon.alloonserver.domain.feed.FeedRepository
+import com.alloon.alloonserver.domain.feed.*
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -44,6 +41,7 @@ class ChallengeServiceTest : AbstractMailProperties {
     private val userRepository = mockk<UserRepository>()
     private val feedRepository = mockk<FeedRepository>()
     private val feedCommentRepository = mockk<FeedCommentRepository>()
+    private val feedLikeRepository = mockk<FeedLikeRepository>()
     private val s3Service = mockk<S3Service>()
     private val hashtagService = mockk<HashtagService>()
 
@@ -53,6 +51,7 @@ class ChallengeServiceTest : AbstractMailProperties {
         userRepository,
         feedRepository,
         feedCommentRepository,
+        feedLikeRepository,
         s3Service,
         hashtagService,
     )
