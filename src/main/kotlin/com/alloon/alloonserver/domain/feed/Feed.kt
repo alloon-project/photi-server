@@ -25,7 +25,7 @@ class Feed(
     val imageUrl: String,
 
     @Column(nullable = false)
-    val likeCnt: Int = 0,
+    var likeCnt: Int = 0,
 
     @Column(nullable = false)
     var commentCnt: Int = 0,
@@ -38,6 +38,16 @@ class Feed(
     fun decreaseCommentCnt() {
         if (commentCnt > 0) {
             commentCnt -= 1
+        }
+    }
+
+    fun updateLikeCnt() {
+        likeCnt += 1
+    }
+
+    fun decreaseLikeCnt() {
+        if (likeCnt > 0) {
+            likeCnt -= 1
         }
     }
 }
