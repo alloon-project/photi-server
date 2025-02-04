@@ -304,6 +304,7 @@ class ChallengeService(
         val feed = validateChallengeFeed(feedId)
         val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
         feedLikeRepository.save(feedLike)
+        feed.updateLikeCnt()
     }
 
     private fun validateUser(userId: Long): User {
