@@ -248,11 +248,18 @@ class UserCustomRepositoryImpl(
             .fetch()
 
         val challengeIds = content.map { it.id }
+        val now = LocalDate.now()
         val feedImageUrls = queryFactory
             .select(QUserImageDto(feed.challenge.id, feed.imageUrl))
             .from(feed)
             .join(feed.challengeMember)
-            .where(feed.challengeMember.user.id.eq(userId), feed.challenge.id.`in`(challengeIds))
+            .where(
+                feed.challengeMember.user.id.eq(userId),
+                feed.challenge.id.`in`(challengeIds),
+                feed.createDateTime.year().eq(now.year),
+                feed.createDateTime.month().eq(now.monthValue),
+                feed.createDateTime.dayOfMonth().eq(now.dayOfMonth),
+            )
             .fetch()
             .groupBy { it.challengeId }
         val hashtags = queryFactory
