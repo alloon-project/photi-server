@@ -1,7 +1,6 @@
 package com.alloon.alloonserver.api.controller.user
 
 import com.alloon.alloonserver.api.controller.user.request.*
-import com.alloon.alloonserver.common.constant.CustomHttpHeaders
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
 import com.alloon.alloonserver.common.response.ApiErrorResponses
@@ -166,16 +165,5 @@ class AuthController(
         jwtProvider.verifyToken(accessToken, JwtType.ACCESS)
 
         return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
-    }
-
-    @GetMapping("/api/auth/validate/refresh-token")
-    @Operation(summary = "리프레시 토큰 유효성 검증", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
-    @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
-    fun validateRefreshToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
-        val refreshToken = request.getHeader(CustomHttpHeaders.REFRESH_TOKEN)
-        jwtProvider.verifyToken(refreshToken, JwtType.REFRESH)
-
-        return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 리프레시 토큰입니다."))
     }
 }
