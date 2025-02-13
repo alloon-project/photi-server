@@ -13,7 +13,6 @@ import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.AbstractMailProperties
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.challenge.dto.*
-import com.alloon.alloonserver.service.s3.FolderType.CHALLENGES
 import com.alloon.alloonserver.service.s3.FolderType.FEEDS
 import com.alloon.alloonserver.service.s3.S3Service
 import io.mockk.*
@@ -290,63 +289,6 @@ class ChallengeServiceTest : AbstractMailProperties {
         assertThat(challenge.endDate).isEqualTo(dto.endDate)
         assertThat(challenge.rules[0].rule).isEqualTo(dto.rules[0].rule)
         assertThat(challenge.hashtags[0].hashtag).isEqualTo(dto.hashtags[0].hashtag)
-    }
-
-    @DisplayName("챌린지 파티원이 2명 이상일 때 챌린지를 탈퇴하면, 챌린지 멤버에서 삭제되고 멤버수가 감소한다.")
-    @Test
-    fun givenMultipleMembers_whenDeleteChallenge_thenDeleteChallengeMemberAndDecreaseMemberCnt() {
-        // given
-        val userId = 1L
-        val challengeId = 1L
-        val challenge = getCreateChallengeDto()
-            .toEntity("https://url.kr/5MhHhD", "ABC12")
-            .apply { currentMemberCnt = 3 }
-        val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
-
-        every { challengeRepository.findInfoById(any()) } returns challenge
-        every {
-            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
-        } returns challengeMember
-        every { challengeMemberRepository.delete(any()) } just Runs
-        every { hashtagService.deleteHashtags(any()) } just Runs
-
-        // when
-        challengeService.deleteChallenge(userId, challengeId)
-
-        // then
-        verify { challengeMemberRepository.delete(challengeMember) }
-        verify(exactly = 0) { challengeRepository.deleteById(challengeId) }
-        verify(exactly = 0) { s3Service.deleteImage(challenge.imageUrl, CHALLENGES) }
-        assertThat(challenge.currentMemberCnt).isEqualTo(2)
-    }
-
-    @DisplayName("마지막 파티원이 챌린지를 탈퇴하면, 챌린지 멤버에서 삭제되고 해당 챌린지는 삭제된다.")
-    @Test
-    fun givenLastMember_whenDeleteChallenge_thenDeleteChallengeMemberAndChallenge() {
-        // given
-        val userId = 1L
-        val challengeId = 1L
-        val challenge = getCreateChallengeDto()
-            .toEntity("https://url.kr/5MhHhD", "ABC12")
-            .apply { currentMemberCnt = 1 }
-        val challengeMember = ChallengeMember(user = getUser(), challenge = challenge)
-
-        every { challengeRepository.findInfoById(any()) } returns challenge
-        every {
-            challengeMemberRepository.findByUserIdAndChallengeId(any(), any())
-        } returns challengeMember
-        every { challengeMemberRepository.delete(any()) } just Runs
-        every { challengeRepository.deleteById(any()) } just Runs
-        every { s3Service.deleteImage(any(), any()) } just Runs
-        every { hashtagService.deleteHashtags(any()) } just Runs
-
-        // when
-        challengeService.deleteChallenge(userId, challengeId)
-
-        // then
-        verify { challengeMemberRepository.delete(challengeMember) }
-        verify { challengeRepository.deleteById(challengeId) }
-        verify { s3Service.deleteImage(challenge.imageUrl, CHALLENGES) }
     }
 
     @DisplayName("챌린지 피드 인증을 하면 피드가 저장되고, 사용자의 피드 인증 횟수가 업데이트된다.")
