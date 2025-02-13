@@ -228,6 +228,8 @@ class ChallengeCustomRepositoryImpl(
                 ).asc(),
                 challenge.endDate.desc(),
             )
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
             .fetch()
 
         content.forEach {
@@ -278,6 +280,8 @@ class ChallengeCustomRepositoryImpl(
                 ).asc(),
                 challenge.endDate.desc(),
             )
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
             .fetch()
 
         val challengeIds = content.map { it.id }
