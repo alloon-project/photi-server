@@ -122,16 +122,15 @@ class ChallengeService(
         val challenge = validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
 
-        challengeMemberRepository.delete(challengeMember)
+        challengeMember.updateStatus()
 
         if (challenge.currentMemberCnt == 1) {
+            hashtagService.deleteHashtags(challenge.hashtags.map { it.hashtag })
             challengeRepository.deleteById(challengeId)
             s3Service.deleteImage(challenge.imageUrl, CHALLENGES)
         } else {
             challenge.decreaseCurrentMemberCnt()
         }
-
-        hashtagService.deleteHashtags(challenge.hashtags.map { it.hashtag })
     }
 
     @Transactional

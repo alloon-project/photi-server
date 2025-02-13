@@ -25,7 +25,7 @@ class ChallengeMember(
 
     @Column(nullable = false, length = 15)
     @Enumerated(value = EnumType.STRING)
-    val status: ChallengeMemberStatus = ChallengeMemberStatus.PROGRESS,
+    var status: ChallengeMemberStatus = ChallengeMemberStatus.PROGRESS,
 
     @Column(nullable = false)
     val isCreator: Boolean = true,
@@ -33,5 +33,9 @@ class ChallengeMember(
 
     fun updateGoal(goal: String) {
         this.goal = goal
+    }
+
+    fun updateStatus() {
+        status = ChallengeMemberStatus.DELETED
     }
 }
