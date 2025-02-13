@@ -1,8 +1,8 @@
 package com.alloon.alloonserver.domain.challenge.custom
 
-import com.alloon.alloonserver.domain.base.ServiceStatus
-import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.ChallengeMember
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus.PROGRESS
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.service.challenge.dto.ChallengeMemberImageDto
 import com.alloon.alloonserver.service.challenge.dto.FindChallengeMembersDto
@@ -23,7 +23,7 @@ class ChallengeMemberCustomRepositoryImpl(
             .selectFrom(challengeMember)
             .where(
                 challengeMember.id.eq(id),
-                eqServiceStatus(ACTIVE)
+                eqChallengeMemberStatus(PROGRESS)
             ).fetchFirst()
     }
 
@@ -35,7 +35,7 @@ class ChallengeMemberCustomRepositoryImpl(
             .where(
                 challengeMember.user.id.eq(userId),
                 challengeMember.challenge.id.eq(challengeId),
-                eqServiceStatus(ACTIVE)
+                eqChallengeMemberStatus(PROGRESS)
             )
             .fetchFirst()
     }
@@ -61,7 +61,7 @@ class ChallengeMemberCustomRepositoryImpl(
                 )
             )
             .from(challengeMember)
-            .where(challengeMember.challenge.id.eq(challengeId))
+            .where(challengeMember.challenge.id.eq(challengeId), eqChallengeMemberStatus(PROGRESS))
             .orderBy(
                 spec.asc(),
                 challengeMember.createDateTime.asc()
@@ -73,12 +73,12 @@ class ChallengeMemberCustomRepositoryImpl(
         return queryFactory
             .select(QChallengeMemberImageDto(challengeMember.user.imageUrl))
             .from(challengeMember)
-            .where(challengeMember.challenge.id.eq(challengeId))
+            .where(challengeMember.challenge.id.eq(challengeId), eqChallengeMemberStatus(PROGRESS))
             .orderBy(challengeMember.createDateTime.desc())
             .limit(3)
             .fetch()
     }
 
-    private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
-        serviceStatus?.let { challengeMember.serviceStatus.eq(serviceStatus) }
+    private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
+        challengeMember.status.eq(status)
 }

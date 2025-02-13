@@ -3,6 +3,8 @@ package com.alloon.alloonserver.domain.challenge.custom
 import com.alloon.alloonserver.domain.base.ServiceStatus
 import com.alloon.alloonserver.domain.base.ServiceStatus.ACTIVE
 import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus.PROGRESS
 import com.alloon.alloonserver.domain.challenge.QChallenge.challenge
 import com.alloon.alloonserver.domain.challenge.QChallengeHashtag.challengeHashtag
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
@@ -67,7 +69,7 @@ class ChallengeCustomRepositoryImpl(
             it.memberImages = queryFactory
                 .select(challengeMember.user.imageUrl)
                 .from(challengeMember)
-                .where(challengeMember.challenge.id.eq(it.id))
+                .where(challengeMember.challenge.id.eq(it.id), eqChallengeMemberStatus(PROGRESS))
                 .orderBy(challengeMember.createDateTime.desc())
                 .limit(3)
                 .fetch()
@@ -232,7 +234,7 @@ class ChallengeCustomRepositoryImpl(
             it.memberImages = queryFactory
                 .select(challengeMember.user.imageUrl)
                 .from(challengeMember)
-                .where(challengeMember.challenge.id.eq(it.id))
+                .where(challengeMember.challenge.id.eq(it.id), eqChallengeMemberStatus(PROGRESS))
                 .orderBy(challengeMember.createDateTime.desc())
                 .limit(3)
                 .fetch()
@@ -296,7 +298,7 @@ class ChallengeCustomRepositoryImpl(
             it.memberImages = queryFactory
                 .select(challengeMember.user.imageUrl)
                 .from(challengeMember)
-                .where(challengeMember.challenge.id.eq(it.id))
+                .where(challengeMember.challenge.id.eq(it.id), eqChallengeMemberStatus(PROGRESS))
                 .orderBy(challengeMember.createDateTime.desc())
                 .limit(3)
                 .fetch()
@@ -314,4 +316,7 @@ class ChallengeCustomRepositoryImpl(
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { challenge.serviceStatus.eq(serviceStatus) }
+
+    private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
+        challengeMember.status.eq(status)
 }

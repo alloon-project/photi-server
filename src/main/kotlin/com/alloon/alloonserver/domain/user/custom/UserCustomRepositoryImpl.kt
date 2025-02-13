@@ -1,6 +1,8 @@
 package com.alloon.alloonserver.domain.user.custom
 
 import com.alloon.alloonserver.domain.base.ServiceStatus.END
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberStatus.PROGRESS
 import com.alloon.alloonserver.domain.challenge.QChallengeHashtag.challengeHashtag
 import com.alloon.alloonserver.domain.challenge.QChallengeMember.challengeMember
 import com.alloon.alloonserver.domain.feed.QFeed.feed
@@ -204,7 +206,7 @@ class UserCustomRepositoryImpl(
             it.memberImages = queryFactory
                 .select(challengeMember.user.imageUrl)
                 .from(challengeMember)
-                .where(challengeMember.challenge.id.eq(it.id))
+                .where(challengeMember.challenge.id.eq(it.id), eqChallengeMemberStatus(PROGRESS))
                 .orderBy(challengeMember.createDateTime.desc())
                 .limit(3)
                 .fetch()
@@ -241,7 +243,7 @@ class UserCustomRepositoryImpl(
             .from(challengeMember)
             .join(challengeMember.challenge)
             .join(challengeMember.user)
-            .where(challengeMember.user.id.eq(userId))
+            .where(challengeMember.user.id.eq(userId), eqChallengeMemberStatus(PROGRESS))
             .orderBy(challengeMember.challenge.proveTime.asc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
@@ -297,4 +299,7 @@ class UserCustomRepositoryImpl(
 
     private fun eqUsername(username: String?): BooleanExpression? =
         username?.let { user.username.eq(it) }
+
+    private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
+        challengeMember.status.eq(status)
 }
