@@ -31,4 +31,4 @@ services:
       - "6379:6379"
     volumes:
       - ./docker/redis-init.sh:/redis-init.sh
-    command: [ "sh", "-c", "redis-server --daemonize yes && sleep 3 && sh /redis-init.sh && tail -f /dev/null" ]
+    command: [ "sh", "-c", "redis-server --daemonize yes && sleep 3 && bash /redis-init.sh && tail -f /dev/null" ]
