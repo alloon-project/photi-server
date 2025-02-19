@@ -106,7 +106,7 @@ class UserCustomRepositoryImpl(
             .select(challengeMember.count())
             .from(challengeMember)
             .join(challengeMember.user)
-            .where(challengeMember.user.id.eq(userId))
+            .where(challengeMember.user.id.eq(userId), eqChallengeMemberStatus(PROGRESS))
             .fetchOne()?.toInt() ?: 0
 
         return queryFactory
