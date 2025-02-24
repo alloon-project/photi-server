@@ -27,4 +27,6 @@ interface UserCustomRepository {
     fun findEndedChallengesById(userId: Long, pageable: Pageable): Slice<FindUserEndedChallengesDto>
 
     fun findUserChallengesById(userId: Long, pageable: Pageable): Slice<FindUserChallengesDto>
+
+    fun findIsProveByChallengeId(userId: Long, challengeId: Long): Boolean
 }

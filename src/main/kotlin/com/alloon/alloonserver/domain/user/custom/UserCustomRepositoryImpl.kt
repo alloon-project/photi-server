@@ -293,6 +293,23 @@ class UserCustomRepositoryImpl(
         return SliceImpl(content, pageable, hasNext)
     }
 
+    override fun findIsProveByChallengeId(
+        userId: Long,
+        challengeId: Long
+    ): Boolean {
+        val now = LocalDate.now()
+        return queryFactory.select(feed.isNotNull)
+            .from(feed)
+            .where(
+                feed.challengeMember.user.id.eq(userId),
+                feed.challenge.id.eq(challengeId),
+                feed.createDateTime.year().eq(now.year),
+                feed.createDateTime.month().eq(now.monthValue),
+                feed.createDateTime.dayOfMonth().eq(now.dayOfMonth),
+            )
+            .fetchOne() ?: false
+    }
+
     private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }
 
     private fun eqEmail(email: String?): BooleanExpression? = email?.let { contact.email.eq(it) }
