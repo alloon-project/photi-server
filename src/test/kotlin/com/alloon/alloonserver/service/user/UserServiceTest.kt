@@ -2,6 +2,8 @@ package com.alloon.alloonserver.service.user
 
 import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
@@ -34,9 +36,12 @@ import java.util.*
 class UserServiceTest {
 
     private val userRepository = mockk<UserRepository>()
+    private val challengeRepository = mockk<ChallengeRepository>()
+    private val challengeMemberRepository = mockk<ChallengeMemberRepository>()
     private val s3Service = mockk<S3Service>()
 
-    private val userService = UserService(userRepository, s3Service)
+    private val userService =
+        UserService(userRepository, challengeRepository, challengeMemberRepository, s3Service)
 
     @DisplayName("사용자 정보 조회를 하면 일치하는 사용자 정보를 반환한다.")
     @Test
