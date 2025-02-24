@@ -123,6 +123,7 @@ class ChallengeService(
         val challengeMember = validateChallengeMember(userId, challengeId)
 
         challengeMember.updateStatus()
+        challengeMember.user.decreaseChallengeCnt()
 
         if (challenge.currentMemberCnt == 1) {
             hashtagService.deleteHashtags(challenge.hashtags.map { it.hashtag })
@@ -274,8 +275,12 @@ class ChallengeService(
         if (challengeMember != null) {
             throw CustomException(EXISTING_CHALLENGE_MEMBER)
         } else {
+            if (user.challengeCnt >= CHALLENGE_LIMIT) {
+                throw CustomException(CHALLENGE_LIMIT_EXCEED)
+            }
             val newMember = ChallengeMember(user = user, challenge = challenge, isCreator = false)
             challengeMemberRepository.save(newMember)
+            user.updateChallengeCnt()
         }
     }
 
@@ -292,8 +297,12 @@ class ChallengeService(
         if (challengeMember != null) {
             throw CustomException(EXISTING_CHALLENGE_MEMBER)
         } else {
+            if (user.challengeCnt >= CHALLENGE_LIMIT) {
+                throw CustomException(CHALLENGE_LIMIT_EXCEED)
+            }
             challenge.validateInvitationCode(dto.invitationCode)
             challengeMemberRepository.save(dto.toEntity(user, challenge))
+            user.updateChallengeCnt()
         }
     }
 
@@ -360,5 +369,6 @@ class ChallengeService(
 
     companion object {
         const val HASHTAG_ALL = "전체"
+        const val CHALLENGE_LIMIT = 20
     }
 }
