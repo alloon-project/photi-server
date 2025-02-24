@@ -176,4 +176,22 @@ class UserController(
 
         return ResponseEntity.ok(response)
     }
+
+    @GetMapping("/challenges/{challengeId}/prove")
+    @Operation(
+        summary = "사용자 챌린지 피드 당일 인증 여부 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND])
+    fun findUserChallengeIsProve(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<FindUserChallengeIsProveResponse> {
+        val userChallengeIsProve =
+            userService.findUserChallengeIsProve(UserUtility.getUserId(principal), challengeId)
+        val response = FindUserChallengeIsProveResponse.of(userChallengeIsProve)
+
+        return ResponseEntity.ok(response)
+    }
 }

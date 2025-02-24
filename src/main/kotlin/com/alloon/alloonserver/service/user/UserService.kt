@@ -3,15 +3,16 @@ package com.alloon.alloonserver.service.user
 import com.alloon.alloonserver.api.controller.user.response.FindUserChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserEndedChallengesResponse
 import com.alloon.alloonserver.api.controller.user.response.FindUserFeedHistoryResponse
-import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
+import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
+import com.alloon.alloonserver.domain.challenge.Challenge
+import com.alloon.alloonserver.domain.challenge.ChallengeMember
+import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
+import com.alloon.alloonserver.domain.challenge.ChallengeRepository
 import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.service.s3.FolderType.USERS
 import com.alloon.alloonserver.service.s3.S3Service
-import com.alloon.alloonserver.service.user.dto.FindUserChallengeCntDto
-import com.alloon.alloonserver.service.user.dto.FindUserFeedsByDateDto
-import com.alloon.alloonserver.service.user.dto.UserChallengeHistoryDto
-import com.alloon.alloonserver.service.user.dto.UserInfoDto
+import com.alloon.alloonserver.service.user.dto.*
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
@@ -23,6 +24,8 @@ import java.time.LocalDate
 @Transactional(readOnly = true)
 class UserService(
     private val userRepository: UserRepository,
+    private val challengeRepository: ChallengeRepository,
+    private val challengeMemberRepository: ChallengeMemberRepository,
     private val s3Service: S3Service,
 ) {
 
@@ -81,9 +84,25 @@ class UserService(
             .map { FindUserChallengesResponse.of(it) }
     }
 
+    fun findUserChallengeIsProve(userId: Long, challengeId: Long): Boolean {
+        validateChallenge(challengeId)
+        validateChallengeMember(userId, challengeId)
+        return userRepository.findIsProveByChallengeId(userId, challengeId)
+    }
+
     private fun deleteOriginalImage(imageUrl: String) {
         if (imageUrl.isNotEmpty()) {
             s3Service.deleteImage(imageUrl, USERS)
         }
+    }
+
+    private fun validateChallenge(challengeId: Long): Challenge {
+        return challengeRepository.findInfoById(challengeId)
+            ?: throw CustomException(CHALLENGE_NOT_FOUND)
+    }
+
+    private fun validateChallengeMember(userId: Long, challengeId: Long): ChallengeMember {
+        return challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
+            ?: throw CustomException(CHALLENGE_MEMBER_NOT_FOUND)
     }
 }
