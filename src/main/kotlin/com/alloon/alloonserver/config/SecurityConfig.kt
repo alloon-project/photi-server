@@ -48,11 +48,15 @@ class SecurityConfig(
                     "/api/challenges/{challengeId}/invitation-code",
                     "/api/challenges/{challengeId}/challenge-members/goal",
                     "/api/challenges/{challengeId}/challenge-members",
+                    "/api/challenges/{challengeId}/join/public",
+                    "/api/challenges/{challengeId}/join/private",
                     "/api/challenges/{challengeId}/feeds",
                     "/api/challenges/{challengeId}/feeds/{feedId}",
+                    "/api/challenges/{challengeId}/feeds/{feedId}/like",
                     "/api/challenges/{challengeId}/feeds/{feedId}/comments",
                     "/api/challenges/feeds/{feedId}/comments",
                     "/api/inquiries",
+                    "/api/reports/{targetId}"
                 ).authenticated()
                 it.anyRequest().permitAll()
             }
