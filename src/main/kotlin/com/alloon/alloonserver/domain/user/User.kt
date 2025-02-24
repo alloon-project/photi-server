@@ -30,6 +30,9 @@ class User(
 
     @Column(nullable = false)
     var feedCnt: Int = 0,
+
+    @Column(nullable = false)
+    var challengeCnt: Int = 0,
 ) : BaseEntity() {
 
     fun resetPassword(password: String) {
@@ -53,6 +56,16 @@ class User(
     fun decreaseFeedCnt() {
         if (feedCnt > 0) {
             feedCnt -= 1
+        }
+    }
+
+    fun updateChallengeCnt() {
+        challengeCnt += 1
+    }
+
+    fun decreaseChallengeCnt() {
+        if (challengeCnt > 0) {
+            challengeCnt -= 1
         }
     }
 }

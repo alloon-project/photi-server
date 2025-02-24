@@ -408,7 +408,7 @@ class ChallengeController(
     @PostMapping("/{challengeId}/join/public")
     @Operation(summary = "공개 챌린지 참여하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER])
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER, CHALLENGE_LIMIT_EXCEED])
     fun joinPublicChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
@@ -421,7 +421,7 @@ class ChallengeController(
     @PostMapping("/{challengeId}/join/private")
     @Operation(summary = "비공개 챌린지 참여하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER, CHALLENGE_INVITATION_CODE_INVALID])
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER, CHALLENGE_INVITATION_CODE_INVALID, CHALLENGE_LIMIT_EXCEED])
     fun joinPrivateChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
