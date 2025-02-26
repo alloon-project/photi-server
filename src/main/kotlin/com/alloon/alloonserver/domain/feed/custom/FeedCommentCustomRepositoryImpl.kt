@@ -41,7 +41,7 @@ class FeedCommentCustomRepositoryImpl(
             .join(feedComment.feed)
             .join(feedComment.challengeMember.user)
             .where(feedComment.feed.id.eq(feedId))
-            .orderBy(feedComment.createDateTime.asc())
+            .orderBy(feedComment.createDateTime.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()

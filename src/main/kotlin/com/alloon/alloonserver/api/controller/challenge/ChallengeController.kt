@@ -307,7 +307,7 @@ class ChallengeController(
     @Operation(
         summary = "챌린지 피드 댓글 리스트 조회",
         security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
-        description = "댓글 작성 오래된 순으로 정렬되어 조회됩니다."
+        description = "댓글 작성 최신순으로 정렬되어 조회됩니다."
     )
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
