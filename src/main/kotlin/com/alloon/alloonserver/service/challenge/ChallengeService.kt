@@ -135,7 +135,7 @@ class ChallengeService(
     }
 
     @Transactional
-    fun createChallengeFeed(userId: Long, challengeId: Long, imageFile: MultipartFile) {
+    fun createChallengeFeed(userId: Long, challengeId: Long, imageFile: MultipartFile): Long? {
         val user = validateUser(userId)
         val challenge = validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
@@ -149,6 +149,8 @@ class ChallengeService(
 
         feedRepository.save(feed)
         user.updateFeedCnt()
+
+        return feed.id
     }
 
     @Transactional
@@ -182,7 +184,7 @@ class ChallengeService(
         challengeId: Long,
         feedId: Long,
         dto: CreateChallengeFeedCommentDto
-    ) {
+    ): Long? {
         validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
         val feed = validateChallengeFeed(feedId)
@@ -190,6 +192,8 @@ class ChallengeService(
 
         feedCommentRepository.save(feedComment)
         feed.updateCommentCnt()
+
+        return feedComment.id
     }
 
     @Transactional

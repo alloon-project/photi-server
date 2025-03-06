@@ -192,14 +192,15 @@ class ChallengeController(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @RequestPart imageFile: MultipartFile,
-    ): ResponseEntity<StringSuccessResponse> {
-        challengeService.createChallengeFeed(
+    ): ResponseEntity<CreateChallengeFeedResponse> {
+        val feedId = challengeService.createChallengeFeed(
             UserUtility.getUserId(principal),
             challengeId,
             imageFile
         )
+        val response = CreateChallengeFeedResponse.of(feedId)
 
-        return ResponseEntity.status(CREATED).body(StringSuccessResponse("챌린지 피드 인증이 완료되었습니다."))
+        return ResponseEntity.status(CREATED).body(response)
     }
 
     @DeleteMapping("/{challengeId}/feeds/{feedId}")
@@ -252,16 +253,16 @@ class ChallengeController(
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @PathVariable @Parameter(description = "피드 id", example = "1") feedId: Long,
         @RequestBody @Valid request: CreateChallengeFeedCommentRequest,
-    ): ResponseEntity<StringSuccessResponse> {
-        challengeService.createChallengeFeedComment(
+    ): ResponseEntity<CreateChallengeFeedCommentResponse> {
+        val feedCommentId = challengeService.createChallengeFeedComment(
             UserUtility.getUserId(principal),
             challengeId,
             feedId,
             request.toServiceDto(),
         )
+        val response = CreateChallengeFeedCommentResponse.of(feedCommentId)
 
-        return ResponseEntity.status(CREATED)
-            .body(StringSuccessResponse("챌린지 피드 댓글 등록이 완료되었습니다."))
+        return ResponseEntity.status(CREATED).body(response)
     }
 
     @DeleteMapping("/{challengeId}/feeds/{feedId}/comments/{commentId}")
