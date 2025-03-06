@@ -21,6 +21,9 @@ data class FindChallengeFeedResponse(
 
     @Schema(description = "피드 하트 수", example = "10")
     val likeCnt: Int,
+
+    @Schema(description = "피드 좋아요 여부", example = "true")
+    val isLike: Boolean,
 ) {
 
     companion object {
@@ -32,6 +35,7 @@ data class FindChallengeFeedResponse(
                 feed.feedImageUrl,
                 feed.createdDateTime,
                 feed.likeCnt,
+                feed.isLike,
             )
         }
     }

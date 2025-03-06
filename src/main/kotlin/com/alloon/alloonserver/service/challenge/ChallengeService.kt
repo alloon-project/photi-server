@@ -207,7 +207,7 @@ class ChallengeService(
     fun findChallengeFeed(userId: Long, challengeId: Long, feedId: Long): FindChallengeFeedDto {
         validateChallenge(challengeId)
         validateChallengeMember(userId, challengeId)
-        return feedRepository.findContentById(challengeId, feedId) ?: throw CustomException(
+        return feedRepository.findContentById(challengeId, feedId, userId) ?: throw CustomException(
             FEED_NOT_FOUND
         )
     }

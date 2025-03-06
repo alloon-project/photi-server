@@ -45,7 +45,11 @@ class FeedCustomRepositoryImpl(
             .fetchFirst()
     }
 
-    override fun findContentById(challengeId: Long, id: Long): FindChallengeFeedDto? {
+    override fun findContentById(
+        challengeId: Long,
+        feedId: Long,
+        userId: Long,
+    ): FindChallengeFeedDto? {
         return queryFactory
             .select(
                 QFindChallengeFeedDto(
@@ -54,12 +58,18 @@ class FeedCustomRepositoryImpl(
                     feed.imageUrl,
                     feed.createDateTime,
                     feed.likeCnt,
+                    cases()
+                        .`when`(feedLike.id.isNotNull).then(true)
+                        .otherwise(false),
                 )
             )
             .from(feed)
             .join(feed.challengeMember)
             .join(feed.challenge)
-            .where(feed.id.eq(id), feed.challenge.id.eq(challengeId))
+            .leftJoin(feedLike).on(
+                feedLike.feed.id.eq(feed.id), feedLike.challengeMember.user.id.eq(userId)
+            )
+            .where(feed.id.eq(feedId), feed.challenge.id.eq(challengeId))
             .fetchFirst()
     }
 

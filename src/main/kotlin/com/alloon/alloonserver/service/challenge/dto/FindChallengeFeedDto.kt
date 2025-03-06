@@ -9,4 +9,5 @@ data class FindChallengeFeedDto @QueryProjection constructor(
     val feedImageUrl: String,
     val createdDateTime: LocalDateTime,
     val likeCnt: Int,
+    val isLike: Boolean,
 )
