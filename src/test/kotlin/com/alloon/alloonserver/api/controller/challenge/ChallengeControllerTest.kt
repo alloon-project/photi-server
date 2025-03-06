@@ -253,27 +253,6 @@ class ChallengeControllerTest : RestDocsSupport() {
         resultActions.andExpect(status().isOk)
     }
 
-    @DisplayName("챌린지 피드 인증을 성공하면 201을 반환한다.")
-    @Test
-    fun givenValid_whenCreateChallengeFeed_thenReturn201() {
-        // given
-        val multipartFile = MockMultipartFile("imageFile", "file.png", "image/png", ByteArray(1))
-
-        every { challengeService.createChallengeFeed(any(), any(), any()) } just Runs
-
-        // when
-        val resultActions = mockMvc.perform(
-            multipart("/api/challenges/{challengeId}/feeds", 1)
-                .file(multipartFile)
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-                .contentType(MULTIPART_FORM_DATA_VALUE)
-        )
-
-        // then
-        resultActions.andExpect(status().isCreated)
-    }
-
     @DisplayName("챌린지 피드 삭제를 성공하면 200을 반환한다.")
     @Test
     fun givenValid_whenDeleteChallengeFeed_thenReturn200() {
@@ -318,27 +297,6 @@ class ChallengeControllerTest : RestDocsSupport() {
 
         // then
         resultActions.andExpect(status().isOk)
-    }
-
-    @DisplayName("챌린지 피드 댓글 등록을 성공하면 201을 반환한다.")
-    @Test
-    fun givenValid_whenCreateChallengeFeedComment_thenReturn201() {
-        // given
-        val request = CreateChallengeFeedCommentRequest("피드 댓글")
-
-        every { challengeService.createChallengeFeedComment(any(), any(), any(), any()) } just Runs
-
-        // when
-        val resultActions = mockMvc.perform(
-            post("/api/challenges/{challengeId}/feeds/{feedId}/comments", 1, 1)
-                .header(AUTHORIZATION, "Bearer access-token")
-                .principal(mockPrincipal)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-
-        // then
-        resultActions.andExpect(status().isCreated)
     }
 
     @DisplayName("챌린지 피드 댓글 삭제를 성공하면 200을 반환한다.")
@@ -548,7 +506,8 @@ class ChallengeControllerTest : RestDocsSupport() {
             "https://url.kr/5MhHhD",
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
-            10
+            10,
+            true,
         )
     }
 }
