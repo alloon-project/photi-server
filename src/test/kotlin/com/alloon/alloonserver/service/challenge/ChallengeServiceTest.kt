@@ -10,7 +10,6 @@ import com.alloon.alloonserver.domain.feed.*
 import com.alloon.alloonserver.domain.user.Contact
 import com.alloon.alloonserver.domain.user.User
 import com.alloon.alloonserver.domain.user.UserRepository
-import com.alloon.alloonserver.framework.AbstractMailProperties
 import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.alloon.alloonserver.service.challenge.dto.*
 import com.alloon.alloonserver.service.s3.FolderType.FEEDS
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -31,9 +29,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Transactional
-@ActiveProfiles("test")
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
-class ChallengeServiceTest : AbstractMailProperties {
+class ChallengeServiceTest {
 
     private val challengeRepository = mockk<ChallengeRepository>()
     private val challengeMemberRepository = mockk<ChallengeMemberRepository>()

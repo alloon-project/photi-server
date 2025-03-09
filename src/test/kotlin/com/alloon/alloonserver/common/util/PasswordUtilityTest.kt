@@ -5,9 +5,7 @@ import io.mockk.mockkObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
 class PasswordUtilityTest {
 
     @DisplayName("랜덤 코드 생성이 정상 작동한다")

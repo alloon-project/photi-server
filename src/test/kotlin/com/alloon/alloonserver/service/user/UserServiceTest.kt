@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.SliceImpl
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -30,7 +29,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
-@ActiveProfiles("test")
 @Transactional
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
 class UserServiceTest {

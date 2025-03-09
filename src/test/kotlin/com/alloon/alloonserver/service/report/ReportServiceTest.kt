@@ -22,13 +22,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.LocalTime
 
-@ActiveProfiles("test")
 @Transactional
 @ContextConfiguration(initializers = [TestContainerInitializer::class])
 class ReportServiceTest {

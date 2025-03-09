@@ -3,7 +3,6 @@ package com.alloon.alloonserver.common.exception
 import com.alloon.alloonserver.common.constant.ExceptionCode.*
 import com.alloon.alloonserver.common.response.CustomException
 import com.alloon.alloonserver.common.response.ErrorResponse
-import io.sentry.Sentry
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.beans.TypeMismatchException
@@ -108,7 +107,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
         logger.error(ex.message)
-        Sentry.captureException(ex)
         val response = ErrorResponse.of(SERVER_ERROR)
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
