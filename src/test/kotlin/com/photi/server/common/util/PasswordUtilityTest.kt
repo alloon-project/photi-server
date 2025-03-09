@@ -1,6 +1,5 @@
-package com.alloon.alloonserver.common.util
+package com.photi.server.common.util
 
-import com.photi.server.common.util.PasswordUtility
 import io.mockk.every
 import io.mockk.mockkObject
 import org.assertj.core.api.Assertions.assertThat

@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.service.inquiry
+package com.photi.server.service.inquiry
 
 import com.photi.server.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.photi.server.common.response.CustomException
@@ -7,7 +7,6 @@ import com.photi.server.domain.inquiry.InquiryRepository
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
-import com.photi.server.service.inquiry.InquiryService
 import com.photi.server.service.inquiry.dto.CreateInquiryDto
 import io.mockk.every
 import io.mockk.mockk

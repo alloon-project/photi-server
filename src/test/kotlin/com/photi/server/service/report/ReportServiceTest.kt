@@ -1,6 +1,5 @@
-package com.alloon.alloonserver.service.report
+package com.photi.server.service.report
 
-import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.photi.server.common.constant.ExceptionCode.*
 import com.photi.server.common.response.CustomException
 import com.photi.server.domain.challenge.ChallengeMemberRepository
@@ -12,10 +11,10 @@ import com.photi.server.domain.report.ReportRepository
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
+import com.photi.server.framework.TestContainerInitializer
 import com.photi.server.service.challenge.dto.ChallengeHashtagDto
 import com.photi.server.service.challenge.dto.ChallengeRuleDto
 import com.photi.server.service.challenge.dto.CreateChallengeDto
-import com.photi.server.service.report.ReportService
 import com.photi.server.service.report.dto.CreateReportDto
 import io.mockk.every
 import io.mockk.mockk

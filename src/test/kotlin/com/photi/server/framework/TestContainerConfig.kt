@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.framework
+package com.photi.server.framework
 
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy

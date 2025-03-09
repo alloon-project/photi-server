@@ -1,7 +1,6 @@
-package com.alloon.alloonserver.domain.feed
+package com.photi.server.domain.feed
 
 import com.photi.server.domain.challenge.ChallengeMember
-import com.photi.server.domain.feed.Feed
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
 import com.photi.server.service.challenge.dto.ChallengeHashtagDto

@@ -1,8 +1,7 @@
-package com.alloon.alloonserver.common.util
+package com.photi.server.common.util
 
 import com.photi.server.common.constant.ExceptionCode.USERNAME_FORMAT_INVALID
 import com.photi.server.common.response.CustomException
-import com.photi.server.common.util.RegexUtility
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

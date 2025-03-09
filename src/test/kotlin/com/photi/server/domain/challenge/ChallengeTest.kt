@@ -1,4 +1,4 @@
-package com.alloon.alloonserver.domain.challenge
+package com.photi.server.domain.challenge
 
 import com.photi.server.service.challenge.dto.ChallengeHashtagDto
 import com.photi.server.service.challenge.dto.ChallengeRuleDto

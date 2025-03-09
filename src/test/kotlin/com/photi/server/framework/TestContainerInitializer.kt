@@ -1,10 +1,9 @@
-package com.alloon.alloonserver.framework
+package com.photi.server.framework
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
-import kotlin.math.log
 import org.springframework.context.ConfigurableApplicationContext as ConfigurableApplicationContext1
 
 class TestContainerInitializer : ApplicationContextInitializer<ConfigurableApplicationContext1> {

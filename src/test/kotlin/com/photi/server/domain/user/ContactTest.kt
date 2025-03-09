@@ -1,8 +1,7 @@
-package com.alloon.alloonserver.domain.user
+package com.photi.server.domain.user
 
 import com.photi.server.common.constant.ExceptionCode.EMAIL_VERIFICATION_CODE_INVALID
 import com.photi.server.common.response.CustomException
-import com.photi.server.domain.user.Contact
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName

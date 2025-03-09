@@ -1,6 +1,5 @@
-package com.alloon.alloonserver.service.challenge
+package com.photi.server.service.challenge
 
-import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.photi.server.common.constant.ExceptionCode.*
 import com.photi.server.common.constant.SortTypeConstants
 import com.photi.server.common.response.CustomException
@@ -11,8 +10,7 @@ import com.photi.server.domain.feed.*
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
-import com.photi.server.service.challenge.ChallengeService
-import com.photi.server.service.challenge.HashtagService
+import com.photi.server.framework.TestContainerInitializer
 import com.photi.server.service.challenge.dto.*
 import com.photi.server.service.s3.FolderType.FEEDS
 import com.photi.server.service.s3.S3Service

@@ -1,6 +1,5 @@
-package com.alloon.alloonserver.service.user
+package com.photi.server.service.user
 
-import com.alloon.alloonserver.framework.TestContainerInitializer
 import com.photi.server.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.photi.server.common.response.CustomException
 import com.photi.server.domain.challenge.ChallengeMemberRepository
@@ -8,9 +7,9 @@ import com.photi.server.domain.challenge.ChallengeRepository
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
+import com.photi.server.framework.TestContainerInitializer
 import com.photi.server.service.challenge.dto.FindChallengeHashtagDto
 import com.photi.server.service.s3.S3Service
-import com.photi.server.service.user.UserService
 import com.photi.server.service.user.dto.*
 import io.mockk.Runs
 import io.mockk.every
