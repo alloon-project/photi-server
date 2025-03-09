@@ -1,34 +1,10 @@
 spring:
   config:
-    activate:
-      on-profile: local
     import: optional:file:.env[.properties]
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: true
-          auth: true
-logging:
-  config: classpath:logback/dev-logback.xml
-
-sentry:
-  dsn:
 
 cloud:
   aws:
@@ -46,15 +22,15 @@ cloud:
     stack:
       auto: false
 
-api:
-  name: "Alloon Test"
-  master:
-    id: alloon
-  jwt:
-    secret: ${JWT_SECRET}
-    domain: ${JWT_DOMAIN}
-    time:
-      access: ${JWT_ACCESS}
-      refresh: ${JWT_REFRESH}
-  mail:
-    address: ${MAIL_ADDRESS}
+springdoc:
+  swagger-ui:
+    groups-order: desc
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
