@@ -1,13 +1,14 @@
 package com.alloon.alloonserver.service.inquiry
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
-import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.domain.inquiry.InquiryCategoryType
-import com.alloon.alloonserver.domain.inquiry.InquiryRepository
-import com.alloon.alloonserver.domain.user.Contact
-import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.domain.user.UserRepository
-import com.alloon.alloonserver.service.inquiry.dto.CreateInquiryDto
+import com.photi.server.common.constant.ExceptionCode.USER_NOT_FOUND
+import com.photi.server.common.response.CustomException
+import com.photi.server.domain.inquiry.InquiryCategoryType
+import com.photi.server.domain.inquiry.InquiryRepository
+import com.photi.server.domain.user.Contact
+import com.photi.server.domain.user.User
+import com.photi.server.domain.user.UserRepository
+import com.photi.server.service.inquiry.InquiryService
+import com.photi.server.service.inquiry.dto.CreateInquiryDto
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat

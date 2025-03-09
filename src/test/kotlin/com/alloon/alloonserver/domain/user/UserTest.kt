@@ -1,5 +1,7 @@
 package com.alloon.alloonserver.domain.user
 
+import com.photi.server.domain.user.Contact
+import com.photi.server.domain.user.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

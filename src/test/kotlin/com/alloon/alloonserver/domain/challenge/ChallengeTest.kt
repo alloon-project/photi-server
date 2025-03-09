@@ -1,8 +1,8 @@
 package com.alloon.alloonserver.domain.challenge
 
-import com.alloon.alloonserver.service.challenge.dto.ChallengeHashtagDto
-import com.alloon.alloonserver.service.challenge.dto.ChallengeRuleDto
-import com.alloon.alloonserver.service.challenge.dto.CreateChallengeDto
+import com.photi.server.service.challenge.dto.ChallengeHashtagDto
+import com.photi.server.service.challenge.dto.ChallengeRuleDto
+import com.photi.server.service.challenge.dto.CreateChallengeDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

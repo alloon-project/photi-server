@@ -7,8 +7,16 @@ plugins {
     id 'org.jetbrains.kotlin.kapt' version '1.9.21'
 }
 
-group = 'com.alloon'
-version = '0.0.1'
+group = 'com.photi'
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveBaseName.set('server')
+    archiveVersion.set('0.0.1-SNAPSHOT')
+}
 
 java {
     toolchain {

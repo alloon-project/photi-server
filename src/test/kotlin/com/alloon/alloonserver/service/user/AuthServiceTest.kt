@@ -1,13 +1,14 @@
 package com.alloon.alloonserver.service.user
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.*
-import com.alloon.alloonserver.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
-import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.common.util.PasswordUtility
-import com.alloon.alloonserver.domain.user.*
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.email.EmailService
-import com.alloon.alloonserver.service.user.dto.*
+import com.photi.server.common.constant.ExceptionCode.*
+import com.photi.server.common.constant.UnavailableConstants.UNAVAILABLE_USERNAMES
+import com.photi.server.common.response.CustomException
+import com.photi.server.common.util.PasswordUtility
+import com.photi.server.domain.user.*
+import com.photi.server.service.email.EmailService
+import com.photi.server.service.user.AuthService
+import com.photi.server.service.user.dto.*
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just

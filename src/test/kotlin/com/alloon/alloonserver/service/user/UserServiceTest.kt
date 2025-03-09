@@ -1,16 +1,17 @@
 package com.alloon.alloonserver.service.user
 
-import com.alloon.alloonserver.common.constant.ExceptionCode.USER_NOT_FOUND
-import com.alloon.alloonserver.common.response.CustomException
-import com.alloon.alloonserver.domain.challenge.ChallengeMemberRepository
-import com.alloon.alloonserver.domain.challenge.ChallengeRepository
-import com.alloon.alloonserver.domain.user.Contact
-import com.alloon.alloonserver.domain.user.User
-import com.alloon.alloonserver.domain.user.UserRepository
 import com.alloon.alloonserver.framework.TestContainerInitializer
-import com.alloon.alloonserver.service.challenge.dto.FindChallengeHashtagDto
-import com.alloon.alloonserver.service.s3.S3Service
-import com.alloon.alloonserver.service.user.dto.*
+import com.photi.server.common.constant.ExceptionCode.USER_NOT_FOUND
+import com.photi.server.common.response.CustomException
+import com.photi.server.domain.challenge.ChallengeMemberRepository
+import com.photi.server.domain.challenge.ChallengeRepository
+import com.photi.server.domain.user.Contact
+import com.photi.server.domain.user.User
+import com.photi.server.domain.user.UserRepository
+import com.photi.server.service.challenge.dto.FindChallengeHashtagDto
+import com.photi.server.service.s3.S3Service
+import com.photi.server.service.user.UserService
+import com.photi.server.service.user.dto.*
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
