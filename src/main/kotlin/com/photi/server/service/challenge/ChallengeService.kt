@@ -191,6 +191,12 @@ class ChallengeService(
             .map { FindChallengeFeedsResponse.of(it) }
     }
 
+    fun findChallengeFeedMemberCnt(challengeId: Long): FindChallengeFeedMemberCntDto {
+        val feedMemberCnt = feedRepository.findFeedMemberCntByChallengeId(challengeId)
+            ?: throw CustomException(CHALLENGE_NOT_FOUND)
+        return FindChallengeFeedMemberCntDto.of(feedMemberCnt)
+    }
+
     @Transactional
     fun createChallengeFeedComment(
         userId: Long,
