@@ -11,21 +11,17 @@ pipeline {
        }
        stage('Build') {
            steps {
-               dir('photi-server') {
-                   sh "./gradlew clean bootJar"
-               }
+               sh "./gradlew clean bootJar"
            }
        }
        stage('Deploy') {
            steps {
-               dir('photi-server/build/libs') {
-                   sshagent(credentials: ["$EC2_CREDENTIALS_ID"]) {
-                      sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP
-                        scp server-0.0.1-SNAPSHOT.jar ubuntu@$EC2_DEV_PRIVATE_IP:/home/ubuntu
-                        ssh ubuntu@$EC2_DEV_PRIVATE_IP "sh photi-script.sh" &
-                      '''
-                   }
+               sshagent(credentials: ["$EC2_CREDENTIALS_ID"]) {
+                  sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP
+                    scp build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:/home/ubuntu
+                    ssh ubuntu@$EC2_DEV_PRIVATE_IP "sh photi-script.sh" &
+                  '''
                }
            }
        }

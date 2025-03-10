@@ -32,6 +32,7 @@ class SecurityConfig(
                 it.requestMatchers(PATCH, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(DELETE, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(
+                    "/api/auth/validate/access-token",
                     "/api/users",
                     "/api/users/token",
                     "/api/users/password",
