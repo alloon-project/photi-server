@@ -10,7 +10,7 @@ import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 
-@RestControllerAdvice(basePackages = ["com.alloon.alloonserver.api.controller"])
+@RestControllerAdvice(basePackages = ["com.photi.server.api.controller"])
 class SuccessResponseBodyAdvice : ResponseBodyAdvice<Any> {
 
     override fun supports(

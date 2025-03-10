@@ -181,6 +181,16 @@ class ChallengeService(
             .map { FindChallengeFeedsByDateResponse.of(it) }
     }
 
+    fun findChallengeFeedsV2(
+        userId: Long,
+        challengeId: Long,
+        pageable: Pageable,
+        sort: SortTypeConstants,
+    ): Slice<FindChallengeFeedsResponse> {
+        return feedRepository.findAllByChallengeIdV2(userId, challengeId, pageable, sort)
+            .map { FindChallengeFeedsResponse.of(it) }
+    }
+
     @Transactional
     fun createChallengeFeedComment(
         userId: Long,

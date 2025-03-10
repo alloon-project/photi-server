@@ -22,4 +22,11 @@ interface FeedCustomRepository {
         pageable: Pageable,
         sort: SortTypeConstants
     ): Slice<Triple<LocalDate, List<FindChallengeFeedsDto>, Int>>
+
+    fun findAllByChallengeIdV2(
+        userId: Long,
+        challengeId: Long,
+        pageable: Pageable,
+        sort: SortTypeConstants
+    ): Slice<FindChallengeFeedsDto>
 }

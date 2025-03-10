@@ -244,6 +244,33 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
+    @GetMapping("/{challengeId}/feeds/v2")
+    @Operation(
+        summary = "챌린지 피드 조회 v2",
+        description = "정렬 기준 선택 시, 최신순[피드 인증 날짜 최신순], 인기순[반응 수(하트 수 + 댓글 수) 많은 순]으로 조회됩니다.",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun findChallengeFeedsV2(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @Parameter(description = "페이지 시작 번호") @RequestParam(defaultValue = "0") page: Int,
+        @Parameter(description = "한 페이지당 content 최대 갯수") @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(description = "정렬 기준") @RequestParam(defaultValue = "LATEST") sort: SortTypeConstants,
+    ): ResponseEntity<SliceResponse<FindChallengeFeedsResponse>> {
+        val pageable = PageRequest.of(page, size)
+        val challengeFeeds = challengeService.findChallengeFeedsV2(
+            UserUtility.getUserId(principal),
+            challengeId,
+            pageable,
+            sort
+        )
+        val response = SliceResponse.of(challengeFeeds)
+
+        return ResponseEntity.ok(response)
+    }
+
     @PostMapping("/{challengeId}/feeds/{feedId}/comments")
     @Operation(summary = "챌린지 피드 댓글 등록", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "201")

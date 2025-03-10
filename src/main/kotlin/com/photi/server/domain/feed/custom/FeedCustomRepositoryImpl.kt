@@ -132,6 +132,48 @@ class FeedCustomRepositoryImpl(
         return SliceImpl(groupedContent, pageable, hasNext)
     }
 
+    override fun findAllByChallengeIdV2(
+        userId: Long,
+        challengeId: Long,
+        pageable: Pageable,
+        sort: SortTypeConstants
+    ): SliceImpl<FindChallengeFeedsDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .select(
+                QFindChallengeFeedsDto(
+                    feed.id,
+                    feed.challengeMember.user.username,
+                    feed.imageUrl,
+                    feed.createDateTime,
+                    feed.challenge.proveTime,
+                    cases()
+                        .`when`(feedLike.id.isNotNull).then(true)
+                        .otherwise(false)
+                )
+            )
+            .from(feed)
+            .join(feed.challenge)
+            .join(feed.challengeMember.user)
+            .leftJoin(feedLike).on(
+                feedLike.feed.id.eq(feed.id), feedLike.challengeMember.user.id.eq(userId)
+            )
+            .where(feed.challenge.id.eq(challengeId))
+            .orderBy(*getOrderSpecifier(sort))
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+
+        val hasNext = if (content.size > pageSize) {
+            content.removeAt(pageSize)
+            true
+        } else {
+            false
+        }
+
+        return SliceImpl(content, pageable, hasNext)
+    }
+
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { feed.serviceStatus.eq(serviceStatus) }
 
