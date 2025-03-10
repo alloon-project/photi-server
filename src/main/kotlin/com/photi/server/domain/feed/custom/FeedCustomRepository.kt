@@ -29,4 +29,6 @@ interface FeedCustomRepository {
         pageable: Pageable,
         sort: SortTypeConstants
     ): Slice<FindChallengeFeedsDto>
+
+    fun findFeedMemberCntByChallengeId(challengeId: Long): Long?
 }

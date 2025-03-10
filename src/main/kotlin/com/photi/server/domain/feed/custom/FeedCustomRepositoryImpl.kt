@@ -8,10 +8,7 @@ import com.photi.server.domain.base.ServiceStatus.ACTIVE
 import com.photi.server.domain.feed.Feed
 import com.photi.server.domain.feed.QFeed.feed
 import com.photi.server.domain.feed.QFeedLike.feedLike
-import com.photi.server.service.challenge.dto.FindChallengeFeedDto
-import com.photi.server.service.challenge.dto.FindChallengeFeedsDto
-import com.photi.server.service.challenge.dto.QFindChallengeFeedDto
-import com.photi.server.service.challenge.dto.QFindChallengeFeedsDto
+import com.photi.server.service.challenge.dto.*
 import com.querydsl.core.types.Order.DESC
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -172,6 +169,19 @@ class FeedCustomRepositoryImpl(
         }
 
         return SliceImpl(content, pageable, hasNext)
+    }
+
+    override fun findFeedMemberCntByChallengeId(challengeId: Long): Long? {
+        return queryFactory
+            .select(feed.count())
+            .from(feed)
+            .where(
+                feed.challenge.id.eq(challengeId),
+                feed.createDateTime.year().eq(LocalDate.now().year),
+                feed.createDateTime.month().eq(LocalDate.now().monthValue),
+                feed.createDateTime.dayOfMonth().eq(LocalDate.now().dayOfMonth),
+            )
+            .fetchOne()
     }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
