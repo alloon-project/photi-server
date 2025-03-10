@@ -54,6 +54,7 @@ class SecurityConfig(
                     "/api/challenges/{challengeId}/feeds/{feedId}",
                     "/api/challenges/{challengeId}/feeds/{feedId}/like",
                     "/api/challenges/{challengeId}/feeds/{feedId}/comments",
+                    "/api/challenges/{challengeId}/feed-members",
                     "/api/challenges/feeds/{feedId}/comments",
                     "/api/inquiries",
                     "/api/reports/{targetId}"

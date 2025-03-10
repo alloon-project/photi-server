@@ -271,6 +271,23 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
+    @GetMapping("/{challengeId}/feed-members")
+    @Operation(
+        summary = "챌린지 피드 당일 인증 파티원 수 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)]
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND])
+    fun findChallengeFeedMemberCnt(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<FindChallengeFeedMemberCntResponse> {
+        val challenge = challengeService.findChallengeFeedMemberCnt(challengeId)
+        val response = FindChallengeFeedMemberCntResponse.of(challenge)
+
+        return ResponseEntity.ok(response)
+    }
+
     @PostMapping("/{challengeId}/feeds/{feedId}/comments")
     @Operation(summary = "챌린지 피드 댓글 등록", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "201")
