@@ -3,6 +3,7 @@ package com.photi.server.domain.challenge
 import com.photi.server.common.constant.ExceptionCode
 import com.photi.server.common.response.CustomException
 import com.photi.server.domain.base.BasePermanentEntity
+import com.photi.server.domain.base.ServiceStatus
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalTime
@@ -76,5 +77,9 @@ class Challenge(
         if (invitationCode != this.invitationCode) {
             throw CustomException(ExceptionCode.CHALLENGE_INVITATION_CODE_INVALID)
         }
+    }
+
+    fun updateChallengeStatus() {
+        serviceStatus = ServiceStatus.END
     }
 }
