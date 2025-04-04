@@ -130,7 +130,7 @@ class ChallengeService(
 
         if (challenge.currentMemberCnt == 1) {
             hashtagService.deleteHashtags(challenge.hashtags.map { it.hashtag })
-            challengeRepository.deleteById(challengeId)
+            challenge.updateChallengeStatusDeleted()
             s3Service.deleteImage(challenge.imageUrl, CHALLENGES)
         } else {
             challenge.decreaseCurrentMemberCnt()

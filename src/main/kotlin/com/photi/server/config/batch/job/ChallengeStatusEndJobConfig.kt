@@ -69,7 +69,7 @@ class ChallengeStatusEndJobConfig(
     @Bean(BEAN_PREFIX + "itemProcessor")
     fun itemProcessor(): ItemProcessor<Challenge, Challenge> {
         return ItemProcessor {
-            it.updateChallengeStatus()
+            it.updateChallengeStatusEnd()
             it
         }
     }

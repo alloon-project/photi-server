@@ -79,7 +79,11 @@ class Challenge(
         }
     }
 
-    fun updateChallengeStatus() {
+    fun updateChallengeStatusEnd() {
         serviceStatus = ServiceStatus.END
+    }
+
+    fun updateChallengeStatusDeleted() {
+        serviceStatus = ServiceStatus.DELETED
     }
 }
