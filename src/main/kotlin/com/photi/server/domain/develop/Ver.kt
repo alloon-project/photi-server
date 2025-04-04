@@ -10,7 +10,7 @@ class Ver(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ver_id")
-    val id: Int? = null,
+    val id: Long? = null,
 
     @Column(nullable = false, length = 10)
     val version: String,
