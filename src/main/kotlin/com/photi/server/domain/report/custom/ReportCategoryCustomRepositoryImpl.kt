@@ -25,7 +25,7 @@ class ReportCategoryCustomRepositoryImpl(
             .fetch()
     }
 
-    override fun find(id: Int, type: ReportCategoryType?): ReportCategory? {
+    override fun find(id: Long, type: ReportCategoryType?): ReportCategory? {
         return queryFactory
             .selectFrom(reportCategory)
             .where(
@@ -35,7 +35,8 @@ class ReportCategoryCustomRepositoryImpl(
             ).fetchFirst()
     }
 
-    private fun eqType(type: ReportCategoryType?): BooleanExpression? = type?.let { reportCategory.type.eq(type) }
+    private fun eqType(type: ReportCategoryType?): BooleanExpression? =
+        type?.let { reportCategory.type.eq(type) }
 
     private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
         serviceStatus?.let { reportCategory.serviceStatus.eq(serviceStatus) }

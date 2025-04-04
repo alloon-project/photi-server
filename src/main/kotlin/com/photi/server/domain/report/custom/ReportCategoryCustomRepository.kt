@@ -7,5 +7,5 @@ interface ReportCategoryCustomRepository {
 
     fun findAllDescription(type: ReportCategoryType?): List<String>
 
-    fun find(id: Int, type: ReportCategoryType?): ReportCategory?
+    fun find(id: Long, type: ReportCategoryType?): ReportCategory?
 }
