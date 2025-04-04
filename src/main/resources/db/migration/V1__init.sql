@@ -1,6 +1,6 @@
 CREATE TABLE contact
 (
-    contact_id        BIGINT PRIMARY KEY,
+    contact_id        BIGSERIAL PRIMARY KEY,
     email             VARCHAR(100) NOT NULL,
     verification_code VARCHAR(6)   NOT NULL,
     verify_yn         BOOLEAN      NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE contact
 
 CREATE TABLE users
 (
-    user_id               BIGINT PRIMARY KEY,
+    user_id               BIGSERIAL PRIMARY KEY,
     username              VARCHAR(20)  NOT NULL,
     password              VARCHAR(255) NOT NULL,
     image_url             VARCHAR(500) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE users
 
 CREATE TABLE user_role
 (
-    user_role_id     BIGINT PRIMARY KEY,
+    user_role_id     BIGSERIAL PRIMARY KEY,
     create_date_time TIMESTAMP(6) NOT NULL,
     update_date_time TIMESTAMP(6) NOT NULL,
     role             VARCHAR(6)   NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE user_role
 
 CREATE TABLE user_template_image
 (
-    user_template_image_id BIGINT PRIMARY KEY,
+    user_template_image_id BIGSERIAL PRIMARY KEY,
     image_url              VARCHAR(500) NOT NULL,
     start_date_time        TIMESTAMP(6) NOT NULL,
     end_date_time          TIMESTAMP(6) NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE user_template_image
 
 CREATE TABLE challenge
 (
-    challenge_id       BIGINT PRIMARY KEY,
+    challenge_id       BIGSERIAL PRIMARY KEY,
     name               VARCHAR(16)  NOT NULL,
     goal               VARCHAR(120) NOT NULL,
     prove_time         TIME         NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE challenge
 
 CREATE TABLE challenge_rule
 (
-    challenge_rule_id BIGINT PRIMARY KEY,
+    challenge_rule_id BIGSERIAL PRIMARY KEY,
     rule              VARCHAR(30)  NOT NULL,
     create_date_time  TIMESTAMP(6) NOT NULL,
     update_date_time  TIMESTAMP(6) NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE challenge_rule
 
 CREATE TABLE challenge_hashtag
 (
-    challenge_hashtag_id BIGINT PRIMARY KEY,
+    challenge_hashtag_id BIGSERIAL PRIMARY KEY,
     hashtag              VARCHAR(6)   NOT NULL,
     create_date_time     TIMESTAMP(6) NOT NULL,
     update_date_time     TIMESTAMP(6) NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE challenge_hashtag
 
 CREATE TABLE challenge_template_image
 (
-    challenge_template_image_id BIGINT PRIMARY KEY,
+    challenge_template_image_id BIGSERIAL PRIMARY KEY,
     image_url                   VARCHAR(500) NOT NULL,
     start_date_time             TIMESTAMP(6) NOT NULL,
     end_date_time               TIMESTAMP(6) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE challenge_template_image
 
 CREATE TABLE challenge_member
 (
-    challenge_member_id BIGINT PRIMARY KEY,
+    challenge_member_id BIGSERIAL PRIMARY KEY,
     is_creator          BOOLEAN      NOT NULL,
     status              VARCHAR(15)  NOT NULL,
     create_date_time    TIMESTAMP(6) NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE challenge_member
 
 CREATE TABLE feed
 (
-    feed_id             BIGINT PRIMARY KEY,
+    feed_id             BIGSERIAL PRIMARY KEY,
     like_cnt            INT          NOT NULL,
     comment_cnt         INT          NOT NULL,
     image_url           VARCHAR(500) NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE feed
 
 CREATE TABLE feed_comment
 (
-    feed_comment_id     BIGINT PRIMARY KEY,
+    feed_comment_id     BIGSERIAL PRIMARY KEY,
     comment             VARCHAR(300),
     create_date_time    TIMESTAMP(6) NOT NULL,
     update_date_time    TIMESTAMP(6) NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE feed_comment
 
 CREATE TABLE feed_like
 (
-    feed_like_id        BIGINT PRIMARY KEY,
+    feed_like_id        BIGSERIAL PRIMARY KEY,
     create_date_time    TIMESTAMP(6) NOT NULL,
     update_date_time    TIMESTAMP(6) NOT NULL,
     service_status      VARCHAR(10)  NOT NULL,
@@ -160,7 +160,7 @@ CREATE TABLE feed_like
 
 CREATE TABLE inquiry_category
 (
-    inquiry_category_id BIGINT PRIMARY KEY,
+    inquiry_category_id BIGSERIAL PRIMARY KEY,
     description         VARCHAR(30)  NOT NULL,
     sort                INT          NOT NULL,
     create_date_time    TIMESTAMP(6) NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE inquiry_category
 
 CREATE TABLE inquiry
 (
-    inquiry_id       BIGINT PRIMARY KEY,
+    inquiry_id       BIGSERIAL PRIMARY KEY,
     type             VARCHAR(15)  NOT NULL,
     content          VARCHAR(120) NOT NULL,
     create_date_time TIMESTAMP(6) NOT NULL,
@@ -183,7 +183,7 @@ CREATE TABLE inquiry
 
 CREATE TABLE report_category
 (
-    report_category_id BIGINT PRIMARY KEY,
+    report_category_id BIGSERIAL PRIMARY KEY,
     type               VARCHAR(16)  NOT NULL,
     description        VARCHAR(30)  NOT NULL,
     sort               INT          NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE report_category
 
 CREATE TABLE report
 (
-    report_id        BIGINT PRIMARY KEY,
+    report_id        BIGSERIAL PRIMARY KEY,
     reporter_id      BIGINT       NOT NULL,
     target_id        BIGINT       NOT NULL,
     category         VARCHAR(15)  NOT NULL,
@@ -208,7 +208,7 @@ CREATE TABLE report
 
 CREATE TABLE suspension
 (
-    suspend_id       BIGINT PRIMARY KEY,
+    suspend_id       BIGSERIAL PRIMARY KEY,
     start_date       DATE         NOT NULL,
     end_date         DATE         NOT NULL,
     create_date_time TIMESTAMP(6) NOT NULL,
@@ -221,7 +221,7 @@ CREATE TABLE suspension
 
 CREATE TABLE block
 (
-    block_id         BIGINT PRIMARY KEY,
+    block_id         BIGSERIAL PRIMARY KEY,
     create_date_time TIMESTAMP(6) NOT NULL,
     update_date_time TIMESTAMP(6) NOT NULL,
     service_status   VARCHAR(10)  NOT NULL,
@@ -233,7 +233,7 @@ CREATE TABLE block
 
 CREATE TABLE ver
 (
-    ver_id           BIGINT PRIMARY KEY,
+    ver_id           BIGSERIAL PRIMARY KEY,
     version          VARCHAR(10)  NOT NULL,
     create_date_time TIMESTAMP(6) NOT NULL,
     update_date_time TIMESTAMP(6) NOT NULL,
