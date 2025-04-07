@@ -191,8 +191,8 @@ class FeedCustomRepositoryImpl(
         return when (sort) {
             LATEST -> arrayOf(OrderSpecifier(DESC, feed.createDateTime))
             POPULAR -> arrayOf(
-                OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt)),
                 OrderSpecifier(DESC, feed.createDateTime),
+                OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt)),
             )
         }
     }
