@@ -304,6 +304,7 @@ class ChallengeService(
             val newMember = ChallengeMember(user = user, challenge = challenge, isCreator = false)
             challengeMemberRepository.save(newMember)
             user.updateChallengeCnt()
+            challenge.updateCurrentMemberCnt()
         }
     }
 
@@ -326,6 +327,7 @@ class ChallengeService(
             challenge.validateInvitationCode(dto.invitationCode)
             challengeMemberRepository.save(dto.toEntity(user, challenge))
             user.updateChallengeCnt()
+            challenge.updateCurrentMemberCnt()
         }
     }
 

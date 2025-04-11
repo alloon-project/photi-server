@@ -86,4 +86,8 @@ class Challenge(
     fun updateChallengeStatusDeleted() {
         serviceStatus = ServiceStatus.DELETED
     }
+
+    fun updateCurrentMemberCnt() {
+        currentMemberCnt += 1
+    }
 }
