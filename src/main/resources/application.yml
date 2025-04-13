@@ -26,6 +26,7 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+      enabled: false
     chunk-size: 1000
 
 api:
