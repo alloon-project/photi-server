@@ -193,12 +193,12 @@ class ChallengeController(
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @RequestPart imageFile: MultipartFile,
     ): ResponseEntity<CreateChallengeFeedResponse> {
-        val feedId = challengeService.createChallengeFeed(
+        val feed = challengeService.createChallengeFeed(
             UserUtility.getUserId(principal),
             challengeId,
             imageFile
         )
-        val response = CreateChallengeFeedResponse.of(feedId)
+        val response = CreateChallengeFeedResponse.of(feed)
 
         return ResponseEntity.status(CREATED).body(response)
     }

@@ -138,7 +138,11 @@ class ChallengeService(
     }
 
     @Transactional
-    fun createChallengeFeed(userId: Long, challengeId: Long, imageFile: MultipartFile): Long? {
+    fun createChallengeFeed(
+        userId: Long,
+        challengeId: Long,
+        imageFile: MultipartFile,
+    ): FindChallengeFeedsDto {
         val user = validateUser(userId)
         val challenge = validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
@@ -146,14 +150,13 @@ class ChallengeService(
 
         val fileName = s3Service.uploadImage(imageFile, FEEDS, challengeId)
         val imageUrl = s3Service.getImageUrl(fileName)
-        val feed = Feed(
-            challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl
-        )
+        val feed =
+            Feed(challengeMember = challengeMember, challenge = challenge, imageUrl = imageUrl)
 
         feedRepository.save(feed)
         user.updateFeedCnt()
 
-        return feed.id
+        return FindChallengeFeedsDto.of(feed, user, challenge)
     }
 
     @Transactional

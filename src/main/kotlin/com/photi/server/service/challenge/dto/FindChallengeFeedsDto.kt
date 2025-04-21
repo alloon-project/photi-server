@@ -1,5 +1,8 @@
 package com.photi.server.service.challenge.dto
 
+import com.photi.server.domain.challenge.Challenge
+import com.photi.server.domain.feed.Feed
+import com.photi.server.domain.user.User
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -11,4 +14,19 @@ data class FindChallengeFeedsDto @QueryProjection constructor(
     val createdDateTime: LocalDateTime,
     val proveTime: LocalTime,
     val isLike: Boolean,
-)
+) {
+
+    companion object {
+
+        fun of(feed: Feed, user: User, challenge: Challenge): FindChallengeFeedsDto {
+            return FindChallengeFeedsDto(
+                feed.id ?: 0L,
+                user.username,
+                feed.imageUrl,
+                feed.createDateTime ?: LocalDateTime.now(),
+                challenge.proveTime,
+                false,
+            )
+        }
+    }
+}
