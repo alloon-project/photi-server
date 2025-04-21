@@ -5,6 +5,7 @@ import com.photi.server.domain.challenge.ChallengeMember
 import jakarta.persistence.*
 
 @Entity
+@Table(uniqueConstraints = [UniqueConstraint(columnNames = ["challenge_member_id", "feed_id"])])
 class FeedLike(
 
     @Id

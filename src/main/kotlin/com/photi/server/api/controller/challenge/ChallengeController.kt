@@ -484,7 +484,7 @@ class ChallengeController(
     @PostMapping("/{challengeId}/feeds/{feedId}/like")
     @Operation(summary = "챌린지 피드 좋아요", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "201")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND, FEED_NOT_FOUND])
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND, FEED_NOT_FOUND, EXISTING_FEED_LIKE])
     fun createChallengeFeedLike(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,

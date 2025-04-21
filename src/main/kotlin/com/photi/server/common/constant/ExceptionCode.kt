@@ -73,6 +73,7 @@ enum class ExceptionCode(
     EXISTING_USER(CONFLICT, "해당 이메일로 이미 가입된 회원이 있습니다."),
     EXISTING_FEED(CONFLICT, "이미 오늘 피드 인증을 완료하였습니다."),
     EXISTING_CHALLENGE_MEMBER(CONFLICT, "이미 챌린지에 참여한 회원입니다."),
+    EXISTING_FEED_LIKE(CONFLICT, "이미 피드 좋아요를 완료하였습니다."),
     DELETED_USER(CONFLICT, "이미 탈퇴한 회원입니다."),
 
     /**

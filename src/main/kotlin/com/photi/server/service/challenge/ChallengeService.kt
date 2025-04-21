@@ -13,6 +13,7 @@ import com.photi.server.domain.feed.*
 import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
 import com.photi.server.service.challenge.dto.*
+import com.photi.server.service.idempotency.IdempotencyKeyService
 import com.photi.server.service.s3.FolderType.CHALLENGES
 import com.photi.server.service.s3.FolderType.FEEDS
 import com.photi.server.service.s3.S3Service
@@ -36,6 +37,7 @@ class ChallengeService(
     private val feedLikeRepository: FeedLikeRepository,
     private val s3Service: S3Service,
     private val hashtagService: HashtagService,
+    private val idempotencyKeyService: IdempotencyKeyService,
 ) {
 
     @Transactional
@@ -341,7 +343,13 @@ class ChallengeService(
         val feed = validateChallengeFeed(feedId)
         val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
 
-        feedLikeRepository.save(feedLike)
+        idempotencyKeyService.validateDuplicatedRequest(EXISTING_FEED_LIKE)
+
+        try {
+            feedLikeRepository.save(feedLike)
+        } catch (e: Exception) {
+            throw CustomException(EXISTING_FEED_LIKE)
+        }
         feed.updateLikeCnt()
     }
 
