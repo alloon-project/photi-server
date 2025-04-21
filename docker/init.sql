@@ -175,7 +175,8 @@ CREATE TABLE feed_like
     feed_id             BIGINT       NOT NULL,
     challenge_member_id BIGINT       NOT NULL,
     CONSTRAINT fk_feed_like_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_feed_like_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
+    CONSTRAINT fk_feed_like_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id),
+    CONSTRAINT uq_feed_like_challenge_member_feed UNIQUE (challenge_member_id, feed_id)
 );
 
 CREATE TABLE inquiry_category
