@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface FeedLikeRepository : JpaRepository<FeedLike, Long> {
 
     fun findByFeedIdAndChallengeMember(feedId: Long, challengeMember: ChallengeMember): FeedLike?
+
+    fun findAllByFeedId(feedId: Long): List<FeedLike>
 }
