@@ -1,6 +1,7 @@
 package com.photi.server.api.controller.user
 
 import com.photi.server.api.controller.user.request.*
+import com.photi.server.common.constant.CustomHttpHeaders
 import com.photi.server.common.constant.ExceptionCode.*
 import com.photi.server.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
 import com.photi.server.common.response.ApiErrorResponses
@@ -9,7 +10,6 @@ import com.photi.server.common.util.UserUtility
 import com.photi.server.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.photi.server.config.SwaggerConfig.Companion.REFRESH_TOKEN_KEY
 import com.photi.server.config.auth.JwtProvider
-import com.photi.server.config.auth.JwtType
 import com.photi.server.service.user.AuthService
 import com.photi.server.service.user.dto.UserServiceValidateUsernameDto
 import com.photi.server.service.user.response.UserLoginResponse
@@ -135,8 +135,10 @@ class AuthController(
     @Operation(summary = "토큰 재발급", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
-    fun refreshToken(principal: Principal): ResponseEntity<StringSuccessResponse> {
-        val headers = jwtProvider.createToken(UserUtility.getUserId(principal))
+    fun refreshToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
+        val refreshToken = request.getHeader(CustomHttpHeaders.REFRESH_TOKEN)
+        val userId = jwtProvider.getUserId(refreshToken)
+        val headers = jwtProvider.createToken(userId)
 
         return ResponseEntity.status(OK)
             .headers(headers)
@@ -162,7 +164,7 @@ class AuthController(
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
     fun validateAccessToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
         val accessToken = request.getHeader(HttpHeaders.AUTHORIZATION)
-        jwtProvider.verifyToken(accessToken, JwtType.ACCESS)
+        jwtProvider.validateAccessTokenAndSetAuthentication(accessToken)
 
         return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
     }

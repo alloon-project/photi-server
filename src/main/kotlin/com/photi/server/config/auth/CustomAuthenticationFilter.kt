@@ -1,5 +1,7 @@
 package com.photi.server.config.auth
 
+import com.photi.server.common.constant.CustomHttpHeaders.Companion.REFRESH_TOKEN
+import com.photi.server.common.constant.ExceptionCode.TOKEN_UNAUTHENTICATED
 import com.photi.server.common.response.CustomException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -21,23 +23,30 @@ class CustomAuthenticationFilter(
         filterChain: FilterChain
     ) {
         try {
+            val requestURI = request.requestURI
             val accessToken = request.getHeader(AUTHORIZATION)
-            val refreshToken = request.getHeader("Refresh-Token")
+            val refreshToken = request.getHeader(REFRESH_TOKEN)
 
-            if (accessToken != null && !request.requestURI.contains("token")) {
-                jwtProvider.verifyToken(accessToken, JwtType.ACCESS)
-            } else if (refreshToken != null) {
-                jwtProvider.verifyToken(refreshToken, JwtType.REFRESH)
+            if (requestURI.contains("/api/users/token")) {
+                validateToken(refreshToken)
+                jwtProvider.validateRefreshToken(refreshToken)
+            } else if (!accessToken.isNullOrBlank()) {
+                jwtProvider.validateAccessTokenAndSetAuthentication(accessToken)
             }
 
             filterChain.doFilter(request, response)
-
         } catch (ex: CustomException) {
             customAuthenticationEntryPoint.commence(
                 request,
                 response,
                 BadCredentialsException(ex.message)
             )
+        }
+    }
+
+    private fun validateToken(token: String?) {
+        if (token.isNullOrBlank()) {
+            throw CustomException(TOKEN_UNAUTHENTICATED)
         }
     }
 }

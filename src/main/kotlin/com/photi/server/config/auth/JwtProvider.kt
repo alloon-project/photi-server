@@ -41,10 +41,7 @@ class JwtProvider(
     fun createToken(userId: Long): HttpHeaders {
         val userDetails = getUserDetails(userId)
         val time = System.currentTimeMillis()
-
-        val authorities = userDetails.authorities.stream()
-            .map { it.authority }
-            .toList()
+        val authorities = userDetails.authorities.map { it.authority }
 
         val headers = HttpHeaders()
 
@@ -54,68 +51,59 @@ class JwtProvider(
             expiresAt(Instant.ofEpochMilli(time + accessTokenTime))
             issuer(domain)
             claim("roles", authorities)
-        }
+        }.signOrThrow()
 
-        when (val signedJWT = accessToken.sign(secret)) {
-            is Either.Left -> throw CustomException(SERVER_ERROR)
-            is Either.Right -> headers.add(HttpHeaders.AUTHORIZATION, signedJWT.value.rendered)
-        }
+        headers.add(HttpHeaders.AUTHORIZATION, accessToken)
 
-        if (authorities.contains(Role.MASTER.name))
-            return headers
+        if (!authorities.contains(Role.MASTER.name)) {
+            val refreshToken = JWT.hs256 {
+                subject(userDetails.username)
+                issuedAt(Instant.ofEpochMilli(time))
+                expiresAt(Instant.ofEpochMilli(time + refreshTokenTime))
+                issuer(domain)
+                claim("roles", authorities)
+            }.signOrThrow()
 
-        val refreshToken = JWT.hs256 {
-            subject(userDetails.username)
-            issuedAt(Instant.ofEpochMilli(time))
-            expiresAt(Instant.ofEpochMilli(time + refreshTokenTime))
-            issuer(domain)
-            claim("roles", authorities)
-        }
-
-        when (val signedJWT = refreshToken.sign(secret)) {
-            is Either.Left -> throw CustomException(SERVER_ERROR)
-            is Either.Right -> headers.add(
-                CustomHttpHeaders.REFRESH_TOKEN,
-                signedJWT.value.rendered
-            )
+            headers.add(CustomHttpHeaders.REFRESH_TOKEN, refreshToken)
         }
 
         return headers
     }
 
-    fun verifyToken(token: String, jwtType: JwtType): JWT<JWSHMAC256Algorithm> {
-        val jwt = when (val result =
-            verifySignature<JWSHMAC256Algorithm>(token.removePrefix(tokenPrefix), secret)) {
-            is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
-            is Either.Right -> result.value
-        }
-
-        val expirationTime =
-            jwt.expiresAt().getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
-        val now = Instant.now()
-
-        if (expirationTime.isBefore(now)) {
+    fun validateAccessTokenAndSetAuthentication(token: String) {
+        val jwt = validateSignatureOrThrow(token.removePrefix(tokenPrefix))
+        val expirationTime = jwt.expiresAt()
+            .getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
+        if (expirationTime.isBefore(Instant.now())) {
             throw CustomException(TOKEN_UNAUTHENTICATED)
         }
 
         val userId = jwt.subject()
             .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
             .toLong()
+        val user = getUserDetails(userId)
 
-        return when (jwtType) {
-            JwtType.ACCESS -> {
-                val user = getUserDetails(userId)
-                SecurityContextHolder.getContext().authentication =
-                    UsernamePasswordAuthenticationToken(
-                        user.username,
-                        user.password,
-                        user.authorities
-                    )
-                jwt
-            }
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken(user.username, user.password, user.authorities)
+    }
 
-            JwtType.REFRESH -> jwt
+    fun validateRefreshToken(token: String) {
+        val jwt = validateSignatureOrThrow(token)
+        val expirationTime = jwt.expiresAt()
+            .getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
+        if (expirationTime.isBefore(Instant.now())) {
+            throw CustomException(TOKEN_UNAUTHENTICATED)
         }
+
+        jwt.subject()
+            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+    }
+
+    fun getUserId(refreshToken: String): Long {
+        val jwt = validateSignatureOrThrow(refreshToken)
+        return jwt.subject()
+            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+            .toLong()
     }
 
     private fun getUserDetails(userId: Long): User {
@@ -126,10 +114,22 @@ class JwtProvider(
             .orElseThrow { CustomException(USER_NOT_FOUND) }
             .user
 
-        val grantedAuthorities = userRoles.stream()
-            .map { userRole -> SimpleGrantedAuthority(userRole.role.name) }
-            .toList()
+        val grantedAuthorities = userRoles.map { SimpleGrantedAuthority(it.role.name) }
 
         return User(user.id.toString(), user.password, grantedAuthorities)
+    }
+
+    private fun validateSignatureOrThrow(token: String): JWT<JWSHMAC256Algorithm> {
+        return when (val result = verifySignature<JWSHMAC256Algorithm>(token, secret)) {
+            is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
+            is Either.Right -> result.value
+        }
+    }
+
+    private fun JWT<JWSHMAC256Algorithm>.signOrThrow(): String {
+        return when (val signedJWT = this.sign(secret)) {
+            is Either.Left -> throw CustomException(SERVER_ERROR)
+            is Either.Right -> signedJWT.value.rendered
+        }
     }
 }

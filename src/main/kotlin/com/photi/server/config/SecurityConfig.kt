@@ -33,7 +33,6 @@ class SecurityConfig(
                 it.requestMatchers(DELETE, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(
                     "/api/users",
-                    "/api/users/token",
                     "/api/users/password",
                     "/api/users/image",
                     "/api/users/challenge-history",
