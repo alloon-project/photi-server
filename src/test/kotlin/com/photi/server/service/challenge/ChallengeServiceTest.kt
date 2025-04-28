@@ -12,6 +12,7 @@ import com.photi.server.domain.user.User
 import com.photi.server.domain.user.UserRepository
 import com.photi.server.framework.TestContainerInitializer
 import com.photi.server.service.challenge.dto.*
+import com.photi.server.service.idempotency.IdempotencyKeyService
 import com.photi.server.service.s3.FolderType.FEEDS
 import com.photi.server.service.s3.S3Service
 import io.mockk.*
@@ -40,6 +41,7 @@ class ChallengeServiceTest {
     private val feedLikeRepository = mockk<FeedLikeRepository>()
     private val s3Service = mockk<S3Service>()
     private val hashtagService = mockk<HashtagService>()
+    private val idempotencyKeyService = mockk<IdempotencyKeyService>()
 
     private val challengeService = ChallengeService(
         challengeRepository,
@@ -50,6 +52,7 @@ class ChallengeServiceTest {
         feedLikeRepository,
         s3Service,
         hashtagService,
+        idempotencyKeyService,
     )
 
     @DisplayName("챌린지 생성을 하면 정상 작동한다")
@@ -361,6 +364,7 @@ class ChallengeServiceTest {
             FeedComment(1L, challengeMember, feed, "피드 댓글"),
             FeedComment(2L, challengeMember, feed, "피드 댓글")
         )
+        val feedLikes = listOf(FeedLike(1L, challengeMember, feed))
 
         every { userRepository.find(any()) } returns user
         every { challengeRepository.findInfoById(any()) } returns challenge
@@ -370,6 +374,8 @@ class ChallengeServiceTest {
         every { feedRepository.findByIdAndChallengeMemberId(any(), any()) } returns feed
         every { feedCommentRepository.findAllByFeedId(any()) } returns feedComments
         every { feedCommentRepository.deleteAllInBatch(any()) } just Runs
+        every { feedLikeRepository.findAllByFeedId(any()) } returns feedLikes
+        every { feedLikeRepository.deleteAllInBatch(any()) } just Runs
         every { feedRepository.delete(any()) } just Runs
         every { s3Service.deleteImage(any(), any(), any()) } just Runs
 
