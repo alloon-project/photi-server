@@ -237,6 +237,7 @@ class UserCustomRepositoryImpl(
                     challengeMember.challenge.endDate,
                     Expressions.constant(emptyList()),
                     Expressions.constant(""),
+                    Expressions.constant(0L),
                     Expressions.constant(false),
                 )
             )
@@ -252,7 +253,7 @@ class UserCustomRepositoryImpl(
         val challengeIds = content.map { it.id }
         val now = LocalDate.now()
         val feedImageUrls = queryFactory
-            .select(QUserImageDto(feed.challenge.id, feed.imageUrl))
+            .select(QUserImageDto(feed.challenge.id, feed.imageUrl, feed.id))
             .from(feed)
             .join(feed.challengeMember)
             .where(
@@ -278,8 +279,10 @@ class UserCustomRepositoryImpl(
 
         content.forEach {
             it.hashtags = hashtags[it.id] ?: emptyList()
-            val imageUrl = feedImageUrls[it.id]?.first()?.imageUrl ?: ""
+            val feedImageUrl = feedImageUrls[it.id]?.first()
+            val imageUrl = feedImageUrl?.imageUrl ?: ""
             it.feedImageUrl = imageUrl
+            it.feedId = feedImageUrl?.feedId
             it.isProve = imageUrl.isNotEmpty()
         }
 
