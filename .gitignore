@@ -43,4 +43,4 @@ out/
 
 ### env ###
 docker/.env
-docker/.env.dev
+docker/dev/.env

@@ -1,10 +1,10 @@
 services:
   backend:
     env_file:
-      - .env.dev
+      - .env
     build:
-      context: ..
-      dockerfile: .Dockerfile.dev
+      context: ../..
+      dockerfile: .Dockerfile
     ports:
       - "8080:8080"
     container_name: spring-photi
