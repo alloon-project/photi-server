@@ -42,7 +42,5 @@ out/
 *log*.gz
 
 ### env ###
-docker/*.env
-.env
-src/main/resources/.env*
-src/test/resources/.env*
+docker/.env
+docker/.env.dev
