@@ -19,6 +19,7 @@ pipeline {
                      ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "sudo mkdir -p $PROJECT_PATH && sudo chown -R ubuntu:ubuntu $PROJECT_PATH"
                      scp -o StrictHostKeyChecking=no build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
                      scp -o StrictHostKeyChecking=no docker/dev/* ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
+                     scp -o StrictHostKeyChecking=no docker/dev/.env ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH/.env
                      ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "bash $PROJECT_PATH/deploy.sh"
                   '''
                }
