@@ -1,6 +1,4 @@
 #!/bin/bash
-cd /var/jenkins_home/custom/photi
-
 DOCKER_APP_NAME=spring-photi
 
 EXIST_RUNNING=$(docker-compose -p "${DOCKER_APP_NAME}" -f docker-compose.dev.yml ps | grep -E "Up|running")

@@ -1,0 +1,27 @@
+pipeline {
+   agent any
+   environment {
+       PROJECT_PATH = '/home/ubuntu/photi-server'
+   }
+   tools {
+       gradle 'gradle'
+   }
+   stages {
+       stage('Build') {
+           steps {
+               sh "./gradlew clean bootJar"
+           }
+       }
+       stage('Deploy') {
+           steps {
+               sshagent(credentials: ["$EC2_CREDENTIALS_ID"]) {
+                  sh '''
+                     scp -o StrictHostKeyChecking=no build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
+                     scp -o StrictHostKeyChecking=no docker/dev/* ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
+                     ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "bash $PROJECT_PATH/docker/dev/deploy.sh"
+                  '''
+               }
+           }
+       }
+   }
+}
