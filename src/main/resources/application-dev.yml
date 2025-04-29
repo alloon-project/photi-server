@@ -9,6 +9,9 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+  data:
+    redis:
+      host: redis
 
 cloud:
   aws:
