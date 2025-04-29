@@ -1,12 +1,15 @@
 pipeline {
    agent any
+   environment {
+       SCRIPT_PATH = '/var/jenkins_home/custom/photi'
+   }
    tools {
        gradle 'gradle'
    }
    stages {
        stage('Github') {
            steps {
-               git branch: 'develop', credentialsId: "$GIT_CREDENTIALS_ID", url: 'https://github.com/alloon-project/photi-server.git'
+               git branch: 'chore/#188-cd', credentialsId: "$GIT_CREDENTIALS_ID", url: 'https://github.com/alloon-project/photi-server.git'
            }
        }
        stage('Build') {
@@ -18,9 +21,8 @@ pipeline {
            steps {
                sshagent(credentials: ["$EC2_CREDENTIALS_ID"]) {
                   sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP
-                    scp build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:/home/ubuntu
-                    ssh ubuntu@$EC2_DEV_PRIVATE_IP "sh photi-script.sh" &
+                     scp -o StrictHostKeyChecking=no build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:$SCRIPT_PATH
+                     ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "bash $SCRIPT_PATH/deploy.sh"
                   '''
                }
            }

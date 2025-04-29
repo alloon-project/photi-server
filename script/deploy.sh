@@ -1,0 +1,14 @@
+#!/bin/bash
+cd /var/jenkins_home/custom/photi
+
+DOCKER_APP_NAME=spring-photi
+
+EXIST_RUNNING=$(docker-compose -p "${DOCKER_APP_NAME}" -f docker-compose.dev.yml ps | grep -E "Up|running")
+
+echo "deploy start - $(date "+%Y-%m-%d %H:%M:%S")"
+
+if [ -z "$EXIST_RUNNING" ]; then
+  docker-compose -p "${DOCKER_APP_NAME}" -f docker-compose.dev.yml up -d --build
+  docker image prune -af
+fi
+  echo "deploy end - $(date '+%Y-%m-%d %H:%M:%S')"
