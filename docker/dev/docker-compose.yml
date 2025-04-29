@@ -11,6 +11,15 @@ services:
       - TZ=Asia/Seoul
     networks:
       - server-network
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - /var/lib/docker/volumes/redis/data:/data
+    restart: always
+    networks:
+      - server-network
 
 networks:
   server-network:
