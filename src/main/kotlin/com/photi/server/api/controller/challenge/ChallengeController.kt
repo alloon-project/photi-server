@@ -516,4 +516,21 @@ class ChallengeController(
 
         return ResponseEntity.ok(StringSuccessResponse("챌린지 피드 좋아요가 취소되었습니다."))
     }
+
+    @GetMapping("/{challengeId}/feed-existence")
+    @Operation(
+        summary = "챌린지 인증 피드 존재 여부 조회",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+    )
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, CHALLENGE_NOT_FOUND])
+    fun findChallengeHasFeed(
+        principal: Principal,
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+    ): ResponseEntity<FindChallengeHasFeedResponse> {
+        val hasFeed = challengeService.hasFeedByChallengeId(challengeId)
+        val response = FindChallengeHasFeedResponse.of(hasFeed)
+
+        return ResponseEntity.ok(response)
+    }
 }
