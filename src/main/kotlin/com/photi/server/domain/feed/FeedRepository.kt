@@ -14,4 +14,6 @@ interface FeedRepository : JpaRepository<Feed, Long>, FeedCustomRepository {
     ): Boolean
 
     fun findByIdAndChallengeMemberId(feedId: Long, challengeMemberId: Long?): Feed?
+
+    fun existsByChallengeId(id: Long): Boolean
 }

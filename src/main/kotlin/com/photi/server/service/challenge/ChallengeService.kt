@@ -367,6 +367,11 @@ class ChallengeService(
         feed.decreaseLikeCnt()
     }
 
+    fun hasFeedByChallengeId(challengeId: Long): Boolean {
+        validateChallenge(challengeId)
+        return feedRepository.existsByChallengeId(challengeId)
+    }
+
     private fun validateUser(userId: Long): User {
         return userRepository.find(userId) ?: throw CustomException(USER_NOT_FOUND)
     }
