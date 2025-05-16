@@ -1,12 +1,10 @@
-version: '3.9'
-
 services:
   alloon:
     restart: always
     env_file:
-      - .env
+      - docker/.env
     build:
-      context: .
+      context: docker
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
