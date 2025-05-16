@@ -12,6 +12,7 @@ import com.photi.server.service.challenge.dto.*
 import com.querydsl.core.types.Order.DESC
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.core.types.dsl.Expressions.cases
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
@@ -191,9 +192,12 @@ class FeedCustomRepositoryImpl(
         return when (sort) {
             LATEST -> arrayOf(OrderSpecifier(DESC, feed.createDateTime))
             POPULAR -> arrayOf(
-                OrderSpecifier(DESC, feed.createDateTime),
+                OrderSpecifier(DESC, getDateTemplate()),
                 OrderSpecifier(DESC, feed.likeCnt.add(feed.commentCnt)),
             )
         }
     }
+
+    private fun getDateTemplate() =
+        Expressions.dateTemplate(LocalDate::class.java, "CAST({0} AS DATE)", feed.createDateTime)
 }
