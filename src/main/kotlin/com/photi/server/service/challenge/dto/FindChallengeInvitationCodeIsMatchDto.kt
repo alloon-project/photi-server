@@ -4,7 +4,7 @@ import com.photi.server.domain.challenge.Challenge
 import com.photi.server.domain.challenge.ChallengeMember
 import com.photi.server.domain.user.User
 
-data class JoinPrivateChallengeDto(
+data class FindChallengeInvitationCodeIsValidDto(
     val invitationCode: String,
 ) {
 
