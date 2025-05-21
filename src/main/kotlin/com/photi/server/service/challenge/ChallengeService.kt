@@ -313,12 +313,9 @@ class ChallengeService(
         newMember.updateGoal(dto.goal)
     }
 
-    fun isMatchInvitationCode(
-        challengeId: Long,
-        dto: FindChallengeInvitationCodeIsMatchDto,
-    ): Boolean {
+    fun isMatchInvitationCode(challengeId: Long, invitationCode: String): Boolean {
         val challenge = validateChallenge(challengeId)
-        return challenge.validateInvitationCode(dto.invitationCode)
+        return challenge.validateInvitationCode(invitationCode)
     }
 
     @Transactional

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.MediaType
@@ -478,9 +479,11 @@ class ChallengeController(
     @ApiErrorResponses([CHALLENGE_NOT_FOUND])
     fun findChallengeInvitationCodeIsMatch(
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody @Valid request: FindChallengeInvitationCodeIsMatchRequest,
+        @RequestParam @NotBlank(message = "초대코드는 필수 입력입니다.")
+        @Parameter(description = "초대코드", example = "478DS")
+        invitationCode: String,
     ): ResponseEntity<FindChallengeInvitationCodeIsMatchResponse> {
-        val isMatch = challengeService.isMatchInvitationCode(challengeId, request.toServiceDto())
+        val isMatch = challengeService.isMatchInvitationCode(challengeId, invitationCode)
         val response = FindChallengeInvitationCodeIsMatchResponse.of(isMatch)
 
         return ResponseEntity.ok(response)
