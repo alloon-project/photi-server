@@ -450,35 +450,40 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @PostMapping("/{challengeId}/join/public")
-    @Operation(summary = "공개 챌린지 참여하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @PostMapping("/{challengeId}/join")
+    @Operation(
+        summary = "챌린지 참여하기",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "건너뛰기 시 { \"goal\": \"\" } 넣어주시면 됩니다.",
+    )
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER, CHALLENGE_LIMIT_EXCEED])
-    fun joinPublicChallenge(
+    fun joinChallenge(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestBody @Valid request: JoinChallengeRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.joinPublicChallenge(UserUtility.getUserId(principal), challengeId)
-
-        return ResponseEntity.ok(StringSuccessResponse("공개 챌린지 참여하기가 완료되었습니다."))
-    }
-
-    @PostMapping("/{challengeId}/join/private")
-    @Operation(summary = "비공개 챌린지 참여하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
-    @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_NOT_FOUND, EXISTING_CHALLENGE_MEMBER, CHALLENGE_INVITATION_CODE_INVALID, CHALLENGE_LIMIT_EXCEED])
-    fun joinPrivateChallenge(
-        principal: Principal,
-        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestBody @Valid request: JoinPrivateChallengeRequest,
-    ): ResponseEntity<StringSuccessResponse> {
-        challengeService.joinPrivateChallenge(
+        challengeService.joinChallenge(
             UserUtility.getUserId(principal),
             challengeId,
-            request.toServiceDto()
+            request.toServiceDto(),
         )
 
-        return ResponseEntity.ok(StringSuccessResponse("비공개 챌린지 참여하기가 완료되었습니다."))
+        return ResponseEntity.ok(StringSuccessResponse("챌린지 참여하기가 완료되었습니다."))
+    }
+
+    @GetMapping("/{challengeId}/invitation-code-match")
+    @Operation(summary = "챌린지 초대코드 일치 여부 조회")
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([CHALLENGE_NOT_FOUND])
+    fun findChallengeInvitationCodeIsMatch(
+        @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
+        @RequestBody @Valid request: FindChallengeInvitationCodeIsMatchRequest,
+    ): ResponseEntity<FindChallengeInvitationCodeIsMatchResponse> {
+        val isMatch = challengeService.isMatchInvitationCode(challengeId, request.toServiceDto())
+        val response = FindChallengeInvitationCodeIsMatchResponse.of(isMatch)
+
+        return ResponseEntity.ok(response)
     }
 
     @PostMapping("/{challengeId}/feeds/{feedId}/like")
