@@ -73,10 +73,8 @@ class Challenge(
         currentMemberCnt -= 1
     }
 
-    fun validateInvitationCode(invitationCode: String) {
-        if (invitationCode != this.invitationCode) {
-            throw CustomException(ExceptionCode.CHALLENGE_INVITATION_CODE_INVALID)
-        }
+    fun validateInvitationCode(invitationCode: String): Boolean {
+        return invitationCode == this.invitationCode
     }
 
     fun updateChallengeStatusEnd() {

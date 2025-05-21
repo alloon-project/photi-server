@@ -30,7 +30,6 @@ enum class ExceptionCode(
     PASSWORD_MATCH_INVALID(BAD_REQUEST, "비밀번호와 비밀번호 재입력이 동일하지 않습니다."),
     EMAIL_VALIDATION_INVALID(BAD_REQUEST, "이메일 인증을 먼저 해주세요."),
     EMPTY_FILE_INVALID(BAD_REQUEST, "비어있는 파일은 저장할 수 없습니다."),
-    CHALLENGE_INVITATION_CODE_INVALID(BAD_REQUEST, "챌린지 초대 코드가 일치하지 않습니다."),
     CHALLENGE_LIMIT_EXCEED(BAD_REQUEST, "챌린지는 최대 20개까지 참여할 수 있습니다."),
 
     /**

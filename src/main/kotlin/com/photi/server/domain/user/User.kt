@@ -1,5 +1,7 @@
 package com.photi.server.domain.user
 
+import com.photi.server.common.constant.ExceptionCode.CHALLENGE_LIMIT_EXCEED
+import com.photi.server.common.response.CustomException
 import com.photi.server.domain.base.BaseEntity
 import jakarta.persistence.*
 
@@ -67,5 +69,15 @@ class User(
         if (challengeCnt > 0) {
             challengeCnt -= 1
         }
+    }
+
+    fun validateChallengeCnt() {
+        if (challengeCnt >= CHALLENGE_LIMIT) {
+            throw CustomException(CHALLENGE_LIMIT_EXCEED)
+        }
+    }
+
+    companion object {
+        private const val CHALLENGE_LIMIT = 20
     }
 }

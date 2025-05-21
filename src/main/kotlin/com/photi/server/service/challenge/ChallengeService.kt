@@ -294,48 +294,31 @@ class ChallengeService(
     }
 
     @Transactional
-    fun joinPublicChallenge(
+    fun joinChallenge(
         userId: Long,
         challengeId: Long,
+        dto: JoinChallengeDto,
     ) {
         val user = validateUser(userId)
         val challenge = validateChallenge(challengeId)
         val challengeMember =
             challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
-        if (challengeMember != null) {
-            throw CustomException(EXISTING_CHALLENGE_MEMBER)
-        } else {
-            if (user.challengeCnt >= CHALLENGE_LIMIT) {
-                throw CustomException(CHALLENGE_LIMIT_EXCEED)
-            }
-            val newMember = ChallengeMember(user = user, challenge = challenge, isCreator = false)
-            challengeMemberRepository.save(newMember)
-            user.updateChallengeCnt()
-            challenge.updateCurrentMemberCnt()
-        }
+        validateExistingChallengeMember(challengeMember)
+        user.validateChallengeCnt()
+
+        val newMember = ChallengeMember(user = user, challenge = challenge, isCreator = false)
+        challengeMemberRepository.save(newMember)
+        user.updateChallengeCnt()
+        challenge.updateCurrentMemberCnt()
+        newMember.updateGoal(dto.goal)
     }
 
-    @Transactional
-    fun joinPrivateChallenge(
-        userId: Long,
+    fun isMatchInvitationCode(
         challengeId: Long,
-        dto: JoinPrivateChallengeDto
-    ) {
-        val user = validateUser(userId)
+        dto: FindChallengeInvitationCodeIsMatchDto,
+    ): Boolean {
         val challenge = validateChallenge(challengeId)
-        val challengeMember =
-            challengeMemberRepository.findByUserIdAndChallengeId(userId, challengeId)
-        if (challengeMember != null) {
-            throw CustomException(EXISTING_CHALLENGE_MEMBER)
-        } else {
-            if (user.challengeCnt >= CHALLENGE_LIMIT) {
-                throw CustomException(CHALLENGE_LIMIT_EXCEED)
-            }
-            challenge.validateInvitationCode(dto.invitationCode)
-            challengeMemberRepository.save(dto.toEntity(user, challenge))
-            user.updateChallengeCnt()
-            challenge.updateCurrentMemberCnt()
-        }
+        return challenge.validateInvitationCode(dto.invitationCode)
     }
 
     @Transactional
@@ -410,8 +393,13 @@ class ChallengeService(
         return feedRepository.findByFeedId(feedId) ?: throw CustomException(FEED_NOT_FOUND)
     }
 
+    private fun validateExistingChallengeMember(challengeMember: ChallengeMember?) {
+        if (challengeMember != null) {
+            throw CustomException(EXISTING_CHALLENGE_MEMBER)
+        }
+    }
+
     companion object {
         const val HASHTAG_ALL = "전체"
-        const val CHALLENGE_LIMIT = 20
     }
 }
