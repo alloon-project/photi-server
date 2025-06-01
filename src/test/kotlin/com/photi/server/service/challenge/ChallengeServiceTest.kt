@@ -250,6 +250,9 @@ class ChallengeServiceTest {
             ChallengeMemberImageDto("https://url.kr/5MhHhD"),
             ChallengeMemberImageDto("https://url.kr/5MhHhD")
         )
+        every { challengeMemberRepository.findCreatorByChallengeId(challengeId) } returns FindCreatorDto(
+            "photi"
+        )
 
         // when
         val result = challengeService.findChallenge(challengeId)
@@ -1002,7 +1005,8 @@ class ChallengeServiceTest {
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
                 ChallengeMemberImageDto("https://url.kr/5MhHhD"),
-            )
+            ),
+            "photi",
         )
     }
 

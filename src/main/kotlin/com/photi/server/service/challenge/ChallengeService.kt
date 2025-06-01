@@ -98,9 +98,10 @@ class ChallengeService(
     fun findChallenge(challengeId: Long): FindChallengeDto {
         val challenge = validateChallenge(challengeId)
         val memberImages = challengeMemberRepository.findImagesByChallengeId(challengeId)
+        val creator = challengeMemberRepository.findCreatorByChallengeId(challengeId)
         challenge.updateVisitCnt()
 
-        return FindChallengeDto.of(challenge, memberImages)
+        return FindChallengeDto.of(challenge, memberImages, creator)
     }
 
     @Transactional

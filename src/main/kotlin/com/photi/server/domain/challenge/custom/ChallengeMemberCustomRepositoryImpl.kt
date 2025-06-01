@@ -4,10 +4,7 @@ import com.photi.server.domain.challenge.ChallengeMember
 import com.photi.server.domain.challenge.ChallengeMemberStatus
 import com.photi.server.domain.challenge.ChallengeMemberStatus.PROGRESS
 import com.photi.server.domain.challenge.QChallengeMember.challengeMember
-import com.photi.server.service.challenge.dto.ChallengeMemberImageDto
-import com.photi.server.service.challenge.dto.FindChallengeMembersDto
-import com.photi.server.service.challenge.dto.QChallengeMemberImageDto
-import com.photi.server.service.challenge.dto.QFindChallengeMembersDto
+import com.photi.server.service.challenge.dto.*
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -77,6 +74,18 @@ class ChallengeMemberCustomRepositoryImpl(
             .orderBy(challengeMember.createDateTime.desc())
             .limit(3)
             .fetch()
+    }
+
+    override fun findCreatorByChallengeId(challengeId: Long): FindCreatorDto {
+        return queryFactory
+            .select(QFindCreatorDto(challengeMember.user.username))
+            .from(challengeMember)
+            .where(
+                challengeMember.challenge.id.eq(challengeId),
+                challengeMember.isCreator.eq(true),
+                eqChallengeMemberStatus(PROGRESS)
+            )
+            .fetchOne() ?: FindCreatorDto("")
     }
 
     private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
