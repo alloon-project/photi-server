@@ -63,6 +63,9 @@ data class FindChallengeResponse(
     """
     )
     val memberImages: List<ChallengeMemberImageResponse>,
+
+    @Schema(description = "챌린지 파티장 이름", example = "photi")
+    val creator: String,
 ) {
 
     companion object {
@@ -79,6 +82,7 @@ data class FindChallengeResponse(
                 ChallengeRuleResponse.of(challenge.rules),
                 ChallengeHashtagResponse.of(challenge.hashtags),
                 ChallengeMemberImageResponse.of(challenge.memberImages),
+                challenge.creator,
             )
         }
     }
