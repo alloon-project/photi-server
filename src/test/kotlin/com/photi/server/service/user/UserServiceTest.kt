@@ -311,7 +311,13 @@ class UserServiceTest {
     }
 
     private fun getUserChallengeHistoryDto(): UserChallengeHistoryDto {
-        return UserChallengeHistoryDto("tester", "https://url.kr/5MhHhD", 99, 2)
+        return UserChallengeHistoryDto(
+            "tester",
+            "https://url.kr/5MhHhD",
+            99,
+            2,
+            LocalDateTime.now()
+        )
     }
 
     private fun getFindUserFeedsByDateDto(): FindUserFeedsByDateDto {
