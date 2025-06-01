@@ -78,6 +78,7 @@ class UserCustomRepositoryImpl(
                     user.imageUrl,
                     user.feedCnt,
                     Expressions.constant(endedChallengeCnt),
+                    user.createDateTime,
                 )
             )
             .from(user)
