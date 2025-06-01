@@ -21,6 +21,9 @@ data class FindUserFeedHistoryResponse(
 
     @Schema(description = "챌린지 이름", example = "신나게 하는 러닝 챌린지")
     val name: String,
+
+    @Schema(description = "챌린지 초대코드", example = "478DS")
+    val invitationCode: String,
 ) {
 
     companion object {
@@ -31,7 +34,8 @@ data class FindUserFeedHistoryResponse(
                 feedHistory.challengeId,
                 feedHistory.imageUrl,
                 feedHistory.createdDate.toLocalDate(),
-                feedHistory.name
+                feedHistory.name,
+                feedHistory.invitationCode,
             )
         }
     }

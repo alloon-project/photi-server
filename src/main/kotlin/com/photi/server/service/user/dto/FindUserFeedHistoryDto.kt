@@ -9,4 +9,5 @@ data class FindUserFeedHistoryDto @QueryProjection constructor(
     val imageUrl: String,
     val createdDate: LocalDateTime,
     val name: String,
+    val invitationCode: String,
 )
