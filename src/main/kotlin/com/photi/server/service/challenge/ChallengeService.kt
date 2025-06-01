@@ -47,6 +47,7 @@ class ChallengeService(
         imageFile: MultipartFile
     ): CreateChallengeDto {
         val user = validateUser(userId)
+        user.validateChallengeCnt()
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
         val invitationCode = CodeUtility.getInvitationCode(dto.isPublic)
@@ -54,6 +55,7 @@ class ChallengeService(
         val challenge = dto.toEntity(imageUrl, invitationCode)
         val challengeMember = ChallengeMember(user = user, challenge = challenge)
 
+        user.updateChallengeCnt()
         challengeRepository.save(challenge)
         challengeMemberRepository.save(challengeMember)
         hashtagService.addHashtags(challenge.hashtags.map { it.hashtag })
