@@ -29,10 +29,10 @@ class CodeUtilityTest {
         // given
         val randomCode = "ABC12"
         mockkObject(CodeUtility)
-        every { CodeUtility.getInvitationCode() } returns randomCode
+        every { CodeUtility.getInvitationCode(false) } returns randomCode
 
         // when
-        val result = CodeUtility.getInvitationCode()
+        val result = CodeUtility.getInvitationCode(false)
 
         // then
         assertThat(result).isEqualTo(randomCode)
