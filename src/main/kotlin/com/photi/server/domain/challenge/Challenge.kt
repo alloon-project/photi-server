@@ -1,7 +1,5 @@
 package com.photi.server.domain.challenge
 
-import com.photi.server.common.constant.ExceptionCode
-import com.photi.server.common.response.CustomException
 import com.photi.server.domain.base.BasePermanentEntity
 import com.photi.server.domain.base.ServiceStatus
 import jakarta.persistence.*
