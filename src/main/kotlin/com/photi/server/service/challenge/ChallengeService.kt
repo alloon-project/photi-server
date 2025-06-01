@@ -49,7 +49,7 @@ class ChallengeService(
         val user = validateUser(userId)
         val fileName = s3Service.uploadImage(imageFile, CHALLENGES)
         val imageUrl = s3Service.getImageUrl(fileName)
-        val invitationCode = CodeUtility.getInvitationCode()
+        val invitationCode = CodeUtility.getInvitationCode(dto.isPublic)
 
         val challenge = dto.toEntity(imageUrl, invitationCode)
         val challengeMember = ChallengeMember(user = user, challenge = challenge)

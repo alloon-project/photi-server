@@ -6,18 +6,22 @@ class CodeUtility {
 
     companion object {
 
+        private const val EMPTY_CHARACTER = ""
+
         fun getVerificationCode(): String {
             return (0..9).toList()
                 .shuffled(Random(System.currentTimeMillis()))
                 .take(4)
-                .joinToString("")
+                .joinToString(EMPTY_CHARACTER)
         }
 
-        fun getInvitationCode(): String {
+        fun getInvitationCode(isPublic: Boolean): String {
             val range = (0..9) + ('A'..'Z')
-            return range.shuffled(Random(System.currentTimeMillis()))
-                .take(5)
-                .joinToString("")
+            return if (!isPublic) {
+                range.shuffled(Random(System.currentTimeMillis()))
+                    .take(5)
+                    .joinToString(EMPTY_CHARACTER)
+            } else EMPTY_CHARACTER
         }
     }
 }
