@@ -3,7 +3,7 @@ package com.photi.server.api.controller.user.response
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.photi.server.service.user.dto.UserChallengeHistoryDto
 import io.swagger.v3.oas.annotations.media.Schema
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Schema(description = "사용자 챌린지 기록 응답 객체")
 data class UserChallengeHistoryResponse(
@@ -22,7 +22,7 @@ data class UserChallengeHistoryResponse(
 
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Schema(description = "사용자 회원가입 날짜", example = "2025-06-01")
-    val registerDate: LocalDateTime,
+    val registerDate: LocalDate,
 ) {
 
     companion object {
@@ -33,7 +33,7 @@ data class UserChallengeHistoryResponse(
                 challengeHistory.imageUrl,
                 challengeHistory.feedCnt,
                 challengeHistory.endedChallengeCnt,
-                challengeHistory.registerDate,
+                challengeHistory.registerDate.toLocalDate(),
             )
         }
     }
