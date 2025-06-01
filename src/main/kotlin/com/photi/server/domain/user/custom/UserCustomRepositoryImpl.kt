@@ -152,7 +152,8 @@ class UserCustomRepositoryImpl(
                     feed.challenge.id,
                     feed.imageUrl,
                     feed.createDateTime,
-                    feed.challenge.name
+                    feed.challenge.name,
+                    feed.challenge.invitationCode,
                 )
             )
             .from(feed)
