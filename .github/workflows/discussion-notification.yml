@@ -38,6 +38,9 @@ jobs:
               ]
             }'
           )
+          
+          echo "Sending payload to Discord:"
+          echo "$payload"
 
           curl -H "Content-Type: application/json" \
                -X POST \
