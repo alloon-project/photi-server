@@ -10,25 +10,30 @@ jobs:
     steps:
       - name: Discord notification
         run: |
+          payload=$(cat <<EOF
+          {
+            "username": "디스커션 봇",
+            "avatar_url": "https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4",
+            "content": "**새로운 디스커션이 생성되었습니다**",
+            "embeds": [
+              {
+                "title": "${{ github.event.discussion.title }}",
+                "description": "${{ github.event.discussion.body }}",
+                "color": 6253567,
+                "fields": [
+                  {
+                    "name": "Discussion Url",
+                    "value": "${{ github.event.discussion.html_url }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+          }
+          EOF
+          )
+
           curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-              "username": "디스커션 봇",
-              "avatar_url": "https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4",
-              "content": "**새로운 디스커션이 생성되었습니다**",
-              "embeds": [
-                {
-                  "title": "${{ github.event.discussion.title }}",
-                  "description": "${{ github.event.discussion.body }}",
-                  "color": 6253567,
-                  "fields": [
-                    {
-                      "name": "Discussion Url",
-                      "value": "${{ github.event.discussion.html_url }}",
-                      "inline": true
-                    }
-                  ]
-                }
-              ]
-            }'\
-            ${{ secrets.DISCORD_WEBHOOK }}
+               -X POST \
+               -d "$payload" \
+               ${{ secrets.DISCORD_WEBHOOK }}
