@@ -1,0 +1,25 @@
+name: discussion notification
+
+on:
+  discussion:
+    types: [ created ]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 디스커션 봇
+          DISCORD_AVATAR: https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4
+          DISCORD_EMBEDS: |
+            [
+                { 
+                  "title": "${{ github.event.discussion.title }}",
+                  "color": 6253567,
+                  "url": "${{ github.event.discussion.html_url }}",
+                  "description": "${{ github.event.discussion.body }}",
+                }
+            ]
