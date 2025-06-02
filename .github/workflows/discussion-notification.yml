@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
-        uses: Ilshidur/action-discord@master
+        uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: 디스커션 봇
@@ -20,6 +20,6 @@ jobs:
                   "title": "${{ github.event.discussion.title }}",
                   "color": 6253567,
                   "url": "${{ github.event.discussion.html_url }}",
-                  "description": "${{ github.event.discussion.body }}",
+                  "description": "${{ github.event.discussion.body }}"
                 }
             ]
