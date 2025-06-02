@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
+        env:
+          DISCUSSION_TITLE: ${{ github.event.discussion.title }}
+          DISCUSSION_BODY: ${{ github.event.discussion.body }}
+          DISCUSSION_URL: ${{ github.event.discussion.html_url }}
         run: |
           payload=$(cat <<EOF
           {
@@ -17,13 +21,13 @@ jobs:
             "content": "**새로운 디스커션이 생성되었습니다**",
             "embeds": [
               {
-                "title": "${{ github.event.discussion.title }}",
-                "description": "${{ github.event.discussion.body }}",
+                "title": "${DISCUSSION_TITLE}",
+                "description": "${DISCUSSION_BODY}",
                 "color": 6253567,
                 "fields": [
                   {
                     "name": "Discussion Url",
-                    "value": "${{ github.event.discussion.html_url }}",
+                    "value": "${DISCUSSION_URL}",
                     "inline": true
                   }
                 ]
