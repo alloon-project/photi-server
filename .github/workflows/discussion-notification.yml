@@ -9,40 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Discord notification
+        uses: Ilshidur/action-discord@0.3.2
         env:
-          DISCUSSION_TITLE: ${{ github.event.discussion.title }}
-          DISCUSSION_BODY: ${{ github.event.discussion.body }}
-          DISCUSSION_URL: ${{ github.event.discussion.html_url }}
-        run: |
-          payload=$(jq -n \
-            --arg title "$DISCUSSION_TITLE" \
-            --arg desc "$DISCUSSION_BODY" \
-            --arg url "$DISCUSSION_URL" \
-            '{
-              username: "디스커션 봇",
-              avatar_url: "https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4",
-              content: "**새로운 디스커션이 생성되었습니다**",
-              embeds: [
-                {
-                  title: $title,
-                  description: $desc,
-                  color: 6253567,
-                  fields: [
-                    {
-                      name: "Discussion Url",
-                      value: $url,
-                      inline: true
-                    }
-                  ]
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 디스커션 봇
+          DISCORD_AVATAR: https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4
+          DISCORD_EMBEDS: |
+            [
+                { 
+                  "title": "${{ github.event.discussion.title }}",
+                  "color": 6253567,
+                  "url": "${{ github.event.discussion.html_url }}",
+                  "description": "${{ github.event.discussion.body }}"
                 }
-              ]
-            }'
-          )
-          
-          echo "Sending payload to Discord:"
-          echo "$payload"
-
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "$payload" \
-               "${{ secrets.DISCORD_WEBHOOK }}"
+            ]
