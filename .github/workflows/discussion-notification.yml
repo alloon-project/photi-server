@@ -2,7 +2,7 @@ name: discussion notification
 
 on:
   discussion:
-    types: [ created ]
+    types: [ created, edited ]
 
 jobs:
   notify:
