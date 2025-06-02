@@ -14,6 +14,7 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: 디스커션 봇
           DISCORD_AVATAR: https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4
+          DISCORD_CONTENT: ""
           DISCORD_EMBEDS: |
             [
                 { 
