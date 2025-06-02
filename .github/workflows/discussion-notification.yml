@@ -14,30 +14,32 @@ jobs:
           DISCUSSION_BODY: ${{ github.event.discussion.body }}
           DISCUSSION_URL: ${{ github.event.discussion.html_url }}
         run: |
-          payload=$(cat <<EOF
-          {
-            "username": "디스커션 봇",
-            "avatar_url": "https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4",
-            "content": "**새로운 디스커션이 생성되었습니다**",
-            "embeds": [
-              {
-                "title": "${DISCUSSION_TITLE}",
-                "description": "${DISCUSSION_BODY}",
-                "color": 6253567,
-                "fields": [
-                  {
-                    "name": "Discussion Url",
-                    "value": "${DISCUSSION_URL}",
-                    "inline": true
-                  }
-                ]
-              }
-            ]
-          }
-          EOF
+          payload=$(jq -n \
+            --arg title "$DISCUSSION_TITLE" \
+            --arg desc "$DISCUSSION_BODY" \
+            --arg url "$DISCUSSION_URL" \
+            '{
+              username: "디스커션 봇",
+              avatar_url: "https://avatars.githubusercontent.com/u/154582156?s=400&u=de1c7ebc9093ce26761a93a1cd78429bc4abe889&v=4",
+              content: "**새로운 디스커션이 생성되었습니다**",
+              embeds: [
+                {
+                  title: $title,
+                  description: $desc,
+                  color: 6253567,
+                  fields: [
+                    {
+                      name: "Discussion Url",
+                      value: $url,
+                      inline: true
+                    }
+                  ]
+                }
+              ]
+            }'
           )
 
           curl -H "Content-Type: application/json" \
                -X POST \
                -d "$payload" \
-               ${{ secrets.DISCORD_WEBHOOK }}
+               "${{ secrets.DISCORD_WEBHOOK }}"
