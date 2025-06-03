@@ -1,12 +1,12 @@
 package com.photi.server.service.user.dto
 
 import com.querydsl.core.annotations.QueryProjection
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 data class FindUserFeedsByDateDto @QueryProjection constructor(
     val feedId: Long,
     val challengeId: Long,
     val imageUrl: String,
     val name: String,
-    val proveTime: LocalTime,
+    val proveTime: LocalDateTime,
 )

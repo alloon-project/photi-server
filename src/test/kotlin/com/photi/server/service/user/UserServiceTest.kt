@@ -326,7 +326,7 @@ class UserServiceTest {
             1L,
             "https://url.kr/5MhHhD",
             "챌린지 이름",
-            LocalTime.of(13, 0)
+            LocalDateTime.of(2025, 6, 3, 13, 0)
         )
     }
 

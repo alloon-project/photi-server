@@ -125,7 +125,7 @@ class UserCustomRepositoryImpl(
                     feed.challenge.id,
                     feed.imageUrl,
                     feed.challenge.name,
-                    feed.challenge.proveTime
+                    feed.createDateTime,
                 )
             )
             .from(feed)
@@ -137,7 +137,7 @@ class UserCustomRepositoryImpl(
                 feed.createDateTime.month().eq(date.monthValue),
                 feed.createDateTime.dayOfMonth().eq(date.dayOfMonth)
             )
-            .orderBy(feed.challenge.proveTime.asc())
+            .orderBy(feed.createDateTime.asc())
             .fetch()
     }
 
