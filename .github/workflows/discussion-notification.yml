@@ -12,7 +12,8 @@ jobs:
         id: prepare
         run: |
           BODY="${{ github.event.discussion.body }}"
-          CLEAN_BODY=$(jq -Rsa . <<< "$BODY" | sed 's/^"//' | sed 's/"$//')
+          ESCAPED_BODY=$(echo "$BODY" | tr -d '\r' | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/`/\&#96;/g')
+          CLEAN_BODY=$(jq -Rsa . <<< "$ESCAPED_BODY" | sed 's/^"//' | sed 's/"$//')
           echo "body=$CLEAN_BODY" >> $GITHUB_OUTPUT
 
       - name: Send Discord notification
