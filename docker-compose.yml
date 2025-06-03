@@ -3,7 +3,7 @@ services:
     container_name: backend
     restart: always
     env_file:
-      - .env
+      - docker/.env
     build:
       context: ./docker
       dockerfile: Dockerfile
@@ -25,9 +25,9 @@ services:
     volumes:
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     environment:
-      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
-      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
-      POSTGRES_DB: ${SPRING_DATASOURCE_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres!2#
+      POSTGRES_DB: photi_local_db
     networks:
       - app-network
   redis:
