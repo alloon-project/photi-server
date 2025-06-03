@@ -20,7 +20,7 @@ data class FindUserFeedsByDateResponse(
     @Schema(description = "챌린지 이름", example = "신나게 하는 러닝 챌린지")
     val name: String,
 
-    @Schema(description = "챌린지 인증 시간", example = "13:00")
+    @Schema(description = "피드 인증 시간", example = "13:00")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
 ) {
@@ -33,7 +33,7 @@ data class FindUserFeedsByDateResponse(
                 feed.challengeId,
                 feed.imageUrl,
                 feed.name,
-                feed.proveTime,
+                feed.proveTime.toLocalTime(),
             )
         }
 
