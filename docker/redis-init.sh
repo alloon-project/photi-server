@@ -1,13 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "[INFO] Waiting for Redis to start..."
-until redis-cli ping | grep -q "PONG"; do
-  echo "[INFO] Redis is not ready yet. Waiting..."
-  sleep 1
-done
-
-echo "[INFO] Redis is up. Initializing data..."
+echo "[INFO] Initializing Redis data..."
 
 declare -A hashtags=(
   ["러닝"]=10
@@ -24,10 +18,10 @@ declare -A hashtags=(
 
 for tag in "${!hashtags[@]}"; do
   score="${hashtags[$tag]}"
-  redis-cli ZADD popular:hashtags "$score" "$tag"
+  redis-cli -h redis ZADD popular:hashtags "$score" "$tag"
 done
 
 echo "[INFO] Initialized hashtags:"
-redis-cli ZRANGE popular:hashtags 0 -1 WITHSCORES
+redis-cli -h redis ZRANGE popular:hashtags 0 -1 WITHSCORES
 
 echo "[INFO] Redis initialization completed successfully"
