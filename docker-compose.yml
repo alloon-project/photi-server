@@ -1,32 +1,52 @@
 services:
-  alloon:
+  backend:
+    container_name: backend
     restart: always
     env_file:
-      - docker/.env
+      - .env
     build:
-      context: docker
+      context: ./docker
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - db
-      - mem-db
+      - redis
+    environment:
+      - TZ=Asia/Seoul
+    networks:
+      - app-network
   db:
     image: postgres:latest
+    container_name: postgres-db
     restart: always
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres!2#
-      POSTGRES_DB: allon_server
-  mem-db:
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: ${SPRING_DATASOURCE_NAME}
+    networks:
+      - app-network
+  redis:
     image: redis:latest
+    container_name: redis-db
     restart: always
     ports:
       - "6379:6379"
     volumes:
-      - ./docker/redis-init.sh:/redis-init.sh
-    command: [ "sh", "-c", "redis-server --daemonize yes && sleep 3 && bash /redis-init.sh && tail -f /dev/null" ]
+      - ./docker/redis-init.sh:/data/redis-init.sh:ro
+    command: >
+      sh -c "chmod +x /data/redis-init.sh &&
+             redis-server &
+             sleep 3 &&
+             bash /data/redis-init.sh &&
+             tail -f /dev/null"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
