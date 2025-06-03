@@ -13,7 +13,7 @@ jobs:
         run: |
           BODY="${{ github.event.discussion.body }}"
           ESCAPED_BODY=$(echo "$BODY" | tr -d '\r' | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/`/\&#96;/g')
-          CLEAN_BODY=$(jq -Rsa . <<< "$ESCAPED_BODY" | sed 's/^"//' | sed 's/"$//')
+          CLEAN_BODY=$(jq -Rsa <<< "$ESCAPED_BODY")
           echo "body=$CLEAN_BODY" >> $GITHUB_OUTPUT
 
       - name: Send Discord notification
