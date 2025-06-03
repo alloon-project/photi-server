@@ -5,13 +5,14 @@ services:
     env_file:
       - docker/.env
     build:
-      context: ./docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - db
       - redis
+      - redis-init
     environment:
       - TZ=Asia/Seoul
     networks:
@@ -36,14 +37,17 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - app-network
+  redis-init:
+    image: redis:latest
+    container_name: redis-init
+    restart: "no"
+    depends_on:
+      - redis
+    entrypoint: [ "bash", "-c", "/init/redis-init.sh" ]
     volumes:
-      - ./docker/redis-init.sh:/data/redis-init.sh:ro
-    command: >
-      sh -c "chmod +x /data/redis-init.sh &&
-             redis-server &
-             sleep 3 &&
-             bash /data/redis-init.sh &&
-             tail -f /dev/null"
+      - ./docker/redis-init.sh:/init/redis-init.sh:ro
     networks:
       - app-network
 
