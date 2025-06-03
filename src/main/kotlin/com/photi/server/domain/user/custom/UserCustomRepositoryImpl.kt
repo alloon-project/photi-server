@@ -160,7 +160,10 @@ class UserCustomRepositoryImpl(
             .from(feed)
             .join(feed.challenge)
             .join(feed.challengeMember.user)
-            .where(feed.challengeMember.user.id.eq(userId))
+            .where(
+                feed.challengeMember.user.id.eq(userId),
+                feed.challengeMember.status.eq(PROGRESS),
+            )
             .orderBy(feed.createDateTime.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
