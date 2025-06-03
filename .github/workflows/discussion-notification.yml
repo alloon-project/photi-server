@@ -8,12 +8,12 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Escape discussion body using jq
+      - name: Clean and escape discussion body
         id: prepare
         run: |
-          BODY="${{ github.event.discussion.body }}"
-          ESCAPED_BODY=$(echo "$BODY" | tr -d '\r' | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/`/\&#96;/g')
-          CLEAN_BODY=$(jq -Rsa <<< "$ESCAPED_BODY")
+          echo "${{ github.event.discussion.body }}" > raw.txt
+          cat raw.txt | tr -d '\r' | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/`/\&#96;/g' > escaped.txt
+          CLEAN_BODY=$(jq -Rs . < escaped.txt)
           echo "body=$CLEAN_BODY" >> $GITHUB_OUTPUT
 
       - name: Send Discord notification
