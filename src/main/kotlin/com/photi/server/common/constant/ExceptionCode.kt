@@ -45,6 +45,7 @@ enum class ExceptionCode(
     TOKEN_UNAUTHORIZED(FORBIDDEN, "권한이 없는 요청입니다. 로그인 후에 다시 시도 해주세요."),
     REQUEST_FORBIDDEN(FORBIDDEN, "권한이 없는 요청입니다."),
     CHALLENGE_CREATOR_FORBIDDEN(FORBIDDEN, "챌린지 파티장 권한이 없습니다."),
+    FEED_CREATOR_FORBIDDEN(FORBIDDEN, "피드 삭제 권한이 없습니다."),
 
     /**
      * 404 Not Found
