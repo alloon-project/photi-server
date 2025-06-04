@@ -170,7 +170,7 @@ class ChallengeService(
         validateChallenge(challengeId)
         val challengeMemberId = validateChallengeMember(userId, challengeId).id
         val feed = feedRepository.findByIdAndChallengeMemberId(feedId, challengeMemberId)
-            ?: throw CustomException(FEED_NOT_FOUND)
+            ?: throw CustomException(FEED_CREATOR_FORBIDDEN)
         val feedComments = feedCommentRepository.findAllByFeedId(feedId)
         val feedLikes = feedLikeRepository.findAllByFeedId(feedId)
 
