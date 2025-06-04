@@ -207,7 +207,7 @@ class ChallengeController(
     @DeleteMapping("/{challengeId}/feeds/{feedId}")
     @Operation(summary = "챌린지 피드 삭제", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND, FEED_NOT_FOUND])
+    @ApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED, USER_NOT_FOUND, CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_NOT_FOUND, FEED_CREATOR_FORBIDDEN])
     fun deleteChallengeFeed(
         principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
