@@ -450,7 +450,7 @@ class ChallengeServiceTest {
             .isEqualTo(CHALLENGE_MEMBER_NOT_FOUND)
     }
 
-    @DisplayName("등록되지 않은 피드 삭제를 하면 예외가 발생한다.")
+    @DisplayName("권한이 없는 피드 삭제를 하면 예외가 발생한다.")
     @Test
     fun givenNotFoundFeed_whenDeleteChallengeFeed_thenThrow() {
         // given
@@ -473,7 +473,7 @@ class ChallengeServiceTest {
         assertThatThrownBy { challengeService.deleteChallengeFeed(userId, challengeId, feedId) }
             .isInstanceOf(CustomException::class.java)
             .extracting("exceptionCode")
-            .isEqualTo(FEED_NOT_FOUND)
+            .isEqualTo(FEED_CREATOR_FORBIDDEN)
     }
 
     @DisplayName("챌린지 피드 조회를 하면 정렬 기준으로 정렬된 페이징 객체를 반환한다.")
