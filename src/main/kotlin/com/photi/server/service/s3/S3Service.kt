@@ -61,10 +61,16 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
     }
 
     fun getChallengeExampleImages(): List<String> {
+        val sortOrder = getSortOrder()
         return amazonS3Client.listObjects(bucket, getRoot(CHALLENGE_EXAMPLES))
             .objectSummaries
             .map { it.key }
             .filter { it.endsWith(".jpg") }
+            .sortedBy { key ->
+                sortOrder.indexOfFirst {
+                    key.contains(it)
+                }
+            }
             .map { getImageUrl(it) }
     }
 
@@ -86,5 +92,22 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
             CHALLENGE_EXAMPLES -> challengeFolder + "examples"
             FEEDS -> "$feedFolder$subFolder/"
         }
+    }
+
+    private fun getSortOrder(): List<String> {
+        return listOf(
+            IMAGE_COVER_PREFIX + LUCKY,
+            IMAGE_COVER_PREFIX + PHOTO,
+            IMAGE_COVER_PREFIX + HEALTH,
+            IMAGE_COVER_PREFIX + STUDY,
+        )
+    }
+
+    companion object {
+        private const val IMAGE_COVER_PREFIX = "img_cover_"
+        private const val LUCKY = "lucky"
+        private const val PHOTO = "photo"
+        private const val HEALTH = "health"
+        private const val STUDY = "study"
     }
 }
