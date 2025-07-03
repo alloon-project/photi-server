@@ -29,9 +29,9 @@ class ChallengeStatusEndJobConfig(
     private val jobRepository: JobRepository,
 ) {
 
-    @Bean(JOB_NAME)
+    @Bean(CHALLENGE_END_JOB_NAME)
     fun job(): Job {
-        return JobBuilder(JOB_NAME, jobRepository)
+        return JobBuilder(CHALLENGE_END_JOB_NAME, jobRepository)
             .start(step())
             .build()
     }
@@ -82,7 +82,7 @@ class ChallengeStatusEndJobConfig(
     }
 
     companion object {
-        const val JOB_NAME = "챌린지종료상태"
-        const val BEAN_PREFIX = JOB_NAME + "_"
+        const val CHALLENGE_END_JOB_NAME = "챌린지종료상태"
+        const val BEAN_PREFIX = CHALLENGE_END_JOB_NAME + "_"
     }
 }
