@@ -22,31 +22,18 @@ class JobScheduler(
 
     @Scheduled(cron = "0 * 3 * * *")
     fun runChallengeEndJob() {
-        val date = LocalDate.now().toString()
-        try {
-            val job = jobRegistry.getJob(CHALLENGE_END_JOB_NAME)
-            val jobParameters = JobParametersBuilder()
-                .addString(JOB_PARAMETER, date)
-                .toJobParameters()
-            jobLauncher.run(job, jobParameters)
-        } catch (e: NoSuchJobException) {
-            throw RuntimeException(e)
-        } catch (e: JobInstanceAlreadyCompleteException) {
-            throw RuntimeException(e)
-        } catch (e: JobExecutionAlreadyRunningException) {
-            throw RuntimeException(e)
-        } catch (e: JobParametersInvalidException) {
-            throw RuntimeException(e)
-        } catch (e: JobRestartException) {
-            throw RuntimeException(e)
-        }
+        runJob(CHALLENGE_END_JOB_NAME)
     }
 
     @Scheduled(cron = "0 * 4 * * *")
     fun runContactReRegisterJob() {
+        runJob(CONTACT_RE_REGISTER_JOB_NAME)
+    }
+
+    fun runJob(jobName: String) {
         val date = LocalDate.now().toString()
         try {
-            val job = jobRegistry.getJob(CONTACT_RE_REGISTER_JOB_NAME)
+            val job = jobRegistry.getJob(jobName)
             val jobParameters = JobParametersBuilder()
                 .addString(JOB_PARAMETER, date)
                 .toJobParameters()
