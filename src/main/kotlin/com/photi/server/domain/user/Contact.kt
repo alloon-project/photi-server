@@ -54,4 +54,9 @@ class Contact(
         isDeleted = true
         deletedDate = LocalDateTime.now()
     }
+
+    fun updateReRegisterStatus() {
+        isDeleted = false
+        deletedDate = null
+    }
 }
