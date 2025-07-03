@@ -50,7 +50,7 @@ class ContactReRegisterJobConfig(
     @Bean(BEAN_PREFIX + "itemReader")
     @StepScope
     fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<Contact> {
-        val minusMonthDate = date?.minusMonths(MONTH_TO_SUBTRACT)
+        val minusMonthDateTime = date?.minusMonths(MONTH_TO_SUBTRACT)?.atStartOfDay()
         return JpaPagingItemReaderBuilder<Contact>()
             .name(BEAN_PREFIX + "itemReader")
             .entityManagerFactory(entityManagerFactory)
@@ -63,7 +63,7 @@ class ContactReRegisterJobConfig(
                 ORDER BY c.id ASC
                 """.trimIndent()
             )
-            .parameterValues(mapOf("date" to minusMonthDate))
+            .parameterValues(mapOf("date" to minusMonthDateTime))
             .build()
     }
 
