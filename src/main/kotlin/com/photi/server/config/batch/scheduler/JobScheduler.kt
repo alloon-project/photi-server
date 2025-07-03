@@ -20,12 +20,12 @@ class JobScheduler(
     private val jobRegistry: JobRegistry,
 ) {
 
-    @Scheduled(cron = "0 * 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *")
     fun runChallengeEndJob() {
         runJob(CHALLENGE_END_JOB_NAME)
     }
 
-    @Scheduled(cron = "0 * 4 * * *")
+    @Scheduled(cron = "0 0 4 * * *")
     fun runContactReRegisterJob() {
         runJob(CONTACT_RE_REGISTER_JOB_NAME)
     }
