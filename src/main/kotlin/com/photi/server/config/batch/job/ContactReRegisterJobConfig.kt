@@ -50,7 +50,7 @@ class ContactReRegisterJobConfig(
     @Bean(BEAN_PREFIX + "itemReader")
     @StepScope
     fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<Contact> {
-        val minusMonthDate = date?.minusMonths(1)
+        val minusMonthDate = date?.minusMonths(MONTH_TO_SUBTRACT)
         return JpaPagingItemReaderBuilder<Contact>()
             .name(BEAN_PREFIX + "itemReader")
             .entityManagerFactory(entityManagerFactory)
@@ -85,5 +85,6 @@ class ContactReRegisterJobConfig(
     companion object {
         const val CONTACT_RE_REGISTER_JOB_NAME = "회원재가입가능상태"
         const val BEAN_PREFIX = CONTACT_RE_REGISTER_JOB_NAME + "_"
+        const val MONTH_TO_SUBTRACT = 1L
     }
 }
