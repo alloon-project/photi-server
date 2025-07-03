@@ -1,6 +1,6 @@
 package com.photi.server.config.batch.job
 
-import com.photi.server.domain.challenge.Challenge
+import com.photi.server.domain.user.Contact
 import jakarta.persistence.EntityManagerFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -20,7 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import java.time.LocalDate
 
 @Configuration
-class ChallengeStatusEndJobConfig(
+class ContactReRegisterJobConfig(
 
     @Value("\${spring.batch.chunk-size}")
     private val chunkSize: Int,
@@ -29,9 +29,9 @@ class ChallengeStatusEndJobConfig(
     private val jobRepository: JobRepository,
 ) {
 
-    @Bean(CHALLENGE_END_JOB_NAME)
+    @Bean(CONTACT_RE_REGISTER_JOB_NAME)
     fun job(): Job {
-        return JobBuilder(CHALLENGE_END_JOB_NAME, jobRepository)
+        return JobBuilder(CONTACT_RE_REGISTER_JOB_NAME, jobRepository)
             .start(step())
             .build()
     }
@@ -40,7 +40,7 @@ class ChallengeStatusEndJobConfig(
     @JobScope
     fun step(): Step {
         return StepBuilder(BEAN_PREFIX + "step", jobRepository)
-            .chunk<Challenge, Challenge>(chunkSize, transactionManager)
+            .chunk<Contact, Contact>(chunkSize, transactionManager)
             .reader(itemReader(null))
             .processor(itemProcessor())
             .writer(itemWriter())
@@ -49,40 +49,42 @@ class ChallengeStatusEndJobConfig(
 
     @Bean(BEAN_PREFIX + "itemReader")
     @StepScope
-    fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<Challenge> {
-        return JpaPagingItemReaderBuilder<Challenge>()
+    fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<Contact> {
+        val minusMonthDateTime = date?.minusMonths(MONTH_TO_SUBTRACT)?.atStartOfDay()
+        return JpaPagingItemReaderBuilder<Contact>()
             .name(BEAN_PREFIX + "itemReader")
             .entityManagerFactory(entityManagerFactory)
             .pageSize(chunkSize)
             .queryString(
                 """
-                SELECT c FROM Challenge c 
-                WHERE c.serviceStatus = 'ACTIVE' 
-                AND c.endDate < :date 
+                SELECT c FROM Contact c 
+                WHERE c.isDeleted = true 
+                AND c.deletedDate <= :date 
                 ORDER BY c.id ASC
                 """.trimIndent()
             )
-            .parameterValues(mapOf("date" to date))
+            .parameterValues(mapOf("date" to minusMonthDateTime))
             .build()
     }
 
     @Bean(BEAN_PREFIX + "itemProcessor")
-    fun itemProcessor(): ItemProcessor<Challenge, Challenge> {
+    fun itemProcessor(): ItemProcessor<Contact, Contact> {
         return ItemProcessor {
-            it.updateChallengeStatusEnd()
+            it.updateReRegisterStatus()
             it
         }
     }
 
     @Bean(BEAN_PREFIX + "itemWriter")
-    fun itemWriter(): JpaItemWriter<Challenge> {
-        return JpaItemWriter<Challenge>().apply {
+    fun itemWriter(): JpaItemWriter<Contact> {
+        return JpaItemWriter<Contact>().apply {
             setEntityManagerFactory(entityManagerFactory)
         }
     }
 
     companion object {
-        const val CHALLENGE_END_JOB_NAME = "챌린지종료상태"
-        const val BEAN_PREFIX = CHALLENGE_END_JOB_NAME + "_"
+        const val CONTACT_RE_REGISTER_JOB_NAME = "회원재가입가능상태"
+        const val BEAN_PREFIX = CONTACT_RE_REGISTER_JOB_NAME + "_"
+        const val MONTH_TO_SUBTRACT = 1L
     }
 }

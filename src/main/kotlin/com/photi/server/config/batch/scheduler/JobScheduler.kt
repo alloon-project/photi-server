@@ -1,5 +1,7 @@
 package com.photi.server.config.batch.scheduler
 
+import com.photi.server.config.batch.job.ChallengeStatusEndJobConfig.Companion.CHALLENGE_END_JOB_NAME
+import com.photi.server.config.batch.job.ContactReRegisterJobConfig.Companion.CONTACT_RE_REGISTER_JOB_NAME
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.JobParametersInvalidException
 import org.springframework.batch.core.configuration.JobRegistry
@@ -18,11 +20,20 @@ class JobScheduler(
     private val jobRegistry: JobRegistry,
 ) {
 
-    @Scheduled(cron = "0 * 3 * * *")
-    fun runJob() {
+    @Scheduled(cron = "0 0 3 * * *")
+    fun runChallengeEndJob() {
+        runJob(CHALLENGE_END_JOB_NAME)
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    fun runContactReRegisterJob() {
+        runJob(CONTACT_RE_REGISTER_JOB_NAME)
+    }
+
+    fun runJob(jobName: String) {
         val date = LocalDate.now().toString()
         try {
-            val job = jobRegistry.getJob(JOB_NAME)
+            val job = jobRegistry.getJob(jobName)
             val jobParameters = JobParametersBuilder()
                 .addString(JOB_PARAMETER, date)
                 .toJobParameters()
@@ -41,7 +52,6 @@ class JobScheduler(
     }
 
     companion object {
-        const val JOB_NAME = "챌린지종료상태"
         const val JOB_PARAMETER = "date"
     }
 }
