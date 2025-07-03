@@ -1,5 +1,7 @@
 package com.photi.server.config.batch.scheduler
 
+import com.photi.server.config.batch.job.ChallengeStatusEndJobConfig.Companion.CHALLENGE_END_JOB_NAME
+import com.photi.server.config.batch.job.ContactReRegisterJobConfig.Companion.CONTACT_RE_REGISTER_JOB_NAME
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.JobParametersInvalidException
 import org.springframework.batch.core.configuration.JobRegistry
@@ -19,10 +21,32 @@ class JobScheduler(
 ) {
 
     @Scheduled(cron = "0 * 3 * * *")
-    fun runJob() {
+    fun runChallengeEndJob() {
         val date = LocalDate.now().toString()
         try {
-            val job = jobRegistry.getJob(JOB_NAME)
+            val job = jobRegistry.getJob(CHALLENGE_END_JOB_NAME)
+            val jobParameters = JobParametersBuilder()
+                .addString(JOB_PARAMETER, date)
+                .toJobParameters()
+            jobLauncher.run(job, jobParameters)
+        } catch (e: NoSuchJobException) {
+            throw RuntimeException(e)
+        } catch (e: JobInstanceAlreadyCompleteException) {
+            throw RuntimeException(e)
+        } catch (e: JobExecutionAlreadyRunningException) {
+            throw RuntimeException(e)
+        } catch (e: JobParametersInvalidException) {
+            throw RuntimeException(e)
+        } catch (e: JobRestartException) {
+            throw RuntimeException(e)
+        }
+    }
+
+    @Scheduled(cron = "0 * 4 * * *")
+    fun runContactReRegisterJob() {
+        val date = LocalDate.now().toString()
+        try {
+            val job = jobRegistry.getJob(CONTACT_RE_REGISTER_JOB_NAME)
             val jobParameters = JobParametersBuilder()
                 .addString(JOB_PARAMETER, date)
                 .toJobParameters()
@@ -41,7 +65,6 @@ class JobScheduler(
     }
 
     companion object {
-        const val JOB_NAME = "챌린지종료상태"
         const val JOB_PARAMETER = "date"
     }
 }
