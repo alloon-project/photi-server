@@ -23,6 +23,9 @@ data class FindUserFeedsByDateResponse(
     @Schema(description = "피드 인증 시간", example = "13:00")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "kk:mm")
     val proveTime: LocalTime,
+
+    @Schema(description = "탈퇴한 챌린지 여부", example = "true")
+    val isDeleted: Boolean,
 ) {
 
     companion object {
@@ -34,6 +37,7 @@ data class FindUserFeedsByDateResponse(
                 feed.imageUrl,
                 feed.name,
                 feed.proveTime.toLocalTime(),
+                feed.status.isDeleted(),
             )
         }
 

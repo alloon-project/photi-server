@@ -126,6 +126,7 @@ class UserCustomRepositoryImpl(
                     feed.imageUrl,
                     feed.challenge.name,
                     feed.createDateTime,
+                    feed.challengeMember.status,
                 )
             )
             .from(feed)
@@ -155,15 +156,13 @@ class UserCustomRepositoryImpl(
                     feed.createDateTime,
                     feed.challenge.name,
                     feed.challenge.invitationCode,
+                    feed.challengeMember.status,
                 )
             )
             .from(feed)
             .join(feed.challenge)
             .join(feed.challengeMember.user)
-            .where(
-                feed.challengeMember.user.id.eq(userId),
-                feed.challengeMember.status.eq(PROGRESS),
-            )
+            .where(feed.challengeMember.user.id.eq(userId))
             .orderBy(feed.createDateTime.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)

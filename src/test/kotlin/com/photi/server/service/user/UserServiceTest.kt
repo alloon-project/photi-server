@@ -3,6 +3,7 @@ package com.photi.server.service.user
 import com.photi.server.common.constant.ExceptionCode.USER_NOT_FOUND
 import com.photi.server.common.response.CustomException
 import com.photi.server.domain.challenge.ChallengeMemberRepository
+import com.photi.server.domain.challenge.ChallengeMemberStatus
 import com.photi.server.domain.challenge.ChallengeRepository
 import com.photi.server.domain.user.Contact
 import com.photi.server.domain.user.User
@@ -232,7 +233,8 @@ class UserServiceTest {
             "https://url.kr/5MhHhD",
             LocalDateTime.now(),
             "챌린지 이름",
-            "ABC12"
+            "ABC12",
+            ChallengeMemberStatus.DELETED,
         )
         val content = listOf(dto, dto, dto)
         val pageable = PageRequest.of(0, 10)
@@ -326,7 +328,8 @@ class UserServiceTest {
             1L,
             "https://url.kr/5MhHhD",
             "챌린지 이름",
-            LocalDateTime.of(2025, 6, 3, 13, 0)
+            LocalDateTime.of(2025, 6, 3, 13, 0),
+            ChallengeMemberStatus.PROGRESS,
         )
     }
 
