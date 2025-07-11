@@ -199,7 +199,8 @@ class UserCustomRepositoryImpl(
             .join(challengeMember.challenge)
             .where(
                 challengeMember.user.id.eq(userId),
-                challengeMember.challenge.serviceStatus.eq(END)
+                challengeMember.challenge.serviceStatus.eq(END),
+                challengeMember.status.eq(PROGRESS),
             )
             .orderBy(challengeMember.challenge.endDate.desc())
             .offset(pageable.offset)
