@@ -1,5 +1,6 @@
 package com.photi.server.service.user.dto
 
+import com.photi.server.domain.challenge.ChallengeMemberStatus
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDateTime
 
@@ -10,4 +11,5 @@ data class FindUserFeedHistoryDto @QueryProjection constructor(
     val createdDate: LocalDateTime,
     val name: String,
     val invitationCode: String,
+    val status: ChallengeMemberStatus,
 )
