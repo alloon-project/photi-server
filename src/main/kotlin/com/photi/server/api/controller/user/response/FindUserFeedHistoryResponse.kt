@@ -24,6 +24,9 @@ data class FindUserFeedHistoryResponse(
 
     @Schema(description = "챌린지 초대코드", example = "478DS")
     val invitationCode: String,
+
+    @Schema(description = "탈퇴한 챌린지 여부", example = "true")
+    val isDeleted: Boolean,
 ) {
 
     companion object {
@@ -36,6 +39,7 @@ data class FindUserFeedHistoryResponse(
                 feedHistory.createdDate.toLocalDate(),
                 feedHistory.name,
                 feedHistory.invitationCode,
+                feedHistory.status.isDeleted(),
             )
         }
     }
