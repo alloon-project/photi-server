@@ -66,8 +66,9 @@ class UserCustomRepositoryImpl(
             .join(challengeMember.user)
             .join(challengeMember.challenge)
             .where(
-                challengeMember.user.id.eq(userId)
-                    .and(challengeMember.challenge.serviceStatus.eq(END))
+                challengeMember.user.id.eq(userId),
+                challengeMember.challenge.serviceStatus.eq(END),
+                challengeMember.status.eq(PROGRESS),
             )
             .fetchOne()?.toInt() ?: 0
 
