@@ -18,6 +18,7 @@ import jakarta.validation.Valid
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
+import java.time.LocalDate
 
 @Service
 @Validated
@@ -137,6 +138,12 @@ class AuthService(
         passwordUtility.verifyPassword(dto.password, user.password)
 
         user.contact.softDelete()
+    }
+
+    fun findUserDeletedDate(dto: UserDeletedDateDto): FindUserDeletedDateDto {
+        val contact =
+            contactRepository.findByEmail(dto.email) ?: throw CustomException(USER_NOT_FOUND)
+        return FindUserDeletedDateDto(contact.deletedDate)
     }
 
     private fun getUserTemplateImage(): String {
