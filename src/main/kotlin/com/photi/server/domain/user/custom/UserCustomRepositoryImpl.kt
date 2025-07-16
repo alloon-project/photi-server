@@ -1,5 +1,6 @@
 package com.photi.server.domain.user.custom
 
+import com.photi.server.domain.base.ServiceStatus.ACTIVE
 import com.photi.server.domain.base.ServiceStatus.END
 import com.photi.server.domain.challenge.ChallengeMemberStatus
 import com.photi.server.domain.challenge.ChallengeMemberStatus.PROGRESS
@@ -108,7 +109,11 @@ class UserCustomRepositoryImpl(
             .select(challengeMember.count())
             .from(challengeMember)
             .join(challengeMember.user)
-            .where(challengeMember.user.id.eq(userId), eqChallengeMemberStatus(PROGRESS))
+            .where(
+                challengeMember.user.id.eq(userId),
+                eqChallengeMemberStatus(PROGRESS),
+                challengeMember.challenge.serviceStatus.eq(ACTIVE),
+            )
             .fetchOne()?.toInt() ?: 0
 
         return queryFactory
@@ -250,7 +255,11 @@ class UserCustomRepositoryImpl(
             .from(challengeMember)
             .join(challengeMember.challenge)
             .join(challengeMember.user)
-            .where(challengeMember.user.id.eq(userId), eqChallengeMemberStatus(PROGRESS))
+            .where(
+                challengeMember.user.id.eq(userId),
+                eqChallengeMemberStatus(PROGRESS),
+                challengeMember.challenge.serviceStatus.eq(ACTIVE),
+            )
             .orderBy(challengeMember.challenge.proveTime.asc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
