@@ -36,5 +36,3 @@ api:
     time:
       access: ${JWT_ACCESS}
       refresh: ${JWT_REFRESH}
-  mail:
-    address: ${MAIL_ADDRESS}
