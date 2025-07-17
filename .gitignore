@@ -42,5 +42,5 @@ out/
 *log*.gz
 
 ### env ###
-docker/.env
-docker/dev/.env
+*/.env
+*/*/.env
