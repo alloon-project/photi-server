@@ -1,5 +1,6 @@
 services:
   backend:
+    image: yugyeong390/photi-server:1.0.0
     env_file:
       - .env
     build:
