@@ -22,24 +22,13 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
     @Value("\${cloud.aws.s3.bucket}")
     private lateinit var bucket: String
 
-    @Value("\${cloud.aws.s3.folder.folderName1}")
-    private lateinit var userFolder: String
-
-    @Value("\${cloud.aws.s3.folder.folderName2}")
-    private lateinit var challengeFolder: String
-
-    @Value("\${cloud.aws.s3.folder.folderName3}")
-    private lateinit var feedFolder: String
-
     fun uploadImage(
         file: MultipartFile,
         folderType: FolderType,
         subFolder: Long? = null
     ): String {
         file.validateFile()
-
         val fileName = getRoot(folderType, subFolder) + file.createFileName()
-
         val objectMetadata = ObjectMetadata().apply {
             contentLength = file.size
             contentType = file.contentType
@@ -61,13 +50,12 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
     }
 
     fun getChallengeExampleImages(): List<String> {
-        val sortOrder = getSortOrder()
         return amazonS3Client.listObjects(bucket, getRoot(CHALLENGE_EXAMPLES))
             .objectSummaries
             .map { it.key }
             .filter { it.endsWith(".jpg") }
             .sortedBy { key ->
-                sortOrder.indexOfFirst {
+                ExampleImageType.getSortOrder().indexOfFirst {
                     key.contains(it)
                 }
             }
@@ -85,29 +73,11 @@ class S3Service(private val amazonS3Client: AmazonS3Client) {
         }
     }
 
-    private fun getRoot(folderType: FolderType, subFolder: Long? = null): String {
-        return when (folderType) {
-            USERS -> userFolder
-            CHALLENGES -> challengeFolder
-            CHALLENGE_EXAMPLES -> challengeFolder + "examples"
-            FEEDS -> "$feedFolder$subFolder/"
+    private fun getRoot(folderType: FolderType, subFolder: Long? = null) =
+        when (folderType) {
+            USERS -> USERS.value
+            CHALLENGES -> CHALLENGES.value
+            FEEDS -> "${FEEDS.value}$subFolder/"
+            CHALLENGE_EXAMPLES -> CHALLENGE_EXAMPLES.value
         }
-    }
-
-    private fun getSortOrder(): List<String> {
-        return listOf(
-            IMAGE_COVER_PREFIX + LUCKY,
-            IMAGE_COVER_PREFIX + PHOTO,
-            IMAGE_COVER_PREFIX + HEALTH,
-            IMAGE_COVER_PREFIX + STUDY,
-        )
-    }
-
-    companion object {
-        private const val IMAGE_COVER_PREFIX = "img_cover_"
-        private const val LUCKY = "lucky"
-        private const val PHOTO = "photo"
-        private const val HEALTH = "health"
-        private const val STUDY = "study"
-    }
 }
