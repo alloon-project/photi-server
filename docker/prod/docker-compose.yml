@@ -4,8 +4,8 @@ services:
     env_file:
       - .env
     build:
-      context: ./docker/prod
-      dockerfile: ./docker/prod/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
