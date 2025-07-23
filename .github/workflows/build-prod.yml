@@ -24,10 +24,7 @@ jobs:
         id: get_version
         run: |
           RELEASE_VERSION_WITHOUT_V="$(cut -d'v' -f2 <<< ${GITHUB_REF#refs/*/})"
-          echo ::set-output name=VERSION::$RELEASE_VERSION_WITHOUT_V
-
-      - name: Start docker containers
-        run: docker compose up -d
+          echo "VERSION=$RELEASE_VERSION_WITHOUT_V" >> $GITHUB_OUTPUT
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
