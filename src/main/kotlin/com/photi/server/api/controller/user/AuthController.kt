@@ -1,6 +1,7 @@
 package com.photi.server.api.controller.user
 
 import com.photi.server.api.controller.user.request.*
+import com.photi.server.api.controller.user.response.FindUserDeletedDateResponse
 import com.photi.server.common.constant.CustomHttpHeaders
 import com.photi.server.common.constant.ExceptionCode.*
 import com.photi.server.common.constant.RegexPatternConstants.Companion.LOWERCASE_NUMBER_UNDERSCORE
@@ -167,5 +168,17 @@ class AuthController(
         jwtProvider.validateAccessTokenAndSetAuthentication(accessToken)
 
         return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
+    }
+
+    @PostMapping("/api/users/deleted-date")
+    @Operation(summary = "회원 탈퇴 날짜 조회")
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([USER_NOT_FOUND])
+    fun findUserDeletedDate(
+        @RequestBody @Valid request: FindUserDeletedDateRequest,
+    ): ResponseEntity<FindUserDeletedDateResponse> {
+        val deletedDate = authService.findUserDeletedDate(request.toServiceDto())
+        val response = FindUserDeletedDateResponse.of(deletedDate)
+        return ResponseEntity.ok(response)
     }
 }

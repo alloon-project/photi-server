@@ -139,6 +139,12 @@ class AuthService(
         user.contact.softDelete()
     }
 
+    fun findUserDeletedDate(dto: UserDeletedDateDto): FindUserDeletedDateDto {
+        val contact =
+            contactRepository.findByEmail(dto.email) ?: throw CustomException(USER_NOT_FOUND)
+        return FindUserDeletedDateDto(contact.deletedDate)
+    }
+
     private fun getUserTemplateImage(): String {
         val userTemplateImages = userTemplateImageRepository.findAll()
         return userTemplateImages.randomOrNull()?.imageUrl ?: ""
