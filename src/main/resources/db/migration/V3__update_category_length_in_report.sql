@@ -1,0 +1,2 @@
+ALTER TABLE report
+    ALTER COLUMN category TYPE VARCHAR(20);
