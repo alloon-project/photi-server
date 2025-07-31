@@ -18,7 +18,7 @@ class Report(
     val targetId: Long,
 
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 20)
     val category: ReportCategoryType,
 
     @Enumerated(value = EnumType.STRING)

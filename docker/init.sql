@@ -220,7 +220,7 @@ CREATE TABLE report
     report_id        BIGSERIAL PRIMARY KEY,
     reporter_id      BIGINT       NOT NULL,
     target_id        BIGINT       NOT NULL,
-    category         VARCHAR(15)  NOT NULL,
+    category         VARCHAR(20)  NOT NULL,
     reason           VARCHAR(15)  NOT NULL,
     content          VARCHAR(120) NULL,
     create_date_time TIMESTAMP(6) NOT NULL,
