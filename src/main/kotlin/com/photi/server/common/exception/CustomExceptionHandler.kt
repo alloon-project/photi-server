@@ -39,9 +39,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        val message = ex.bindingResult.fieldErrors.map {
-            mapOf(it.field to it.defaultMessage)
-        }
+        val message = ex.bindingResult.fieldErrors.joinToString { it.defaultMessage.toString() }
         val response = ErrorResponse(status.toString().split(" ")[1], message)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
@@ -52,12 +50,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         ex: ConstraintViolationException,
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
-        val message = mutableListOf<Map<String?, String>>()
-        ex.constraintViolations.forEach {
-            val propertyPaths = it.propertyPath.toString().split(".")
-            val property = propertyPaths.lastOrNull()
-            message.add(mapOf(property to it.message))
-        }
+        val message = ex.constraintViolations.joinToString { it.message }
         val response = ErrorResponse(BAD_REQUEST.name, message)
 
         return ResponseEntity.status(BAD_REQUEST).body(response)
