@@ -357,6 +357,11 @@ SELECT 'user' || gs.i || '@example.com'              AS email,
        NULL                                          AS deleted_date
 FROM generate_series(1, 30) AS gs(i);
 
+INSERT INTO contact (email, verification_code, verify_yn, is_deleted, create_date_time,
+                     update_date_time, deleted_date)
+VALUES ('photi.aos@gmail.com', 1234, true, false, NOW(), NOW(), null),
+       ('photi.ios@gmail.com', 5678, true, false, NOW(), NOW(), null);
+
 -- user 테이블
 INSERT INTO users (username, password, image_url, temporary_password_yn, create_date_time,
                    update_date_time, contact_id, feed_cnt, challenge_cnt)
@@ -398,6 +403,15 @@ FROM generate_series(6, 30) AS gs(i)
                ] AS image_urls
     ) img_array;
 
+INSERT INTO users (username, password, image_url, temporary_password_yn, create_date_time,
+                   update_date_time, contact_id, feed_cnt, challenge_cnt)
+VALUES ('photi_aos', '$2a$10$IyhRXXoibA7zeoq5IMYWMea1kRnt7BX2qzRmQ8Sn0iQosmSyBTjWa',
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        FALSE, NOW(), NOW(), 31, 0, 0),
+       ('photi_ios', '$2a$10$QyNEaU1.Dkj.dZ34rUzZIuGbOMpi5IV3pddCBraW.3ERu0eOPYHS6',
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
+        FALSE, NOW(), NOW(), 32, 0, 0);
+
 -- user_role 테이블
 INSERT INTO user_role (create_date_time, update_date_time, role, user_id)
 SELECT NOW()  AS create_date_time,
@@ -405,6 +419,10 @@ SELECT NOW()  AS create_date_time,
        'USER' AS role,
        gs.i   AS user_id
 FROM generate_series(1, 30) AS gs(i);
+
+INSERT INTO user_role (create_date_time, update_date_time, role, user_id)
+VALUES (NOW(), NOW(), 'MASTER', 31),
+       (NOW(), NOW(), 'MASTER', 32);
 
 -- challenge 테이블
 INSERT INTO challenge (name, goal, prove_time, end_date, image_url, is_public,
