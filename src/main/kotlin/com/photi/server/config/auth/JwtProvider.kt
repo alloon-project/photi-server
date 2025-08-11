@@ -114,7 +114,7 @@ class JwtProvider(
             .orElseThrow { CustomException(USER_NOT_FOUND) }
             .user
 
-        val grantedAuthorities = userRoles.map { SimpleGrantedAuthority(it.role.name) }
+        val grantedAuthorities = userRoles.map { SimpleGrantedAuthority("ROLE_${it.role.name}") }
 
         return User(user.id.toString(), user.password, grantedAuthorities)
     }

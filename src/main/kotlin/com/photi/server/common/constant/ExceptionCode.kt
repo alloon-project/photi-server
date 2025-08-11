@@ -58,6 +58,7 @@ enum class ExceptionCode(
     FEED_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드입니다."),
     FEED_COMMENT_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드 댓글입니다."),
     FEED_LIKE_NOT_FOUND(NOT_FOUND, "존재하지 않는 피드 좋아요입니다."),
+    OS_POLICY_NOT_FOUND(NOT_FOUND, "존재하지 않는 OS 정책입니다."),
 
     /**
      * 405 Method Not Allowed
