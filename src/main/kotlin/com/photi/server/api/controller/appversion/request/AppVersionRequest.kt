@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 
-@Schema(description = "앱 강제 업데이트 필요 여부 조회 요청 객체")
+@Schema(description = "앱 버전 요청 객체")
 data class AppVersionRequest(
 
     @Schema(description = "OS", example = "ANDROID")
