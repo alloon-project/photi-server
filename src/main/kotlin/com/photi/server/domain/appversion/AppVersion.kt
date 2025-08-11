@@ -16,5 +16,10 @@ class AppVersion(
     val os: OsType,
 
     @Column(nullable = false, length = 10)
-    val minVersion: String,
-) : BaseEntity()
+    var minVersion: String,
+) : BaseEntity() {
+
+    fun updateMinVersion(minVersion: String) {
+        this.minVersion = minVersion
+    }
+}
