@@ -12,8 +12,8 @@ data class AppVersionRequest(
     @Schema(description = "OS", example = "ANDROID")
     @field:NotBlank(message = "OS는 필수 입력입니다.")
     @field:Pattern(
-        regexp = "ANDROID|IOS",
-        message = "OS는 ANDROID, IOS 중 하나여야 됩니다.",
+        regexp = "ANDROID|IOS|android|ios",
+        message = "OS는 ANDROID(android), IOS(ios) 중 하나여야 됩니다.",
     )
     val os: String,
 
@@ -22,5 +22,5 @@ data class AppVersionRequest(
     val appVersion: String,
 ) {
 
-    fun toServiceDto() = AppVersionDto(OsType.valueOf(os), appVersion)
+    fun toServiceDto() = AppVersionDto(OsType.valueOf(os.uppercase()), appVersion)
 }
