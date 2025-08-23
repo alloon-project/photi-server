@@ -1,5 +1,6 @@
 package com.photi.server.config
 
+import com.photi.server.config.auth.CustomAccessDeniedHandler
 import com.photi.server.config.auth.CustomAuthenticationEntryPoint
 import com.photi.server.config.auth.CustomAuthenticationFilter
 import org.springframework.context.annotation.Bean
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     val customAuthenticationFilter: CustomAuthenticationFilter,
     val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    val customAccessDeniedHandler: CustomAccessDeniedHandler,
 ) {
 
     @Bean
@@ -30,6 +32,7 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(POST, "/api/challenges").authenticated()
                 it.requestMatchers(PATCH, "/api/challenges/{challengeId}").authenticated()
+                it.requestMatchers(PATCH, "/api/app-version").hasRole("MASTER")
                 it.requestMatchers(DELETE, "/api/challenges/{challengeId}").authenticated()
                 it.requestMatchers(
                     "/api/users",
@@ -64,7 +67,10 @@ class SecurityConfig(
                 customAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter::class.java
             )
-            .exceptionHandling { it.authenticationEntryPoint(customAuthenticationEntryPoint) }
+            .exceptionHandling {
+                it.authenticationEntryPoint(customAuthenticationEntryPoint)
+                it.accessDeniedHandler(customAccessDeniedHandler)
+            }
             .build()
     }
 }

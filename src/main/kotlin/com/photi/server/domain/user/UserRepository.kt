@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
 
-    fun existsByContact(contact: Contact): Boolean
+    fun existsByContactAndIsDeletedFalse(contact: Contact): Boolean
 
     fun existsByUsername(username: String): Boolean
 
