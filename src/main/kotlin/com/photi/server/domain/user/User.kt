@@ -4,6 +4,7 @@ import com.photi.server.common.constant.ExceptionCode.CHALLENGE_LIMIT_EXCEED
 import com.photi.server.common.response.CustomException
 import com.photi.server.domain.base.BaseEntity
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Table(name = "users")
 @Entity
@@ -35,6 +36,12 @@ class User(
 
     @Column(nullable = false)
     var challengeCnt: Int = 0,
+
+    @Column(nullable = false)
+    var isDeleted: Boolean = false,
+
+    @Column(nullable = true)
+    var deletedDate: LocalDateTime? = null,
 ) : BaseEntity() {
 
     fun resetPassword(password: String) {
@@ -69,6 +76,11 @@ class User(
         if (challengeCnt > 0) {
             challengeCnt -= 1
         }
+    }
+
+    fun softDelete() {
+        isDeleted = true
+        deletedDate = LocalDateTime.now()
     }
 
     fun validateChallengeCnt() {
