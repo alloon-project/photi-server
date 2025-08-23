@@ -10,17 +10,13 @@ import java.util.concurrent.TimeUnit
 @Service
 class IdempotencyKeyService(private val redisTemplate: RedisTemplate<String, String>) {
 
-    fun validateDuplicatedRequest(exceptionCode: ExceptionCode) {
+    fun validateDuplicatedRequest(key: String, exceptionCode: ExceptionCode) {
         val idempotencyKey = UUID.randomUUID().toString()
         val isFirstRequest = redisTemplate.opsForValue()
-            .setIfAbsent(IDEMPOTENCY_KEY, idempotencyKey, 10, TimeUnit.SECONDS)
+            .setIfAbsent(key, idempotencyKey, 2, TimeUnit.SECONDS)
 
         if (isFirstRequest != true) {
             throw CustomException(exceptionCode)
         }
-    }
-
-    companion object {
-        const val IDEMPOTENCY_KEY = "Idempotency-key"
     }
 }

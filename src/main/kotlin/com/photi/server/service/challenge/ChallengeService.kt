@@ -326,16 +326,16 @@ class ChallengeService(
         validateChallenge(challengeId)
         val challengeMember = validateChallengeMember(userId, challengeId)
         val feed = validateChallengeFeed(feedId)
-        val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
 
-        idempotencyKeyService.validateDuplicatedRequest(EXISTING_FEED_LIKE)
+        idempotencyKeyService.validateDuplicatedRequest("like:$userId:$feedId", EXISTING_FEED_LIKE)
 
         try {
+            val feedLike = FeedLike(challengeMember = challengeMember, feed = feed)
             feedLikeRepository.save(feedLike)
+            feed.updateLikeCnt()
         } catch (e: Exception) {
             throw CustomException(EXISTING_FEED_LIKE)
         }
-        feed.updateLikeCnt()
     }
 
     @Transactional
