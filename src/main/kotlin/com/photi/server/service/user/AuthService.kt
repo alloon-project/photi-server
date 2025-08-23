@@ -40,7 +40,7 @@ class AuthService(
             if (it.isDeleted) {
                 throw CustomException(DELETED_USER)
             }
-            if (userRepository.existsByContact(it)) {
+            if (userRepository.existsByContactAndIsDeletedFalse(it)) {
                 throw CustomException(EXISTING_EMAIL)
             }
             it.changeVerificationCode(verificationCode)
@@ -73,7 +73,7 @@ class AuthService(
 
         if (!contact.verifyYn)
             throw CustomException(EMAIL_VALIDATION_INVALID)
-        if (userRepository.existsByContact(contact))
+        if (userRepository.existsByContactAndIsDeletedFalse(contact))
             throw CustomException(EXISTING_USER)
 
         validateUsername(UserServiceValidateUsernameDto(request.username))
@@ -137,6 +137,7 @@ class AuthService(
         passwordUtility.verifyPassword(dto.password, user.password)
 
         user.contact.softDelete()
+        user.softDelete()
     }
 
     fun findUserDeletedDate(dto: UserDeletedDateDto): FindUserDeletedDateDto {
