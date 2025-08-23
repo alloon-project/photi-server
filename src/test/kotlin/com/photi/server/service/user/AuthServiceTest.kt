@@ -47,7 +47,7 @@ class AuthServiceTest {
         val dto = ContactServiceSendVerificationDto("tester@photi.com")
 
         every { contactRepository.findByEmail(any()) } returns contact
-        every { userRepository.existsByContact(any()) } returns false
+        every { userRepository.existsByContactAndIsDeletedFalse(any()) } returns false
         every { emailService.sendEmail(any(), any(), any()) } just Runs
 
         // when
@@ -83,7 +83,7 @@ class AuthServiceTest {
         val dto = ContactServiceSendVerificationDto("tester@photi.com")
 
         every { contactRepository.findByEmail(any()) } returns contact
-        every { userRepository.existsByContact(any()) } returns true
+        every { userRepository.existsByContactAndIsDeletedFalse(any()) } returns true
 
         // when & then
         assertThatThrownBy { authService.sendVerificationCode(dto) }
@@ -194,7 +194,7 @@ class AuthServiceTest {
         val userRole = UserRole(1L, user, Role.USER)
 
         every { contactRepository.findByEmail(any()) } returns contact
-        every { userRepository.existsByContact(any()) } returns false
+        every { userRepository.existsByContactAndIsDeletedFalse(any()) } returns false
         every { userRepository.existsByUsername(any()) } returns false
         every { passwordUtility.encryptPassword(any()) } returns password
         every { userTemplateImageRepository.findAll() } returns listOf()
@@ -250,7 +250,7 @@ class AuthServiceTest {
         val dto = getUserServiceRegisterDto()
 
         every { contactRepository.findByEmail(any()) } returns contact
-        every { userRepository.existsByContact(any()) } returns true
+        every { userRepository.existsByContactAndIsDeletedFalse(any()) } returns true
 
         // when & then
         assertThatThrownBy { authService.registerUser(dto) }
