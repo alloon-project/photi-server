@@ -3,9 +3,6 @@ services:
     image: yugyeong390/photi-server:1.1.0
     env_file:
       - .env
-    build:
-      context: ./docker/prod
-      dockerfile: ./docker/prod/Dockerfile
     ports:
       - "8080:8080"
     environment:

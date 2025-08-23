@@ -39,9 +39,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            echo "start docker compose up: ubuntu"
-            sudo docker compose -v
-            sudo docker compose -f ~/srv/ubuntu/docker/prod/docker-compose.yml pull
-            sudo docker compose -f ~/srv/ubuntu/docker/prod/docker-compose.yml --env-file ~/srv/ubuntu/docker/prod/.env up --build -d
+            echo "start docker-compose up: ubuntu"
+            sudo docker-compose -v
+            sudo docker-compose -f ~/srv/ubuntu/docker/prod/docker-compose.yml pull
+            sudo docker-compose -f ~/srv/ubuntu/docker/prod/docker-compose.yml --env-file ~/srv/ubuntu/docker/prod/.env up --build -d
             echo "prune images"
             sudo docker system prune --all -f
