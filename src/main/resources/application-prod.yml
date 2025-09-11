@@ -38,7 +38,7 @@ management:
     enabled-by-default: false
     jmx:
       exposure:
-        exclude: *
+        exclude: "*"
     web:
       exposure:
         include: prometheus
