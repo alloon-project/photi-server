@@ -32,3 +32,16 @@ springdoc:
 logging:
   level:
     org.hibernate.SQL: error
+
+management:
+  endpoints:
+    enabled-by-default: false
+    jmx:
+      exposure:
+        exclude: *
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
