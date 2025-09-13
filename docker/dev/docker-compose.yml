@@ -11,6 +11,8 @@ services:
       - TZ=Asia/Seoul
     networks:
       - server-network
+    volumes:
+      - /home/ubuntu/logs:/app/logs
   redis:
     image: redis:latest
     ports:
