@@ -6,9 +6,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /home/ubuntu/logs:/app/logs
+      - /home/ubuntu/logs:/logs
     environment:
       - TZ=Asia/Seoul
+      - LOGGING_FILE_PATH=/logs
     networks:
       - server-network
   redis:

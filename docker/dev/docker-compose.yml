@@ -9,10 +9,11 @@ services:
       - "8080:8080"
     environment:
       - TZ=Asia/Seoul
+      - LOGGING_FILE_PATH=/logs
     networks:
       - server-network
     volumes:
-      - /home/ubuntu/logs:/app/logs
+      - /home/ubuntu/logs:/logs
   redis:
     image: redis:latest
     ports:

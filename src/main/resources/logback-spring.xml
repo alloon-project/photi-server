@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-  <springProperty name="LOG_PATH" source="logging.file.path" defaultValue="logs"/>
+  <springProperty name="LOG_PATH" source="LOGGING_FILE_PATH" defaultValue="/logs"/>
 
   <property name="LOG_PATTERN"
     value="[%X{request_id:-startup}] [%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg %ex{5}%n"/>
