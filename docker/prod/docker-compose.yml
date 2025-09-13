@@ -1,10 +1,12 @@
 services:
   backend:
-    image: yugyeong390/photi-server:1.1.1
+    image: yugyeong390/photi-server:1.1.2
     env_file:
       - .env
     ports:
       - "8080:8080"
+    volumes:
+      - /home/ubuntu/logs:/app/logs
     environment:
       - TZ=Asia/Seoul
     networks:
