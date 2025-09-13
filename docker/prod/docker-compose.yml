@@ -5,6 +5,8 @@ services:
       - .env
     ports:
       - "8080:8080"
+    volumes:
+      - /home/ubuntu/logs:/app/logs
     environment:
       - TZ=Asia/Seoul
     networks:
