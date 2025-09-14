@@ -3,6 +3,7 @@ package com.photi.server.config
 import com.photi.server.common.exception.CustomAsyncUncaughtExceptionHandler
 import com.photi.server.common.log.LoggingTaskDecorator
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.AsyncConfigurer
 import org.springframework.scheduling.annotation.EnableAsync
@@ -14,7 +15,8 @@ import java.util.concurrent.ThreadPoolExecutor
 @Configuration
 class AsyncConfig : AsyncConfigurer {
 
-    override fun getAsyncExecutor(): Executor {
+    @Bean
+    fun taskExecutor(): ThreadPoolTaskExecutor {
         return ThreadPoolTaskExecutor().apply {
             corePoolSize = 10
             queueCapacity = 50
@@ -28,6 +30,10 @@ class AsyncConfig : AsyncConfigurer {
             setAcceptTasksAfterContextClose(false)
             setAllowCoreThreadTimeOut(false)
         }
+    }
+
+    override fun getAsyncExecutor(): Executor {
+        return taskExecutor()
     }
 
     override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
