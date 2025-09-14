@@ -26,6 +26,7 @@ class AsyncConfig : AsyncConfigurer {
             setAwaitTerminationSeconds(20)
             setAcceptTasksAfterContextClose(false)
             setAllowCoreThreadTimeOut(false)
+            initialize()
         }
     }
 
