@@ -1,0 +1,84 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${RDS_URL}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+        show_sql: true
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: redis
+
+logging:
+  level:
+    org.hibernate.SQL: debug # TODO 수정 필요
+    org.hibernate.orm.jdbc.bind: trace
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${RDS_URL}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: redis
+
+logging:
+  level:
+    org.hibernate.SQL: error

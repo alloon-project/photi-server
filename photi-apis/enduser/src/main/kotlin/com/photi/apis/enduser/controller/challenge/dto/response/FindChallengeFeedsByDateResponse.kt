@@ -1,0 +1,31 @@
+package com.photi.apis.enduser.controller.challenge.dto.response
+
+import com.photi.core.domain.challenge.dto.FindChallengeFeedsDto
+import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDate
+
+@Schema(description = "챌린지 피드 인증 날짜별 응답 객체")
+data class FindChallengeFeedsByDateResponse(
+
+    @Schema(description = "피드 인증 날짜", example = "2024-10-09")
+    val createdDate: LocalDate,
+
+    @Schema(description = "피드 인증한 파티원 수", example = "5")
+    val feedMemberCnt: Int,
+
+    @Schema(description = "피드 목록")
+    val feeds: List<FindChallengeFeedsResponse>
+) {
+
+    companion object {
+
+        fun of(dto: Triple<LocalDate, List<FindChallengeFeedsDto>, Int>): FindChallengeFeedsByDateResponse {
+            val (createdDate, feeds, feedMemberCnt) = dto
+            return FindChallengeFeedsByDateResponse(
+                createdDate,
+                feedMemberCnt,
+                FindChallengeFeedsResponse.of(feeds),
+            )
+        }
+    }
+}
