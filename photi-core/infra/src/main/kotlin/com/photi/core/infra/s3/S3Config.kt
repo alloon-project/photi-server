@@ -1,15 +1,16 @@
-package com.photi.core.domain.config
+package com.photi.core.infra.s3
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.photi.core.infra.PhotiConfig
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class S3Config {
+class S3Config : PhotiConfig {
 
     @Value("\${cloud.aws.credentials.access-key}")
     private lateinit var accessKey: String

@@ -1,5 +1,6 @@
-package com.photi.core.domain.config
+package com.photi.core.infra.redis
 
+import com.photi.core.infra.PhotiConfig
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,9 +13,9 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 @Configuration
 @EnableRedisRepositories
-class RedisRepositoryConfig(
+class RedisConfig(
     private val redisProperties: RedisProperties,
-) {
+) : PhotiConfig {
 
     @Bean
     fun redisConnectionFactory(): RedisConnectionFactory {

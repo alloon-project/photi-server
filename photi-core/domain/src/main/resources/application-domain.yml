@@ -18,9 +18,6 @@ spring:
     open-in-view: false
   flyway:
     enabled: false
-  data:
-    redis:
-      host: ${SPRING_REDIS_HOST}
 
 logging:
   level:
@@ -48,9 +45,6 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-  data:
-    redis:
-      host: redis
 
 logging:
   level:
@@ -75,9 +69,6 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
-  data:
-    redis:
-      host: redis
 
 logging:
   level:

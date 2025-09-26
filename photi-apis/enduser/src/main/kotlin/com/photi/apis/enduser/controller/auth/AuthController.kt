@@ -8,11 +8,11 @@ import com.photi.apis.enduser.controller.auth.dto.response.UserLoginResponse
 import com.photi.apis.enduser.controller.auth.dto.response.UserRegisterResponse
 import com.photi.core.domain.common.consts.CustomHttpHeaders
 import com.photi.core.domain.common.consts.RegexPatternConstants.LOWERCASE_NUMBER_UNDERSCORE
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.consts.SwaggerConstants.REFRESH_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
 import com.photi.core.domain.user.dto.UserServiceValidateUsernameDto
 import com.photi.core.domain.user.usecase.AuthService
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.REFRESH_TOKEN_KEY
 import com.photi.apis.enduser.config.security.JwtProvider
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation

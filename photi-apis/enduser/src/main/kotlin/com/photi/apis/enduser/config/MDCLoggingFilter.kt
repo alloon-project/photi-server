@@ -26,6 +26,6 @@ class MDCLoggingFilter : Filter {
     }
 
     companion object {
-        const val REQUEST_ID = "request_id"
+        private const val REQUEST_ID = "request_id"
     }
 }

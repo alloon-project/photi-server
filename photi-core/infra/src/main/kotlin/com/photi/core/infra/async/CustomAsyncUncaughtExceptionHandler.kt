@@ -1,4 +1,4 @@
-package com.photi.apis.enduser.config.async
+package com.photi.core.infra.async
 
 import org.slf4j.LoggerFactory
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler

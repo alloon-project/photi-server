@@ -3,9 +3,9 @@ package com.photi.apis.enduser.controller.inquiry
 import com.photi.apis.enduser.common.exception.ApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.controller.inquiry.dto.request.CreateInquiryRequest
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
 import com.photi.core.domain.inquiry.usecase.InquiryService
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse

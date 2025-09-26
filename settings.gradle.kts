@@ -10,5 +10,6 @@ include(
     "photi-batch",
     "photi-core",
     "photi-core:domain",
+    "photi-core:infra",
     "photi-utils",
 )

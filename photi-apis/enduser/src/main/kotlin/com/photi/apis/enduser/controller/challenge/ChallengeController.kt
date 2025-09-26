@@ -8,8 +8,8 @@ import com.photi.apis.enduser.controller.challenge.dto.request.*
 import com.photi.apis.enduser.controller.challenge.dto.response.*
 import com.photi.core.domain.challenge.usecase.ChallengeService
 import com.photi.core.domain.common.consts.SortTypeConstants
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

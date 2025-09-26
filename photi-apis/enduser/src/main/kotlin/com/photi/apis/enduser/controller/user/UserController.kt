@@ -4,9 +4,9 @@ import com.photi.apis.enduser.common.exception.ApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.CollectionSuccessResponse
 import com.photi.apis.enduser.common.success.dto.SliceResponse
 import com.photi.apis.enduser.controller.user.dto.response.*
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
 import com.photi.core.domain.user.usecase.UserService
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

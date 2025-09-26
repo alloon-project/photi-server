@@ -3,6 +3,7 @@ spring:
     active: local
     include:
       - domain
+      - infra
   config:
     import: optional:file:.env[.properties]
   mail:

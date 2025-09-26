@@ -1,0 +1,59 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    redis:
+      host: redis
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    redis:
+      host: redis
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false

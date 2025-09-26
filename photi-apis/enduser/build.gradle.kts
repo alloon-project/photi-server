@@ -10,6 +10,7 @@ dependencies {
     implementation("io.github.nefilim.kjwt:kjwt-core:0.9.0")
 
     implementation(project(":photi-core:domain"))
+    implementation(project(":photi-core:infra"))
     implementation(project(":photi-utils"))
 
     // todo 코드 수정 후 삭제

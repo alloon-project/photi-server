@@ -1,5 +1,6 @@
-package com.photi.apis.enduser.config.async
+package com.photi.core.infra.async
 
+import com.photi.core.infra.PhotiConfig
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,9 +10,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.util.concurrent.Executor
 import java.util.concurrent.ThreadPoolExecutor
 
-@EnableAsync
 @Configuration
-class AsyncConfig : AsyncConfigurer {
+@EnableAsync
+class AsyncConfig : AsyncConfigurer, PhotiConfig {
 
     @Bean
     fun taskExecutor(): ThreadPoolTaskExecutor {
@@ -21,7 +22,7 @@ class AsyncConfig : AsyncConfigurer {
             maxPoolSize = 30
             keepAliveSeconds = 60
             setThreadNamePrefix("Executor-")
-            setTaskDecorator(LoggingTaskDecorator())
+            setTaskDecorator(CustomTaskDecorator())
             setRejectedExecutionHandler(ThreadPoolExecutor.CallerRunsPolicy())
             setWaitForTasksToCompleteOnShutdown(true)
             setAwaitTerminationSeconds(20)

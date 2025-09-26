@@ -1,4 +1,4 @@
-package com.photi.apis.enduser.common
+package com.photi.apis.enduser.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

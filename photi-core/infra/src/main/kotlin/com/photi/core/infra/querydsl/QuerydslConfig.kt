@@ -1,5 +1,6 @@
-package com.photi.core.domain.config
+package com.photi.core.infra.querydsl
 
+import com.photi.core.infra.PhotiConfig
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
@@ -11,7 +12,7 @@ class QuerydslConfig(
 
     @PersistenceContext
     private val entityManager: EntityManager,
-) {
+) : PhotiConfig {
 
     @Bean
     fun jpaQueryFactory() = JPAQueryFactory(entityManager)

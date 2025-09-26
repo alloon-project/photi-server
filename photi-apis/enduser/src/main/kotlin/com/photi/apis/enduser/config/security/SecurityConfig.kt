@@ -13,9 +13,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    val customAuthenticationFilter: CustomAuthenticationFilter,
-    val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-    val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    private val customAuthenticationFilter: CustomAuthenticationFilter,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    private val customAccessDeniedHandler: CustomAccessDeniedHandler,
 ) {
 
     @Bean

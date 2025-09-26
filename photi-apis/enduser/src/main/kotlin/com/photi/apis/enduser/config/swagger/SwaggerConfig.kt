@@ -1,7 +1,9 @@
-package com.photi.apis.enduser.config
+package com.photi.apis.enduser.config.swagger
 
 import com.photi.apis.enduser.common.exception.ApiErrorResponses
 import com.photi.core.domain.common.consts.CustomHttpHeaders
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.consts.SwaggerConstants.REFRESH_TOKEN_KEY
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.models.Components
@@ -103,10 +105,5 @@ class SwaggerConfig {
                 )
             )
         }
-    }
-
-    companion object {
-        const val ACCESS_TOKEN_KEY = "Access Token"
-        const val REFRESH_TOKEN_KEY = "Refresh Token"
     }
 }

@@ -2,10 +2,10 @@ package com.photi.apis.enduser.controller.appversion
 
 import com.photi.apis.enduser.common.exception.ApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
-import com.photi.apis.enduser.config.SwaggerConfig.Companion.ACCESS_TOKEN_KEY
 import com.photi.apis.enduser.controller.appversion.dto.request.AppVersionRequest
 import com.photi.apis.enduser.controller.appversion.dto.response.AppVersionResponse
 import com.photi.core.domain.appversion.usecase.AppVersionService
+import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
