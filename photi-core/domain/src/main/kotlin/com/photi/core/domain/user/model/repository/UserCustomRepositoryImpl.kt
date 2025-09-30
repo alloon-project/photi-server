@@ -12,7 +12,6 @@ import com.photi.core.domain.common.model.ServiceStatus.END
 import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.feed.model.QFeed.feed
 import com.photi.core.domain.user.dto.*
-import com.photi.core.domain.user.model.QContact.contact
 import com.photi.core.domain.user.model.QUser.user
 import com.photi.core.domain.user.model.User
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -28,18 +27,6 @@ class UserCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
 ) : UserCustomRepository {
 
-    override fun findFetchContact(email: String?, username: String?, userId: Long?): User? {
-        return queryFactory
-            .selectFrom(user)
-            .innerJoin(user.contact, contact)
-            .where(
-                eqUserId(userId),
-                eqUsername(username),
-                eqEmail(email),
-                contact.verifyYn.isTrue
-            ).fetchOne()
-    }
-
     override fun find(userId: Long): User? {
         return queryFactory
             .selectFrom(user)
@@ -53,7 +40,7 @@ class UserCustomRepositoryImpl(
                 QUserInfoDto(
                     user.imageUrl,
                     user.username,
-                    user.contact.email
+                    user.email
                 )
             )
             .from(user)
@@ -328,13 +315,6 @@ class UserCustomRepositoryImpl(
             )
             .fetchOne() ?: false
     }
-
-    private fun eqUserId(userId: Long?): BooleanExpression? = userId?.let { user.id.eq(it) }
-
-    private fun eqEmail(email: String?): BooleanExpression? = email?.let { contact.email.eq(it) }
-
-    private fun eqUsername(username: String?): BooleanExpression? =
-        username?.let { user.username.eq(it) }
 
     private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
         challengeMember.status.eq(status)

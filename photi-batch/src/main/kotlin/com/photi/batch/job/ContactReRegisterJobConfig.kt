@@ -1,6 +1,6 @@
 package com.photi.batch.job
 
-import com.photi.core.domain.user.model.Contact
+import com.photi.core.domain.user.model.User
 import jakarta.persistence.EntityManagerFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -40,7 +40,7 @@ class ContactReRegisterJobConfig(
     @JobScope
     fun step(): Step {
         return StepBuilder(BEAN_PREFIX + "step", jobRepository)
-            .chunk<Contact, Contact>(chunkSize, transactionManager)
+            .chunk<User, User>(chunkSize, transactionManager)
             .reader(itemReader(null))
             .processor(itemProcessor())
             .writer(itemWriter())
@@ -49,9 +49,9 @@ class ContactReRegisterJobConfig(
 
     @Bean(BEAN_PREFIX + "itemReader")
     @StepScope
-    fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<Contact> {
+    fun itemReader(@Value("#{jobParameters[date]}") date: LocalDate?): JpaPagingItemReader<User> {
         val minusMonthDateTime = date?.minusMonths(MONTH_TO_SUBTRACT)?.atStartOfDay()
-        return JpaPagingItemReaderBuilder<Contact>()
+        return JpaPagingItemReaderBuilder<User>()
             .name(BEAN_PREFIX + "itemReader")
             .entityManagerFactory(entityManagerFactory)
             .pageSize(chunkSize)
@@ -68,7 +68,7 @@ class ContactReRegisterJobConfig(
     }
 
     @Bean(BEAN_PREFIX + "itemProcessor")
-    fun itemProcessor(): ItemProcessor<Contact, Contact> {
+    fun itemProcessor(): ItemProcessor<User, User> {
         return ItemProcessor {
             it.updateReRegisterStatus()
             it
@@ -76,8 +76,8 @@ class ContactReRegisterJobConfig(
     }
 
     @Bean(BEAN_PREFIX + "itemWriter")
-    fun itemWriter(): JpaItemWriter<Contact> {
-        return JpaItemWriter<Contact>().apply {
+    fun itemWriter(): JpaItemWriter<User> {
+        return JpaItemWriter<User>().apply {
             setEntityManagerFactory(entityManagerFactory)
         }
     }

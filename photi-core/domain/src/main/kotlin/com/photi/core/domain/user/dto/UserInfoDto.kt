@@ -11,6 +11,6 @@ data class UserInfoDto @QueryProjection constructor(
 
     companion object {
 
-        fun of(user: User) = UserInfoDto(user.imageUrl, user.username, user.contact.email)
+        fun of(user: User) = UserInfoDto(user.imageUrl!!, user.username!!, user.email)
     }
 }

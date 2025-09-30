@@ -20,7 +20,7 @@ data class FindChallengeFeedsDto @QueryProjection constructor(
 
         fun of(feed: Feed, user: User, challenge: Challenge) = FindChallengeFeedsDto(
             feed.id ?: 0L,
-            user.username,
+            user.username!!,
             feed.imageUrl,
             feed.createDateTime ?: LocalDateTime.now(),
             challenge.proveTime,

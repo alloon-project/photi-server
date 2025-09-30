@@ -37,7 +37,7 @@ class UserService(
             throw CustomException(ExceptionCode.USER_NOT_FOUND)
         }
 
-        deleteOriginalImage(user.imageUrl)
+        deleteOriginalImage(user.imageUrl!!)
         val fileName = s3Service.uploadImage(imageFile, FolderType.USERS)
         val imageUrl = s3Service.getImageUrl(fileName)
 

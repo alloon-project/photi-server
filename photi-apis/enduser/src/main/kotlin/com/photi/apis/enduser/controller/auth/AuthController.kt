@@ -3,15 +3,14 @@ package com.photi.apis.enduser.controller.auth
 import com.photi.apis.enduser.common.exception.ApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.controller.auth.dto.request.*
-import com.photi.apis.enduser.controller.auth.dto.response.FindUserDeletedDateResponse
-import com.photi.apis.enduser.controller.auth.dto.response.UserLoginResponse
-import com.photi.apis.enduser.controller.auth.dto.response.UserRegisterResponse
+import com.photi.apis.enduser.controller.auth.dto.response.FindWithdrawDateResponse
+import com.photi.apis.enduser.controller.auth.dto.response.LoginResponse
+import com.photi.apis.enduser.controller.auth.dto.response.SignUpResponse
 import com.photi.core.domain.common.consts.CustomHttpHeaders
 import com.photi.core.domain.common.consts.RegexPatternConstants.LOWERCASE_NUMBER_UNDERSCORE
 import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.consts.SwaggerConstants.REFRESH_TOKEN_KEY
 import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.core.domain.user.dto.UserServiceValidateUsernameDto
 import com.photi.core.domain.user.usecase.AuthService
 import com.photi.apis.enduser.config.security.JwtProvider
 import com.photi.utils.UserUtil
@@ -45,19 +44,23 @@ class AuthController(
     @Operation(summary = "이메일 인증코드 전송")
     @ApiResponse(responseCode = "201")
     @ApiErrorResponses([ExceptionCode.EXISTING_EMAIL, ExceptionCode.DELETED_USER])
-    fun sendVerificationCode(@RequestBody @Valid request: ContactSendVerificationRequest): ResponseEntity<StringSuccessResponse> {
-        authService.sendVerificationCode(request.toServiceDto())
+    fun sendEmailAuthenticationCode(
+        @RequestBody @Valid request: SendEmailAuthenticationCodeRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        authService.sendEmailAuthenticationCode(request.toServiceDto())
         return ResponseEntity.status(CREATED)
             .body(StringSuccessResponse("이메일 인증코드를 보냈습니다."))
     }
 
     @PatchMapping("/api/contacts/verify")
-    @Operation(summary = "이메일 인증코드 확인")
+    @Operation(summary = "이메일 인증코드 검증")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([ExceptionCode.EMAIL_VERIFICATION_CODE_INVALID, ExceptionCode.EMAIL_NOT_FOUND])
-    fun verifyEmailVerificationCode(@RequestBody @Valid request: ContactVerifyRequest): ResponseEntity<StringSuccessResponse> {
-        authService.verifyEmailVerificationCode(request.toServiceDto())
-        return ResponseEntity.ok(StringSuccessResponse("이메일 인증코드가 확인 되었습니다."))
+    fun validateEmailAuthenticationCode(
+        @RequestBody @Valid request: ValidateEmailAuthenticationCodeRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        authService.validateEmailAuthenticationCode(request.toServiceDto())
+        return ResponseEntity.ok(StringSuccessResponse("이메일 인증코드가 검증 되었습니다."))
     }
 
     @GetMapping("/api/users/username")
@@ -70,7 +73,7 @@ class AuthController(
         @Parameter(description = "아이디", example = "photi_123")
         username: String,
     ): ResponseEntity<StringSuccessResponse> {
-        authService.validateUsername(UserServiceValidateUsernameDto(username))
+        authService.validateUsername(username)
         return ResponseEntity.ok(StringSuccessResponse("사용 가능한 아이디입니다."))
     }
 
@@ -78,9 +81,11 @@ class AuthController(
     @Operation(summary = "회원가입")
     @ApiResponse(responseCode = "201")
     @ApiErrorResponses([ExceptionCode.EMAIL_VALIDATION_INVALID, ExceptionCode.PASSWORD_MATCH_INVALID, ExceptionCode.EXISTING_USER, ExceptionCode.UNAVAILABLE_USERNAME, ExceptionCode.EXISTING_USERNAME])
-    fun registerUser(@RequestBody @Valid request: UserRegisterRequest): ResponseEntity<UserRegisterResponse> {
-        val registerUser = authService.registerUser(request.toServiceDto())
-        val response = UserRegisterResponse.of(registerUser)
+    fun signUp(
+        @RequestBody @Valid request: SignUpRequest,
+    ): ResponseEntity<SignUpResponse> {
+        val signUpUser = authService.signUp(request.toServiceDto())
+        val response = SignUpResponse.of(signUpUser)
         val headers = jwtProvider.createToken(response.userId)
         return ResponseEntity.status(CREATED).headers(headers).body(response)
     }
@@ -89,7 +94,9 @@ class AuthController(
     @Operation(summary = "아이디 찾기")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
-    fun findUsername(@RequestBody @Valid request: UserFindUsernameRequest): ResponseEntity<StringSuccessResponse> {
+    fun findUsername(
+        @RequestBody @Valid request: FindUsernameRequest,
+    ): ResponseEntity<StringSuccessResponse> {
         authService.findUsername(request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("아이디를 이메일로 전송했습니다."))
     }
@@ -98,7 +105,9 @@ class AuthController(
     @Operation(summary = "비밀번호 찾기")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
-    fun findPassword(@RequestBody @Valid request: UserFindPasswordRequest): ResponseEntity<StringSuccessResponse> {
+    fun findPassword(
+        @RequestBody @Valid request: FindPasswordRequest,
+    ): ResponseEntity<StringSuccessResponse> {
         authService.findPassword(request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("임시 비밀번호를 이메일로 전송했습니다."))
     }
@@ -107,9 +116,11 @@ class AuthController(
     @Operation(summary = "로그인")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([ExceptionCode.LOGIN_UNAUTHENTICATED, ExceptionCode.DELETED_USER])
-    fun login(@RequestBody @Valid request: UserLoginRequest): ResponseEntity<UserLoginResponse> {
+    fun login(
+        @RequestBody @Valid request: LoginRequest,
+    ): ResponseEntity<LoginResponse> {
         val loginUser = authService.login(request.toServiceDto())
-        val response = UserLoginResponse.of(loginUser)
+        val response = LoginResponse.of(loginUser)
         val headers = jwtProvider.createToken(response.userId)
         return ResponseEntity.status(OK).headers(headers).body(response)
     }
@@ -120,23 +131,10 @@ class AuthController(
     @ApiErrorResponses([ExceptionCode.PASSWORD_MATCH_INVALID, ExceptionCode.LOGIN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
     fun changePassword(
         principal: Principal,
-        @RequestBody @Valid request: UserChangePasswordRequest,
+        @RequestBody @Valid request: ChangePasswordRequest,
     ): ResponseEntity<StringSuccessResponse> {
         authService.changePassword(UserUtil.getUserId(principal), request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("비밀번호가 변경되었습니다."))
-    }
-
-    @PostMapping("/api/users/token")
-    @Operation(summary = "토큰 재발급", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
-    @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
-    fun refreshToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
-        val refreshToken = request.getHeader(CustomHttpHeaders.REFRESH_TOKEN)
-        val userId = jwtProvider.getUserId(refreshToken)
-        val headers = jwtProvider.createToken(userId)
-        return ResponseEntity.status(OK)
-            .headers(headers)
-            .body(StringSuccessResponse("토큰이 재발급 됐습니다."))
     }
 
     @PatchMapping("/api/users")
@@ -145,31 +143,48 @@ class AuthController(
     @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED, ExceptionCode.USER_NOT_FOUND, ExceptionCode.LOGIN_UNAUTHENTICATED])
     fun deleteUser(
         principal: Principal,
-        @RequestBody @Valid request: DeleteUserRequest,
+        @RequestBody @Valid request: WithdrawRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        authService.deleteUser(UserUtil.getUserId(principal), request.toServiceDto())
+        authService.withdraw(UserUtil.getUserId(principal), request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("회원 탈퇴가 완료되었습니다."))
-    }
-
-    @GetMapping("/api/auth/validate/access-token")
-    @Operation(summary = "액세스 토큰 유효성 검증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
-    @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
-    fun validateAccessToken(request: HttpServletRequest): ResponseEntity<StringSuccessResponse> {
-        val accessToken = request.getHeader(HttpHeaders.AUTHORIZATION)
-        jwtProvider.validateAccessTokenAndSetAuthentication(accessToken)
-        return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
     }
 
     @PostMapping("/api/users/deleted-date")
     @Operation(summary = "회원 탈퇴 날짜 조회")
     @ApiResponse(responseCode = "200")
     @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
-    fun findUserDeletedDate(
-        @RequestBody @Valid request: FindUserDeletedDateRequest,
-    ): ResponseEntity<FindUserDeletedDateResponse> {
-        val deletedDate = authService.findUserDeletedDate(request.toServiceDto())
-        val response = FindUserDeletedDateResponse.of(deletedDate)
+    fun findWithdrawDate(
+        @RequestBody @Valid request: FindWithdrawDateRequest,
+    ): ResponseEntity<FindWithdrawDateResponse> {
+        val deletedDate = authService.findWithdrawDate(request.toServiceDto())
+        val response = FindWithdrawDateResponse.of(deletedDate)
         return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/api/auth/validate/access-token")
+    @Operation(summary = "액세스 토큰 유효성 검증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
+    fun validateAccessToken(
+        request: HttpServletRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        val accessToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+        jwtProvider.validateAccessTokenAndSetAuthentication(accessToken)
+        return ResponseEntity.status(OK).body(StringSuccessResponse("유효한 액세스 토큰입니다."))
+    }
+
+    @PostMapping("/api/users/token")
+    @Operation(summary = "토큰 재발급", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
+    fun refreshToken(
+        request: HttpServletRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        val refreshToken = request.getHeader(CustomHttpHeaders.REFRESH_TOKEN)
+        val userId = jwtProvider.getUserId(refreshToken)
+        val headers = jwtProvider.createToken(userId)
+        return ResponseEntity.status(OK)
+            .headers(headers)
+            .body(StringSuccessResponse("토큰이 재발급 됐습니다."))
     }
 }

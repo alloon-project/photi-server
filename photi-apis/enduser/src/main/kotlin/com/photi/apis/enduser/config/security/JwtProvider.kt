@@ -5,8 +5,7 @@ import arrow.core.getOrElse
 import com.photi.core.domain.common.consts.CustomHttpHeaders
 import com.photi.core.domain.common.exception.CustomException
 import com.photi.core.domain.common.exception.ExceptionCode.*
-import com.photi.core.domain.user.model.Role
-import com.photi.core.domain.user.model.repository.UserRoleRepository
+import com.photi.core.domain.user.model.RoleType
 import io.github.nefilim.kjwt.JWSHMAC256Algorithm
 import io.github.nefilim.kjwt.JWT
 import io.github.nefilim.kjwt.sign
@@ -31,8 +30,6 @@ class JwtProvider(
 
     @Value("\${spring.security.jwt.refresh-exp}")
     private var refreshTokenTime: Long,
-
-    private val userRoleRepository: UserRoleRepository,
 ) {
 
     private val tokenPrefix: String = "Bearer "
@@ -53,7 +50,7 @@ class JwtProvider(
 
         headers.add(HttpHeaders.AUTHORIZATION, accessToken)
 
-        if (!authorities.contains(Role.MASTER.name)) {
+        if (!authorities.contains(RoleType.MASTER.name)) {
             val refreshToken = JWT.hs256 {
                 subject(userDetails.username)
                 issuedAt(Instant.ofEpochMilli(time))
@@ -104,16 +101,18 @@ class JwtProvider(
     }
 
     private fun getUserDetails(userId: Long): User {
-        val userRoles = userRoleRepository.findAllFetchUser(userId)
-
-        val user = userRoles.stream()
-            .findFirst()
-            .orElseThrow { CustomException(USER_NOT_FOUND) }
-            .user
-
-        val grantedAuthorities = userRoles.map { SimpleGrantedAuthority("ROLE_${it.role.name}") }
-
-        return User(user.id.toString(), user.password, grantedAuthorities)
+        // todo 수정 필요
+//        val userRoles = userRoleRepository.findAllFetchUser(userId)
+//
+//        val user = userRoles.stream()
+//            .findFirst()
+//            .orElseThrow { CustomException(USER_NOT_FOUND) }
+//            .user
+//
+//        val grantedAuthorities = userRoles.map { SimpleGrantedAuthority("ROLE_${it.role.name}") }
+//
+//        return User(user.id.toString(), user.password, grantedAuthorities)
+        return User("", "", null)
     }
 
     private fun validateSignatureOrThrow(token: String): JWT<JWSHMAC256Algorithm> {

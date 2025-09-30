@@ -6,7 +6,7 @@ object CodeUtil {
 
     private const val EMPTY_CHARACTER = ""
 
-    fun getVerificationCode(): String {
+    fun getAuthenticationCode(): String {
         return (0..9).toList()
             .shuffled(Random(System.currentTimeMillis()))
             .take(4)

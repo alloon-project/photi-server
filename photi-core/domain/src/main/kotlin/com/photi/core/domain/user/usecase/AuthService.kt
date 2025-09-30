@@ -1,164 +1,91 @@
 package com.photi.core.domain.user.usecase
 
-import com.photi.core.domain.common.PasswordUtility
-import com.photi.core.domain.common.consts.EmailConstants
-import com.photi.core.domain.common.consts.UnavailableConstants
 import com.photi.core.domain.common.exception.CustomException
 import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.core.domain.email.usecase.EmailService
+import com.photi.core.domain.user.command.UserCommandService
 import com.photi.core.domain.user.dto.*
-import com.photi.core.domain.user.model.repository.ContactRepository
-import com.photi.core.domain.user.model.repository.UserRepository
-import com.photi.core.domain.user.model.repository.UserRoleRepository
-import com.photi.core.domain.user.model.repository.UserTemplateImageRepository
-import com.photi.utils.CodeUtil.getVerificationCode
-import com.photi.utils.PasswordUtil.getTemporaryPassword
+import com.photi.core.domain.user.port.PasswordPort
+import com.photi.core.domain.user.port.email.EmailMessage
+import com.photi.core.domain.user.port.email.EmailPort
+import com.photi.core.domain.user.query.UserQueryService
+import com.photi.core.domain.user.validator.UserValidator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.validation.annotation.Validated
 
 @Service
-@Validated
 @Transactional(readOnly = true)
 class AuthService(
-    private val contactRepository: ContactRepository,
-    private val userRepository: UserRepository,
-    private val userRoleRepository: UserRoleRepository,
-    private val userTemplateImageRepository: UserTemplateImageRepository,
-    private val passwordUtility: PasswordUtility,
-    private val emailService: EmailService,
+    private val userValidator: UserValidator,
+    private val userQueryService: UserQueryService,
+    private val userCommandService: UserCommandService,
+    private val passwordPort: PasswordPort,
+    private val emailPort: EmailPort,
 ) {
 
     @Transactional
-    fun sendVerificationCode(dto: ContactServiceSendVerificationDto) {
-        val verificationCode = getVerificationCode()
-        val contact = contactRepository.findByEmail(dto.email)
-
-        contact?.let {
-            if (it.isDeleted) {
-                throw CustomException(ExceptionCode.DELETED_USER)
-            }
-            if (userRepository.existsByContactAndIsDeletedFalse(it)) {
-                throw CustomException(ExceptionCode.EXISTING_EMAIL)
-            }
-            it.changeVerificationCode(verificationCode)
-        } ?: run {
-            contactRepository.save(dto.toEntity(verificationCode))
-        }
-
-        emailService.sendEmail(
-            dto.email,
-            verificationCode,
-            EmailConstants.REGISTER_VERIFICATION_CODE,
-        )
+    fun sendEmailAuthenticationCode(dto: SendEmailAuthenticationCodeDto) {
+        val user = userQueryService.getUserBy(dto.email)
+        user?.let { user.issueNewAuthenticationCode(userValidator, dto.email) }
+            ?: userCommandService.createUser(dto)
+        emailPort.send(EmailMessage.SignUpAuthenticationCode(dto.email))
     }
 
     @Transactional
-    fun verifyEmailVerificationCode(dto: ContactServiceVerifyDto) {
-        contactRepository.findByEmail(dto.email)
-            ?.verify(dto.verificationCode)
-            ?: throw CustomException(ExceptionCode.EMAIL_NOT_FOUND)
+    fun validateEmailAuthenticationCode(dto: ValidateEmailAuthenticationCodeDto) {
+        userQueryService.getUserBy(dto.email)
+            ?.authenticated(userValidator, dto.authenticationCode)
     }
 
-    fun validateUsername(dto: UserServiceValidateUsernameDto) {
-        if (dto.username in UnavailableConstants.UNAVAILABLE_USERNAMES.fields) {
-            throw CustomException(ExceptionCode.UNAVAILABLE_USERNAME)
-        }
-        if (userRepository.existsByUsername(dto.username)) {
-            throw CustomException(ExceptionCode.EXISTING_USERNAME)
-        }
+    fun validateUsername(username: String) {
+        userValidator.validateUsername(username)
     }
 
     @Transactional
-    fun registerUser(dto: UserServiceRegisterDto): UserRegisterDto {
-        val contact = contactRepository.findByEmail(dto.email)
+    fun signUp(dto: SignUpRequestDto): SignUpDto {
+        val user = userQueryService.getAuthenticatedUserBy(dto.email)
             ?: throw CustomException(ExceptionCode.EMAIL_VALIDATION_INVALID)
-
-        if (!contact.verifyYn) {
-            throw CustomException(ExceptionCode.EMAIL_VALIDATION_INVALID)
-        }
-        if (userRepository.existsByContactAndIsDeletedFalse(contact)) {
-            throw CustomException(ExceptionCode.EXISTING_USER)
-        }
-
-        validateUsername(UserServiceValidateUsernameDto(dto.username))
-        dto.password = passwordUtility.encryptPassword(dto.password)
-
-        val userTemplateImage = getUserTemplateImage()
-
-        val user = userRepository.save(dto.toUserEntity(contact, userTemplateImage))
-        userRoleRepository.save(dto.toUserRoleEntity(user))
-
-        return UserRegisterDto.of(user)
+        user.signUp(userValidator, passwordPort, dto)
+        return SignUpDto.of(user)
     }
 
-    fun findUsername(dto: UserServiceFindUsernameDto) {
-        val user = userRepository.findFetchContact(dto.email, null, null)
+    fun findUsername(dto: FindUsernameDto) {
+        val user = userQueryService.getAuthenticatedUserBy(dto.email)
             ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
-
-        emailService.sendEmail(user.contact.email, user.username, EmailConstants.FORGOT_USERNAME)
+        emailPort.send(EmailMessage.FindUsername(user.email, user.username!!))
     }
 
     @Transactional
-    fun findPassword(dto: UserServiceFindPasswordDto) {
-        val user = userRepository.findFetchContact(dto.email, dto.username, null)
+    fun findPassword(dto: FindPasswordDto) {
+        val user = userQueryService.getAuthenticatedUserBy(dto.email, dto.username)
             ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
-
-        val password = getTemporaryPassword(8)
-        val encryptedPassword = passwordUtility.encryptPassword(password)
-        user.resetPassword(encryptedPassword)
-
-        emailService.sendEmail(user.contact.email, password, EmailConstants.FORGOT_PASSWORD)
+        user.resetPasswordTo(passwordPort)
+        emailPort.send(EmailMessage.FindPassword(dto.email))
     }
 
-    fun login(dto: UserServiceLoginDto): UserLoginDto {
-        val user = userRepository.findByUsername(dto.username)
+    fun login(dto: LoginRequestDto): LoginDto {
+        val user = userQueryService.getLoginUserBy(dto.username)
             ?: throw CustomException(ExceptionCode.LOGIN_UNAUTHENTICATED)
-
-        if (user.contact.isDeleted) {
-            throw CustomException(ExceptionCode.DELETED_USER)
-        }
-        passwordUtility.verifyPassword(dto.password, user.password)
-        return UserLoginDto.of(user)
+        userValidator.validatePassword(user, dto.password)
+        return LoginDto.of(user)
     }
 
     @Transactional
-    fun changePassword(userId: Long, dto: UserServiceChangePasswordDto) {
-        validateMatchPassword(dto.newPassword, dto.newPasswordReEnter)
-
-        val user = userRepository.find(userId)
-            ?: throw CustomException(ExceptionCode.LOGIN_UNAUTHENTICATED)
-        passwordUtility.verifyPassword(dto.password, user.password)
-        val encryptedPassword = passwordUtility.encryptPassword(dto.newPassword)
-
-        user.changePassword(encryptedPassword)
+    fun changePassword(id: Long, dto: ChangePasswordDto) {
+        val user = userQueryService.getUserBy(id)
+            .orElseThrow { throw CustomException(ExceptionCode.LOGIN_UNAUTHENTICATED) }
+        user.changePasswordTo(userValidator, passwordPort, dto)
     }
 
     @Transactional
-    fun deleteUser(userId: Long, dto: DeleteUserDto) {
-        val user = userRepository.find(userId)
+    fun withdraw(id: Long, dto: WithdrawDto) {
+        val user = userQueryService.getUserBy(id)
+            .orElseThrow { throw CustomException(ExceptionCode.USER_NOT_FOUND) }
+        user.withdraw(passwordPort, dto.password)
+    }
+
+    fun findWithdrawDate(dto: FindWithdrawDateRequestDto): FindWithdrawDateDto {
+        val user = userQueryService.getUserBy(dto.email)
             ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
-
-        passwordUtility.verifyPassword(dto.password, user.password)
-
-        user.contact.softDelete()
-        user.softDelete()
-    }
-
-    fun findUserDeletedDate(dto: UserDeletedDateDto): FindUserDeletedDateDto {
-        val contact = contactRepository.findByEmail(dto.email)
-            ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
-        return FindUserDeletedDateDto(contact.deletedDate)
-    }
-
-    private fun getUserTemplateImage(): String {
-        val userTemplateImages = userTemplateImageRepository.findAll()
-        return userTemplateImages.randomOrNull()?.imageUrl ?: ""
-    }
-
-    private fun validateMatchPassword(password: String, passwordReEnter: String) {
-        if (password != passwordReEnter) {
-            throw CustomException(ExceptionCode.PASSWORD_MATCH_INVALID)
-        }
+        return FindWithdrawDateDto.of(user)
     }
 }

@@ -21,11 +21,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     // todo 코드 수정 후 삭제
-    implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.awspring.cloud:spring-cloud-starter-aws:2.4.4")
-    implementation("org.springframework.boot:spring-boot-starter-security")
 }
 
 allOpen {

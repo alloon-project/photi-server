@@ -8,8 +8,6 @@ import java.time.LocalDate
 
 interface UserCustomRepository {
 
-    fun findFetchContact(email: String?, username: String?, userId: Long?): User?
-
     fun find(userId: Long): User?
 
     fun findInfoById(userId: Long): UserInfoDto?
