@@ -11,12 +11,12 @@ data class CreateInquiryRequest(
 
     @Schema(
         description = "문의 내용 타입",
-        examples = ["SERVICE_USE", "SUGGESTION", "ERROR", "ETC"]
+        examples = ["SERVICE_USE", "SUGGESTION", "ERROR", "ETC"],
     )
     @field:NotBlank(message = "문의 내용 타입은 필수 입력입니다.")
     @field:Pattern(
         regexp = "SERVICE_USE|SUGGESTION|ERROR|ETC",
-        message = "문의 내용 타입은 SERVICE_USE(서비스 이용 문의), SUGGESTION(개선/제안 요청), ERROR(오류 문의), ETC(기타 문의) 중 하나여야 합니다."
+        message = "문의 내용 타입은 SERVICE_USE(서비스 이용 문의), SUGGESTION(개선/제안 요청), ERROR(오류 문의), ETC(기타 문의) 중 하나여야 합니다.",
     )
     val type: String,
 

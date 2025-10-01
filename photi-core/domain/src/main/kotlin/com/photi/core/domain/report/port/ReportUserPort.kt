@@ -1,6 +1,6 @@
 package com.photi.core.domain.report.port
 
-interface UserPort {
+interface ReportUserPort {
 
     fun getUserBy(id: Long)
 }
