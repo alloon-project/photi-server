@@ -1,6 +1,6 @@
 services:
   backend:
-    image: yugyeong390/photi-server:1.1.3
+    image: yugyeong390/photi-server:1.1.4
     env_file:
       - .env
     ports:
