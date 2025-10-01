@@ -1,7 +1,7 @@
 package com.photi.core.domain.user.model
 
 enum class RoleType(
-    val value: String,
+    private val value: String,
 ) {
     UNAUTHENTICATED_USER("미인증 회원"),
     USER("일반 회원"),

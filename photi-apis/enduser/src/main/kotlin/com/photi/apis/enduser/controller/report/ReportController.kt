@@ -39,7 +39,7 @@ class ReportController(
         reportService.createReport(
             UserUtil.getUserId(principal),
             targetId,
-            request.toServiceDto()
+            request.toServiceDto(),
         )
         return ResponseEntity.status(CREATED)
             .body(StringSuccessResponse("신고 등록이 완료되었습니다."))
