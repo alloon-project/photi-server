@@ -1,7 +1,7 @@
 package com.photi.apis.enduser.controller.auth.dto.request
 
-import com.photi.core.domain.common.consts.RegexPatternConstants.LETTER_NUMBER_SPECIAL_CHARACTER
-import com.photi.core.domain.common.consts.RegexPatternConstants.LOWERCASE_NUMBER_UNDERSCORE
+import com.photi.core.domain.common.consts.RegexPattern.LETTER_NUMBER_SPECIAL_CHARACTER
+import com.photi.core.domain.common.consts.RegexPattern.LOWERCASE_NUMBER_UNDERSCORE
 import com.photi.core.domain.user.dto.SignUpRequestDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Email

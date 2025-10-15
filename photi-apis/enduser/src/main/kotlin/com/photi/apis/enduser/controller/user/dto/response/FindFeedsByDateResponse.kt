@@ -1,12 +1,12 @@
 package com.photi.apis.enduser.controller.user.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.user.dto.FindUserFeedsByDateDto
+import com.photi.core.domain.user.dto.FindFeedsByDateDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalTime
 
 @Schema(description = "사용자 피드 인증 개별 날짜 조회 응답 객체")
-data class FindUserFeedsByDateResponse(
+data class FindFeedsByDateResponse(
 
     @Schema(description = "피드 id", example = "1")
     val feedId: Long,
@@ -30,7 +30,7 @@ data class FindUserFeedsByDateResponse(
 
     companion object {
 
-        fun of(feed: FindUserFeedsByDateDto) = FindUserFeedsByDateResponse(
+        fun of(feed: FindFeedsByDateDto) = FindFeedsByDateResponse(
             feed.feedId,
             feed.challengeId,
             feed.imageUrl,
@@ -39,6 +39,6 @@ data class FindUserFeedsByDateResponse(
             feed.status.isDeleted(),
         )
 
-        fun of(feeds: List<FindUserFeedsByDateDto>) = feeds.map { of(it) }
+        fun of(feeds: List<FindFeedsByDateDto>) = feeds.map { of(it) }
     }
 }

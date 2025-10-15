@@ -2,13 +2,13 @@ package com.photi.apis.enduser.controller.user.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.photi.apis.enduser.controller.challenge.dto.response.ChallengeHashtagResponse
-import com.photi.core.domain.user.dto.FindUserChallengesDto
+import com.photi.core.domain.user.dto.FindChallengesDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Schema(description = "사용자 참여 중인 챌린지 조회 응답 객체")
-data class FindUserChallengesResponse(
+data class FindChallengesResponse(
 
     @Schema(description = "챌린지 id", example = "1")
     val id: Long,
@@ -49,13 +49,13 @@ data class FindUserChallengesResponse(
 
     companion object {
 
-        fun of(challenge: FindUserChallengesDto) = FindUserChallengesResponse(
+        fun of(challenge: FindChallengesDto) = FindChallengesResponse(
             challenge.id,
             challenge.name,
             challenge.challengeImageUrl,
             challenge.proveTime,
             challenge.endDate,
-            challenge.hashtags.map { ChallengeHashtagResponse(it.hashtag) },
+            ChallengeHashtagResponse.of(challenge.hashtags),
             challenge.feedImageUrl,
             challenge.feedId,
             challenge.isProve,

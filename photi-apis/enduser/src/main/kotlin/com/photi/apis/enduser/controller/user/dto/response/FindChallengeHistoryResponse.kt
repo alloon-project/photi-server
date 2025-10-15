@@ -1,12 +1,12 @@
 package com.photi.apis.enduser.controller.user.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.user.dto.UserChallengeHistoryDto
+import com.photi.core.domain.user.dto.FindChallengeHistoryDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 @Schema(description = "사용자 챌린지 기록 응답 객체")
-data class UserChallengeHistoryResponse(
+data class FindChallengeHistoryResponse(
 
     @Schema(description = "사용자 아이디", example = "photi")
     val username: String,
@@ -27,12 +27,12 @@ data class UserChallengeHistoryResponse(
 
     companion object {
 
-        fun of(challengeHistory: UserChallengeHistoryDto) = UserChallengeHistoryResponse(
+        fun of(challengeHistory: FindChallengeHistoryDto) = FindChallengeHistoryResponse(
             challengeHistory.username,
             challengeHistory.imageUrl,
-            challengeHistory.feedCnt,
-            challengeHistory.endedChallengeCnt,
-            challengeHistory.registerDate.toLocalDate(),
+            challengeHistory.feedCount,
+            challengeHistory.endedChallengeCount,
+            challengeHistory.signInDate.toLocalDate(),
         )
     }
 }

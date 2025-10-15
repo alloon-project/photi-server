@@ -1,10 +1,10 @@
 package com.photi.apis.enduser.controller.user.dto.response
 
-import com.photi.core.domain.user.dto.UserInfoDto
+import com.photi.core.domain.user.dto.FindInfoDto
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "사용자 정보 응답 객체")
-data class UserInfoResponse(
+data class FindInfoResponse(
 
     @Schema(description = "사용자 프로필 이미지", example = "https://url.kr/5MhHhD")
     val imageUrl: String,
@@ -18,10 +18,10 @@ data class UserInfoResponse(
 
     companion object {
 
-        fun of(userInfo: UserInfoDto) = UserInfoResponse(
-            userInfo.imageUrl,
-            userInfo.username,
-            userInfo.email
+        fun of(info: FindInfoDto) = FindInfoResponse(
+            info.imageUrl,
+            info.username,
+            info.email,
         )
     }
 }

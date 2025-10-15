@@ -2,12 +2,12 @@ package com.photi.apis.enduser.controller.user.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.photi.apis.enduser.controller.challenge.dto.response.ChallengeMemberImageResponse
-import com.photi.core.domain.user.dto.FindUserEndedChallengesDto
+import com.photi.core.domain.user.dto.FindEndedChallengesDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 @Schema(description = "사용자 종료된 챌린지 조회 응답 객체")
-data class FindUserEndedChallengesResponse(
+data class FindEndedChallengesResponse(
 
     @Schema(description = "챌린지 id", example = "1")
     val id: Long,
@@ -39,12 +39,12 @@ data class FindUserEndedChallengesResponse(
 
     companion object {
 
-        fun of(challenge: FindUserEndedChallengesDto) = FindUserEndedChallengesResponse(
+        fun of(challenge: FindEndedChallengesDto) = FindEndedChallengesResponse(
             challenge.id,
             challenge.name,
             challenge.imageUrl,
             challenge.endDate,
-            challenge.currentMemberCnt,
+            challenge.currentMemberCount,
             challenge.memberImages.map { ChallengeMemberImageResponse(it) }
         )
     }

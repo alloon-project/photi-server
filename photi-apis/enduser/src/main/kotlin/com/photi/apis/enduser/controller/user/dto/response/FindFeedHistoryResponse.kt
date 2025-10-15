@@ -1,11 +1,11 @@
 package com.photi.apis.enduser.controller.user.dto.response
 
-import com.photi.core.domain.user.dto.FindUserFeedHistoryDto
+import com.photi.core.domain.user.dto.FindFeedHistoryDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 @Schema(description = "사용자 피드 인증 횟수 모아보기 조회 응답 객체")
-data class FindUserFeedHistoryResponse(
+data class FindFeedHistoryResponse(
 
     @Schema(description = "피드 id", example = "1")
     val feedId: Long,
@@ -31,7 +31,7 @@ data class FindUserFeedHistoryResponse(
 
     companion object {
 
-        fun of(feedHistory: FindUserFeedHistoryDto) = FindUserFeedHistoryResponse(
+        fun of(feedHistory: FindFeedHistoryDto) = FindFeedHistoryResponse(
             feedHistory.feedId,
             feedHistory.challengeId,
             feedHistory.imageUrl,

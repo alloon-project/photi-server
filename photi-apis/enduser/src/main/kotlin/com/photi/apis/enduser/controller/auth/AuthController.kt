@@ -1,18 +1,21 @@
 package com.photi.apis.enduser.controller.auth
 
-import com.photi.apis.enduser.common.exception.ApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.UserApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
+import com.photi.apis.enduser.config.security.JwtProvider
 import com.photi.apis.enduser.controller.auth.dto.request.*
 import com.photi.apis.enduser.controller.auth.dto.response.FindWithdrawDateResponse
 import com.photi.apis.enduser.controller.auth.dto.response.LoginResponse
 import com.photi.apis.enduser.controller.auth.dto.response.SignUpResponse
 import com.photi.core.domain.common.consts.CustomHttpHeaders
-import com.photi.core.domain.common.consts.RegexPatternConstants.LOWERCASE_NUMBER_UNDERSCORE
-import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
-import com.photi.core.domain.common.consts.SwaggerConstants.REFRESH_TOKEN_KEY
-import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.core.domain.user.usecase.AuthService
-import com.photi.apis.enduser.config.security.JwtProvider
+import com.photi.core.domain.common.consts.RegexPattern.LOWERCASE_NUMBER_UNDERSCORE
+import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.consts.SwaggerKey.REFRESH_TOKEN_KEY
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHENTICATED
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHORIZED
+import com.photi.core.domain.user.exception.UserErrorCode.*
+import com.photi.core.domain.user.service.AuthService
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -43,7 +46,7 @@ class AuthController(
     @PostMapping("/api/contacts")
     @Operation(summary = "이메일 인증코드 전송")
     @ApiResponse(responseCode = "201")
-    @ApiErrorResponses([ExceptionCode.EXISTING_EMAIL, ExceptionCode.DELETED_USER])
+    @UserApiErrorResponses([EXISTING_EMAIL, DELETED_USER])
     fun sendEmailAuthenticationCode(
         @RequestBody @Valid request: SendEmailAuthenticationCodeRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -55,7 +58,7 @@ class AuthController(
     @PatchMapping("/api/contacts/verify")
     @Operation(summary = "이메일 인증코드 검증")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.EMAIL_VERIFICATION_CODE_INVALID, ExceptionCode.EMAIL_NOT_FOUND])
+    @UserApiErrorResponses([EMAIL_VERIFICATION_CODE_INVALID, EMAIL_NOT_FOUND])
     fun validateEmailAuthenticationCode(
         @RequestBody @Valid request: ValidateEmailAuthenticationCodeRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -66,7 +69,7 @@ class AuthController(
     @GetMapping("/api/users/username")
     @Operation(summary = "아이디 검증")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.USERNAME_FORMAT_INVALID, ExceptionCode.UNAVAILABLE_USERNAME, ExceptionCode.EXISTING_USERNAME])
+    @UserApiErrorResponses([USERNAME_FORMAT_INVALID, UNAVAILABLE_USERNAME, EXISTING_USERNAME])
     fun validateUsername(
         @RequestParam @NotBlank @Size(min = 5, max = 20)
         @Pattern(regexp = LOWERCASE_NUMBER_UNDERSCORE)
@@ -80,7 +83,7 @@ class AuthController(
     @PostMapping("/api/users/register")
     @Operation(summary = "회원가입")
     @ApiResponse(responseCode = "201")
-    @ApiErrorResponses([ExceptionCode.EMAIL_VALIDATION_INVALID, ExceptionCode.PASSWORD_MATCH_INVALID, ExceptionCode.EXISTING_USER, ExceptionCode.UNAVAILABLE_USERNAME, ExceptionCode.EXISTING_USERNAME])
+    @UserApiErrorResponses([EMAIL_VALIDATION_INVALID, PASSWORD_MATCH_INVALID, EXISTING_USER, UNAVAILABLE_USERNAME, EXISTING_USERNAME])
     fun signUp(
         @RequestBody @Valid request: SignUpRequest,
     ): ResponseEntity<SignUpResponse> {
@@ -93,7 +96,7 @@ class AuthController(
     @PostMapping("/api/users/find-username")
     @Operation(summary = "아이디 찾기")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
+    @UserApiErrorResponses([USER_NOT_FOUND])
     fun findUsername(
         @RequestBody @Valid request: FindUsernameRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -104,7 +107,7 @@ class AuthController(
     @PostMapping("/api/users/find-password")
     @Operation(summary = "비밀번호 찾기")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
+    @UserApiErrorResponses([USER_NOT_FOUND])
     fun findPassword(
         @RequestBody @Valid request: FindPasswordRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -115,7 +118,7 @@ class AuthController(
     @PostMapping("/api/users/login")
     @Operation(summary = "로그인")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.LOGIN_UNAUTHENTICATED, ExceptionCode.DELETED_USER])
+    @UserApiErrorResponses([LOGIN_UNAUTHENTICATED, DELETED_USER])
     fun login(
         @RequestBody @Valid request: LoginRequest,
     ): ResponseEntity<LoginResponse> {
@@ -128,7 +131,8 @@ class AuthController(
     @PatchMapping("/api/users/password")
     @Operation(summary = "비밀번호 변경", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.PASSWORD_MATCH_INVALID, ExceptionCode.LOGIN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @UserApiErrorResponses([PASSWORD_MATCH_INVALID, LOGIN_UNAUTHENTICATED])
     fun changePassword(
         principal: Principal,
         @RequestBody @Valid request: ChangePasswordRequest,
@@ -140,8 +144,9 @@ class AuthController(
     @PatchMapping("/api/users")
     @Operation(summary = "회원 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED, ExceptionCode.USER_NOT_FOUND, ExceptionCode.LOGIN_UNAUTHENTICATED])
-    fun deleteUser(
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @UserApiErrorResponses([USER_NOT_FOUND, LOGIN_UNAUTHENTICATED])
+    fun withdraw(
         principal: Principal,
         @RequestBody @Valid request: WithdrawRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -152,7 +157,7 @@ class AuthController(
     @PostMapping("/api/users/deleted-date")
     @Operation(summary = "회원 탈퇴 날짜 조회")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.USER_NOT_FOUND])
+    @UserApiErrorResponses([USER_NOT_FOUND])
     fun findWithdrawDate(
         @RequestBody @Valid request: FindWithdrawDateRequest,
     ): ResponseEntity<FindWithdrawDateResponse> {
@@ -164,7 +169,7 @@ class AuthController(
     @GetMapping("/api/auth/validate/access-token")
     @Operation(summary = "액세스 토큰 유효성 검증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
     fun validateAccessToken(
         request: HttpServletRequest,
     ): ResponseEntity<StringSuccessResponse> {
@@ -176,7 +181,7 @@ class AuthController(
     @PostMapping("/api/users/token")
     @Operation(summary = "토큰 재발급", security = [SecurityRequirement(name = REFRESH_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
     fun refreshToken(
         request: HttpServletRequest,
     ): ResponseEntity<StringSuccessResponse> {
