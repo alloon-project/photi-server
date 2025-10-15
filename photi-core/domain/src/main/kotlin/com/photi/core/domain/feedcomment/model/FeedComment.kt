@@ -5,21 +5,31 @@ import jakarta.persistence.*
 
 @Entity
 class FeedComment(
+    userId: Long,
+    challengeMemberId: Long,
+    feedId: Long,
+    comment: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_comment_id", nullable = false)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val userId: Long,
+    var userId: Long = userId
+        protected set
 
     @Column(nullable = false)
-    val challengeMemberId: Long,
+    var challengeMemberId: Long = challengeMemberId
+        protected set
 
     @Column(nullable = false)
-    val feedId: Long,
+    var feedId: Long = feedId
+        protected set
 
     @Column(nullable = false)
-    val comment: String,
-) : BaseEntity()
+    var comment: String = comment
+        protected set
+}

@@ -5,21 +5,26 @@ import jakarta.persistence.*
 
 @Entity
 class ChallengeHistory(
+    challengeId: Long,
+) : BaseEntity() {
 
     @Id
     @Column(name = "challenge_history_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false, unique = true)
-    val challengeId: Long,
+    var challengeId: Long = challengeId
+        protected set
 
     @Column(nullable = false)
-    var challengeMemberCount: Int = 0,
+    var challengeMemberCount: Int = 0
+        protected set
 
     @Column(nullable = false)
-    var visitCount: Int = 0,
-) : BaseEntity() {
+    var visitCount: Int = 0
+        protected set
 
     fun increaseChallengeMember() {
         challengeMemberCount += 1

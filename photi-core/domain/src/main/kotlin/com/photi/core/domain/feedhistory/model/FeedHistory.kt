@@ -5,21 +5,26 @@ import jakarta.persistence.*
 
 @Entity
 class FeedHistory(
+    feedId: Long,
+) : BaseEntity() {
 
     @Id
     @Column(name = "feed_history_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false, unique = true)
-    val feedId: Long,
+    var feedId: Long = feedId
+        protected set
 
     @Column(nullable = false)
-    var likeCount: Int = 0,
+    var likeCount: Int = 0
+        protected set
 
     @Column(nullable = false)
-    var commentCount: Int = 0,
-) : BaseEntity() {
+    var commentCount: Int = 0
+        protected set
 
     fun increaseLike() {
         likeCount += 1

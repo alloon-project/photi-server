@@ -10,15 +10,21 @@ import jakarta.persistence.*
     ]
 )
 class FeedLike(
+    challengeMemberId: Long,
+    feedId: Long,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_like_id", nullable = false)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val challengeMemberId: Long,
+    var challengeMemberId: Long = challengeMemberId
+        protected set
 
     @Column(nullable = false)
-    val feedId: Long,
-) : BaseEntity()
+    var feedId: Long = feedId
+        protected set
+}

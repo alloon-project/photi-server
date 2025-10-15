@@ -10,52 +10,74 @@ import com.photi.core.domain.challenge.service.HashtagService
 import com.photi.core.domain.challenge.validator.ChallengeValidator
 import com.photi.core.domain.challengemember.dto.RegisterChallengePersonalGoalDto
 import com.photi.core.domain.common.consts.DirectoryType
-import com.photi.core.domain.common.model.BasePermanentEntity
-import com.photi.core.domain.common.model.ServiceStatus
+import com.photi.core.domain.common.model.BaseEntity
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
 class Challenge(
+    name: String,
+    isPublic: Boolean,
+    goal: String,
+    proveTime: LocalTime,
+    endDate: LocalDate,
+    imageUrl: String,
+    invitationCode: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_id")
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false, length = 16)
-    var name: String,
+    var name: String = name
+        protected set
 
     @Column(nullable = false)
-    val isPublic: Boolean,
+    var isPublic: Boolean = isPublic
+        protected set
 
     @Column(nullable = false, length = 120)
-    var goal: String,
+    var goal: String = goal
+        protected set
 
     @Column(nullable = false)
-    var proveTime: LocalTime,
+    var proveTime: LocalTime = proveTime
+        protected set
 
     @Column(nullable = false)
-    var endDate: LocalDate,
+    var endDate: LocalDate = endDate
+        protected set
 
     @Column(nullable = false, length = 500)
-    var imageUrl: String,
+    var imageUrl: String = imageUrl
+        protected set
 
-    @Column(length = 5)
-    val invitationCode: String,
+    @Column(nullable = false, length = 5)
+    var invitationCode: String = invitationCode
+        protected set
 
     @Column(nullable = false)
-    val startDate: LocalDate = LocalDate.now(),
+    var startDate: LocalDate = LocalDate.now()
+        protected set
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val rules: MutableList<ChallengeRule> = mutableListOf(),
+    var rules: MutableList<ChallengeRule> = mutableListOf()
+        protected set
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "challenge", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val hashtags: MutableList<ChallengeHashtag> = mutableListOf(),
-) : BasePermanentEntity() {
+    var hashtags: MutableList<ChallengeHashtag> = mutableListOf()
+        protected set
+
+    @Column(nullable = false, length = 15)
+    @Enumerated(value = EnumType.STRING)
+    var status: StatusType = StatusType.ACTIVE
+        protected set
 
     fun createCreator(
         userId: Long,
@@ -108,7 +130,7 @@ class Challenge(
     }
 
     fun end() {
-        serviceStatus = ServiceStatus.END
+        status = StatusType.END
     }
 
     private fun changeImageUrl(s3Port: ChallengeS3Port, imageUrl: String) {

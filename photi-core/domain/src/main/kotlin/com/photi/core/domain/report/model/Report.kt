@@ -5,26 +5,38 @@ import jakarta.persistence.*
 
 @Entity
 class Report(
+    reporterId: Long,
+    targetId: Long,
+    category: CategoryType,
+    reason: ReasonType,
+    content: String? = null,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id", nullable = false)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val reporterId: Long,
+    var reporterId: Long = reporterId
+        protected set
 
     @Column(nullable = false)
-    val targetId: Long,
+    var targetId: Long = targetId
+        protected set
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 20)
-    val category: CategoryType,
+    var category: CategoryType = category
+        protected set
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 15)
-    val reason: ReasonType,
+    var reason: ReasonType = reason
+        protected set
 
-    @Column(length = 120)
-    val content: String? = null,
-) : BaseEntity()
+    @Column(nullable = true, length = 120)
+    var content: String? = content
+        protected set
+}

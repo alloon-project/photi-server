@@ -5,16 +5,22 @@ import jakarta.persistence.*
 
 @Entity
 class ChallengeHashtag(
+    challenge: Challenge,
+    hashtag: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_hashtag_id")
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
-    val challenge: Challenge,
+    var challenge: Challenge = challenge
+        protected set
 
     @Column(nullable = false, length = 6)
-    val hashtag: String,
-) : BaseEntity()
+    var hashtag: String = hashtag
+        protected set
+}

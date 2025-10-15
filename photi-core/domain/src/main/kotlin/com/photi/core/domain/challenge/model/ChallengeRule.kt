@@ -5,16 +5,22 @@ import jakarta.persistence.*
 
 @Entity
 class ChallengeRule(
+    challenge: Challenge,
+    rule: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_rule_id")
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
-    val challenge: Challenge,
+    var challenge: Challenge = challenge
+        protected set
 
     @Column(nullable = false, length = 30)
-    var rule: String,
-) : BaseEntity()
+    var rule: String = rule
+        protected set
+}

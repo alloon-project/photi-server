@@ -1,7 +1,7 @@
 package com.photi.core.domain.feed.model
 
 import com.photi.core.domain.common.consts.DirectoryType
-import com.photi.core.domain.common.model.BasePermanentEntity
+import com.photi.core.domain.common.model.BaseEntity
 import com.photi.core.domain.feed.port.FeedS3Port
 import jakarta.persistence.*
 
@@ -12,24 +12,33 @@ import jakarta.persistence.*
     ]
 )
 class Feed(
+    userId: Long,
+    challengeMemberId: Long,
+    challengeId: Long,
+    imageUrl: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feed_id", nullable = false)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val userId: Long,
+    var userId: Long = userId
+        protected set
 
     @Column(nullable = false)
-    val challengeMemberId: Long,
+    var challengeMemberId: Long = challengeMemberId
+        protected set
 
     @Column(nullable = false)
-    val challengeId: Long,
+    var challengeId: Long = challengeId
+        protected set
 
     @Column(nullable = false, length = 500)
-    var imageUrl: String,
-) : BasePermanentEntity() {
+    var imageUrl: String = imageUrl
+        protected set
 
     fun deleteImage(s3Port: FeedS3Port) {
         s3Port.deleteImage(imageUrl, DirectoryType.FEEDS)

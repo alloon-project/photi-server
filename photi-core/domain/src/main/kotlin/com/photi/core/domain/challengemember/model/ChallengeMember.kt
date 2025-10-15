@@ -6,28 +6,37 @@ import jakarta.persistence.*
 
 @Entity
 class ChallengeMember(
+    userId: Long,
+    challengeId: Long,
+    isCreator: Boolean = true,
+) : BaseEntity() {
 
     @Id
     @Column(name = "challenge_member_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val userId: Long,
+    var userId: Long = userId
+        protected set
 
     @Column(nullable = false)
-    val challengeId: Long,
+    var challengeId: Long = challengeId
+        protected set
 
     @Column(nullable = true, length = 16)
-    var goal: String? = null,
+    var goal: String? = null
+        protected set
 
     @Column(nullable = false)
-    val isCreator: Boolean = true,
+    var isCreator: Boolean = isCreator
+        protected set
 
     @Column(nullable = false, length = 15)
     @Enumerated(value = EnumType.STRING)
-    var status: StatusType = StatusType.PROGRESS,
-) : BaseEntity() {
+    var status: StatusType = StatusType.PROGRESS
+        protected set
 
     fun registerGoal(dto: RegisterChallengePersonalGoalDto) {
         goal = dto.goal

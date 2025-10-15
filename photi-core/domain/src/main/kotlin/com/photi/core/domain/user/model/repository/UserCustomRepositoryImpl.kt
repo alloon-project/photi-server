@@ -7,8 +7,8 @@ import com.photi.core.domain.challengehistory.model.QChallengeHistory.challengeH
 import com.photi.core.domain.challengemember.model.QChallengeMember.challengeMember
 import com.photi.core.domain.challengemember.model.StatusType.PROGRESS
 import com.photi.core.domain.common.SliceDto
-import com.photi.core.domain.common.model.ServiceStatus.ACTIVE
-import com.photi.core.domain.common.model.ServiceStatus.END
+import com.photi.core.domain.challenge.model.StatusType.ACTIVE
+import com.photi.core.domain.challenge.model.StatusType.END
 import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.feed.model.QFeed.feed
 import com.photi.core.domain.user.dto.*
@@ -143,7 +143,7 @@ class UserCustomRepositoryImpl(
             .where(
                 challengeMember.userId.eq(userId),
                 challengeMember.status.eq(PROGRESS),
-                challenge.serviceStatus.eq(END),
+                challenge.status.eq(END),
             )
             .orderBy(challenge.endDate.desc())
             .offset(pageable.offset)
@@ -196,7 +196,7 @@ class UserCustomRepositoryImpl(
             .where(
                 challengeMember.userId.eq(userId),
                 challengeMember.status.eq(PROGRESS),
-                challenge.serviceStatus.eq(ACTIVE),
+                challenge.status.eq(ACTIVE),
             )
             .orderBy(challenge.proveTime.asc())
             .offset(pageable.offset)

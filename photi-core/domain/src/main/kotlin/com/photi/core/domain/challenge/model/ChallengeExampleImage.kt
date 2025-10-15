@@ -4,13 +4,17 @@ import com.photi.core.domain.common.model.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-class ChallengeExampleImages(
+class ChallengeExampleImage(
+    imageUrl: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "challenge_example_images_id")
-    val id: Long? = null,
+    @Column(name = "challenge_example_image_id")
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false, length = 500)
-    val imageUrl: String,
-) : BaseEntity()
+    var imageUrl: String = imageUrl
+        protected set
+}

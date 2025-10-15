@@ -1,6 +1,6 @@
 package com.photi.core.domain.feed.model.repository
 
-import com.photi.core.domain.common.model.ServiceStatus
+import com.photi.core.domain.challenge.model.StatusType
 import com.photi.core.domain.feed.model.Feed
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -14,7 +14,7 @@ interface FeedRepository : JpaRepository<Feed, Long>, FeedCustomRepository {
         todayEnd: LocalDateTime,
     ): Boolean
 
-    fun existsByIdAndServiceStatus(id: Long, status: ServiceStatus): Boolean
+    fun existsByIdAndServiceStatus(id: Long, status: StatusType): Boolean
 
     fun existsByChallengeId(id: Long): Boolean
 

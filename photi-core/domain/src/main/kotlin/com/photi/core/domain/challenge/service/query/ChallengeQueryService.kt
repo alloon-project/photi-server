@@ -2,7 +2,7 @@ package com.photi.core.domain.challenge.service.query
 
 import com.photi.core.domain.challenge.model.repository.ChallengeExampleImagesRepository
 import com.photi.core.domain.challenge.model.repository.ChallengeRepository
-import com.photi.core.domain.common.model.ServiceStatus
+import com.photi.core.domain.challenge.model.StatusType
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +15,7 @@ class ChallengeQueryService(
 ) {
 
     fun existsBy(id: Long) =
-        challengeRepository.existsByIdAndServiceStatus(id, ServiceStatus.ACTIVE)
+        challengeRepository.existsByIdAndServiceStatus(id, StatusType.ACTIVE)
 
     fun getExampleImages() = challengeExampleImagesRepository.findExampleImages()
 

@@ -6,19 +6,24 @@ import jakarta.persistence.*
 
 @Entity
 class AppVersion(
+    os: OsType,
+    minVersion: String,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "app_version_id")
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 15)
-    val os: OsType,
+    var os: OsType = os
+        protected set
 
     @Column(nullable = false, length = 10)
-    var minVersion: String,
-) : BaseEntity() {
+    var minVersion: String = minVersion
+        protected set
 
     fun compareVersions(version: String) =
         AppVersionUtil.compareVersions(version, minVersion) < ZERO

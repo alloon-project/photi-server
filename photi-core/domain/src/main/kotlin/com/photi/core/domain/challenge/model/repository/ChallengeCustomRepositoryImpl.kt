@@ -8,7 +8,7 @@ import com.photi.core.domain.challengehistory.model.QChallengeHistory.challengeH
 import com.photi.core.domain.challengemember.model.QChallengeMember.challengeMember
 import com.photi.core.domain.challengemember.model.StatusType.PROGRESS
 import com.photi.core.domain.common.SliceDto
-import com.photi.core.domain.common.model.ServiceStatus.ACTIVE
+import com.photi.core.domain.challenge.model.StatusType.ACTIVE
 import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.user.dto.QMemberImageDto
 import com.photi.core.domain.user.model.QUser.user
@@ -43,7 +43,7 @@ class ChallengeCustomRepositoryImpl(
             )
             .from(challenge)
             .join(challengeHistory).on(challengeHistory.challengeId.eq(challenge.id))
-            .where(challenge.serviceStatus.eq(ACTIVE))
+            .where(challenge.status.eq(ACTIVE))
             .orderBy(challengeHistory.visitCount.desc())
             .limit(5)
             .fetch()
@@ -91,7 +91,7 @@ class ChallengeCustomRepositoryImpl(
                 )
             )
             .from(challenge)
-            .where(challenge.serviceStatus.eq(ACTIVE))
+            .where(challenge.status.eq(ACTIVE))
             .orderBy(challenge.endDate.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
@@ -165,7 +165,7 @@ class ChallengeCustomRepositoryImpl(
             .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .where(
-                challenge.serviceStatus.eq(ACTIVE),
+                challenge.status.eq(ACTIVE),
                 challengeHashtag.hashtag.`in`(popularHashtags),
             )
             .orderBy(challengeHistory.challengeMemberCount.desc())
@@ -195,7 +195,7 @@ class ChallengeCustomRepositoryImpl(
             .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .where(
-                challenge.serviceStatus.eq(ACTIVE),
+                challenge.status.eq(ACTIVE),
                 challengeHashtag.hashtag.eq(hashtag),
             )
             .orderBy(challengeHistory.challengeMemberCount.desc())
@@ -234,7 +234,7 @@ class ChallengeCustomRepositoryImpl(
             .from(challenge)
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .where(
-                challenge.serviceStatus.eq(ACTIVE),
+                challenge.status.eq(ACTIVE),
                 challenge.name.likeIgnoreCase("%$name"),
             )
             .orderBy(
@@ -275,7 +275,7 @@ class ChallengeCustomRepositoryImpl(
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .where(
-                challenge.serviceStatus.eq(ACTIVE),
+                challenge.status.eq(ACTIVE),
                 challengeHashtag.hashtag.likeIgnoreCase("%$hashtag%"),
             )
             .orderBy(
