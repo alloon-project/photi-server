@@ -1,6 +1,7 @@
 package com.photi.core.domain.appversion.model
 
 import com.photi.core.domain.common.model.BaseEntity
+import com.photi.utils.AppVersionUtil
 import jakarta.persistence.*
 
 @Entity
@@ -19,7 +20,14 @@ class AppVersion(
     var minVersion: String,
 ) : BaseEntity() {
 
-    fun updateMinVersion(minVersion: String) {
+    fun compareVersions(version: String) =
+        AppVersionUtil.compareVersions(version, minVersion) < ZERO
+
+    fun changeMinVersion(minVersion: String) {
         this.minVersion = minVersion
+    }
+
+    companion object {
+        private const val ZERO = 0
     }
 }
