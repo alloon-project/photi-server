@@ -21,7 +21,6 @@ import java.time.LocalDate
 
 @Configuration
 class ChallengeStatusEndJobConfig(
-
     @Value("\${spring.batch.chunk-size}")
     private val chunkSize: Int,
     private val entityManagerFactory: EntityManagerFactory,
@@ -69,7 +68,7 @@ class ChallengeStatusEndJobConfig(
     @Bean(BEAN_PREFIX + "itemProcessor")
     fun itemProcessor(): ItemProcessor<Challenge, Challenge> {
         return ItemProcessor {
-            it.updateChallengeStatusEnd()
+            it.end()
             it
         }
     }
@@ -83,6 +82,6 @@ class ChallengeStatusEndJobConfig(
 
     companion object {
         const val CHALLENGE_END_JOB_NAME = "챌린지종료상태"
-        const val BEAN_PREFIX = CHALLENGE_END_JOB_NAME + "_"
+        private const val BEAN_PREFIX = CHALLENGE_END_JOB_NAME + "_"
     }
 }

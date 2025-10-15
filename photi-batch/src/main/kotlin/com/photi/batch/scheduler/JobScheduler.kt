@@ -1,7 +1,7 @@
 package com.photi.batch.scheduler
 
 import com.photi.batch.job.ChallengeStatusEndJobConfig.Companion.CHALLENGE_END_JOB_NAME
-import com.photi.batch.job.ContactReRegisterJobConfig.Companion.CONTACT_RE_REGISTER_JOB_NAME
+import com.photi.batch.job.UserReSignUpJobConfig.Companion.USER_RE_SIGN_UP_JOB_NAME
 import org.springframework.batch.core.JobParametersBuilder
 import org.springframework.batch.core.JobParametersInvalidException
 import org.springframework.batch.core.configuration.JobRegistry
@@ -26,8 +26,8 @@ class JobScheduler(
     }
 
     @Scheduled(cron = "0 0 4 * * *")
-    fun runContactReRegisterJob() {
-        runJob(CONTACT_RE_REGISTER_JOB_NAME)
+    fun runUserReSignUpJob() {
+        runJob(USER_RE_SIGN_UP_JOB_NAME)
     }
 
     fun runJob(jobName: String) {
@@ -52,6 +52,6 @@ class JobScheduler(
     }
 
     companion object {
-        const val JOB_PARAMETER = "date"
+        private const val JOB_PARAMETER = "date"
     }
 }

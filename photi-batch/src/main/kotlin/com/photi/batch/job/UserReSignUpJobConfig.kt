@@ -20,8 +20,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import java.time.LocalDate
 
 @Configuration
-class ContactReRegisterJobConfig(
-
+class UserReSignUpJobConfig(
     @Value("\${spring.batch.chunk-size}")
     private val chunkSize: Int,
     private val entityManagerFactory: EntityManagerFactory,
@@ -29,9 +28,9 @@ class ContactReRegisterJobConfig(
     private val jobRepository: JobRepository,
 ) {
 
-    @Bean(CONTACT_RE_REGISTER_JOB_NAME)
+    @Bean(USER_RE_SIGN_UP_JOB_NAME)
     fun job(): Job {
-        return JobBuilder(CONTACT_RE_REGISTER_JOB_NAME, jobRepository)
+        return JobBuilder(USER_RE_SIGN_UP_JOB_NAME, jobRepository)
             .start(step())
             .build()
     }
@@ -57,10 +56,10 @@ class ContactReRegisterJobConfig(
             .pageSize(chunkSize)
             .queryString(
                 """
-                SELECT c FROM Contact c 
-                WHERE c.isDeleted = true 
-                AND c.deletedDate <= :date 
-                ORDER BY c.id ASC
+                SELECT u FROM User u 
+                WHERE u.isDeleted = true 
+                AND u.deletedDate <= :date 
+                ORDER BY u.id ASC
                 """.trimIndent()
             )
             .parameterValues(mapOf("date" to minusMonthDateTime))
@@ -70,7 +69,7 @@ class ContactReRegisterJobConfig(
     @Bean(BEAN_PREFIX + "itemProcessor")
     fun itemProcessor(): ItemProcessor<User, User> {
         return ItemProcessor {
-            it.updateReRegisterStatus()
+            it.changeReSignUpStatus()
             it
         }
     }
@@ -83,8 +82,8 @@ class ContactReRegisterJobConfig(
     }
 
     companion object {
-        const val CONTACT_RE_REGISTER_JOB_NAME = "회원재가입가능상태"
-        const val BEAN_PREFIX = CONTACT_RE_REGISTER_JOB_NAME + "_"
-        const val MONTH_TO_SUBTRACT = 1L
+        const val USER_RE_SIGN_UP_JOB_NAME = "회원재가입가능상태"
+        private const val BEAN_PREFIX = USER_RE_SIGN_UP_JOB_NAME + "_"
+        private const val MONTH_TO_SUBTRACT = 1L
     }
 }
