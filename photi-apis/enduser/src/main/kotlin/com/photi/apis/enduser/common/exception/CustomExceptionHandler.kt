@@ -1,8 +1,8 @@
 package com.photi.apis.enduser.common.exception
 
 import com.photi.apis.enduser.common.exception.dto.ErrorResponse
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.common.exception.PhotiException
+import com.photi.core.domain.common.exception.GlobalErrorCode
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.beans.TypeMismatchException
@@ -21,13 +21,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 class CustomExceptionHandler : ResponseEntityExceptionHandler() {
 
-    @ExceptionHandler(CustomException::class)
+    @ExceptionHandler(PhotiException::class)
     protected fun handleCustomException(
-        ex: CustomException,
-        request: HttpServletRequest
+        ex: PhotiException,
+        request: HttpServletRequest,
     ): ResponseEntity<ErrorResponse> {
-        val response = ErrorResponse.of(ex.exceptionCode)
-        return ResponseEntity.status(ex.exceptionCode.httpStatus).body(response)
+        val response = ErrorResponse.of(ex.errorCode)
+        return ResponseEntity.status(ex.errorCode.status).body(response)
     }
 
     /**
@@ -41,7 +41,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         val message = ex.bindingResult.fieldErrors.joinToString { it.defaultMessage.toString() }
         val response = ErrorResponse(status.toString().split(" ")[1], message)
-
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 
@@ -52,7 +51,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<ErrorResponse> {
         val message = ex.constraintViolations.joinToString { it.message }
         val response = ErrorResponse(BAD_REQUEST.name, message)
-
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 
@@ -64,7 +62,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
     ): ResponseEntity<Any>? {
         val message = ex.mostSpecificCause.message.toString()
         val response = ErrorResponse(status.toString().split(" ")[1], message)
-
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 
@@ -75,8 +72,8 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any>? {
         val response = ErrorResponse(
-            ExceptionCode.DATE_FORMAT_INVALID.name,
-            ExceptionCode.DATE_FORMAT_INVALID.message,
+            GlobalErrorCode.DATE_FORMAT_INVALID.name,
+            GlobalErrorCode.DATE_FORMAT_INVALID.message,
         )
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
@@ -90,7 +87,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        val response = ErrorResponse.of(ExceptionCode.FILE_SIZE_EXCEED)
+        val response = ErrorResponse.of(GlobalErrorCode.FILE_SIZE_EXCEED)
         return ResponseEntity.status(PAYLOAD_TOO_LARGE).body(response)
     }
 
@@ -103,7 +100,7 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         request: HttpServletRequest
     ): ResponseEntity<ErrorResponse> {
         logger.error(ex.message)
-        val response = ErrorResponse.of(ExceptionCode.SERVER_ERROR)
+        val response = ErrorResponse.of(GlobalErrorCode.SERVER_ERROR)
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(response)
     }
 }

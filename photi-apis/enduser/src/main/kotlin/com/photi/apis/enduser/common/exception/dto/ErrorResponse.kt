@@ -1,15 +1,14 @@
 package com.photi.apis.enduser.common.exception.dto
 
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.common.exception.BaseErrorCode
 
 data class ErrorResponse(
     val code: String,
-    val message: Any,
+    val message: String,
 ) {
 
     companion object {
 
-        fun of(exceptionCode: ExceptionCode) =
-            ErrorResponse(exceptionCode.name, exceptionCode.message)
+        fun of(errorCode: BaseErrorCode) = ErrorResponse(errorCode.code, errorCode.message)
     }
 }
