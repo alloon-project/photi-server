@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query
 
 interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
 
-    fun existsByEmailAndDeletedFalse(email: String): Boolean
+    fun existsByEmailAndIsDeletedFalse(email: String): Boolean
 
     fun existsByUsername(username: String): Boolean
 
@@ -15,9 +15,9 @@ interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
 
     fun findByEmail(email: String): User?
 
-    fun findByEmailAndAuthenticatedTrue(email: String): User?
+    fun findByEmailAndIsAuthenticatedTrue(email: String): User?
 
-    fun findByEmailAndUsernameAndAuthenticatedTrue(email: String, username: String): User?
+    fun findByEmailAndUsernameAndIsAuthenticatedTrue(email: String, username: String): User?
 
     @Query("select u.imageUrl, u.username, u.email from User u where u.id = :id")
     fun findInfoById(id: Long): FindInfoDto?

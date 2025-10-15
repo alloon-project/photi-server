@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query
 
 interface ChallengeRepository : JpaRepository<Challenge, Long>, ChallengeCustomRepository {
 
-    fun existsByIdAndServiceStatus(id: Long, status: StatusType): Boolean
+    fun existsByIdAndStatus(id: Long, status: StatusType): Boolean
 
     @Query("select c.name, c.invitationCode from Challenge c where c.id = :id")
     fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto?

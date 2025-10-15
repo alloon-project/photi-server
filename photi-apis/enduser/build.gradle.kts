@@ -12,7 +12,4 @@ dependencies {
     implementation(project(":photi-core:domain"))
     implementation(project(":photi-core:infra"))
     implementation(project(":photi-utils"))
-
-    // todo 코드 수정 후 삭제
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }

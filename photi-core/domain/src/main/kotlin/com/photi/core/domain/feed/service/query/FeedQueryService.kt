@@ -1,6 +1,5 @@
 package com.photi.core.domain.feed.service.query
 
-import com.photi.core.domain.challenge.model.StatusType
 import com.photi.core.domain.feed.model.SortType
 import com.photi.core.domain.feed.model.repository.FeedRepository
 import org.springframework.data.domain.PageRequest
@@ -14,8 +13,7 @@ class FeedQueryService(
     private val feedRepository: FeedRepository,
 ) {
 
-    fun existsBy(id: Long) =
-        feedRepository.existsByIdAndServiceStatus(id, StatusType.ACTIVE)
+    fun existsBy(id: Long) = feedRepository.existsById(id)
 
     fun existsTodayFeedBy(challengeMemberId: Long) =
         feedRepository.existsByChallengeMemberIdAndCreatedDateTimeBetween(

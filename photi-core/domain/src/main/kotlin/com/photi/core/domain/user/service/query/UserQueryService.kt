@@ -19,10 +19,10 @@ class UserQueryService(
     fun getLoginUserBy(username: String) = userRepository.findByUsername(username)
 
     fun getAuthenticatedUserBy(email: String) =
-        userRepository.findByEmailAndAuthenticatedTrue(email)
+        userRepository.findByEmailAndIsAuthenticatedTrue(email)
 
     fun getAuthenticatedUserBy(email: String, username: String) =
-        userRepository.findByEmailAndUsernameAndAuthenticatedTrue(email, username)
+        userRepository.findByEmailAndUsernameAndIsAuthenticatedTrue(email, username)
 
     fun getInfoBy(id: Long) = userRepository.findInfoById(id)
 
@@ -46,7 +46,7 @@ class UserQueryService(
     fun getChallengeIsProveBy(userId: Long, challengeId: Long) =
         userRepository.findChallengeIsProveById(userId, challengeId)
 
-    fun existsActiveUserBy(email: String) = userRepository.existsByEmailAndDeletedFalse(email)
+    fun existsActiveUserBy(email: String) = userRepository.existsByEmailAndIsDeletedFalse(email)
 
     fun existsUserBy(username: String) = userRepository.existsByUsername(username)
 }

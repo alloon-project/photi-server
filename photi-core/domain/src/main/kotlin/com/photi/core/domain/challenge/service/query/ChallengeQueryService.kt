@@ -15,7 +15,7 @@ class ChallengeQueryService(
 ) {
 
     fun existsBy(id: Long) =
-        challengeRepository.existsByIdAndServiceStatus(id, StatusType.ACTIVE)
+        challengeRepository.existsByIdAndStatus(id, StatusType.ACTIVE)
 
     fun getExampleImages() = challengeExampleImagesRepository.findExampleImages()
 
