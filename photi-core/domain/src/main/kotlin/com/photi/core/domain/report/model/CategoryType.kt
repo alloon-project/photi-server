@@ -1,6 +1,6 @@
 package com.photi.core.domain.report.model
 
-enum class ReportCategoryType(
+enum class CategoryType(
     private val value: String,
 ) {
     CHALLENGE("챌린지"),

@@ -19,11 +19,11 @@ class Report(
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 20)
-    val category: ReportCategoryType,
+    val category: CategoryType,
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 15)
-    val reason: ReportReasonType,
+    val reason: ReasonType,
 
     @Column(length = 120)
     val content: String? = null,

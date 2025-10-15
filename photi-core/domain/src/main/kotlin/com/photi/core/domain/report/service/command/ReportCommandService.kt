@@ -1,4 +1,4 @@
-package com.photi.core.domain.report.command
+package com.photi.core.domain.report.service.command
 
 import com.photi.core.domain.report.dto.CreateReportDto
 import com.photi.core.domain.report.model.repository.ReportRepository
@@ -12,6 +12,6 @@ class ReportCommandService(
 ) {
 
     fun createReport(dto: CreateReportDto, reporterId: Long, targetId: Long) {
-        reportRepository.save(dto.toReportEntity(reporterId, targetId))
+        reportRepository.save(dto.toEntity(reporterId, targetId))
     }
 }

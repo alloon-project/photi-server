@@ -1,6 +1,6 @@
 package com.photi.core.domain.report.model
 
-enum class ReportReasonType(
+enum class ReasonType(
     private val value: String,
 ) {
     REDUNDANT("중복/도배성"),

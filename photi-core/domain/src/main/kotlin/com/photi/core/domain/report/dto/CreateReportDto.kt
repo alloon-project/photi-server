@@ -1,8 +1,8 @@
 package com.photi.core.domain.report.dto
 
 import com.photi.core.domain.report.model.Report
-import com.photi.core.domain.report.model.ReportCategoryType
-import com.photi.core.domain.report.model.ReportReasonType
+import com.photi.core.domain.report.model.CategoryType
+import com.photi.core.domain.report.model.ReasonType
 
 data class CreateReportDto(
     val category: String,
@@ -10,11 +10,11 @@ data class CreateReportDto(
     val content: String?,
 ) {
 
-    fun toReportEntity(reporterId: Long, targetId: Long) = Report(
+    fun toEntity(reporterId: Long, targetId: Long) = Report(
         reporterId = reporterId,
         targetId = targetId,
-        category = ReportCategoryType.valueOf(category),
-        reason = ReportReasonType.valueOf(reason),
-        content = content
+        category = CategoryType.valueOf(category),
+        reason = ReasonType.valueOf(reason),
+        content = content,
     )
 }
