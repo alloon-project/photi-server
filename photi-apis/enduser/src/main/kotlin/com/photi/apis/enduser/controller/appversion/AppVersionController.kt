@@ -1,12 +1,15 @@
 package com.photi.apis.enduser.controller.appversion
 
-import com.photi.apis.enduser.common.exception.ApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.AppVersionApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.controller.appversion.dto.request.AppVersionRequest
 import com.photi.apis.enduser.controller.appversion.dto.response.AppVersionResponse
-import com.photi.core.domain.appversion.usecase.AppVersionService
-import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.appversion.exception.AppVersionErrorCode.OS_POLICY_NOT_FOUND
+import com.photi.core.domain.appversion.service.AppVersionService
+import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHENTICATED
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHORIZED
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -27,9 +30,9 @@ class AppVersionController(
     @PostMapping
     @Operation(summary = "앱 강제 업데이트 필요 여부 조회")
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.OS_POLICY_NOT_FOUND])
-    fun checkAppVersion(@RequestBody @Valid request: AppVersionRequest): ResponseEntity<AppVersionResponse> {
-        val forceUpdate = appVersionService.checkAppVersion(request.toServiceDto())
+    @AppVersionApiErrorResponses([OS_POLICY_NOT_FOUND])
+    fun checkMinVersion(@RequestBody @Valid request: AppVersionRequest): ResponseEntity<AppVersionResponse> {
+        val forceUpdate = appVersionService.checkMinVersion(request.toServiceDto())
         val response = AppVersionResponse.of(forceUpdate)
         return ResponseEntity.ok(response)
     }
@@ -37,9 +40,9 @@ class AppVersionController(
     @PatchMapping
     @Operation(summary = "앱 최소 버전 업데이트", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED])
-    fun updateAppVersion(@RequestBody @Valid request: AppVersionRequest): ResponseEntity<StringSuccessResponse> {
-        appVersionService.updateAppVersion(request.toServiceDto())
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    fun updateMinVersion(@RequestBody @Valid request: AppVersionRequest): ResponseEntity<StringSuccessResponse> {
+        appVersionService.updateMinVersion(request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("앱 최소 버전 업데이트가 완료되었습니다."))
     }
 }
