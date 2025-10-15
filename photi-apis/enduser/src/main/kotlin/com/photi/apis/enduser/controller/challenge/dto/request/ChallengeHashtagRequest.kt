@@ -1,5 +1,6 @@
 package com.photi.apis.enduser.controller.challenge.dto.request
 
+import com.photi.core.domain.challenge.dto.ChallengeHashtagDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -10,4 +11,7 @@ data class ChallengeHashtagRequest(
     @field:NotBlank(message = "해시태그는 필수 입력입니다.")
     @field:Size(min = 1, max = 6, message = "해시태그는 1~6자만 가능합니다.")
     val hashtag: String,
-)
+) {
+
+    fun toServiceDto() = ChallengeHashtagDto(hashtag)
+}

@@ -1,13 +1,13 @@
 package com.photi.apis.enduser.controller.challenge.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.challenge.dto.FindChallengeInfoDto
+import com.photi.core.domain.challenge.dto.FindChallengeIntroDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Schema(description = "챌린지 소개 조회 응답 객체")
-data class FindChallengeInfoResponse(
+data class FindChallengeIntroResponse(
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
@@ -38,12 +38,12 @@ data class FindChallengeInfoResponse(
 
     companion object {
 
-        fun of(challengeInfo: FindChallengeInfoDto) = FindChallengeInfoResponse(
-            ChallengeRuleResponse.of(challengeInfo.rules),
-            challengeInfo.proveTime,
-            challengeInfo.goal,
-            challengeInfo.startDate,
-            challengeInfo.endDate
+        fun of(intro: FindChallengeIntroDto) = FindChallengeIntroResponse(
+            ChallengeRuleResponse.of(intro.rules),
+            intro.proveTime,
+            intro.goal,
+            intro.startDate,
+            intro.endDate,
         )
     }
 }

@@ -34,16 +34,12 @@ data class FindChallengesResponse(
 
     companion object {
 
-        fun of(challenge: FindChallengesDto) = FindChallengesResponse(
-            challenge.id,
-            challenge.name,
-            challenge.imageUrl,
-            challenge.endDate,
-            challenge.hashtags.map {
-                ChallengeHashtagResponse(it.hashtag)
-            }
+        fun of(challenges: FindChallengesDto) = FindChallengesResponse(
+            challenges.id,
+            challenges.name,
+            challenges.imageUrl,
+            challenges.endDate,
+            ChallengeHashtagResponse.of(challenges.hashtags),
         )
-
-        fun of(challenges: List<FindChallengesDto>) = challenges.map { of(it) }
     }
 }

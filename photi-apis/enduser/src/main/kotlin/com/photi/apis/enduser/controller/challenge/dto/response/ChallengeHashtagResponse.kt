@@ -12,9 +12,15 @@ data class ChallengeHashtagResponse(
 
     companion object {
 
-        fun of(challengeHashtag: ChallengeHashtagDto) =
+        @JvmName("ofFromDto")
+        fun of(challengeHashtags: List<ChallengeHashtagDto>) = challengeHashtags.map { of(it) }
+
+        @JvmName("ofFromString")
+        fun of(hashtags: List<String>) = hashtags.map { of(it) }
+
+        private fun of(challengeHashtag: ChallengeHashtagDto) =
             ChallengeHashtagResponse(challengeHashtag.hashtag)
 
-        fun of(challengeHashtags: List<ChallengeHashtagDto>) = challengeHashtags.map { of(it) }
+        private fun of(hashtag: String) = ChallengeHashtagResponse(hashtag)
     }
 }

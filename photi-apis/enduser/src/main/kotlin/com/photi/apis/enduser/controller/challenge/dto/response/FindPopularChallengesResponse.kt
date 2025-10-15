@@ -55,18 +55,18 @@ data class FindPopularChallengesResponse(
 
     companion object {
 
-        fun of(challenge: FindPopularChallengesDto) = FindPopularChallengesResponse(
+        fun of(challenges: List<FindPopularChallengesDto>) = challenges.map { of(it) }
+
+        private fun of(challenge: FindPopularChallengesDto) = FindPopularChallengesResponse(
             challenge.id,
             challenge.name,
             challenge.imageUrl,
             challenge.goal,
-            challenge.currentMemberCnt,
+            challenge.challengeMemberCount,
             challenge.proveTime,
             challenge.endDate,
-            challenge.hashtags.map { ChallengeHashtagResponse(it.hashtag) },
-            challenge.memberImages.map { ChallengeMemberImageResponse(it) },
+            ChallengeHashtagResponse.of(challenge.hashtags),
+            ChallengeMemberImageResponse.of(challenge.memberImages),
         )
-
-        fun of(challenges: List<FindPopularChallengesDto>) = challenges.map { of(it) }
     }
 }

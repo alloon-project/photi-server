@@ -27,7 +27,7 @@ data class CreateChallengeResponse(
     val endDate: LocalDate,
 
     @Schema(description = "챌린지 대표 이미지", example = "https://url.kr/5MhHhD")
-    val imageUrl: String?,
+    val imageUrl: String,
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
@@ -61,7 +61,7 @@ data class CreateChallengeResponse(
             challenge.endDate,
             challenge.imageUrl,
             ChallengeRuleResponse.of(challenge.rules),
-            ChallengeHashtagResponse.of(challenge.hashtags)
+            ChallengeHashtagResponse.of(challenge.hashtags),
         )
     }
 }

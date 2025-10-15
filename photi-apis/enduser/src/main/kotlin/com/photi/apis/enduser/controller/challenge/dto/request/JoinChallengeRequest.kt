@@ -1,6 +1,6 @@
 package com.photi.apis.enduser.controller.challenge.dto.request
 
-import com.photi.core.domain.challenge.dto.JoinChallengeDto
+import com.photi.core.domain.challengemember.dto.RegisterChallengePersonalGoalDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Size
 
@@ -12,5 +12,5 @@ data class JoinChallengeRequest(
     val goal: String,
 ) {
 
-    fun toServiceDto() = JoinChallengeDto(goal)
+    fun toServiceDto() = RegisterChallengePersonalGoalDto(goal)
 }

@@ -1,11 +1,11 @@
 package com.photi.apis.enduser.controller.challenge.dto.response
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.challenge.dto.SearchChallengeByNameDto
+import com.photi.core.domain.challenge.dto.FindChallengesByNameDto
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
-data class SearchChallengeByNameResponse(
+data class SearchChallengesByNameResponse(
 
     @Schema(description = "챌린지 id", example = "1")
     val id: Long,
@@ -37,15 +37,15 @@ data class SearchChallengeByNameResponse(
 
     companion object {
 
-        fun of(challenge: SearchChallengeByNameDto) = SearchChallengeByNameResponse(
+        fun of(challenge: FindChallengesByNameDto) = SearchChallengesByNameResponse(
             challenge.id,
             challenge.name,
             challenge.imageUrl,
-            challenge.currentMemberCnt,
+            challenge.challengeMemberCount,
             challenge.endDate,
             challenge.memberImages.map { ChallengeMemberImageResponse(it) },
         )
 
-        fun of(challenges: List<SearchChallengeByNameDto>) = challenges.map { of(it) }
+        fun of(challenges: List<FindChallengesByNameDto>) = challenges.map { of(it) }
     }
 }

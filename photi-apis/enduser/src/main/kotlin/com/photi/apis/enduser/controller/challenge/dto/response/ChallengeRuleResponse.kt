@@ -12,8 +12,14 @@ data class ChallengeRuleResponse(
 
     companion object {
 
-        fun of(challengeRule: ChallengeRuleDto) = ChallengeRuleResponse(challengeRule.rule)
+        @JvmName("ofFromDto")
+        fun of(rules: List<ChallengeRuleDto>) = rules.map { of(it) }
 
-        fun of(challengeRules: List<ChallengeRuleDto>) = challengeRules.map { of(it) }
+        @JvmName("ofFromString")
+        fun of(rules: List<String>) = rules.map { of(it) }
+
+        private fun of(rule: ChallengeRuleDto) = ChallengeRuleResponse(rule.rule)
+
+        private fun of(rule: String) = ChallengeRuleResponse(rule)
     }
 }

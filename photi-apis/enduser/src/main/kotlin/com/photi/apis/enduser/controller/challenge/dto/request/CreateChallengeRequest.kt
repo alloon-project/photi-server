@@ -1,9 +1,7 @@
 package com.photi.apis.enduser.controller.challenge.dto.request
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.challenge.dto.ChallengeHashtagDto
-import com.photi.core.domain.challenge.dto.ChallengeRuleDto
-import com.photi.core.domain.challenge.dto.CreateChallengeDto
+import com.photi.core.domain.challenge.dto.CreateChallengeRequestDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Future
@@ -39,6 +37,9 @@ data class CreateChallengeRequest(
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
 
+    @Schema(description = "챌린지 이미지 url", example = "https://url.kr/5MhHhD")
+    val imageUrl: String,
+
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
         [
@@ -65,17 +66,18 @@ data class CreateChallengeRequest(
     val hashtags: List<ChallengeHashtagRequest>,
 ) {
 
-    fun toServiceDto() = CreateChallengeDto(
+    fun toServiceDto() = CreateChallengeRequestDto(
         name,
         isPublic,
         goal,
         proveTime,
         endDate,
-        rules.map {
-            ChallengeRuleDto(it.rule)
-        },
-        hashtags.map {
-            ChallengeHashtagDto(it.hashtag)
-        },
+        imageUrl.substringBefore(SUFFIX),
+        rules.map { it.toServiceDto() },
+        hashtags.map { it.toServiceDto() },
     )
+
+    companion object {
+        private const val SUFFIX = "?"
+    }
 }

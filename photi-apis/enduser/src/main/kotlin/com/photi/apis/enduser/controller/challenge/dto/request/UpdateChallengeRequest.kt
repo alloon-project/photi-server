@@ -1,8 +1,6 @@
 package com.photi.apis.enduser.controller.challenge.dto.request
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.photi.core.domain.challenge.dto.ChallengeHashtagDto
-import com.photi.core.domain.challenge.dto.ChallengeRuleDto
 import com.photi.core.domain.challenge.dto.UpdateChallengeDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
@@ -33,6 +31,9 @@ data class UpdateChallengeRequest(
     @field:Future(message = "종료 날짜는 당일 날짜보다 앞설 수 없습니다.")
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
+
+    @Schema(description = "챌린지 이미지 url", example = "https://url.kr/5MhHhD")
+    val imageUrl: String,
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
@@ -65,11 +66,12 @@ data class UpdateChallengeRequest(
         goal,
         proveTime,
         endDate,
-        rules.map {
-            ChallengeRuleDto(it.rule)
-        },
-        hashtags.map {
-            ChallengeHashtagDto(it.hashtag)
-        }
+        imageUrl.substringBefore(SUFFIX),
+        rules.map { it.toServiceDto() },
+        hashtags.map { it.toServiceDto() },
     )
+
+    companion object {
+        private const val SUFFIX = "?"
+    }
 }
