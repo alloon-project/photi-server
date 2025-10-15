@@ -16,7 +16,7 @@ class Inquiry(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 15)
-    val type: InquiryCategoryType,
+    val category: CategoryType,
 
     @Column(nullable = false, length = 120)
     val content: String,

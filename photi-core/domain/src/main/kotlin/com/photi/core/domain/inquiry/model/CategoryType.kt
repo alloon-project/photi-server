@@ -1,8 +1,6 @@
 package com.photi.core.domain.inquiry.model
 
-enum class InquiryCategoryType(
-    val text: String,
-) {
+enum class CategoryType(val text: String) {
     SERVICE_USE("서비스 이용 문의"),
     SUGGESTION("개선/제안 요청"),
     ERROR("오류 문의"),

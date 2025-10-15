@@ -1,4 +1,4 @@
-package com.photi.core.domain.inquiry.command
+package com.photi.core.domain.inquiry.service.command
 
 import com.photi.core.domain.inquiry.dto.CreateInquiryDto
 import com.photi.core.domain.inquiry.model.repository.InquiryRepository
