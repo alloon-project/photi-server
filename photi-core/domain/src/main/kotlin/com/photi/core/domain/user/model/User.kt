@@ -41,7 +41,7 @@ class User(
     var username: String? = null
         protected set
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 255)
     var password: String? = null
         protected set
 
@@ -54,7 +54,7 @@ class User(
         protected set
 
     @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 25)
     var role: RoleType = RoleType.UNAUTHENTICATED_USER
         protected set
 

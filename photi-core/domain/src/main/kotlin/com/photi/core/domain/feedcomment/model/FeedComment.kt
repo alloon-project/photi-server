@@ -29,7 +29,7 @@ class FeedComment(
     var feedId: Long = feedId
         protected set
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 300)
     var comment: String = comment
         protected set
 }

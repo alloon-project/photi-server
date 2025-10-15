@@ -1,8 +1,6 @@
 package com.photi.core.domain.report.model
 
-enum class ReasonType(
-    private val value: String,
-) {
+enum class ReasonType(private val value: String) {
     REDUNDANT("중복/도배성"),
     OBSCENITY("음란성/선정적"),
     ABUSIVE("욕설/혐오"),
