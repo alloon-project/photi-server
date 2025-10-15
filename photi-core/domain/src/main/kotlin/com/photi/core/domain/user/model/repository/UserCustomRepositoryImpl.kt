@@ -1,11 +1,11 @@
 package com.photi.core.domain.user.model.repository
 
 import com.photi.core.domain.challenge.dto.QFindChallengeHashtagDto
-import com.photi.core.domain.challenge.dto.QUserImageDto
-import com.photi.core.domain.challenge.model.ChallengeMemberStatus
-import com.photi.core.domain.challenge.model.ChallengeMemberStatus.PROGRESS
+import com.photi.core.domain.challenge.model.QChallenge.challenge
 import com.photi.core.domain.challenge.model.QChallengeHashtag.challengeHashtag
-import com.photi.core.domain.challenge.model.QChallengeMember.challengeMember
+import com.photi.core.domain.challengehistory.model.QChallengeHistory.challengeHistory
+import com.photi.core.domain.challengemember.model.QChallengeMember.challengeMember
+import com.photi.core.domain.challengemember.model.StatusType.PROGRESS
 import com.photi.core.domain.common.SliceDto
 import com.photi.core.domain.common.model.ServiceStatus.ACTIVE
 import com.photi.core.domain.common.model.ServiceStatus.END
@@ -13,8 +13,7 @@ import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.feed.model.QFeed.feed
 import com.photi.core.domain.user.dto.*
 import com.photi.core.domain.user.model.QUser.user
-import com.photi.core.domain.user.model.User
-import com.querydsl.core.types.dsl.BooleanExpression
+import com.photi.core.domain.userchallengehistory.model.QUserChallengeHistory.userChallengeHistory
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
@@ -27,213 +26,165 @@ class UserCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
 ) : UserCustomRepository {
 
-    override fun find(userId: Long): User? {
-        return queryFactory
-            .selectFrom(user)
-            .where(user.id.eq(userId))
-            .fetchOne()
-    }
-
-    override fun findInfoById(userId: Long): UserInfoDto? {
+    override fun findChallengeHistoryById(userId: Long): FindChallengeHistoryDto? {
         return queryFactory
             .select(
-                QUserInfoDto(
-                    user.imageUrl,
+                QFindChallengeHistoryDto(
                     user.username,
-                    user.email
+                    user.imageUrl,
+                    userChallengeHistory.feedCount,
+                    userChallengeHistory.endedChallengeCount,
+                    user.createdDateTime,
                 )
             )
             .from(user)
+            .join(userChallengeHistory).on(user.id.eq(userChallengeHistory.userId))
             .where(user.id.eq(userId))
             .fetchOne()
     }
 
-    override fun findChallengeHistoryById(userId: Long): UserChallengeHistoryDto? {
-        val endedChallengeCnt = queryFactory
-            .select(challengeMember.count())
-            .from(challengeMember)
-            .join(challengeMember.user)
-            .join(challengeMember.challenge)
-            .where(
-                challengeMember.user.id.eq(userId),
-                challengeMember.challenge.serviceStatus.eq(END),
-                challengeMember.status.eq(PROGRESS),
-            )
-            .fetchOne()?.toInt() ?: 0
-
+    override fun findFeedDatesById(userId: Long): List<String> {
         return queryFactory
-            .select(
-                QUserChallengeHistoryDto(
-                    user.username,
-                    user.imageUrl,
-                    user.feedCnt,
-                    Expressions.constant(endedChallengeCnt),
-                    user.createDateTime,
-                )
-            )
+            .select(feed.createdDateTime)
             .from(user)
+            .join(feed).on(user.id.eq(feed.userId))
             .where(user.id.eq(userId))
-            .fetchOne()
-    }
-
-    override fun findFeedsById(userId: Long): List<String>? {
-        val feeds = queryFactory
-            .select(feed.createDateTime)
-            .from(feed)
-            .join(feed.challengeMember.user)
-            .where(feed.challengeMember.user.id.eq(userId))
             .fetch()
             .map { it.toLocalDate().toString() }
-
-        return queryFactory
-            .select(Expressions.constant(feeds))
-            .from(user)
-            .where(user.id.eq(userId))
-            .fetchOne()
+            .distinct()
     }
 
-    override fun findChallengeCntById(userId: Long): FindUserChallengeCntDto? {
-        val challengeCnt = queryFactory
-            .select(challengeMember.count())
-            .from(challengeMember)
-            .join(challengeMember.user)
-            .where(
-                challengeMember.user.id.eq(userId),
-                eqChallengeMemberStatus(PROGRESS),
-                challengeMember.challenge.serviceStatus.eq(ACTIVE),
-            )
-            .fetchOne()?.toInt() ?: 0
-
-        return queryFactory
-            .select(QFindUserChallengeCntDto(user.username, Expressions.constant(challengeCnt)))
-            .from(user)
-            .where(user.id.eq(userId))
-            .fetchOne()
-    }
-
-    override fun findFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto> {
+    override fun findChallengeCountById(userId: Long): FindChallengeCountDto? {
         return queryFactory
             .select(
-                QFindUserFeedsByDateDto(
+                QFindChallengeCountDto(
+                    user.username,
+                    userChallengeHistory.challengeCount,
+                )
+            )
+            .from(user)
+            .join(userChallengeHistory).on(user.id.eq(userChallengeHistory.userId))
+            .where(user.id.eq(userId))
+            .fetchOne()
+    }
+
+    override fun findFeedsByDate(userId: Long, date: LocalDate): List<FindFeedsByDateDto> {
+        return queryFactory
+            .select(
+                QFindFeedsByDateDto(
                     feed.id,
-                    feed.challenge.id,
+                    feed.challengeId,
                     feed.imageUrl,
-                    feed.challenge.name,
-                    feed.createDateTime,
-                    feed.challengeMember.status,
+                    challenge.name,
+                    feed.createdDateTime,
+                    challengeMember.status,
                 )
             )
             .from(feed)
-            .join(feed.challenge)
-            .join(feed.challengeMember.user)
+            .join(challenge).on(feed.challengeId.eq(challenge.id))
+            .join(challengeMember).on(feed.challengeMemberId.eq(challengeMember.id))
             .where(
-                feed.challengeMember.user.id.eq(userId),
-                feed.createDateTime.year().eq(date.year),
-                feed.createDateTime.month().eq(date.monthValue),
-                feed.createDateTime.dayOfMonth().eq(date.dayOfMonth)
+                feed.userId.eq(userId),
+                feed.createdDateTime.year().eq(date.year),
+                feed.createdDateTime.month().eq(date.monthValue),
+                feed.createdDateTime.dayOfMonth().eq(date.dayOfMonth),
             )
-            .orderBy(feed.createDateTime.asc())
+            .orderBy(feed.createdDateTime.asc())
             .fetch()
     }
 
     override fun findFeedHistoryById(
         userId: Long,
-        pageable: Pageable
-    ): SliceDto<FindUserFeedHistoryDto> {
+        pageable: Pageable,
+    ): SliceDto<FindFeedHistoryDto> {
         val pageSize = pageable.pageSize
         val content = queryFactory
             .select(
-                QFindUserFeedHistoryDto(
+                QFindFeedHistoryDto(
                     feed.id,
-                    feed.challenge.id,
+                    feed.challengeId,
                     feed.imageUrl,
-                    feed.createDateTime,
-                    feed.challenge.name,
-                    feed.challenge.invitationCode,
-                    feed.challengeMember.status,
+                    feed.createdDateTime,
+                    challenge.name,
+                    challenge.invitationCode,
+                    challengeMember.status,
                 )
             )
             .from(feed)
-            .join(feed.challenge)
-            .join(feed.challengeMember.user)
-            .where(feed.challengeMember.user.id.eq(userId))
-            .orderBy(feed.createDateTime.desc())
+            .join(challenge).on(feed.challengeId.eq(challenge.id))
+            .join(challengeMember).on(feed.challengeMemberId.eq(challengeMember.id))
+            .where(feed.userId.eq(userId))
+            .orderBy(feed.createdDateTime.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
-
-        val hasNext = if (content.size > pageSize) {
-            content.removeAt(pageSize)
-            true
-        } else {
-            false
-        }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
+        return SliceImpl(content, pageable, hasNext(content, pageSize)).toSliceDto()
     }
 
     override fun findEndedChallengesById(
         userId: Long,
-        pageable: Pageable
-    ): SliceDto<FindUserEndedChallengesDto> {
+        pageable: Pageable,
+    ): SliceDto<FindEndedChallengesDto> {
         val pageSize = pageable.pageSize
-        val content = queryFactory
+        val challenges = queryFactory
             .select(
-                QFindUserEndedChallengesDto(
-                    challengeMember.challenge.id,
-                    challengeMember.challenge.name,
-                    challengeMember.challenge.imageUrl,
-                    challengeMember.challenge.endDate,
-                    challengeMember.challenge.currentMemberCnt,
-                    Expressions.constant(emptyList())
+                QFindEndedChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challenge.endDate,
+                    challengeHistory.challengeMemberCount,
+                    Expressions.constant(emptyList()),
                 )
             )
             .from(challengeMember)
-            .join(challengeMember.user)
-            .join(challengeMember.challenge)
+            .join(challenge).on(challengeMember.challengeId.eq(challenge.id))
+            .join(challengeHistory).on(challengeHistory.challengeId.eq(challenge.id))
             .where(
-                challengeMember.user.id.eq(userId),
-                challengeMember.challenge.serviceStatus.eq(END),
+                challengeMember.userId.eq(userId),
                 challengeMember.status.eq(PROGRESS),
+                challenge.serviceStatus.eq(END),
             )
-            .orderBy(challengeMember.challenge.endDate.desc())
+            .orderBy(challenge.endDate.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
-
-        content.forEach {
-            it.memberImages = queryFactory
-                .select(challengeMember.user.imageUrl)
+        val challengeIds = challenges.map { it.id }
+        if (challengeIds.isNotEmpty()) {
+            val memberImages = queryFactory
+                .select(
+                    QMemberImageDto(
+                        challengeMember.challengeId,
+                        user.imageUrl,
+                    )
+                )
                 .from(challengeMember)
-                .where(challengeMember.challenge.id.eq(it.id), eqChallengeMemberStatus(PROGRESS))
-                .orderBy(challengeMember.createDateTime.desc())
-                .limit(3)
+                .join(user).on(challengeMember.userId.eq(userId))
+                .where(
+                    challengeMember.challengeId.`in`(challengeIds),
+                    challengeMember.status.eq(PROGRESS),
+                )
+                .orderBy(challengeMember.createdDateTime.desc())
                 .fetch()
+                .groupBy { it.challengeId }
+                .mapValues { it.value.take(3).map { it.imageUrl } }
+            challenges.forEach {
+                it.memberImages = memberImages[it.id] ?: emptyList()
+            }
         }
-
-        val hasNext = if (content.size > pageSize) {
-            content.removeAt(pageSize)
-            true
-        } else {
-            false
-        }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
     }
 
-    override fun findUserChallengesById(
-        userId: Long,
-        pageable: Pageable
-    ): SliceDto<FindUserChallengesDto> {
+    override fun findChallengesById(userId: Long, pageable: Pageable): SliceDto<FindChallengesDto> {
         val pageSize = pageable.pageSize
-        val content = queryFactory
+        val challenges = queryFactory
             .select(
-                QFindUserChallengesDto(
-                    challengeMember.challenge.id,
-                    challengeMember.challenge.name,
-                    challengeMember.challenge.imageUrl,
-                    challengeMember.challenge.proveTime,
-                    challengeMember.challenge.endDate,
+                QFindChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challenge.proveTime,
+                    challenge.endDate,
                     Expressions.constant(emptyList()),
                     Expressions.constant(""),
                     Expressions.constant(0L),
@@ -241,81 +192,80 @@ class UserCustomRepositoryImpl(
                 )
             )
             .from(challengeMember)
-            .join(challengeMember.challenge)
-            .join(challengeMember.user)
+            .join(challenge).on(challengeMember.challengeId.eq(challenge.id))
             .where(
-                challengeMember.user.id.eq(userId),
-                eqChallengeMemberStatus(PROGRESS),
-                challengeMember.challenge.serviceStatus.eq(ACTIVE),
+                challengeMember.userId.eq(userId),
+                challengeMember.status.eq(PROGRESS),
+                challenge.serviceStatus.eq(ACTIVE),
             )
-            .orderBy(challengeMember.challenge.proveTime.asc())
+            .orderBy(challenge.proveTime.asc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
-
-        val challengeIds = content.map { it.id }
-        val now = LocalDate.now()
-        val feedImageUrls = queryFactory
-            .select(QUserImageDto(feed.challenge.id, feed.imageUrl, feed.id))
-            .from(feed)
-            .join(feed.challengeMember)
-            .where(
-                feed.challengeMember.user.id.eq(userId),
-                feed.challenge.id.`in`(challengeIds),
-                feed.createDateTime.year().eq(now.year),
-                feed.createDateTime.month().eq(now.monthValue),
-                feed.createDateTime.dayOfMonth().eq(now.dayOfMonth),
-            )
-            .fetch()
-            .groupBy { it.challengeId }
-        val hashtags = queryFactory
-            .select(
-                QFindChallengeHashtagDto(
-                    challengeHashtag.challenge.id,
-                    challengeHashtag.hashtag,
+        val challengeIds = challenges.map { it.id }
+        if (challengeIds.isNotEmpty()) {
+            val todayStart = LocalDate.now().atStartOfDay()
+            val todayEnd = todayStart.plusDays(1)
+            val feeds = queryFactory
+                .select(
+                    QFeedImageDto(
+                        feed.challengeId,
+                        feed.imageUrl,
+                        feed.id,
+                    )
                 )
-            )
-            .from(challengeHashtag)
-            .where(challengeHashtag.challenge.id.`in`(challengeIds))
-            .fetch()
-            .groupBy { it.challengeId }
-
-        content.forEach {
-            it.hashtags = hashtags[it.id] ?: emptyList()
-            val feedImageUrl = feedImageUrls[it.id]?.first()
-            val imageUrl = feedImageUrl?.imageUrl ?: ""
-            it.feedImageUrl = imageUrl
-            it.feedId = feedImageUrl?.feedId
-            it.isProve = imageUrl.isNotEmpty()
+                .from(feed)
+                .where(
+                    feed.userId.eq(userId),
+                    feed.challengeId.`in`(challengeIds),
+                    feed.createdDateTime.between(todayStart, todayEnd),
+                )
+                .fetch()
+                .groupBy { it.challengeId }
+                .mapValues { it.value.firstOrNull() }
+            val hashtags = queryFactory
+                .select(
+                    QFindChallengeHashtagDto(
+                        challengeHashtag.challenge.id,
+                        challengeHashtag.hashtag,
+                    )
+                )
+                .from(challengeHashtag)
+                .where(challengeHashtag.challenge.id.`in`(challengeIds))
+                .fetch()
+                .groupBy { it.challengeId }
+                .mapValues { it.value.map { it.hashtag } }
+            challenges.forEach { challenge ->
+                challenge.hashtags = hashtags[challenge.id] ?: emptyList()
+                feeds[challenge.id]?.let {
+                    challenge.feedImageUrl = it.imageUrl
+                    challenge.feedId = it.feedId
+                    challenge.isProve = true
+                }
+            }
         }
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
+    }
 
-        val hasNext = if (content.size > pageSize) {
+    override fun findChallengeIsProveById(userId: Long, challengeId: Long): Boolean {
+        val todayStart = LocalDate.now().atStartOfDay()
+        val todayEnd = todayStart.plusDays(1)
+        return queryFactory
+            .select(feed.isNotNull)
+            .from(feed)
+            .where(
+                feed.userId.eq(userId),
+                feed.challengeId.eq(challengeId),
+                feed.createdDateTime.between(todayStart, todayEnd),
+            )
+            .fetchOne() ?: false
+    }
+
+    private fun <T> hasNext(content: MutableList<T>, pageSize: Int) =
+        if (content.size > pageSize) {
             content.removeAt(pageSize)
             true
         } else {
             false
         }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
-    }
-
-    override fun findIsProveByChallengeId(
-        userId: Long,
-        challengeId: Long
-    ): Boolean {
-        val now = LocalDate.now()
-        return queryFactory.select(feed.isNotNull)
-            .from(feed)
-            .where(
-                feed.challengeMember.user.id.eq(userId),
-                feed.challenge.id.eq(challengeId),
-                feed.createDateTime.year().eq(now.year),
-                feed.createDateTime.month().eq(now.monthValue),
-                feed.createDateTime.dayOfMonth().eq(now.dayOfMonth),
-            )
-            .fetchOne() ?: false
-    }
-
-    private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
-        challengeMember.status.eq(status)
 }

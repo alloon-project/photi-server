@@ -1,4 +1,4 @@
-package com.photi.core.domain.user.command
+package com.photi.core.domain.user.service.command
 
 import com.photi.core.domain.user.dto.SendEmailAuthenticationCodeDto
 import com.photi.core.domain.user.model.repository.UserRepository
@@ -12,6 +12,6 @@ class UserCommandService(
 ) {
 
     fun createUser(dto: SendEmailAuthenticationCodeDto) {
-        userRepository.save(dto.toUserEntity())
+        userRepository.save(dto.toEntity())
     }
 }

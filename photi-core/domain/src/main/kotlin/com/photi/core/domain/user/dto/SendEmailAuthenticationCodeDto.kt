@@ -7,5 +7,5 @@ data class SendEmailAuthenticationCodeDto(
     val email: String,
 ) {
 
-    fun toUserEntity() = User(email = email, authenticationCode = getAuthenticationCode())
+    fun toEntity() = User(email = email, authenticationCode = getAuthenticationCode())
 }

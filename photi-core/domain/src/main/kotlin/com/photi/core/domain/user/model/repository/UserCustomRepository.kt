@@ -2,32 +2,24 @@ package com.photi.core.domain.user.model.repository
 
 import com.photi.core.domain.common.SliceDto
 import com.photi.core.domain.user.dto.*
-import com.photi.core.domain.user.model.User
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 
 interface UserCustomRepository {
 
-    fun find(userId: Long): User?
+    fun findChallengeHistoryById(userId: Long): FindChallengeHistoryDto?
 
-    fun findInfoById(userId: Long): UserInfoDto?
+    fun findFeedDatesById(userId: Long): List<String>
 
-    fun findChallengeHistoryById(userId: Long): UserChallengeHistoryDto?
+    fun findChallengeCountById(userId: Long): FindChallengeCountDto?
 
-    fun findFeedsById(userId: Long): List<String>?
+    fun findFeedsByDate(userId: Long, date: LocalDate): List<FindFeedsByDateDto>
 
-    fun findChallengeCntById(userId: Long): FindUserChallengeCntDto?
+    fun findFeedHistoryById(userId: Long, pageable: Pageable): SliceDto<FindFeedHistoryDto>
 
-    fun findFeedsByDate(userId: Long, date: LocalDate): List<FindUserFeedsByDateDto>
+    fun findEndedChallengesById(userId: Long, pageable: Pageable): SliceDto<FindEndedChallengesDto>
 
-    fun findFeedHistoryById(userId: Long, pageable: Pageable): SliceDto<FindUserFeedHistoryDto>
+    fun findChallengesById(userId: Long, pageable: Pageable): SliceDto<FindChallengesDto>
 
-    fun findEndedChallengesById(
-        userId: Long,
-        pageable: Pageable,
-    ): SliceDto<FindUserEndedChallengesDto>
-
-    fun findUserChallengesById(userId: Long, pageable: Pageable): SliceDto<FindUserChallengesDto>
-
-    fun findIsProveByChallengeId(userId: Long, challengeId: Long): Boolean
+    fun findChallengeIsProveById(userId: Long, challengeId: Long): Boolean
 }

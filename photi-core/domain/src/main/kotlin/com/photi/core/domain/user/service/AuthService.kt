@@ -1,13 +1,12 @@
-package com.photi.core.domain.user.usecase
+package com.photi.core.domain.user.service
 
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.core.domain.user.command.UserCommandService
 import com.photi.core.domain.user.dto.*
+import com.photi.core.domain.user.exception.UserException
 import com.photi.core.domain.user.port.PasswordPort
 import com.photi.core.domain.user.port.email.EmailMessage
 import com.photi.core.domain.user.port.email.EmailPort
-import com.photi.core.domain.user.query.UserQueryService
+import com.photi.core.domain.user.service.command.UserCommandService
+import com.photi.core.domain.user.service.query.UserQueryService
 import com.photi.core.domain.user.validator.UserValidator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -43,28 +42,28 @@ class AuthService(
     @Transactional
     fun signUp(dto: SignUpRequestDto): SignUpDto {
         val user = userQueryService.getAuthenticatedUserBy(dto.email)
-            ?: throw CustomException(ExceptionCode.EMAIL_VALIDATION_INVALID)
+            ?: throw UserException.InvalidEmailException()
         user.signUp(userValidator, passwordPort, dto)
         return SignUpDto.of(user)
     }
 
     fun findUsername(dto: FindUsernameDto) {
         val user = userQueryService.getAuthenticatedUserBy(dto.email)
-            ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
+            ?: throw UserException.NotFoundUserException()
         emailPort.send(EmailMessage.FindUsername(user.email, user.username!!))
     }
 
     @Transactional
     fun findPassword(dto: FindPasswordDto) {
         val user = userQueryService.getAuthenticatedUserBy(dto.email, dto.username)
-            ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
+            ?: throw UserException.NotFoundUserException()
         user.resetPasswordTo(passwordPort)
         emailPort.send(EmailMessage.FindPassword(dto.email))
     }
 
     fun login(dto: LoginRequestDto): LoginDto {
         val user = userQueryService.getLoginUserBy(dto.username)
-            ?: throw CustomException(ExceptionCode.LOGIN_UNAUTHENTICATED)
+            ?: throw UserException.UnauthorizedLoginException()
         userValidator.validatePassword(user, dto.password)
         return LoginDto.of(user)
     }
@@ -72,20 +71,20 @@ class AuthService(
     @Transactional
     fun changePassword(id: Long, dto: ChangePasswordDto) {
         val user = userQueryService.getUserBy(id)
-            .orElseThrow { throw CustomException(ExceptionCode.LOGIN_UNAUTHENTICATED) }
+            .orElseThrow { throw UserException.UnauthorizedLoginException() }
         user.changePasswordTo(userValidator, passwordPort, dto)
     }
 
     @Transactional
     fun withdraw(id: Long, dto: WithdrawDto) {
         val user = userQueryService.getUserBy(id)
-            .orElseThrow { throw CustomException(ExceptionCode.USER_NOT_FOUND) }
+            .orElseThrow { throw UserException.NotFoundUserException() }
         user.withdraw(passwordPort, dto.password)
     }
 
     fun findWithdrawDate(dto: FindWithdrawDateRequestDto): FindWithdrawDateDto {
         val user = userQueryService.getUserBy(dto.email)
-            ?: throw CustomException(ExceptionCode.USER_NOT_FOUND)
+            ?: throw UserException.NotFoundUserException()
         return FindWithdrawDateDto.of(user)
     }
 }

@@ -2,7 +2,7 @@ package com.photi.core.domain.user.dto
 
 import com.querydsl.core.annotations.QueryProjection
 
-data class FindUserChallengeCntDto @QueryProjection constructor(
+data class FindChallengeCountDto @QueryProjection constructor(
     val username: String,
-    val challengeCnt: Int,
+    val challengeCount: Int,
 )

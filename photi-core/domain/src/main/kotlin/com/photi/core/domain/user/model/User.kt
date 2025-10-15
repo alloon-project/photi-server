@@ -1,11 +1,11 @@
 package com.photi.core.domain.user.model
 
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
 import com.photi.core.domain.common.model.BaseEntity
 import com.photi.core.domain.user.dto.ChangePasswordDto
 import com.photi.core.domain.user.dto.SignUpRequestDto
 import com.photi.core.domain.user.port.PasswordPort
+import com.photi.core.domain.common.consts.DirectoryType
+import com.photi.core.domain.user.port.UserS3Port
 import com.photi.core.domain.user.validator.UserValidator
 import com.photi.utils.CodeUtil.getAuthenticationCode
 import com.photi.utils.PasswordUtil.getTemporaryPassword
@@ -41,12 +41,6 @@ class User(
 
     @Column(nullable = false)
     var isTemporaryPassword: Boolean = false,
-
-    @Column(nullable = false)
-    var feedCnt: Int = 0,
-
-    @Column(nullable = false)
-    var challengeCnt: Int = 0,
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 15)
@@ -100,37 +94,14 @@ class User(
         deletedDate = LocalDateTime.now()
     }
 
-    fun changeImageUrl(imageUrl: String) {
+    fun changeImageUrl(s3Port: UserS3Port, imageUrl: String) {
+        if (!isImageNullOrEmpty()) {
+            s3Port.deleteImage(this.imageUrl!!, DirectoryType.USERS)
+        }
         this.imageUrl = imageUrl
     }
 
-    fun updateFeedCnt() {
-        feedCnt += 1
-    }
-
-    fun decreaseFeedCnt() {
-        if (feedCnt > 0) {
-            feedCnt -= 1
-        }
-    }
-
-    fun updateChallengeCnt() {
-        challengeCnt += 1
-    }
-
-    fun decreaseChallengeCnt() {
-        if (challengeCnt > 0) {
-            challengeCnt -= 1
-        }
-    }
-
-    fun validateChallengeCnt() {
-        if (challengeCnt >= CHALLENGE_LIMIT) {
-            throw CustomException(ExceptionCode.CHALLENGE_LIMIT_EXCEED)
-        }
-    }
-
-    fun updateReRegisterStatus() {
+    fun changeReSignUpStatus() {
         isDeleted = false
         deletedDate = null
     }
@@ -140,7 +111,5 @@ class User(
         isAuthenticated = false
     }
 
-    companion object {
-        private const val CHALLENGE_LIMIT = 20
-    }
+    private fun isImageNullOrEmpty() = this.imageUrl.isNullOrEmpty()
 }
