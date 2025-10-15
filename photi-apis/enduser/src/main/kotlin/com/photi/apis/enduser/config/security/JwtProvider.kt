@@ -3,8 +3,8 @@ package com.photi.apis.enduser.config.security
 import arrow.core.Either
 import arrow.core.getOrElse
 import com.photi.core.domain.common.consts.CustomHttpHeaders
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode.*
+import com.photi.core.domain.common.exception.PhotiException
+import com.photi.core.domain.common.exception.GlobalErrorCode.*
 import com.photi.core.domain.user.model.RoleType
 import io.github.nefilim.kjwt.JWSHMAC256Algorithm
 import io.github.nefilim.kjwt.JWT
@@ -13,7 +13,6 @@ import io.github.nefilim.kjwt.verifySignature
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Component
@@ -67,13 +66,13 @@ class JwtProvider(
     fun validateAccessTokenAndSetAuthentication(token: String) {
         val jwt = validateSignatureOrThrow(token.removePrefix(tokenPrefix))
         val expirationTime = jwt.expiresAt()
-            .getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
+            .getOrElse { throw PhotiException(TOKEN_UNAUTHENTICATED) }
         if (expirationTime.isBefore(Instant.now())) {
-            throw CustomException(TOKEN_UNAUTHENTICATED)
+            throw PhotiException(TOKEN_UNAUTHENTICATED)
         }
 
         val userId = jwt.subject()
-            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+            .getOrElse { throw PhotiException(TOKEN_UNAUTHORIZED) }
             .toLong()
         val user = getUserDetails(userId)
 
@@ -84,19 +83,19 @@ class JwtProvider(
     fun validateRefreshToken(token: String) {
         val jwt = validateSignatureOrThrow(token)
         val expirationTime = jwt.expiresAt()
-            .getOrElse { throw CustomException(TOKEN_UNAUTHENTICATED) }
+            .getOrElse { throw PhotiException(TOKEN_UNAUTHENTICATED) }
         if (expirationTime.isBefore(Instant.now())) {
-            throw CustomException(TOKEN_UNAUTHENTICATED)
+            throw PhotiException(TOKEN_UNAUTHENTICATED)
         }
 
         jwt.subject()
-            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+            .getOrElse { throw PhotiException(TOKEN_UNAUTHORIZED) }
     }
 
     fun getUserId(refreshToken: String): Long {
         val jwt = validateSignatureOrThrow(refreshToken)
         return jwt.subject()
-            .getOrElse { throw CustomException(TOKEN_UNAUTHORIZED) }
+            .getOrElse { throw PhotiException(TOKEN_UNAUTHORIZED) }
             .toLong()
     }
 
@@ -117,14 +116,14 @@ class JwtProvider(
 
     private fun validateSignatureOrThrow(token: String): JWT<JWSHMAC256Algorithm> {
         return when (val result = verifySignature<JWSHMAC256Algorithm>(token, secret)) {
-            is Either.Left -> throw CustomException(TOKEN_UNAUTHENTICATED)
+            is Either.Left -> throw PhotiException(TOKEN_UNAUTHENTICATED)
             is Either.Right -> result.value
         }
     }
 
     private fun JWT<JWSHMAC256Algorithm>.signOrThrow(): String {
         return when (val signedJWT = this.sign(secret)) {
-            is Either.Left -> throw CustomException(SERVER_ERROR)
+            is Either.Left -> throw PhotiException(SERVER_ERROR)
             is Either.Right -> signedJWT.value.rendered
         }
     }

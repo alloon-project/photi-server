@@ -1,8 +1,8 @@
 package com.photi.apis.enduser.config.security
 
 import com.photi.core.domain.common.consts.CustomHttpHeaders.REFRESH_TOKEN
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.common.exception.PhotiException
+import com.photi.core.domain.common.exception.GlobalErrorCode
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -35,7 +35,7 @@ class CustomAuthenticationFilter(
             }
 
             filterChain.doFilter(request, response)
-        } catch (ex: CustomException) {
+        } catch (ex: PhotiException) {
             customAuthenticationEntryPoint.commence(
                 request,
                 response,
@@ -46,7 +46,7 @@ class CustomAuthenticationFilter(
 
     private fun validateToken(token: String?) {
         if (token.isNullOrBlank()) {
-            throw CustomException(ExceptionCode.TOKEN_UNAUTHENTICATED)
+            throw PhotiException(GlobalErrorCode.TOKEN_UNAUTHENTICATED)
         }
     }
 }

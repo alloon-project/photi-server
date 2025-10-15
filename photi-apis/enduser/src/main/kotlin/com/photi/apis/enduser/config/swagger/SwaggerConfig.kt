@@ -1,9 +1,9 @@
 package com.photi.apis.enduser.config.swagger
 
-import com.photi.apis.enduser.common.exception.ApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.ApiErrorResponses
 import com.photi.core.domain.common.consts.CustomHttpHeaders
-import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
-import com.photi.core.domain.common.consts.SwaggerConstants.REFRESH_TOKEN_KEY
+import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.consts.SwaggerKey.REFRESH_TOKEN_KEY
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.models.Components
@@ -41,17 +41,14 @@ class SwaggerConfig {
             bearerFormat = "JWT"
             name = HttpHeaders.AUTHORIZATION
         }
-
         val refreshTokenSecurityScheme = SecurityScheme().apply {
             type = SecurityScheme.Type.APIKEY
             `in` = SecurityScheme.In.HEADER
             name = CustomHttpHeaders.REFRESH_TOKEN
         }
-
         val components = Components()
             .addSecuritySchemes(ACCESS_TOKEN_KEY, accessTokenSecurityScheme)
             .addSecuritySchemes(REFRESH_TOKEN_KEY, refreshTokenSecurityScheme)
-
         return OpenAPI().components(components)
     }
 
@@ -66,17 +63,14 @@ class SwaggerConfig {
 
     private fun addResponseBodySchemaExample(operation: Operation) {
         val filterKeys = operation.responses.filterKeys { it.startsWith("2") }
-
         filterKeys.forEach { (code, response) ->
             response.content.forEach { (_, mediaType) ->
-                val data = mediaType.schema
                 val schema = Schema<String>().apply {
-                    addProperty(
-                        "code",
+                    val codeProperty =
                         Schema<String>().example("$code ${response.description.uppercase()}")
-                    )
+                    addProperty("code", codeProperty)
                     addProperty("message", Schema<String>().example("성공"))
-                    addProperty("data", data)
+                    addProperty("data", mediaType.schema)
                 }
                 mediaType.schema = schema
             }
@@ -85,25 +79,20 @@ class SwaggerConfig {
 
     private fun addApiErrorResponses(operation: Operation, handlerMethod: HandlerMethod) {
         val apiErrorResponses = handlerMethod.method.getAnnotation(ApiErrorResponses::class.java)
-
-        apiErrorResponses?.exceptionCodes?.forEach { exceptionCode ->
+        val responses = operation.responses
+        val errorCodes = apiErrorResponses.errorCodeClass.java.enumConstants
+        errorCodes?.forEach { errorCode ->
             val example = Example().apply {
-                summary = exceptionCode.name
-                value = mapOf("code" to exceptionCode.name, "message" to exceptionCode.message)
-                description = exceptionCode.description
+                summary = errorCode.code
+                value = mapOf("code" to errorCode.code, "message" to errorCode.message)
+                description = errorCode.description
             }
-            val apiResponse = operation.responses[exceptionCode.httpStatus.value().toString()]
+            val apiResponse = responses[errorCode.status.toString()]
             val mediaType = apiResponse?.content?.get("application/json") ?: MediaType()
             val examples = mediaType.examples?.toMutableMap() ?: mutableMapOf()
-
-            examples[exceptionCode.name] = example
-
-            operation.responses.addApiResponse(
-                exceptionCode.httpStatus.value().toString(),
-                ApiResponse().content(
-                    Content().addMediaType("application/json", MediaType().examples(examples))
-                )
-            )
+            examples[errorCode.code] = example
+            val content = Content().addMediaType("application/json", MediaType().examples(examples))
+            responses.addApiResponse(errorCode.status.toString(), ApiResponse().content(content))
         }
     }
 }

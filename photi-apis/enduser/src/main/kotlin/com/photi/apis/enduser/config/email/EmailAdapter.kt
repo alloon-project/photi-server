@@ -1,8 +1,8 @@
 package com.photi.apis.enduser.config.email
 
 import com.photi.core.domain.user.port.email.EmailTemplate
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.common.exception.PhotiException
+import com.photi.core.domain.common.exception.GlobalErrorCode
 import com.photi.core.domain.user.port.email.EmailMessage
 import com.photi.core.domain.user.port.email.EmailPort
 import jakarta.mail.internet.InternetAddress
@@ -30,7 +30,7 @@ class EmailAdapter(
         try {
             mailSender.send(mimeMessage)
         } catch (e: MailSendException) {
-            throw CustomException(ExceptionCode.EMAIL_SEND_ERROR)
+            throw PhotiException(GlobalErrorCode.EMAIL_SEND_ERROR)
         }
     }
 

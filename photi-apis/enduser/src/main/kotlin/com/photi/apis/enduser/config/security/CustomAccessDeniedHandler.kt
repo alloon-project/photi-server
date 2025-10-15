@@ -2,7 +2,7 @@ package com.photi.apis.enduser.config.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.photi.apis.enduser.common.exception.dto.ErrorResponse
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.common.exception.GlobalErrorCode
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus.FORBIDDEN
@@ -22,7 +22,7 @@ class CustomAccessDeniedHandler(
         response: HttpServletResponse?,
         accessDeniedException: AccessDeniedException?
     ) {
-        val errorResponse = ErrorResponse.of(ExceptionCode.TOKEN_UNAUTHORIZED)
+        val errorResponse = ErrorResponse.of(GlobalErrorCode.TOKEN_UNAUTHORIZED)
 
         response?.apply {
             status = FORBIDDEN.value()
