@@ -1,34 +1,27 @@
 package com.photi.core.domain.feed.model.repository
 
-import com.photi.core.domain.challenge.dto.FindChallengeFeedDto
-import com.photi.core.domain.challenge.dto.FindChallengeFeedsDto
 import com.photi.core.domain.common.SliceDto
-import com.photi.core.domain.common.consts.SortTypeConstants
-import com.photi.core.domain.feed.model.Feed
+import com.photi.core.domain.feed.dto.FeedDto
+import com.photi.core.domain.feed.dto.FindFeedDto
+import com.photi.core.domain.feed.model.SortType
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 
 interface FeedCustomRepository {
 
-    fun find(id: Long): Feed?
+    fun findFeedById(userId: Long, challengeId: Long, feedId: Long): FindFeedDto?
 
-    fun findByFeedId(id: Long): Feed?
-
-    fun findContentById(challengeId: Long, feedId: Long, userId: Long): FindChallengeFeedDto?
-
-    fun findAllByChallengeId(
+    fun findFeedsById(
         userId: Long,
         challengeId: Long,
         pageable: Pageable,
-        sort: SortTypeConstants,
-    ): SliceDto<Triple<LocalDate, List<FindChallengeFeedsDto>, Int>>
+        sort: SortType,
+    ): SliceDto<Triple<LocalDate, List<FeedDto>, Int>>
 
-    fun findAllByChallengeIdV2(
+    fun findFeedsByIdV2(
         userId: Long,
         challengeId: Long,
         pageable: Pageable,
-        sort: SortTypeConstants
-    ): SliceDto<FindChallengeFeedsDto>
-
-    fun findFeedMemberCntByChallengeId(challengeId: Long): Long?
+        sort: SortType,
+    ): SliceDto<FeedDto>
 }

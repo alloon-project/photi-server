@@ -1,11 +1,16 @@
 package com.photi.core.domain.feed.model
 
-import com.photi.core.domain.challenge.model.Challenge
-import com.photi.core.domain.challenge.model.ChallengeMember
+import com.photi.core.domain.common.consts.DirectoryType
 import com.photi.core.domain.common.model.BasePermanentEntity
+import com.photi.core.domain.feed.port.FeedS3Port
 import jakarta.persistence.*
 
 @Entity
+@Table(
+    indexes = [
+        Index(columnList = "challenge_id, created_date_time"),
+    ]
+)
 class Feed(
 
     @Id
@@ -13,41 +18,20 @@ class Feed(
     @Column(name = "feed_id", nullable = false)
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_member_id", nullable = false)
-    val challengeMember: ChallengeMember,
+    @Column(nullable = false)
+    val userId: Long,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id", nullable = false)
-    val challenge: Challenge,
+    @Column(nullable = false)
+    val challengeMemberId: Long,
+
+    @Column(nullable = false)
+    val challengeId: Long,
 
     @Column(nullable = false, length = 500)
-    val imageUrl: String,
-
-    @Column(nullable = false)
-    var likeCnt: Int = 0,
-
-    @Column(nullable = false)
-    var commentCnt: Int = 0,
+    var imageUrl: String,
 ) : BasePermanentEntity() {
 
-    fun updateCommentCnt() {
-        commentCnt += 1
-    }
-
-    fun decreaseCommentCnt() {
-        if (commentCnt > 0) {
-            commentCnt -= 1
-        }
-    }
-
-    fun updateLikeCnt() {
-        likeCnt += 1
-    }
-
-    fun decreaseLikeCnt() {
-        if (likeCnt > 0) {
-            likeCnt -= 1
-        }
+    fun deleteImage(s3Port: FeedS3Port) {
+        s3Port.deleteImage(imageUrl, DirectoryType.FEEDS)
     }
 }
