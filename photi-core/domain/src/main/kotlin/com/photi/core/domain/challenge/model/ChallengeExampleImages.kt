@@ -4,17 +4,13 @@ import com.photi.core.domain.common.model.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-class ChallengeRule(
+class ChallengeExampleImages(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "challenge_rule_id")
+    @Column(name = "challenge_example_images_id")
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id")
-    val challenge: Challenge,
-
-    @Column(nullable = false, length = 30)
-    var rule: String,
+    @Column(nullable = false, length = 500)
+    val imageUrl: String,
 ) : BaseEntity()

@@ -1,8 +1,8 @@
 package com.photi.core.domain.challenge.validator
 
-import com.photi.core.domain.challenge.query.ChallengeQueryService
-import com.photi.core.domain.common.exception.CustomException
-import com.photi.core.domain.common.exception.ExceptionCode
+import com.photi.core.domain.challenge.exception.ChallengeException
+import com.photi.core.domain.challenge.model.Challenge
+import com.photi.core.domain.challenge.service.query.ChallengeQueryService
 import org.springframework.stereotype.Component
 
 @Component
@@ -12,7 +12,10 @@ class ChallengeValidator(
 
     fun validateExistsBy(targetId: Long) {
         if (!challengeQueryService.existsBy(targetId)) {
-            throw CustomException(ExceptionCode.CHALLENGE_NOT_FOUND)
+            throw ChallengeException.NotFoundChallengeException()
         }
     }
+
+    fun validateMatches(challenge: Challenge, invitationCode: String) =
+        challenge.invitationCode == invitationCode
 }

@@ -1,24 +1,22 @@
 package com.photi.core.domain.challenge.dto
 
 import com.photi.core.domain.challenge.model.Challenge
-import com.photi.core.domain.challenge.model.ChallengeHashtag
-import com.photi.core.domain.challenge.model.ChallengeRule
+import com.photi.utils.CodeUtil.getInvitationCode
 import java.time.LocalDate
 import java.time.LocalTime
 
-data class CreateChallengeDto(
+data class CreateChallengeRequestDto(
     val name: String,
     val isPublic: Boolean,
     val goal: String,
     val proveTime: LocalTime,
     val endDate: LocalDate,
+    val imageUrl: String,
     val rules: List<ChallengeRuleDto>,
     val hashtags: List<ChallengeHashtagDto>,
-    val id: Long? = null,
-    val imageUrl: String? = null,
 ) {
 
-    fun toEntity(imageUrl: String, invitationCode: String): Challenge {
+    fun toEntity(): Challenge {
         val challenge = Challenge(
             name = name,
             isPublic = isPublic,
@@ -26,29 +24,36 @@ data class CreateChallengeDto(
             proveTime = proveTime,
             endDate = endDate,
             imageUrl = imageUrl,
-            invitationCode = invitationCode,
+            invitationCode = getInvitationCode(isPublic),
         )
-        rules.forEach {
-            challenge.addChallengeRule(ChallengeRule(rule = it.rule))
-        }
-        hashtags.forEach {
-            challenge.addChallengeHashtag(ChallengeHashtag(hashtag = it.hashtag))
-        }
+        challenge.addRules(rules)
+        challenge.addHashtags(hashtags)
         return challenge
     }
+}
+
+data class CreateChallengeDto(
+    val id: Long,
+    val name: String,
+    val goal: String,
+    val proveTime: LocalTime,
+    val endDate: LocalDate,
+    val imageUrl: String,
+    val rules: List<ChallengeRuleDto>,
+    val hashtags: List<ChallengeHashtagDto>,
+) {
 
     companion object {
 
         fun of(challenge: Challenge) = CreateChallengeDto(
+            challenge.id!!,
             challenge.name,
-            challenge.isPublic,
             challenge.goal,
             challenge.proveTime,
             challenge.endDate,
+            challenge.imageUrl,
             ChallengeRuleDto.of(challenge.rules),
             ChallengeHashtagDto.of(challenge.hashtags),
-            challenge.id,
-            challenge.imageUrl,
         )
     }
 }

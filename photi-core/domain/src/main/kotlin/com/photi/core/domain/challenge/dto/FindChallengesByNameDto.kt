@@ -3,11 +3,11 @@ package com.photi.core.domain.challenge.dto
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDate
 
-data class SearchChallengeByNameDto @QueryProjection constructor(
+data class FindChallengesByNameDto @QueryProjection constructor(
     val id: Long,
     val name: String,
     val imageUrl: String,
-    val currentMemberCnt: Int,
+    val challengeMemberCount: Int,
     val endDate: LocalDate,
     var memberImages: List<String>,
 )

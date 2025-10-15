@@ -1,17 +1,21 @@
 package com.photi.core.domain.challenge.model.repository
 
 import com.photi.core.domain.challenge.dto.*
-import com.photi.core.domain.challenge.model.Challenge
-import com.photi.core.domain.challenge.model.ChallengeMemberStatus
 import com.photi.core.domain.challenge.model.QChallenge.challenge
 import com.photi.core.domain.challenge.model.QChallengeHashtag.challengeHashtag
-import com.photi.core.domain.challenge.model.QChallengeMember.challengeMember
+import com.photi.core.domain.challenge.model.QChallengeRule.challengeRule
+import com.photi.core.domain.challengehistory.model.QChallengeHistory.challengeHistory
+import com.photi.core.domain.challengemember.model.QChallengeMember.challengeMember
+import com.photi.core.domain.challengemember.model.StatusType.PROGRESS
 import com.photi.core.domain.common.SliceDto
-import com.photi.core.domain.common.model.ServiceStatus
 import com.photi.core.domain.common.model.ServiceStatus.ACTIVE
 import com.photi.core.domain.common.toSliceDto
-import com.querydsl.core.types.dsl.BooleanExpression
+import com.photi.core.domain.user.dto.QMemberImageDto
+import com.photi.core.domain.user.model.QUser.user
+import com.querydsl.core.group.GroupBy.groupBy
+import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.dsl.Expressions
+import com.querydsl.core.types.dsl.StringPath
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.SliceImpl
@@ -22,24 +26,15 @@ class ChallengeCustomRepositoryImpl(
     private val queryFactory: JPAQueryFactory,
 ) : ChallengeCustomRepository {
 
-    override fun find(id: Long): Challenge? {
-        return queryFactory
-            .selectFrom(challenge)
-            .where(
-                challenge.id.eq(id),
-                eqServiceStatus(ACTIVE)
-            ).fetchFirst()
-    }
-
-    override fun findPopular(): List<FindPopularChallengesDto> {
-        val popularChallenges = queryFactory
+    override fun findPopularChallenges(): List<FindPopularChallengesDto> {
+        val challenges = queryFactory
             .select(
                 QFindPopularChallengesDto(
                     challenge.id,
                     challenge.name,
                     challenge.imageUrl,
                     challenge.goal,
-                    challenge.currentMemberCnt,
+                    challengeHistory.challengeMemberCount,
                     challenge.proveTime,
                     challenge.endDate,
                     Expressions.constant(emptyList()),
@@ -47,51 +42,45 @@ class ChallengeCustomRepositoryImpl(
                 )
             )
             .from(challenge)
-            .where(eqServiceStatus(ACTIVE))
-            .orderBy(challenge.visitCnt.desc())
+            .join(challengeHistory).on(challengeHistory.challengeId.eq(challenge.id))
+            .where(challenge.serviceStatus.eq(ACTIVE))
+            .orderBy(challengeHistory.visitCount.desc())
             .limit(5)
             .fetch()
-        val challengeIds = popularChallenges.map { it.id }
-        val hashtags = queryFactory
-            .select(
-                QFindChallengeHashtagDto(
-                    challengeHashtag.challenge.id,
-                    challengeHashtag.hashtag
+        val challengeIds = challenges.map { it.id }
+        if (challengeIds.isNotEmpty()) {
+            val hashtags = getHashtags(challengeIds)
+            val memberImages = getMemberImages(challengeIds)
+            challenges.forEach { challenge ->
+                challenge.hashtags = hashtags[challenge.id] ?: emptyList()
+                challenge.memberImages = memberImages[challenge.id] ?: emptyList()
+            }
+        }
+        return challenges
+    }
+
+    override fun findChallengeIntroById(id: Long): FindChallengeIntroDto? {
+        return queryFactory
+            .from(challenge)
+            .join(challengeRule).on(challenge.id.eq(challengeRule.challenge.id))
+            .where(challenge.id.eq(id))
+            .transform(
+                groupBy(challenge.id).list(
+                    QFindChallengeIntroDto(
+                        list(challengeRule.rule),
+                        challenge.proveTime,
+                        challenge.goal,
+                        challenge.startDate,
+                        challenge.endDate,
+                    )
                 )
             )
-            .from(challengeHashtag)
-            .where(challengeHashtag.challenge.id.`in`(challengeIds))
-            .fetch()
-            .groupBy { it.challengeId }
-
-        popularChallenges.forEach {
-            it.hashtags = hashtags[it.id] ?: emptyList()
-            it.memberImages = queryFactory
-                .select(challengeMember.user.imageUrl)
-                .from(challengeMember)
-                .where(
-                    challengeMember.challenge.id.eq(it.id),
-                    eqChallengeMemberStatus(ChallengeMemberStatus.PROGRESS),
-                )
-                .orderBy(challengeMember.createDateTime.desc())
-                .limit(3)
-                .fetch()
-        }
-
-        return popularChallenges
+            .firstOrNull()
     }
 
-    override fun findInfoById(id: Long): Challenge? {
-        return queryFactory
-            .selectFrom(challenge)
-            .join(challenge.rules).fetchJoin()
-            .where(challenge.id.eq(id))
-            .fetchFirst()
-    }
-
-    override fun findAllOrderByEndDate(pageable: Pageable): SliceDto<FindChallengesDto> {
+    override fun findChallenges(pageable: Pageable): SliceDto<FindChallengesDto> {
         val pageSize = pageable.pageSize
-        val content = queryFactory
+        val challenges = queryFactory
             .select(
                 QFindChallengesDto(
                     challenge.id,
@@ -102,240 +91,257 @@ class ChallengeCustomRepositoryImpl(
                 )
             )
             .from(challenge)
-            .where(eqServiceStatus(ACTIVE))
+            .where(challenge.serviceStatus.eq(ACTIVE))
             .orderBy(challenge.endDate.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
-
-        val challengeIds = content.map { it.id }
-        val hashtags = queryFactory
-            .select(
-                QFindChallengeHashtagDto(
-                    challengeHashtag.challenge.id,
-                    challengeHashtag.hashtag
-                )
-            )
-            .from(challengeHashtag)
-            .where(challengeHashtag.challenge.id.`in`(challengeIds))
-            .fetch()
-            .groupBy { it.challengeId }
-
-        content.forEach {
-            it.hashtags = hashtags[it.id] ?: emptyList()
+        val challengeIds = challenges.map { it.id }
+        if (challengeIds.isNotEmpty()) {
+            val hashtags = getHashtags(challengeIds)
+            challenges.forEach {
+                it.hashtags = hashtags[it.id] ?: emptyList()
+            }
         }
-
-        val hasNext = if (content.size > pageSize) {
-            content.removeAt(pageSize)
-            true
-        } else {
-            false
-        }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
     }
 
-    override fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto? {
-        return queryFactory
-            .select(
-                QFindChallengeInvitationCodeDto(
-                    challenge.name,
-                    challenge.invitationCode
-                )
-            )
+    override fun findChallengeById(id: Long): FindChallengeDto? {
+        val challenge = queryFactory
             .from(challenge)
+            .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
+            .leftJoin(challengeRule).on(challenge.id.eq(challengeRule.challenge.id))
+            .leftJoin(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .where(challenge.id.eq(id))
-            .fetchOne()
+            .transform(
+                groupBy(challenge.id).list(
+                    QFindChallengeDto(
+                        challenge.name,
+                        challenge.goal,
+                        challenge.imageUrl,
+                        challengeHistory.challengeMemberCount,
+                        challenge.isPublic,
+                        challenge.proveTime,
+                        challenge.endDate,
+                        list(challengeRule.rule),
+                        list(challengeHashtag.hashtag),
+                        Expressions.constant(emptyList()),
+                        Expressions.constant(""),
+                    )
+                )
+            )
+            .firstOrNull() ?: return null
+        val memberImages = queryFactory
+            .select(user.imageUrl)
+            .from(challengeMember)
+            .join(user).on(user.id.eq(challengeMember.userId))
+            .where(
+                challengeMember.challengeId.eq(id),
+                challengeMember.status.eq(PROGRESS),
+            )
+            .orderBy(challengeMember.createdDateTime.desc())
+            .limit(3)
+            .fetch()
+        val creator = queryFactory
+            .select(user.username)
+            .from(challengeMember)
+            .join(user).on(user.id.eq(challengeMember.userId))
+            .where(
+                challengeMember.challengeId.eq(id),
+                challengeMember.isCreator.isTrue,
+                challengeMember.status.eq(PROGRESS),
+            )
+            .fetchOne() ?: ""
+        return challenge.copy(memberImages = memberImages, creator = creator)
     }
 
-    override fun findAllByHashtag(
-        hashtag: String?,
-        popularHashtags: List<String>?,
-        pageable: Pageable
+    override fun findChallengesByHashtags(
+        popularHashtags: Set<String>,
+        pageable: Pageable,
     ): SliceDto<FindChallengesDto> {
         val pageSize = pageable.pageSize
-        val query = queryFactory
-            .select(
-                QFindChallengesDto(
-                    challenge.id,
-                    challenge.name,
-                    challenge.endDate,
-                    challenge.imageUrl,
-                    Expressions.constant(emptyList()),
-                )
-            )
-            .from(challenge)
-            .join(challengeHashtag).on(challengeHashtag.challenge.id.eq(challenge.id))
-            .where(eqServiceStatus(ACTIVE))
-
-        if (!hashtag.isNullOrBlank()) {
-            query.where(challengeHashtag.hashtag.eq(hashtag))
-        } else {
-            query.where(challengeHashtag.hashtag.`in`(popularHashtags))
-        }
-
-        val content = query
-            .groupBy(challenge.id)
-            .orderBy(challenge.currentMemberCnt.desc())
-            .offset(pageable.offset)
-            .limit(pageSize + 1L)
-            .fetch()
-
-        val challengeIds = content.map { it.id }
-        val hashtags = queryFactory
-            .select(
-                QFindChallengeHashtagDto(
-                    challengeHashtag.challenge.id,
-                    challengeHashtag.hashtag
-                )
-            )
-            .from(challengeHashtag)
-            .where(challengeHashtag.challenge.id.`in`(challengeIds))
-            .fetch()
-            .groupBy { it.challengeId }
-
-        content.forEach {
-            it.hashtags = hashtags[it.id] ?: emptyList()
-        }
-
-        val hasNext = if (content.size > pageSize) {
-            content.removeAt(pageSize)
-            true
-        } else {
-            false
-        }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
-    }
-
-    override fun searchByName(
-        name: String,
-        pageable: Pageable
-    ): SliceDto<SearchChallengeByNameDto> {
-        val pageSize = pageable.pageSize
         val content = queryFactory
-            .select(
-                QSearchChallengeByNameDto(
-                    challenge.id,
-                    challenge.name,
-                    challenge.imageUrl,
-                    challenge.currentMemberCnt,
-                    challenge.endDate,
-                    Expressions.constant(emptyList()),
-                )
-            )
             .from(challenge)
-            .where(eqServiceStatus(ACTIVE), challenge.name.containsIgnoreCase(name))
-            .orderBy(
-                Expressions.numberTemplate(
-                    Int::class.java,
-                    "case when {0} = {1} then 1 when {0} like {2} then 2 else 3 end",
-                    challenge.name, name, "%$name%",
-                ).asc(),
-                challenge.endDate.desc(),
-            )
-            .offset(pageable.offset)
-            .limit(pageSize + 1L)
-            .fetch()
-
-        content.forEach {
-            it.memberImages = queryFactory
-                .select(challengeMember.user.imageUrl)
-                .from(challengeMember)
-                .where(
-                    challengeMember.challenge.id.eq(it.id),
-                    eqChallengeMemberStatus(ChallengeMemberStatus.PROGRESS),
-                )
-                .orderBy(challengeMember.createDateTime.desc())
-                .limit(3)
-                .fetch()
-        }
-
-        val hasNext = if (content.size > pageSize) {
-            content.removeAt(pageSize)
-            true
-        } else {
-            false
-        }
-
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
-    }
-
-    override fun searchByHashtag(
-        hashtag: String,
-        pageable: Pageable
-    ): SliceDto<SearchChallengeByHashtagDto> {
-        val pageSize = pageable.pageSize
-        val content = queryFactory
-            .select(
-                QSearchChallengeByHashtagDto(
-                    challenge.id,
-                    challenge.name,
-                    challenge.imageUrl,
-                    challenge.currentMemberCnt,
-                    challenge.endDate,
-                    Expressions.constant(emptyList()),
-                    Expressions.constant(emptyList()),
-                )
-            )
-            .from(challenge)
-            .join(challenge.hashtags, challengeHashtag)
+            .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
+            .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .where(
-                eqServiceStatus(ACTIVE),
-                challengeHashtag.hashtag.containsIgnoreCase(hashtag),
+                challenge.serviceStatus.eq(ACTIVE),
+                challengeHashtag.hashtag.`in`(popularHashtags),
+            )
+            .orderBy(challengeHistory.challengeMemberCount.desc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .transform(
+                groupBy(challenge.id).list(
+                    QFindChallengesDto(
+                        challenge.id,
+                        challenge.name,
+                        challenge.endDate,
+                        challenge.imageUrl,
+                        list(challengeHashtag.hashtag),
+                    )
+                )
+            )
+        return SliceImpl(content, pageable, hasNext(content, pageSize)).toSliceDto()
+    }
+
+    override fun findChallengesBySpecificHashtag(
+        hashtag: String,
+        pageable: Pageable,
+    ): SliceDto<FindChallengesDto> {
+        val pageSize = pageable.pageSize
+        val content = queryFactory
+            .from(challenge)
+            .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
+            .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
+            .where(
+                challenge.serviceStatus.eq(ACTIVE),
+                challengeHashtag.hashtag.eq(hashtag),
+            )
+            .orderBy(challengeHistory.challengeMemberCount.desc())
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .transform(
+                groupBy(challenge.id).list(
+                    QFindChallengesDto(
+                        challenge.id,
+                        challenge.name,
+                        challenge.endDate,
+                        challenge.imageUrl,
+                        list(challengeHashtag.hashtag),
+                    )
+                )
+            )
+        return SliceImpl(content, pageable, hasNext(content, pageSize)).toSliceDto()
+    }
+
+    override fun findChallengesByName(
+        name: String,
+        pageable: Pageable,
+    ): SliceDto<FindChallengesByNameDto> {
+        val pageSize = pageable.pageSize
+        val challenges = queryFactory
+            .select(
+                QFindChallengesByNameDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challengeHistory.challengeMemberCount,
+                    challenge.endDate,
+                    Expressions.constant(emptyList()),
+                )
+            )
+            .from(challenge)
+            .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
+            .where(
+                challenge.serviceStatus.eq(ACTIVE),
+                challenge.name.likeIgnoreCase("%$name"),
             )
             .orderBy(
-                Expressions.numberTemplate(
-                    Int::class.java,
-                    "case when {0} = {1} then 1 when {0} like {2} then 2 else 3 end",
-                    challengeHashtag.hashtag, hashtag, "%$hashtag%"
-                ).asc(),
+                similarityOrder(challenge.name, name),
                 challenge.endDate.desc(),
             )
             .offset(pageable.offset)
             .limit(pageSize + 1L)
             .fetch()
+        val challengeIds = challenges.map { it.id }
+        if (challengeIds.isNotEmpty()) {
+            val memberImages = getMemberImages(challengeIds)
+            challenges.forEach { challenge ->
+                challenge.memberImages = memberImages[challenge.id] ?: emptyList()
+            }
+        }
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
+    }
 
-        val challengeIds = content.map { it.id }
-        val hashtags = queryFactory
+    override fun findChallengesByHashtag(
+        hashtag: String,
+        pageable: Pageable,
+    ): SliceDto<FindChallengesByHashtagDto> {
+        val pageSize = pageable.pageSize
+        val challenges = queryFactory
+            .select(
+                QFindChallengesByHashtagDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.imageUrl,
+                    challengeHistory.challengeMemberCount,
+                    challenge.endDate,
+                    Expressions.constant(emptyList()),
+                    Expressions.constant(emptyList()),
+                )
+            )
+            .from(challenge)
+            .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
+            .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
+            .where(
+                challenge.serviceStatus.eq(ACTIVE),
+                challengeHashtag.hashtag.likeIgnoreCase("%$hashtag%"),
+            )
+            .orderBy(
+                similarityOrder(challengeHashtag.hashtag, hashtag),
+                challenge.endDate.desc(),
+            )
+            .offset(pageable.offset)
+            .limit(pageSize + 1L)
+            .fetch()
+        val challengeIds = challenges.map { it.id }
+        val hashtags = getHashtags(challengeIds)
+        val memberImages = getMemberImages(challengeIds)
+        challenges.forEach { challenge ->
+            challenge.hashtags = hashtags[challenge.id] ?: emptyList()
+            challenge.memberImages = memberImages[challenge.id] ?: emptyList()
+        }
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
+    }
+
+    private fun getHashtags(challengeIds: List<Long>): Map<Long, List<String>> {
+        return queryFactory
             .select(
                 QFindChallengeHashtagDto(
                     challengeHashtag.challenge.id,
-                    challengeHashtag.hashtag
+                    challengeHashtag.hashtag,
                 )
             )
             .from(challengeHashtag)
             .where(challengeHashtag.challenge.id.`in`(challengeIds))
             .fetch()
             .groupBy { it.challengeId }
+            .mapValues { it.value.map { it.hashtag } }
+    }
 
-        content.forEach {
-            it.hashtags = hashtags[it.id] ?: emptyList()
-            it.memberImages = queryFactory
-                .select(challengeMember.user.imageUrl)
-                .from(challengeMember)
-                .where(
-                    challengeMember.challenge.id.eq(it.id),
-                    eqChallengeMemberStatus(ChallengeMemberStatus.PROGRESS),
+    private fun getMemberImages(challengeIds: List<Long>): Map<Long, List<String>> {
+        return queryFactory
+            .select(
+                QMemberImageDto(
+                    challengeMember.challengeId,
+                    user.imageUrl,
                 )
-                .orderBy(challengeMember.createDateTime.desc())
-                .limit(3)
-                .fetch()
-        }
+            )
+            .from(challengeMember)
+            .join(user).on(challengeMember.userId.eq(user.id))
+            .where(
+                challengeMember.challengeId.`in`(challengeIds),
+                challengeMember.status.eq(PROGRESS),
+            )
+            .orderBy(challengeMember.createdDateTime.desc())
+            .fetch()
+            .groupBy { it.challengeId }
+            .mapValues { it.value.take(3).map { it.imageUrl } }
+    }
 
-        val hasNext = if (content.size > pageSize) {
+    private fun <T> hasNext(content: MutableList<T>, pageSize: Int) =
+        if (content.size > pageSize) {
             content.removeAt(pageSize)
             true
         } else {
             false
         }
 
-        return SliceImpl(content, pageable, hasNext).toSliceDto()
+    private fun similarityOrder(path: StringPath, keyword: String) =
+        Expressions.numberTemplate(Int::class.java, NUMBER_TEMPLATE, path, keyword).desc()
+
+    companion object {
+        private const val NUMBER_TEMPLATE = "similarity({0}, {1})"
     }
-
-    private fun eqServiceStatus(serviceStatus: ServiceStatus?): BooleanExpression? =
-        serviceStatus?.let { challenge.serviceStatus.eq(serviceStatus) }
-
-    private fun eqChallengeMemberStatus(status: ChallengeMemberStatus): BooleanExpression =
-        challengeMember.status.eq(status)
 }

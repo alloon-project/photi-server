@@ -1,6 +1,6 @@
 package com.photi.core.domain.challenge.model
 
-import com.photi.core.domain.common.model.BasePermanentEntity
+import com.photi.core.domain.common.model.BaseEntity
 import jakarta.persistence.*
 
 @Entity
@@ -12,9 +12,9 @@ class ChallengeHashtag(
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id", nullable = false)
-    var challenge: Challenge? = null,
+    @JoinColumn(name = "challenge_id")
+    val challenge: Challenge,
 
     @Column(nullable = false, length = 6)
     val hashtag: String,
-) : BasePermanentEntity()
+) : BaseEntity()

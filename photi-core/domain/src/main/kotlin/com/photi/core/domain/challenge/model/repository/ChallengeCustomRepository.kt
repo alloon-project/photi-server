@@ -1,29 +1,33 @@
 package com.photi.core.domain.challenge.model.repository
 
 import com.photi.core.domain.challenge.dto.*
-import com.photi.core.domain.challenge.model.Challenge
 import com.photi.core.domain.common.SliceDto
 import org.springframework.data.domain.Pageable
 
 interface ChallengeCustomRepository {
 
-    fun find(id: Long): Challenge?
+    fun findPopularChallenges(): List<FindPopularChallengesDto>
 
-    fun findPopular(): List<FindPopularChallengesDto>
+    fun findChallengeIntroById(id: Long): FindChallengeIntroDto?
 
-    fun findInfoById(id: Long): Challenge?
+    fun findChallenges(pageable: Pageable): SliceDto<FindChallengesDto>
 
-    fun findAllOrderByEndDate(pageable: Pageable): SliceDto<FindChallengesDto>
+    fun findChallengeById(id: Long): FindChallengeDto?
 
-    fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto?
-
-    fun findAllByHashtag(
-        hashtag: String? = null,
-        popularHashtags: List<String>? = null,
+    fun findChallengesByHashtags(
+        popularHashtags: Set<String>,
         pageable: Pageable,
     ): SliceDto<FindChallengesDto>
 
-    fun searchByName(name: String, pageable: Pageable): SliceDto<SearchChallengeByNameDto>
+    fun findChallengesBySpecificHashtag(
+        hashtag: String,
+        pageable: Pageable,
+    ): SliceDto<FindChallengesDto>
 
-    fun searchByHashtag(hashtag: String, pageable: Pageable): SliceDto<SearchChallengeByHashtagDto>
+    fun findChallengesByName(name: String, pageable: Pageable): SliceDto<FindChallengesByNameDto>
+
+    fun findChallengesByHashtag(
+        hashtag: String,
+        pageable: Pageable,
+    ): SliceDto<FindChallengesByHashtagDto>
 }

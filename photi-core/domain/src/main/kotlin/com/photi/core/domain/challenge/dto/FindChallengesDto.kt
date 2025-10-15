@@ -8,5 +8,5 @@ data class FindChallengesDto @QueryProjection constructor(
     val name: String,
     val endDate: LocalDate,
     val imageUrl: String,
-    var hashtags: List<FindChallengeHashtagDto>,
+    var hashtags: List<String>,
 )
