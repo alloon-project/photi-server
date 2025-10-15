@@ -5,5 +5,4 @@ enum class ServiceStatus(
 ) {
     ACTIVE("활성화"),
     END("종료"),
-    DELETED("삭제"),
 }

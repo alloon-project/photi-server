@@ -11,5 +11,5 @@ data class SliceDto<T>(
 )
 
 fun <T> Slice<T>.toSliceDto(): SliceDto<T> {
-    return SliceDto(this.content, this.number, this.size, this.isFirst, this.isLast)
+    return SliceDto(content, number, size, isFirst, isLast)
 }

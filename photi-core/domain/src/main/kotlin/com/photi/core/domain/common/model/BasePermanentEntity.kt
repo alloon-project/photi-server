@@ -13,6 +13,6 @@ abstract class BasePermanentEntity(
     @Enumerated(EnumType.STRING)
     var serviceStatus: ServiceStatus = ServiceStatus.ACTIVE,
 
-    createDateTime: LocalDateTime? = null,
-    updateDateTime: LocalDateTime? = null,
-) : BaseEntity(createDateTime, updateDateTime)
+    createdDateTime: LocalDateTime? = null,
+    lastModifiedDateTime: LocalDateTime? = null,
+) : BaseEntity(createdDateTime, lastModifiedDateTime)
