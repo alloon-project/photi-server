@@ -11,6 +11,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("io.awspring.cloud:spring-cloud-starter-aws:2.4.4")
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
+    implementation(project(":photi-core:domain"))
 
     kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
     kapt("jakarta.annotation:jakarta.annotation-api")

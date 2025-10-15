@@ -7,7 +7,6 @@ class CustomTaskDecorator : TaskDecorator {
 
     override fun decorate(task: Runnable): Runnable {
         val callerThreadContext = MDC.getCopyOfContextMap()
-
         return Runnable {
             callerThreadContext?.let {
                 MDC.setContextMap(it)

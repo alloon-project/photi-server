@@ -9,7 +9,6 @@ import com.photi.core.infra.s3.S3Config
 enum class PhotiConfigGroup(
     val configClass: Class<out PhotiConfig>,
 ) {
-
     JPA(JpaConfig::class.java),
     QUERYDSL(QuerydslConfig::class.java),
     REDIS(RedisConfig::class.java),
