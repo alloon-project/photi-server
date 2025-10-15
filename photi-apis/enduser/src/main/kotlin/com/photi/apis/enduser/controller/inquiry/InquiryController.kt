@@ -1,11 +1,14 @@
 package com.photi.apis.enduser.controller.inquiry
 
-import com.photi.apis.enduser.common.exception.ApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
+import com.photi.apis.enduser.common.exception.annotation.UserApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.controller.inquiry.dto.request.CreateInquiryRequest
-import com.photi.core.domain.common.consts.SwaggerConstants.ACCESS_TOKEN_KEY
-import com.photi.core.domain.common.exception.ExceptionCode
-import com.photi.core.domain.inquiry.usecase.InquiryService
+import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHENTICATED
+import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHORIZED
+import com.photi.core.domain.inquiry.service.InquiryService
+import com.photi.core.domain.user.exception.UserErrorCode.USER_NOT_FOUND
 import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -32,7 +35,8 @@ class InquiryController(
     @PostMapping
     @Operation(summary = "문의하기", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "201")
-    @ApiErrorResponses([ExceptionCode.TOKEN_UNAUTHENTICATED, ExceptionCode.TOKEN_UNAUTHORIZED, ExceptionCode.USER_NOT_FOUND])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @UserApiErrorResponses([USER_NOT_FOUND])
     fun createChallenge(
         principal: Principal,
         @RequestBody @Valid request: CreateInquiryRequest,
