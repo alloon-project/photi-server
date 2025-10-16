@@ -8,8 +8,7 @@ import com.photi.apis.enduser.controller.appversion.dto.response.AppVersionRespo
 import com.photi.core.domain.appversion.exception.AppVersionErrorCode.OS_POLICY_NOT_FOUND
 import com.photi.core.domain.appversion.service.AppVersionService
 import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
-import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHENTICATED
-import com.photi.core.domain.common.exception.GlobalErrorCode.TOKEN_UNAUTHORIZED
+import com.photi.core.domain.common.exception.GlobalErrorCode.*
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*
 
 @Validated
 @RestController
-@RequestMapping("/api/app-version")
+@RequestMapping("/api/v2/app-version")
 @Tag(name = "AppVersion", description = "앱 버전 API")
 class AppVersionController(
     private val appVersionService: AppVersionService,
@@ -40,7 +39,7 @@ class AppVersionController(
     @PatchMapping
     @Operation(summary = "앱 최소 버전 업데이트", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, INVALID_TOKEN, EXPIRED_TOKEN, TOKEN_UNAUTHORIZED])
     fun updateMinVersion(@RequestBody @Valid request: AppVersionRequest): ResponseEntity<StringSuccessResponse> {
         appVersionService.updateMinVersion(request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("앱 최소 버전 업데이트가 완료되었습니다."))

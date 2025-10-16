@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import java.time.Instant
 import java.util.*
@@ -52,8 +51,7 @@ class JwtTokenProvider(
     fun getAuthentication(accessToken: String): Authentication {
         val claims = parseClaims(accessToken)
         val principal = CustomUserDetails(claims.subject, claims[ROLE].toString())
-        val authorities = claims[ROLE].toString().split(COMMA).map { SimpleGrantedAuthority(it) }
-        return UsernamePasswordAuthenticationToken(principal, null, authorities)
+        return UsernamePasswordAuthenticationToken(principal, null, principal.authorities)
     }
 
     fun getUserIdBy(refreshToken: String) = parseClaims(refreshToken).subject.toLong()

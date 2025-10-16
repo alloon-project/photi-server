@@ -27,7 +27,7 @@ class CustomAccessDeniedHandler(
             status = FORBIDDEN.value()
             contentType = APPLICATION_JSON_VALUE
             characterEncoding = UTF_8.name()
+            writer.write(objectMapper.writeValueAsString(errorResponse))
         }
-        objectMapper.writeValue(response?.writer, errorResponse)
     }
 }
