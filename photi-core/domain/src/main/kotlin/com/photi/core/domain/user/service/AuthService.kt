@@ -8,6 +8,8 @@ import com.photi.core.domain.user.port.email.EmailPort
 import com.photi.core.domain.user.service.command.UserCommandService
 import com.photi.core.domain.user.service.query.UserQueryService
 import com.photi.core.domain.user.validator.UserValidator
+import com.photi.utils.CodeUtil.getAuthenticationCode
+import com.photi.utils.PasswordUtil.getTemporaryPassword
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -23,16 +25,18 @@ class AuthService(
 
     @Transactional
     fun sendEmailAuthenticationCode(dto: SendEmailAuthenticationCodeDto) {
-        val user = userQueryService.getUserBy(dto.email)
-        user?.let { user.issueNewAuthenticationCode(userValidator, dto.email) }
-            ?: userCommandService.createUser(dto)
-        emailPort.send(EmailMessage.SignUpAuthenticationCode(dto.email))
+        val authenticationCode = getAuthenticationCode()
+        userQueryService.getUnAuthenticatedUserBy(dto.email)
+            ?.issueNewAuthenticationCode(userValidator, dto.email, authenticationCode)
+            ?: userCommandService.createUser(dto, authenticationCode)
+        emailPort.send(EmailMessage.SignUpAuthenticationCode(dto.email, authenticationCode))
     }
 
     @Transactional
     fun validateEmailAuthenticationCode(dto: ValidateEmailAuthenticationCodeDto) {
-        userQueryService.getUserBy(dto.email)
+        userQueryService.getUnAuthenticatedUserBy(dto.email)
             ?.authenticated(userValidator, dto.authenticationCode)
+            ?: throw UserException.NotFoundEmailException()
     }
 
     fun validateUsername(username: String) {
@@ -42,7 +46,7 @@ class AuthService(
     @Transactional
     fun signUp(dto: SignUpRequestDto): SignUpDto {
         val user = userQueryService.getAuthenticatedUserBy(dto.email)
-            ?: throw UserException.InvalidEmailException()
+            ?: throw UserException.NotFoundEmailException()
         user.signUp(userValidator, passwordPort, dto)
         return SignUpDto.of(user)
     }
@@ -55,10 +59,11 @@ class AuthService(
 
     @Transactional
     fun findPassword(dto: FindPasswordDto) {
-        val user = userQueryService.getAuthenticatedUserBy(dto.email, dto.username)
+        val temporaryPassword = getTemporaryPassword()
+        userQueryService.getAuthenticatedUserBy(dto.email, dto.username)
+            ?.resetPasswordTo(passwordPort, temporaryPassword)
             ?: throw UserException.NotFoundUserException()
-        user.resetPasswordTo(passwordPort)
-        emailPort.send(EmailMessage.FindPassword(dto.email))
+        emailPort.send(EmailMessage.FindPassword(dto.email, temporaryPassword))
     }
 
     fun login(dto: LoginRequestDto): LoginDto {

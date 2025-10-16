@@ -57,7 +57,7 @@ class UserReSignUpJobConfig(
             .queryString(
                 """
                 SELECT u FROM User u 
-                WHERE u.isDeleted = true 
+                WHERE u.role = 'DELETED_USER' 
                 AND u.deletedDate <= :date 
                 ORDER BY u.id ASC
                 """.trimIndent()

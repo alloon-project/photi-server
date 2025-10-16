@@ -1,15 +1,18 @@
 package com.photi.core.domain.user.model.repository
 
 import com.photi.core.domain.user.dto.FindInfoDto
+import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
 
-    fun existsByEmailAndIsDeletedFalse(email: String): Boolean
+    fun existsByEmailAndRole(email: String, role: RoleType): Boolean
 
     fun existsByUsername(username: String): Boolean
+
+    fun findByEmailAndRole(email: String, role: RoleType): User?
 
     fun findByUsername(username: String): User?
 

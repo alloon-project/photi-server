@@ -1,5 +1,6 @@
 package com.photi.core.domain.user.service.query
 
+import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.repository.UserRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -15,6 +16,9 @@ class UserQueryService(
     fun getUserBy(email: String) = userRepository.findByEmail(email)
 
     fun getUserBy(id: Long) = userRepository.findById(id)
+
+    fun getUnAuthenticatedUserBy(email: String) =
+        userRepository.findByEmailAndRole(email, RoleType.UNAUTHENTICATED_USER)
 
     fun getLoginUserBy(username: String) = userRepository.findByUsername(username)
 
@@ -46,7 +50,7 @@ class UserQueryService(
     fun getChallengeIsProveBy(userId: Long, challengeId: Long) =
         userRepository.findChallengeIsProveById(userId, challengeId)
 
-    fun existsActiveUserBy(email: String) = userRepository.existsByEmailAndIsDeletedFalse(email)
+    fun existsEmail(email: String) = userRepository.existsByEmailAndRole(email, RoleType.USER)
 
-    fun existsUserBy(username: String) = userRepository.existsByUsername(username)
+    fun existsUsername(username: String) = userRepository.existsByUsername(username)
 }

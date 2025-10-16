@@ -7,8 +7,6 @@ import com.photi.core.domain.user.dto.SignUpRequestDto
 import com.photi.core.domain.user.port.PasswordPort
 import com.photi.core.domain.user.port.UserS3Port
 import com.photi.core.domain.user.validator.UserValidator
-import com.photi.utils.CodeUtil.getAuthenticationCode
-import com.photi.utils.PasswordUtil.getTemporaryPassword
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -58,17 +56,18 @@ class User(
     var role: RoleType = RoleType.UNAUTHENTICATED_USER
         protected set
 
-    @Column(nullable = false)
-    var isDeleted: Boolean = false
-        protected set
-
     @Column(nullable = true)
     var deletedDate: LocalDateTime? = null
         protected set
 
-    fun issueNewAuthenticationCode(userValidator: UserValidator, email: String) {
+    fun issueNewAuthenticationCode(
+        userValidator: UserValidator,
+        email: String,
+        authenticationCode: String,
+    ) {
         userValidator.validateEmail(this, email)
-        notAuthenticated()
+        this.authenticationCode = authenticationCode
+        isAuthenticated = false
     }
 
     fun authenticated(userValidator: UserValidator, authenticationCode: String) {
@@ -82,12 +81,13 @@ class User(
         dto: SignUpRequestDto,
     ) {
         userValidator.validateNewUser(dto.email, dto.username)
+        username = dto.username
         password = passwordPort.encode(dto.password)
         role = RoleType.USER
     }
 
-    fun resetPasswordTo(passwordPort: PasswordPort) {
-        password = passwordPort.encode(getTemporaryPassword())
+    fun resetPasswordTo(passwordPort: PasswordPort, temporaryPassword: String) {
+        password = passwordPort.encode(temporaryPassword)
         isTemporaryPassword = true
     }
 
@@ -103,7 +103,7 @@ class User(
 
     fun withdraw(passwordPort: PasswordPort, password: String) {
         passwordPort.validateMatches(password, this.password!!)
-        isDeleted = true
+        role = RoleType.DELETED_USER
         deletedDate = LocalDateTime.now()
     }
 
@@ -115,13 +115,9 @@ class User(
     }
 
     fun changeReSignUpStatus() {
-        isDeleted = false
-        deletedDate = null
-    }
-
-    private fun notAuthenticated() {
-        authenticationCode = getAuthenticationCode()
+        role = RoleType.UNAUTHENTICATED_USER
         isAuthenticated = false
+        deletedDate = null
     }
 
     private fun isImageNullOrEmpty() = this.imageUrl.isNullOrEmpty()

@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val customAuthenticationFilter: CustomAuthenticationFilter,
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
 ) {
@@ -27,42 +27,44 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it.requestMatchers(POST, "/api/challenges").authenticated()
-                it.requestMatchers(PATCH, "/api/challenges/{challengeId}").authenticated()
-                it.requestMatchers(PATCH, "/api/app-version").hasRole("MASTER")
-                it.requestMatchers(DELETE, "/api/challenges/{challengeId}").authenticated()
+                it.requestMatchers(PATCH, "/api/v2/app-version").hasRole("ADMIN")
                 it.requestMatchers(
-                    "/api/users",
-                    "/api/users/password",
-                    "/api/users/image",
-                    "/api/users/challenge-history",
-                    "/api/users/feeds",
-                    "/api/users/challenges",
-                    "/api/users/feeds-by-date",
-                    "/api/users/feed-history",
-                    "/api/users/ended-challenges",
-                    "/api/users/my-challenges",
-                    "/api/users/challenges/{challengeId}/prove",
-                    "/api/challenges/{challengeId}/info",
-                    "/api/challenges/{challengeId}/invitation-code",
-                    "/api/challenges/{challengeId}/challenge-members/goal",
-                    "/api/challenges/{challengeId}/challenge-members",
-                    "/api/challenges/{challengeId}/join",
-                    "/api/challenges/{challengeId}/feeds",
-                    "/api/challenges/{challengeId}/feeds/{feedId}",
-                    "/api/challenges/{challengeId}/feeds/{feedId}/like",
-                    "/api/challenges/{challengeId}/feeds/{feedId}/comments",
-                    "/api/challenges/{challengeId}/feed-members",
-                    "/api/challenges/{challengeId}/feed-existence",
-                    "/api/challenges/feeds/{feedId}/comments",
-                    "/api/inquiries",
-                    "/api/reports/{targetId}"
+                    GET,
+                    "/api/v2/auth/validate/token",
+                    "/api/v2/challenges/{challengeId}/invitation-code",
+                    "/api/v2/challenges/{challengeId}/intro",
+                    "/api/v2/challenges/{challengeId}/feed",
                 ).authenticated()
+                it.requestMatchers(
+                    PATCH,
+                    "/api/v2/auth",
+                    "/api/v2/auth/password",
+                    "/api/v2/challenges/{challengeId}",
+                ).authenticated()
+                it.requestMatchers(
+                    POST,
+                    "/api/v2/challenges",
+                    "/api/v2/challenges/{challengeId}/join",
+                ).authenticated()
+                it.requestMatchers(DELETE, "/api/v2/challenges/{challengeId}").authenticated()
+                it.requestMatchers(
+                    "/api/v2/users/**",
+                    "/api/v2/reports/**",
+                    "/api/v2/inquires/**",
+                    "/api/v2/feed-likes/**",
+                    "/api/v2/feed-comments/**",
+                    "/api/v2/feeds/**",
+                ).authenticated()
+                it.requestMatchers(
+                    "/api/v2/users/image/pre-signed-url",
+                    "/api/v2/feeds/image/pre-signed-url",
+                    "/api/v2/challenges/image/pre-signed-url",
+                ).permitAll()
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(
-                customAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter::class.java
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter::class.java,
             )
             .exceptionHandling {
                 it.authenticationEntryPoint(customAuthenticationEntryPoint)

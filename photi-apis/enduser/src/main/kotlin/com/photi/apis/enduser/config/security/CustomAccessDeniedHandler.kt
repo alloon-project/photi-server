@@ -20,16 +20,14 @@ class CustomAccessDeniedHandler(
     override fun handle(
         request: HttpServletRequest?,
         response: HttpServletResponse?,
-        accessDeniedException: AccessDeniedException?
+        accessDeniedException: AccessDeniedException?,
     ) {
         val errorResponse = ErrorResponse.of(GlobalErrorCode.TOKEN_UNAUTHORIZED)
-
         response?.apply {
             status = FORBIDDEN.value()
             contentType = APPLICATION_JSON_VALUE
             characterEncoding = UTF_8.name()
         }
-
         objectMapper.writeValue(response?.writer, errorResponse)
     }
 }

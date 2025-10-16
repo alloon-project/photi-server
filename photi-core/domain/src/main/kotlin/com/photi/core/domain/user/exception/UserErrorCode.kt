@@ -12,7 +12,6 @@ enum class UserErrorCode(
     override val message: String,
     override val description: String? = null,
 ) : BaseErrorCode {
-    EMAIL_VALIDATION_INVALID(BAD_REQUEST, "EMAIL_VALIDATION_INVALID", "이메일 인증을 먼저 해주세요."),
     EMAIL_VERIFICATION_CODE_INVALID(
         BAD_REQUEST,
         "EMAIL_VERIFICATION_CODE_INVALID",

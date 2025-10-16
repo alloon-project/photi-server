@@ -3,6 +3,7 @@ package com.photi.core.domain.user.validator
 import com.photi.core.domain.common.consts.NotAvailable
 import com.photi.core.domain.user.dto.ChangePasswordDto
 import com.photi.core.domain.user.exception.UserException
+import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.User
 import com.photi.core.domain.user.port.PasswordPort
 import com.photi.core.domain.user.service.query.UserQueryService
@@ -15,13 +16,14 @@ class UserValidator(
 ) {
 
     fun validateEmail(user: User, email: String) {
-        validateIsDeleted(user)
+        validateDeletedUser(user)
         validateExistsActiveUserBy(email)
     }
 
-    fun validateAuthenticationCode(user: User?, authenticationCode: String) {
-        user ?: throw UserException.NotFoundEmailException()
-        validateMatches(user, authenticationCode)
+    fun validateAuthenticationCode(user: User, authenticationCode: String) {
+        if (user.authenticationCode != authenticationCode) {
+            throw UserException.InvalidEmailAuthenticationCodeException()
+        }
     }
 
     fun validateUsername(username: String) {
@@ -30,7 +32,7 @@ class UserValidator(
     }
 
     fun validatePassword(user: User, password: String) {
-        validateIsDeleted(user)
+        validateDeletedUser(user)
         passwordPort.validateMatches(password, user.password!!)
     }
 
@@ -40,27 +42,21 @@ class UserValidator(
     }
 
     fun validateNewUser(email: String, username: String) {
-        if (userQueryService.existsActiveUserBy(email)) {
+        if (userQueryService.existsEmail(email)) {
             throw UserException.ExistsUserException()
         }
         validateUsername(username)
     }
 
-    private fun validateIsDeleted(user: User) {
-        if (user.isDeleted) {
+    private fun validateDeletedUser(user: User) {
+        if (user.role == RoleType.DELETED_USER) {
             throw UserException.ExistsDeletedUserException()
         }
     }
 
     private fun validateExistsActiveUserBy(email: String) {
-        if (userQueryService.existsActiveUserBy(email)) {
+        if (userQueryService.existsEmail(email)) {
             throw UserException.ExistsEmailException()
-        }
-    }
-
-    private fun validateMatches(user: User, authenticationCode: String) {
-        if (user.authenticationCode != authenticationCode) {
-            throw UserException.InvalidEmailAuthenticationCodeException()
         }
     }
 
@@ -71,7 +67,7 @@ class UserValidator(
     }
 
     private fun validateExistsUserBy(username: String) {
-        if (userQueryService.existsUserBy(username)) {
+        if (userQueryService.existsUsername(username)) {
             throw UserException.ExistsUsernameException()
         }
     }

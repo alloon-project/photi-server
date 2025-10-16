@@ -1,16 +1,16 @@
 package com.photi.apis.enduser.config.email
 
-import com.photi.core.domain.user.port.email.EmailTemplate
-import com.photi.core.domain.common.exception.PhotiException
-import com.photi.core.domain.common.exception.GlobalErrorCode
+import com.photi.core.domain.common.exception.GlobalException
 import com.photi.core.domain.user.port.email.EmailMessage
 import com.photi.core.domain.user.port.email.EmailPort
+import com.photi.core.domain.user.port.email.EmailTemplate
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeMessage
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.MailSendException
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
@@ -23,14 +23,14 @@ class EmailAdapter(
     private val templateEngine: SpringTemplateEngine,
 ) : EmailPort {
 
+    @Async
     override fun send(message: EmailMessage) {
         val mimeMessage = mailSender.createMimeMessage()
         setMimeMessageHelper(mimeMessage, message.to, message.value, message.template)
-
         try {
             mailSender.send(mimeMessage)
         } catch (e: MailSendException) {
-            throw PhotiException(GlobalErrorCode.EMAIL_SEND_ERROR)
+            throw GlobalException.SendEmailException()
         }
     }
 

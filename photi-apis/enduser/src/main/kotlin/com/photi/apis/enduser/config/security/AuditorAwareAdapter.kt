@@ -8,9 +8,16 @@ import org.springframework.stereotype.Component
 class AuditorAwareAdapter : AuditorAwarePort {
 
     override fun getCurrentAuditor(): String? {
-        // todo 수정 필요
         return SecurityContextHolder.getContext().authentication
             ?.takeIf { it.isAuthenticated }
-            ?.principal?.toString()
+            ?.principal
+            ?.let { getUserId(it) }
+    }
+
+    private fun getUserId(principal: Any): String? {
+        if (principal is CustomUserDetails) {
+            return principal.username
+        }
+        return null
     }
 }

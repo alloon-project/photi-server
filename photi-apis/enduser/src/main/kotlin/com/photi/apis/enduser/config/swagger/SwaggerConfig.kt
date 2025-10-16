@@ -1,7 +1,8 @@
 package com.photi.apis.enduser.config.swagger
 
 import com.photi.apis.enduser.common.exception.annotation.ApiErrorResponses
-import com.photi.core.domain.common.consts.CustomHttpHeaders
+import com.photi.apis.enduser.config.security.JwtTokenProvider.Companion.AUTHORIZATION_HEADER
+import com.photi.apis.enduser.config.security.JwtTokenProvider.Companion.REFRESH_TOKEN_HEADER
 import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.consts.SwaggerKey.REFRESH_TOKEN_KEY
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
@@ -19,14 +20,14 @@ import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpHeaders
+import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.web.method.HandlerMethod
 
 @OpenAPIDefinition(
     info = Info(
         title = "포티 API",
         description = "포티 API 명세서입니다.",
-        version = "v1"
+        version = "v2",
     )
 )
 @Configuration
@@ -39,12 +40,12 @@ class SwaggerConfig {
             type = SecurityScheme.Type.HTTP
             scheme = "Bearer"
             bearerFormat = "JWT"
-            name = HttpHeaders.AUTHORIZATION
+            name = AUTHORIZATION_HEADER
         }
         val refreshTokenSecurityScheme = SecurityScheme().apply {
             type = SecurityScheme.Type.APIKEY
             `in` = SecurityScheme.In.HEADER
-            name = CustomHttpHeaders.REFRESH_TOKEN
+            name = REFRESH_TOKEN_HEADER
         }
         val components = Components()
             .addSecuritySchemes(ACCESS_TOKEN_KEY, accessTokenSecurityScheme)
@@ -78,7 +79,9 @@ class SwaggerConfig {
     }
 
     private fun addApiErrorResponses(operation: Operation, handlerMethod: HandlerMethod) {
-        val apiErrorResponses = handlerMethod.method.getAnnotation(ApiErrorResponses::class.java)
+        val apiErrorResponses =
+            AnnotationUtils.findAnnotation(handlerMethod.method, ApiErrorResponses::class.java)
+                ?: return
         val responses = operation.responses
         val errorCodes = apiErrorResponses.errorCodeClass.java.enumConstants
         errorCodes?.forEach { errorCode ->

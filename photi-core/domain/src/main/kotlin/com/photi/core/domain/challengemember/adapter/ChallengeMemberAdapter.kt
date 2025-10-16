@@ -6,8 +6,6 @@ import com.photi.core.domain.challengemember.exception.ChallengeMemberException
 import com.photi.core.domain.challengemember.service.command.ChallengeMemberCommandService
 import com.photi.core.domain.challengemember.service.query.ChallengeMemberQueryService
 import com.photi.core.domain.challengemember.validator.ChallengeMemberValidator
-import com.photi.core.domain.common.exception.GlobalErrorCode
-import com.photi.core.domain.common.exception.PhotiException
 import com.photi.core.domain.feed.port.FeedChallengeMemberPort
 import com.photi.core.domain.feedcomment.port.FeedCommentChallengeMemberPort
 import com.photi.core.domain.feedlike.port.FeedLikeChallengeMemberPort

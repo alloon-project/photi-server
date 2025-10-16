@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.security.authentication.ott.InvalidOneTimeTokenException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.authentication.www.NonceExpiredException
 import org.springframework.stereotype.Component
 import kotlin.text.Charsets.UTF_8
 
@@ -22,14 +24,17 @@ class CustomAuthenticationEntryPoint(
         response: HttpServletResponse?,
         authException: AuthenticationException?,
     ) {
-        val errorResponse = ErrorResponse.of(GlobalErrorCode.TOKEN_UNAUTHENTICATED)
-
         response?.apply {
             status = UNAUTHORIZED.value()
             contentType = APPLICATION_JSON_VALUE
             characterEncoding = UTF_8.name()
+            writer.write(objectMapper.writeValueAsString(getErrorResponse(authException)))
         }
+    }
 
-        objectMapper.writeValue(response?.writer, errorResponse)
+    private fun getErrorResponse(authException: AuthenticationException?) = when (authException) {
+        is NonceExpiredException -> ErrorResponse.of(GlobalErrorCode.EXPIRED_TOKEN)
+        is InvalidOneTimeTokenException -> ErrorResponse.of(GlobalErrorCode.INVALID_TOKEN)
+        else -> ErrorResponse.of(GlobalErrorCode.TOKEN_UNAUTHENTICATED)
     }
 }

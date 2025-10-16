@@ -56,7 +56,7 @@ class ChallengeStatusEndJobConfig(
             .queryString(
                 """
                 SELECT c FROM Challenge c 
-                WHERE c.serviceStatus = 'ACTIVE' 
+                WHERE c.status = 'ACTIVE' 
                 AND c.endDate < :date 
                 ORDER BY c.id ASC
                 """.trimIndent()

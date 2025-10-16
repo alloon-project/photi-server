@@ -4,8 +4,6 @@ import com.photi.core.domain.common.exception.PhotiException
 
 sealed class UserException(errorCode: UserErrorCode) : PhotiException(errorCode) {
 
-    class InvalidEmailException : UserException(UserErrorCode.EMAIL_VALIDATION_INVALID)
-
     class InvalidEmailAuthenticationCodeException :
         UserException(UserErrorCode.EMAIL_VERIFICATION_CODE_INVALID)
 
