@@ -12,10 +12,9 @@ class FeedCommandService(
 ) {
 
     fun createFeed(dto: RegisterFeedDto, userId: Long, challengeMemberId: Long, challengeId: Long) =
-        feedRepository.save(dto.toEntity(userId, challengeMemberId, challengeId))
+        feedRepository.save(dto.toEntity(userId, challengeMemberId, challengeId)).id!!
 
     fun deleteFeed(feedId: Long) {
-        // todo 피드 댓글, 피드 좋아요, 피드 히스토리도 함께 삭제되는지 확인
         feedRepository.deleteById(feedId)
     }
 }

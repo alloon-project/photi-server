@@ -7,9 +7,7 @@ import com.photi.core.domain.feed.dto.FindTodayFeedMemberCountDto
 import com.photi.core.domain.feed.dto.RegisterFeedDto
 import com.photi.core.domain.feed.exception.FeedException
 import com.photi.core.domain.feed.model.SortType
-import com.photi.core.domain.feed.port.FeedChallengeMemberPort
-import com.photi.core.domain.feed.port.FeedS3Port
-import com.photi.core.domain.feed.port.FeedUserChallengeHistoryPort
+import com.photi.core.domain.feed.port.*
 import com.photi.core.domain.feed.service.command.FeedCommandService
 import com.photi.core.domain.feed.service.query.FeedQueryService
 import com.photi.core.domain.feed.validator.FeedValidator
@@ -24,6 +22,9 @@ class FeedService(
     private val feedValidator: FeedValidator,
     private val challengeMemberPort: FeedChallengeMemberPort,
     private val userChallengeHistoryPort: FeedUserChallengeHistoryPort,
+    private val feedHistoryPort: FeedFeedHistoryPort,
+    private val feedLikePort: FeedFeedLikePort,
+    private val feedCommentPort: FeedFeedCommentPort,
     private val s3Port: FeedS3Port,
 ) {
 
@@ -35,7 +36,8 @@ class FeedService(
         val challengeMemberId = getChallengeMemberIdBy(userId, challengeId)
         feedValidator.validateExistsTodayFeedBy(challengeMemberId)
         userChallengeHistoryPort.increaseFeed(userId)
-        feedCommandService.createFeed(dto, userId, challengeMemberId, challengeId)
+        val feedId = feedCommandService.createFeed(dto, userId, challengeMemberId, challengeId)
+        feedHistoryPort.createFeedHistory(feedId)
     }
 
     @Transactional
@@ -43,7 +45,7 @@ class FeedService(
         val challengeMemberId = getChallengeMemberIdBy(userId, challengeId)
         val feed = feedQueryService.getFeedBy(feedId, challengeMemberId)
             ?: throw FeedException.ForbiddenCreatorException()
-        feed.deleteImage(s3Port)
+        feed.delete(s3Port, feedLikePort, feedCommentPort, feedHistoryPort)
         userChallengeHistoryPort.decreaseFeed(userId)
         feedCommandService.deleteFeed(feedId)
     }

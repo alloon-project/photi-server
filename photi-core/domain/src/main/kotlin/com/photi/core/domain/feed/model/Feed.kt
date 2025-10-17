@@ -2,6 +2,9 @@ package com.photi.core.domain.feed.model
 
 import com.photi.core.domain.common.consts.DirectoryType
 import com.photi.core.domain.common.model.BaseEntity
+import com.photi.core.domain.feed.port.FeedFeedCommentPort
+import com.photi.core.domain.feed.port.FeedFeedHistoryPort
+import com.photi.core.domain.feed.port.FeedFeedLikePort
 import com.photi.core.domain.feed.port.FeedS3Port
 import jakarta.persistence.*
 
@@ -40,7 +43,19 @@ class Feed(
     var imageUrl: String = imageUrl
         protected set
 
-    fun deleteImage(s3Port: FeedS3Port) {
+    fun delete(
+        s3Port: FeedS3Port,
+        feedLikePort: FeedFeedLikePort,
+        feedCommentPort: FeedFeedCommentPort,
+        feedHistoryPort: FeedFeedHistoryPort,
+    ) {
+        deleteImage(s3Port)
+        feedLikePort.deleteFeedLikes(id!!)
+        feedCommentPort.deleteFeedComments(id!!)
+        feedHistoryPort.deleteFeedHistory(id!!)
+    }
+
+    private fun deleteImage(s3Port: FeedS3Port) {
         s3Port.deleteImage(imageUrl, DirectoryType.FEEDS)
     }
 }

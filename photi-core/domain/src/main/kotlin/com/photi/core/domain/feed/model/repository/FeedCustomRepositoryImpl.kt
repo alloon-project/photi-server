@@ -2,6 +2,7 @@ package com.photi.core.domain.feed.model.repository
 
 import com.photi.core.domain.challenge.model.QChallenge.challenge
 import com.photi.core.domain.challengemember.model.QChallengeMember.challengeMember
+import com.photi.core.domain.challengemember.model.StatusType
 import com.photi.core.domain.common.SliceDto
 import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.feed.dto.FeedDto
@@ -87,7 +88,9 @@ class FeedCustomRepositoryImpl(
             .on(
                 challengeMember.userId.eq(userId),
                 challengeMember.challengeId.eq(challengeId),
+                challengeMember.status.eq(StatusType.PROGRESS),
             )
+            .join(feedHistory).on(feedHistory.feedId.eq(feed.id))
             .leftJoin(feedLike)
             .on(
                 feedLike.feedId.eq(feed.id),
@@ -140,7 +143,9 @@ class FeedCustomRepositoryImpl(
             .on(
                 challengeMember.userId.eq(userId),
                 challengeMember.challengeId.eq(challengeId),
+                challengeMember.status.eq(StatusType.PROGRESS),
             )
+            .join(feedHistory).on(feedHistory.feedId.eq(feed.id))
             .leftJoin(feedLike)
             .on(
                 feedLike.feedId.eq(feed.id),
