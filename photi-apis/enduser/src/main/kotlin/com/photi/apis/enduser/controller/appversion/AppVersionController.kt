@@ -1,7 +1,7 @@
 package com.photi.apis.enduser.controller.appversion
 
-import com.photi.apis.enduser.common.exception.annotation.AppVersionApiErrorResponses
-import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
+import com.photi.apis.enduser.common.exception.AppVersionApiErrorResponses
+import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.controller.appversion.dto.request.AppVersionRequest
 import com.photi.apis.enduser.controller.appversion.dto.response.AppVersionResponse

@@ -1,9 +1,9 @@
 package com.photi.apis.enduser.controller.feedlike
 
-import com.photi.apis.enduser.common.exception.annotation.ChallengeMemberApiErrorResponses
-import com.photi.apis.enduser.common.exception.annotation.FeedApiErrorResponses
-import com.photi.apis.enduser.common.exception.annotation.FeedLikeApiErrorResponses
-import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
+import com.photi.apis.enduser.common.exception.ChallengeMemberApiErrorResponses
+import com.photi.apis.enduser.common.exception.FeedApiErrorResponses
+import com.photi.apis.enduser.common.exception.FeedLikeApiErrorResponses
+import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.config.security.AuthUser
 import com.photi.apis.enduser.config.security.CustomUserDetails

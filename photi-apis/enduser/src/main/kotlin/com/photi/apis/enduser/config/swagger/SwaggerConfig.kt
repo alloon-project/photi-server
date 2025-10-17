@@ -1,10 +1,11 @@
 package com.photi.apis.enduser.config.swagger
 
-import com.photi.apis.enduser.common.exception.annotation.ApiErrorResponses
+import com.photi.apis.enduser.common.exception.*
 import com.photi.apis.enduser.config.security.JwtTokenProvider.Companion.AUTHORIZATION_HEADER
 import com.photi.apis.enduser.config.security.JwtTokenProvider.Companion.REFRESH_TOKEN_HEADER
 import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.consts.SwaggerKey.REFRESH_TOKEN_KEY
+import com.photi.core.domain.common.exception.BaseErrorCode
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.models.Components
@@ -20,8 +21,8 @@ import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.web.method.HandlerMethod
+import kotlin.reflect.KClass
 
 @OpenAPIDefinition(
     info = Info(
@@ -57,7 +58,7 @@ class SwaggerConfig {
     fun operationCustomizer(): OperationCustomizer {
         return OperationCustomizer { operation, handlerMethod ->
             addResponseBodySchemaExample(operation)
-            addApiErrorResponses(operation, handlerMethod)
+            applyApiErrorResponses(operation, handlerMethod)
             operation
         }
     }
@@ -78,24 +79,52 @@ class SwaggerConfig {
         }
     }
 
-    private fun addApiErrorResponses(operation: Operation, handlerMethod: HandlerMethod) {
-        val apiErrorResponses =
-            AnnotationUtils.findAnnotation(handlerMethod.method, ApiErrorResponses::class.java)
-                ?: return
-        val responses = operation.responses
-        val errorCodes = apiErrorResponses.errorCodeClass.java.enumConstants
-        errorCodes?.forEach { errorCode ->
-            val example = Example().apply {
-                summary = errorCode.code
-                value = mapOf("code" to errorCode.code, "message" to errorCode.message)
-                description = errorCode.description
+    private fun <A : Annotation, B : BaseErrorCode> addApiErrorResponses(
+        operation: Operation,
+        handlerMethod: HandlerMethod,
+        annotationClasses: List<KClass<out A>>,
+        extractErrorCodes: (A) -> Array<B>,
+    ) {
+        annotationClasses.forEach { annotationClass ->
+            val annotation =
+                handlerMethod.method.getAnnotation(annotationClass.java) ?: return@forEach
+            val responses = operation.responses
+            val errorCodes = extractErrorCodes(annotation)
+            errorCodes.forEach { errorCode ->
+                val example = Example().apply {
+                    summary = errorCode.code
+                    value = mapOf("code" to errorCode.code, "message" to errorCode.message)
+                    description = errorCode.description
+                }
+                val apiResponse = responses[errorCode.status.toString()]
+                val mediaType = apiResponse?.content?.get("application/json") ?: MediaType()
+                val examples = mediaType.examples?.toMutableMap() ?: mutableMapOf()
+                examples[errorCode.code] = example
+                val content =
+                    Content().addMediaType("application/json", MediaType().examples(examples))
+                responses.addApiResponse(
+                    errorCode.status.toString(),
+                    ApiResponse().content(content)
+                )
             }
-            val apiResponse = responses[errorCode.status.toString()]
-            val mediaType = apiResponse?.content?.get("application/json") ?: MediaType()
-            val examples = mediaType.examples?.toMutableMap() ?: mutableMapOf()
-            examples[errorCode.code] = example
-            val content = Content().addMediaType("application/json", MediaType().examples(examples))
-            responses.addApiResponse(errorCode.status.toString(), ApiResponse().content(content))
         }
     }
+
+    private fun applyApiErrorResponses(operation: Operation, handlerMethod: HandlerMethod) {
+        addApiErrorResponses(operation, handlerMethod, getAnnotationClasses()) {
+            it.annotationClass.java.getMethod("errorCodes").invoke(it) as Array<BaseErrorCode>
+        }
+    }
+
+    private fun getAnnotationClasses() = listOf(
+        GlobalApiErrorResponses::class,
+        AppVersionApiErrorResponses::class,
+        UserApiErrorResponses::class,
+        UserChallengeHistoryApiErrorResponses::class,
+        ChallengeApiErrorResponses::class,
+        ChallengeMemberApiErrorResponses::class,
+        FeedApiErrorResponses::class,
+        FeedCommentApiErrorResponses::class,
+        FeedLikeApiErrorResponses::class,
+    )
 }

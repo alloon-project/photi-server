@@ -1,6 +1,6 @@
 package com.photi.apis.enduser.controller.feed
 
-import com.photi.apis.enduser.common.exception.annotation.*
+import com.photi.apis.enduser.common.exception.*
 import com.photi.apis.enduser.common.success.dto.SliceResponse
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.config.security.AuthUser

@@ -1,7 +1,7 @@
 package com.photi.apis.enduser.controller.user
 
-import com.photi.apis.enduser.common.exception.annotation.GlobalApiErrorResponses
-import com.photi.apis.enduser.common.exception.annotation.UserApiErrorResponses
+import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
+import com.photi.apis.enduser.common.exception.UserApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.CollectionSuccessResponse
 import com.photi.apis.enduser.common.success.dto.SliceResponse
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
