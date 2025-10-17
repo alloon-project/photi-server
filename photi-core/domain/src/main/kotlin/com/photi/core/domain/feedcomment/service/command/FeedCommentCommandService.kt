@@ -22,4 +22,8 @@ class FeedCommentCommandService(
     fun deleteFeedComment(feedComment: FeedComment) {
         feedCommentRepository.delete(feedComment)
     }
+
+    fun deleteFeedComments(feedId: Long) {
+        feedCommentRepository.deleteByFeedId(feedId)
+    }
 }

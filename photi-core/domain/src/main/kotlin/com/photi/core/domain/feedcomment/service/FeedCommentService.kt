@@ -37,10 +37,10 @@ class FeedCommentService(
     @Transactional
     fun deleteFeedComment(userId: Long, challengeId: Long, feedId: Long, commentId: Long) {
         // todo 동시성 제어 aop
-        getChallengeMemberIdBy(userId, challengeId)
-        val feedComment = feedCommentQueryService.getFeedCommentBy(commentId).orElseThrow {
-            throw FeedCommentException.NotFoundFeedCommentException()
-        }
+        val challengeMemberId = getChallengeMemberIdBy(userId, challengeId)
+        val feedComment =
+            feedCommentQueryService.getFeedCommentBy(commentId, userId, challengeMemberId)
+                ?: throw FeedCommentException.NotFoundFeedCommentException()
         feedCommentCommandService.deleteFeedComment(feedComment)
         feedHistoryPort.decreaseComment(feedId)
     }

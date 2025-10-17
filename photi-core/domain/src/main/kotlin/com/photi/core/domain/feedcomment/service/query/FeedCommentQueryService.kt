@@ -11,7 +11,12 @@ class FeedCommentQueryService(
     private val feedCommentRepository: FeedCommentRepository,
 ) {
 
-    fun getFeedCommentBy(id: Long) = feedCommentRepository.findById(id)
+    fun getFeedCommentBy(commentId: Long, userId: Long, challengeMemberId: Long) =
+        feedCommentRepository.findByIdAndUserIdAndChallengeMemberId(
+            commentId,
+            userId,
+            challengeMemberId,
+        )
 
     fun getFeedCommentsBy(feedId: Long, page: Int, size: Int) =
         feedCommentRepository.findFeedCommentsById(feedId, PageRequest.of(page, size))
