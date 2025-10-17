@@ -1,9 +1,8 @@
 package com.photi.core.domain.user.dto
 
 import com.photi.core.domain.user.model.User
-import com.querydsl.core.annotations.QueryProjection
 
-data class FindInfoDto @QueryProjection constructor(
+data class FindInfoDto(
     val imageUrl: String,
     val username: String,
     val email: String,

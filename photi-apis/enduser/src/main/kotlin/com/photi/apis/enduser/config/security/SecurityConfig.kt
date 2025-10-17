@@ -29,6 +29,11 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers(PATCH, "/api/v2/app-version").hasRole("ADMIN")
                 it.requestMatchers(
+                    "/api/v2/users/image/pre-signed-url",
+                    "/api/v2/feeds/image/pre-signed-url",
+                    "/api/v2/challenges/image/pre-signed-url",
+                ).permitAll()
+                it.requestMatchers(
                     GET,
                     "/api/v2/auth/validate/token",
                     "/api/v2/challenges/{challengeId}/invitation-code",
@@ -55,11 +60,6 @@ class SecurityConfig(
                     "/api/v2/feed-comments/**",
                     "/api/v2/feeds/**",
                 ).authenticated()
-                it.requestMatchers(
-                    "/api/v2/users/image/pre-signed-url",
-                    "/api/v2/feeds/image/pre-signed-url",
-                    "/api/v2/challenges/image/pre-signed-url",
-                ).permitAll()
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(
