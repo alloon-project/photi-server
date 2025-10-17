@@ -12,11 +12,14 @@ class FeedLikeCommandService(
 ) {
 
     fun createFeedLike(challengeMemberId: Long, feedId: Long) {
-        val feedLike = FeedLike(challengeMemberId = challengeMemberId, feedId = feedId)
-        feedLikeRepository.save(feedLike)
+        feedLikeRepository.save(FeedLike(challengeMemberId, feedId))
     }
 
     fun deleteFeedLike(feedLike: FeedLike) {
         feedLikeRepository.delete(feedLike)
+    }
+
+    fun deleteFeedLikes(feedId: Long) {
+        feedLikeRepository.deleteByFeedId(feedId)
     }
 }

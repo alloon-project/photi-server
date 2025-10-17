@@ -16,7 +16,6 @@ class IdempotencyKeyService(
         val idempotencyKey = UUID.randomUUID().toString()
         val isFirstRequest = redisTemplate.opsForValue()
             .setIfAbsent(key, idempotencyKey, 2, TimeUnit.SECONDS)
-
         if (isFirstRequest != true) {
             throw FeedLikeException.ExistsFeedLikeException()
         }
