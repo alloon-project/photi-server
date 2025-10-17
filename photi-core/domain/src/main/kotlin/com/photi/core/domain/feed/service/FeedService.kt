@@ -27,10 +27,8 @@ class FeedService(
     private val s3Port: FeedS3Port,
 ) {
 
-    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto): String {
-        // todo 파일 크기, 파일 형식 에러 지정, appversion과 같은 권한 (앱개발자)
-        return s3Port.getPreSignedUrl(dto.imageName, DirectoryType.FEEDS)
-    }
+    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto) =
+        s3Port.getPreSignedUrl(dto.imageName, DirectoryType.FEEDS)
 
     @Transactional
     fun registerFeed(userId: Long, challengeId: Long, dto: RegisterFeedDto) {

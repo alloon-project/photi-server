@@ -12,6 +12,8 @@ import com.photi.core.domain.user.port.UserS3Port
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 @Component
@@ -28,7 +30,8 @@ class S3Adapter(
 
     @Async
     override fun deleteImage(imageUrl: String, directory: DirectoryType) {
-        val key = directory.value + imageUrl.substringAfterLast("/") // todo 수정 필요
+        val fileName = imageUrl.substringAfterLast("/")
+        val key = directory.value + URLDecoder.decode(fileName, StandardCharsets.UTF_8)
         s3Client.deleteObject(bucket, key)
     }
 

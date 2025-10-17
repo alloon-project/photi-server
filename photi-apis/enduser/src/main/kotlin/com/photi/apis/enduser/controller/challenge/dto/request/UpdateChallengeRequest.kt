@@ -32,8 +32,8 @@ data class UpdateChallengeRequest(
     @field:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val endDate: LocalDate,
 
-    @Schema(description = "챌린지 이미지 url", example = "https://url.kr/5MhHhD")
-    val imageUrl: String,
+    @Schema(description = "챌린지 이미지 pre signed url", example = "https://url.kr/5MhHhD")
+    val preSignedUrl: String,
 
     @Schema(
         description = "챌린지 인증 룰 리스트", example = """
@@ -66,7 +66,7 @@ data class UpdateChallengeRequest(
         goal,
         proveTime,
         endDate,
-        imageUrl.substringBefore(SUFFIX),
+        preSignedUrl.substringBefore(SUFFIX),
         rules.map { it.toServiceDto() },
         hashtags.map { it.toServiceDto() },
     )

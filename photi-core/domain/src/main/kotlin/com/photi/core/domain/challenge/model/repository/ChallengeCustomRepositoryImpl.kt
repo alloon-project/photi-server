@@ -12,8 +12,7 @@ import com.photi.core.domain.challenge.model.StatusType.ACTIVE
 import com.photi.core.domain.common.toSliceDto
 import com.photi.core.domain.user.dto.QMemberImageDto
 import com.photi.core.domain.user.model.QUser.user
-import com.querydsl.core.group.GroupBy.groupBy
-import com.querydsl.core.group.GroupBy.list
+import com.querydsl.core.group.GroupBy.*
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.core.types.dsl.StringPath
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -110,29 +109,35 @@ class ChallengeCustomRepositoryImpl(
         val challenge = queryFactory
             .from(challenge)
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
-            .leftJoin(challengeRule).on(challenge.id.eq(challengeRule.challenge.id))
-            .leftJoin(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .where(challenge.id.eq(id))
-            .transform(
-                groupBy(challenge.id).list(
-                    QFindChallengeDto(
-                        challenge.name,
-                        challenge.goal,
-                        challenge.imageUrl,
-                        challengeHistory.challengeMemberCount,
-                        challenge.isPublic,
-                        challenge.proveTime,
-                        challenge.endDate,
-                        list(challengeRule.rule),
-                        list(challengeHashtag.hashtag),
-                        Expressions.constant(emptyList()),
-                        Expressions.constant(""),
-                    )
+            .select(
+                QFindChallengeDto(
+                    challenge.name,
+                    challenge.goal,
+                    challenge.imageUrl,
+                    challengeHistory.challengeMemberCount,
+                    challenge.isPublic,
+                    challenge.proveTime,
+                    challenge.endDate,
+                    Expressions.constant(emptyList()),
+                    Expressions.constant(emptyList()),
+                    Expressions.constant(emptyList()),
+                    Expressions.constant(""),
                 )
             )
-            .firstOrNull() ?: return null
+            .fetchOne() ?: return null
+        val rules = queryFactory
+            .select(challengeRule.rule)
+            .from(challengeRule)
+            .where(challengeRule.challenge.id.eq(id))
+            .fetch()
+        val hashtags = queryFactory
+            .select(challengeHashtag.hashtag)
+            .from(challengeHashtag)
+            .where(challengeHashtag.challenge.id.eq(id))
+            .fetch()
         val memberImages = queryFactory
-            .select(user.imageUrl)
+            .select(user.imageUrl.coalesce(""))
             .from(challengeMember)
             .join(user).on(user.id.eq(challengeMember.userId))
             .where(
@@ -152,7 +157,12 @@ class ChallengeCustomRepositoryImpl(
                 challengeMember.status.eq(PROGRESS),
             )
             .fetchOne() ?: ""
-        return challenge.copy(memberImages = memberImages, creator = creator)
+        return challenge.copy(
+            rules = rules,
+            hashtags = hashtags,
+            memberImages = memberImages,
+            creator = creator,
+        )
     }
 
     override fun findChallengesByHashtags(
@@ -160,7 +170,16 @@ class ChallengeCustomRepositoryImpl(
         pageable: Pageable,
     ): SliceDto<FindChallengesDto> {
         val pageSize = pageable.pageSize
-        val content = queryFactory
+        val challenges = queryFactory
+            .select(
+                QFindChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.endDate,
+                    challenge.imageUrl,
+                    Expressions.constant(emptyList()),
+                )
+            )
             .from(challenge)
             .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
@@ -168,21 +187,23 @@ class ChallengeCustomRepositoryImpl(
                 challenge.status.eq(ACTIVE),
                 challengeHashtag.hashtag.`in`(popularHashtags),
             )
+            .groupBy(
+                challenge.id,
+                challenge.name,
+                challenge.endDate,
+                challenge.imageUrl,
+                challengeHistory.challengeMemberCount,
+            )
             .orderBy(challengeHistory.challengeMemberCount.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
-            .transform(
-                groupBy(challenge.id).list(
-                    QFindChallengesDto(
-                        challenge.id,
-                        challenge.name,
-                        challenge.endDate,
-                        challenge.imageUrl,
-                        list(challengeHashtag.hashtag),
-                    )
-                )
-            )
-        return SliceImpl(content, pageable, hasNext(content, pageSize)).toSliceDto()
+            .fetch()
+        val challengeIds = challenges.map { it.id }
+        val hashtags = getHashtags(challengeIds)
+        challenges.forEach { challenge ->
+            challenge.hashtags = hashtags[challenge.id] ?: emptyList()
+        }
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
     }
 
     override fun findChallengesBySpecificHashtag(
@@ -190,7 +211,16 @@ class ChallengeCustomRepositoryImpl(
         pageable: Pageable,
     ): SliceDto<FindChallengesDto> {
         val pageSize = pageable.pageSize
-        val content = queryFactory
+        val challenges = queryFactory
+            .select(
+                QFindChallengesDto(
+                    challenge.id,
+                    challenge.name,
+                    challenge.endDate,
+                    challenge.imageUrl,
+                    Expressions.constant(emptyList()),
+                )
+            )
             .from(challenge)
             .join(challengeHashtag).on(challenge.id.eq(challengeHashtag.challenge.id))
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
@@ -201,18 +231,13 @@ class ChallengeCustomRepositoryImpl(
             .orderBy(challengeHistory.challengeMemberCount.desc())
             .offset(pageable.offset)
             .limit(pageSize + 1L)
-            .transform(
-                groupBy(challenge.id).list(
-                    QFindChallengesDto(
-                        challenge.id,
-                        challenge.name,
-                        challenge.endDate,
-                        challenge.imageUrl,
-                        list(challengeHashtag.hashtag),
-                    )
-                )
-            )
-        return SliceImpl(content, pageable, hasNext(content, pageSize)).toSliceDto()
+            .fetch()
+        val challengeIds = challenges.map { it.id }
+        val hashtags = getHashtags(challengeIds)
+        challenges.forEach { challenge ->
+            challenge.hashtags = hashtags[challenge.id] ?: emptyList()
+        }
+        return SliceImpl(challenges, pageable, hasNext(challenges, pageSize)).toSliceDto()
     }
 
     override fun findChallengesByName(
@@ -235,7 +260,7 @@ class ChallengeCustomRepositoryImpl(
             .join(challengeHistory).on(challenge.id.eq(challengeHistory.challengeId))
             .where(
                 challenge.status.eq(ACTIVE),
-                challenge.name.likeIgnoreCase("%$name"),
+                challenge.name.likeIgnoreCase("%$name%"),
             )
             .orderBy(
                 similarityOrder(challenge.name, name),

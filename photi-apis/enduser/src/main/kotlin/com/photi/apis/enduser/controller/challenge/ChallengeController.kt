@@ -4,6 +4,9 @@ import com.photi.apis.enduser.common.exception.annotation.*
 import com.photi.apis.enduser.common.success.dto.CollectionSuccessResponse
 import com.photi.apis.enduser.common.success.dto.SliceResponse
 import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
+import com.photi.apis.enduser.config.security.AuthUser
+import com.photi.apis.enduser.config.security.CustomUserDetails
+import com.photi.apis.enduser.config.security.getUserId
 import com.photi.apis.enduser.controller.challenge.dto.request.CreateChallengeRequest
 import com.photi.apis.enduser.controller.challenge.dto.request.JoinChallengeRequest
 import com.photi.apis.enduser.controller.challenge.dto.request.UpdateChallengeRequest
@@ -17,7 +20,6 @@ import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.GlobalErrorCode.*
 import com.photi.core.domain.user.exception.UserErrorCode.USER_NOT_FOUND
 import com.photi.core.domain.userchallengehistory.exception.UserChallengeHistoryErrorCode.CHALLENGE_LIMIT_EXCEED
-import com.photi.utils.UserUtil
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -26,15 +28,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.springframework.http.HttpStatus.CREATED
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import java.security.Principal
 
 @Validated
 @RestController
-@RequestMapping("/api/challenges")
+@RequestMapping("/api/v2/challenges")
 @Tag(name = "Challenge", description = "챌린지 API")
 class ChallengeController(
     private val challengeService: ChallengeService,
@@ -43,27 +43,26 @@ class ChallengeController(
     @PostMapping("/image/pre-signed-url")
     @Operation(summary = "이미지 PresignedURL 조회")
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([FILE_SIZE_EXCEED, IMAGE_TYPE_UNSUPPORTED])
-    fun findImagePreSignedUrl(
-        @RequestBody @Valid request: FindImagePreSignedUrlRequest,
-    ): ResponseEntity<FindImagePreSignedUrlResponse> {
+    fun findImagePreSignedUrl(@RequestBody @Valid request: FindImagePreSignedUrlRequest): ResponseEntity<FindImagePreSignedUrlResponse> {
         val preSignedUrl = challengeService.findImagePreSignedUrl(request.toServiceDto())
         val response = FindImagePreSignedUrlResponse.of(preSignedUrl)
         return ResponseEntity.ok(response)
     }
 
     @PostMapping
-    @Operation(summary = "챌린지 개최", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @Operation(
+        summary = "챌린지 개최",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "'이미지 PresignedURL 조회' API 호출한 후, PUT 요청으로 해당 PresignedURL에 실제 이미지 파일을 업로드합니다. 이후 '챌린지 개최 요청 객체'의 preSignedUrl 필드에 PresignedURL을 넣어주시면 됩니다.",
+    )
     @ApiResponse(responseCode = "201")
-    @GlobalApiErrorResponses([EMPTY_FILE_INVALID, TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
-    @UserApiErrorResponses([USER_NOT_FOUND])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @UserChallengeHistoryApiErrorResponses([CHALLENGE_LIMIT_EXCEED])
     fun createChallenge(
-        principal: Principal,
-        @RequestPart @Valid request: CreateChallengeRequest,
+        @AuthUser user: CustomUserDetails,
+        @RequestBody @Valid request: CreateChallengeRequest,
     ): ResponseEntity<CreateChallengeResponse> {
-        val challenge =
-            challengeService.createChallenge(UserUtil.getUserId(principal), request.toServiceDto())
+        val challenge = challengeService.createChallenge(user.getUserId(), request.toServiceDto())
         val response = CreateChallengeResponse.of(challenge)
         return ResponseEntity.status(CREATED).body(response)
     }
@@ -88,13 +87,12 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/{challengeId}/info")
+    @GetMapping("/{challengeId}/intro")
     @Operation(summary = "챌린지 소개 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
     fun findChallengeIntro(
-        principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
     ): ResponseEntity<FindChallengeIntroResponse> {
         val intro = challengeService.findChallengeIntro(challengeId)
@@ -126,53 +124,52 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @PatchMapping("/{challengeId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @Operation(summary = "챌린지 수정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @PatchMapping("/{challengeId}")
+    @Operation(
+        summary = "챌린지 수정",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "'이미지 PresignedURL 조회' API 호출한 후, PUT 요청으로 해당 PresignedURL에 실제 이미지 파일을 업로드합니다. 이후 '챌린지 수정 요청 객체'의 preSignedUrl 필드에 PresignedURL을 넣어주시면 됩니다.",
+    )
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
     @ChallengeMemberApiErrorResponses([CHALLENGE_MEMBER_NOT_FOUND, CHALLENGE_CREATOR_FORBIDDEN])
     fun updateChallenge(
-        principal: Principal,
+        @AuthUser user: CustomUserDetails,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
-        @RequestPart @Valid request: UpdateChallengeRequest,
+        @RequestBody @Valid request: UpdateChallengeRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.updateChallenge(
-            UserUtil.getUserId(principal),
-            challengeId,
-            request.toServiceDto(),
-        )
+        challengeService.updateChallenge(user.getUserId(), challengeId, request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("챌린지 수정이 완료되었습니다."))
     }
 
     @DeleteMapping("/{challengeId}")
     @Operation(summary = "챌린지 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
+    @UserApiErrorResponses([USER_NOT_FOUND])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
     @ChallengeMemberApiErrorResponses([CHALLENGE_MEMBER_NOT_FOUND])
     fun withdrawChallenge(
-        principal: Principal,
+        @AuthUser user: CustomUserDetails,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.withdrawChallenge(UserUtil.getUserId(principal), challengeId)
+        challengeService.withdrawChallenge(user.getUserId(), challengeId)
         return ResponseEntity.ok(StringSuccessResponse("챌린지 탈퇴가 완료되었습니다."))
     }
 
     @GetMapping("/{challengeId}/invitation-code")
     @Operation(summary = "챌린지 초대코드 조회", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
     @ChallengeMemberApiErrorResponses([CHALLENGE_MEMBER_NOT_FOUND])
     fun findChallengeInvitationCode(
-        principal: Principal,
+        @AuthUser user: CustomUserDetails,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
     ): ResponseEntity<FindChallengeInvitationCodeResponse> {
-        val invitationCode = challengeService.findChallengeInvitationCode(
-            UserUtil.getUserId(principal),
-            challengeId,
-        )
+        val invitationCode =
+            challengeService.findChallengeInvitationCode(user.getUserId(), challengeId)
         val response = FindChallengeInvitationCodeResponse.of(invitationCode)
         return ResponseEntity.ok(response)
     }
@@ -186,7 +183,7 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/by-hashtags")
+    @GetMapping("/hashtag")
     @Operation(
         summary = "해시태그 모아보기 조회",
         description = "해시태그 파라미터를 지정하면 해당 해시태그가 있는 전체 챌린지 리스트가 조회되고, 파라미터를 '전체'로 지정하면 '전체'로 조회됩니다. 파티원 수가 가장 많은 순으로 정렬됩니다.",
@@ -241,21 +238,16 @@ class ChallengeController(
         description = "건너뛰기 시 { \"goal\": \"\" } 넣어주시면 됩니다.",
     )
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
-    @UserApiErrorResponses([USER_NOT_FOUND])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
-    @ChallengeMemberApiErrorResponses([CHALLENGE_MEMBER_NOT_FOUND, EXISTING_CHALLENGE_MEMBER])
+    @ChallengeMemberApiErrorResponses([EXISTING_CHALLENGE_MEMBER])
     @UserChallengeHistoryApiErrorResponses([CHALLENGE_LIMIT_EXCEED])
     fun joinChallenge(
-        principal: Principal,
+        @AuthUser user: CustomUserDetails,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @RequestBody @Valid request: JoinChallengeRequest,
     ): ResponseEntity<StringSuccessResponse> {
-        challengeService.joinChallenge(
-            UserUtil.getUserId(principal),
-            challengeId,
-            request.toServiceDto(),
-        )
+        challengeService.joinChallenge(user.getUserId(), challengeId, request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("챌린지 참여하기가 완료되었습니다."))
     }
 
@@ -274,16 +266,15 @@ class ChallengeController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/{challengeId}/feed-existence")
+    @GetMapping("/{challengeId}/feed")
     @Operation(
         summary = "챌린지 인증 피드 존재 여부 조회",
         security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
     )
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, TOKEN_UNAUTHORIZED])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @ChallengeApiErrorResponses([CHALLENGE_NOT_FOUND])
     fun findChallengeHasFeed(
-        principal: Principal,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
     ): ResponseEntity<FindChallengeHasFeedResponse> {
         val hasFeed = challengeService.findChallengeHasFeed(challengeId)

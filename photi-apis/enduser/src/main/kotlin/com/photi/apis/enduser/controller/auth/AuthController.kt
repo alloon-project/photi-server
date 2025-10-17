@@ -66,7 +66,7 @@ class AuthController(
         return ResponseEntity.ok(StringSuccessResponse("이메일 인증코드가 검증 되었습니다."))
     }
 
-    @GetMapping("/validate")
+    @GetMapping("/validate/name")
     @Operation(summary = "아이디 검증")
     @ApiResponse(responseCode = "200")
     @UserApiErrorResponses([USERNAME_FORMAT_INVALID, UNAVAILABLE_USERNAME, EXISTING_USERNAME])

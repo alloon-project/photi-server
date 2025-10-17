@@ -1,8 +1,6 @@
 package com.photi.core.domain.challenge.dto
 
-import com.querydsl.core.annotations.QueryProjection
-
-data class FindChallengeInvitationCodeDto @QueryProjection constructor(
+data class FindChallengeInvitationCodeDto(
     val name: String,
     val invitationCode: String,
 )

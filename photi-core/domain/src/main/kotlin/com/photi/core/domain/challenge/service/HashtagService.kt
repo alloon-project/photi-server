@@ -31,7 +31,7 @@ class HashtagService(
     }
 
     @Async
-    fun deleteHashtags(hashtags: List<ChallengeHashtag>) {
+    fun deleteHashtags(hashtags: List<ChallengeHashtagDto>) {
         hashtags.map { it.hashtag }
             .forEach { hashtag ->
                 val score = redisTemplate.opsForZSet().score(POPULAR_HASHTAGS_KEY, hashtag)

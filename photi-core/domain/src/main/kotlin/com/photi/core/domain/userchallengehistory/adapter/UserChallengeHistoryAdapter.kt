@@ -3,12 +3,14 @@ package com.photi.core.domain.userchallengehistory.adapter
 import com.photi.core.domain.challenge.port.ChallengeUserChallengeHistoryPort
 import com.photi.core.domain.feed.port.FeedUserChallengeHistoryPort
 import com.photi.core.domain.user.exception.UserException
+import com.photi.core.domain.userchallengehistory.service.command.UserChallengeHistoryCommandService
 import com.photi.core.domain.userchallengehistory.service.query.UserChallengeHistoryQueryService
 import com.photi.core.domain.userchallengehistory.validator.UserChallengeHistoryValidator
 import org.springframework.stereotype.Component
 
 @Component
 class UserChallengeHistoryAdapter(
+    private val userChallengeHistoryCommandService: UserChallengeHistoryCommandService,
     private val userChallengeHistoryQueryService: UserChallengeHistoryQueryService,
     private val userChallengeHistoryValidator: UserChallengeHistoryValidator,
 ) : FeedUserChallengeHistoryPort, ChallengeUserChallengeHistoryPort {
@@ -22,7 +24,9 @@ class UserChallengeHistoryAdapter(
     }
 
     override fun increaseChallenge(userId: Long) {
-        getUserChallengeHistoryBy(userId).increaseChallenge(userChallengeHistoryValidator)
+        userChallengeHistoryQueryService.getUserChallengeHistoryBy(userId)
+            ?.increaseChallenge(userChallengeHistoryValidator)
+            ?: userChallengeHistoryCommandService.createUserChallengeHistory(userId)
     }
 
     override fun decreaseChallenge(userId: Long) {

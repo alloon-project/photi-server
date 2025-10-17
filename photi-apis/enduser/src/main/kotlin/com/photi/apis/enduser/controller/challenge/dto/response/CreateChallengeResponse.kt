@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Schema(description = "챌린지 생성 응답 객체")
+@Schema(description = "챌린지 개최 응답 객체")
 data class CreateChallengeResponse(
 
     @Schema(description = "챌린지 id", example = "1")

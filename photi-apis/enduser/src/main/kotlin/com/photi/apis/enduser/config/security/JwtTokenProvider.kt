@@ -33,14 +33,14 @@ class JwtTokenProvider(
             .subject(id.toString())
             .claim(ROLE, role.name)
             .issuedAt(Date.from(now))
-            .expiration(Date.from(now.plusSeconds(accessExp)))
+            .expiration(Date.from(now.plusMillis(accessExp)))
             .signWith(getSecretKey())
             .compact()
         headers.add(AUTHORIZATION_HEADER, accessToken)
         if (role != RoleType.ADMIN) {
             val refreshToken = Jwts.builder()
                 .subject(id.toString())
-                .expiration(Date.from(now.plusSeconds(refreshExp)))
+                .expiration(Date.from(now.plusMillis(refreshExp)))
                 .signWith(getSecretKey())
                 .compact()
             headers.add(REFRESH_TOKEN_HEADER, refreshToken)
@@ -76,6 +76,5 @@ class JwtTokenProvider(
         const val AUTHORIZATION_HEADER = "Authorization"
         const val REFRESH_TOKEN_HEADER = "Refresh-Token"
         private const val ROLE = "role"
-        private const val COMMA = ","
     }
 }

@@ -20,10 +20,8 @@ class UserService(
     fun findInfo(userId: Long) = userQueryService.getInfoBy(userId)
         ?: throw UserException.NotFoundUserException()
 
-    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto): String {
-        // todo 파일 크기, 파일 형식 에러 지정, appversion과 같은 권한 (앱개발자)
-        return s3Port.getPreSignedUrl(dto.imageName, DirectoryType.USERS)
-    }
+    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto) =
+        s3Port.getPreSignedUrl(dto.imageName, DirectoryType.USERS)
 
     @Transactional
     fun updateProfileImage(userId: Long, dto: UpdateProfileImageDto) {

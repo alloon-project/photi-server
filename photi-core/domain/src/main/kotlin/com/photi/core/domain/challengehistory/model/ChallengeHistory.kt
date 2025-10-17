@@ -19,7 +19,7 @@ class ChallengeHistory(
         protected set
 
     @Column(nullable = false)
-    var challengeMemberCount: Int = 0
+    var challengeMemberCount: Int = 1
         protected set
 
     @Column(nullable = false)

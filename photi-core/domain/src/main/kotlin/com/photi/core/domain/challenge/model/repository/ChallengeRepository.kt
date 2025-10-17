@@ -10,6 +10,6 @@ interface ChallengeRepository : JpaRepository<Challenge, Long>, ChallengeCustomR
 
     fun existsByIdAndStatus(id: Long, status: StatusType): Boolean
 
-    @Query("select c.name, c.invitationCode from Challenge c where c.id = :id")
+    @Query("select new com.photi.core.domain.challenge.dto.FindChallengeInvitationCodeDto(c.name, c.invitationCode) from Challenge c where c.id = :id")
     fun findInvitationCodeById(id: Long): FindChallengeInvitationCodeDto?
 }

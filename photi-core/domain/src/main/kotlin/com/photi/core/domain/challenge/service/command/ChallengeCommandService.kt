@@ -13,9 +13,4 @@ class ChallengeCommandService(
 
     fun createChallenge(userId: Long, dto: CreateChallengeRequestDto) =
         challengeRepository.save(dto.toEntity())
-
-    fun deleteChallenge(challengeId: Long) {
-        // todo 멤버, 피드, 히스토리, 좋아요 등도 함께 삭제되는지 확인
-        challengeRepository.deleteById(challengeId)
-    }
 }

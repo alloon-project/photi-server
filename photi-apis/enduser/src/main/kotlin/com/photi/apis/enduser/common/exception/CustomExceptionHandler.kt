@@ -1,13 +1,14 @@
 package com.photi.apis.enduser.common.exception
 
 import com.photi.apis.enduser.common.exception.dto.ErrorResponse
-import com.photi.core.domain.common.exception.PhotiException
 import com.photi.core.domain.common.exception.GlobalErrorCode
+import com.photi.core.domain.common.exception.PhotiException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -15,7 +16,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.context.request.WebRequest
-import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 
 @RestControllerAdvice
@@ -76,19 +76,6 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
             GlobalErrorCode.DATE_FORMAT_INVALID.message,
         )
         return ResponseEntity.status(BAD_REQUEST).body(response)
-    }
-
-    /**
-     * 413 Payload Too Large
-     */
-    override fun handleMaxUploadSizeExceededException(
-        ex: MaxUploadSizeExceededException,
-        headers: HttpHeaders,
-        status: HttpStatusCode,
-        request: WebRequest
-    ): ResponseEntity<Any>? {
-        val response = ErrorResponse.of(GlobalErrorCode.FILE_SIZE_EXCEED)
-        return ResponseEntity.status(PAYLOAD_TOO_LARGE).body(response)
     }
 
     /**

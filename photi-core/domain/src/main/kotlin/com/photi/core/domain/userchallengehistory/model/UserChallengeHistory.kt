@@ -6,24 +6,30 @@ import jakarta.persistence.*
 
 @Entity
 class UserChallengeHistory(
+    userId: Long,
+) : BaseEntity() {
 
     @Id
     @Column(name = "user_challenge_history_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null
+        protected set
 
     @Column(nullable = false)
-    val userId: Long,
+    var userId: Long = userId
+        protected set
 
     @Column(nullable = false)
-    var challengeCount: Int = 0,
+    var challengeCount: Int = 1
+        protected set
 
     @Column(nullable = false)
-    var endedChallengeCount: Int = 0,
+    var endedChallengeCount: Int = 0
+        protected set
 
     @Column(nullable = false)
-    var feedCount: Int = 0,
-) : BaseEntity() {
+    var feedCount: Int = 0
+        protected set
 
     fun increaseChallenge(userChallengeHistoryValidator: UserChallengeHistoryValidator) {
         userChallengeHistoryValidator.validateJoinChallengeCount(this)

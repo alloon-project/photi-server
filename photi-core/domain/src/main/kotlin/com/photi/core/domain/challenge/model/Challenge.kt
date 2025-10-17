@@ -125,8 +125,9 @@ class Challenge(
     }
 
     fun delete(s3Port: ChallengeS3Port, hashtagService: HashtagService) {
-        hashtagService.deleteHashtags(hashtags)
+        hashtagService.deleteHashtags(ChallengeHashtagDto.of(hashtags))
         deleteImage(s3Port)
+        status = StatusType.DELETED
     }
 
     fun end() {

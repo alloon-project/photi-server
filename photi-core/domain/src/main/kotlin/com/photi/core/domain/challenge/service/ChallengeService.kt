@@ -28,10 +28,8 @@ class ChallengeService(
     private val hashtagService: HashtagService,
 ) {
 
-    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto): String {
-        // todo 파일 크기, 파일 형식 에러 지정, appversion과 같은 권한 (앱개발자)
-        return s3Port.getPreSignedUrl(dto.imageName, DirectoryType.CHALLENGES)
-    }
+    fun findImagePreSignedUrl(dto: FindImagePreSignedUrlDto) =
+        s3Port.getPreSignedUrl(dto.imageName, DirectoryType.CHALLENGES)
 
     @Transactional
     fun createChallenge(userId: Long, dto: CreateChallengeRequestDto): CreateChallengeDto {
@@ -71,11 +69,8 @@ class ChallengeService(
     @Transactional
     fun withdrawChallenge(userId: Long, challengeId: Long) {
         userChallengeHistoryPort.decreaseChallenge(userId)
-        val challenge = getChallengeBy(challengeId)
-        leaveChallenge(userId, challengeId)
-
-        challenge.delete(s3Port, hashtagService)
-        challengeCommandService.deleteChallenge(challengeId)
+        if (leaveChallenge(userId, challengeId)) return
+        getChallengeBy(challengeId).delete(s3Port, hashtagService)
     }
 
     fun findChallengeInvitationCode(
@@ -126,11 +121,12 @@ class ChallengeService(
             throw ChallengeException.NotFoundChallengeException()
         }
 
-    private fun leaveChallenge(userId: Long, challengeId: Long) {
+    private fun leaveChallenge(userId: Long, challengeId: Long): Boolean {
         if (!challengeHistoryPort.validateLastChallengeMember(challengeId)) {
             challengeMemberPort.withdrawMember(userId, challengeId)
             challengeHistoryPort.decreaseChallengeMember(challengeId)
-            return
+            return true
         }
+        return false
     }
 }

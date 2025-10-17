@@ -2,18 +2,22 @@ package com.photi.core.domain.challengehistory.adapter
 
 import com.photi.core.domain.challenge.exception.ChallengeException
 import com.photi.core.domain.challenge.port.ChallengeChallengeHistoryPort
+import com.photi.core.domain.challengehistory.service.command.ChallengeHistoryCommandService
 import com.photi.core.domain.challengehistory.service.query.ChallengeHistoryQueryService
 import com.photi.core.domain.challengehistory.validator.ChallengeHistoryValidator
 import org.springframework.stereotype.Component
 
 @Component
 class ChallengeHistoryAdapter(
+    private val challengeHistoryCommandService: ChallengeHistoryCommandService,
     private val challengeHistoryQueryService: ChallengeHistoryQueryService,
     private val challengeHistoryValidator: ChallengeHistoryValidator,
 ) : ChallengeChallengeHistoryPort {
 
     override fun increaseChallengeMember(challengeId: Long) {
-        getChallengeHistoryBy(challengeId).increaseChallengeMember()
+        challengeHistoryQueryService.getChallengeHistoryBy(challengeId)
+            ?.increaseChallengeMember()
+            ?: challengeHistoryCommandService.createChallengeHistory(challengeId)
     }
 
     override fun increaseVisit(challengeId: Long) {

@@ -6,7 +6,6 @@ object HttpErrorStatus {
     const val FORBIDDEN = 403
     const val NOT_FOUND = 404
     const val CONFLICT = 409
-    const val PAYLOAD_TOO_LARGE = 413
     const val UNSUPPORTED_MEDIA_TYPE = 415
     const val INTERNAL_SERVER_ERROR = 500
 }

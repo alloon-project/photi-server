@@ -13,12 +13,11 @@ class ChallengeMemberCommandService(
 ) {
 
     fun createCreator(userId: Long, challengeId: Long) {
-        val creator = ChallengeMember(userId = userId, challengeId = challengeId)
-        challengeMemberRepository.save(creator)
+        challengeMemberRepository.save(ChallengeMember(userId, challengeId))
     }
 
     fun createMember(userId: Long, challengeId: Long, dto: RegisterChallengePersonalGoalDto) {
-        val member = ChallengeMember(userId = userId, challengeId = challengeId, isCreator = false)
+        val member = ChallengeMember(userId, challengeId, false)
         challengeMemberRepository.save(member)
         member.registerGoal(dto)
     }
