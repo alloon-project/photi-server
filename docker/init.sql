@@ -25,7 +25,6 @@ CREATE TABLE users
     username                VARCHAR(20)  NULL,
     password                VARCHAR(255) NULL,
     image_url               VARCHAR(500) NULL,
-    is_temporary_password   BOOLEAN      NOT NULL,
     role                    VARCHAR(25)  NOT NULL,
     deleted_date            TIMESTAMP(6) NULL,
     created_date_time       TIMESTAMP(6) NULL,
@@ -45,7 +44,8 @@ CREATE TABLE user_challenge_history
     last_modified_date_time   TIMESTAMP(6) NULL,
     created_by                VARCHAR(255) NULL,
     last_modified_by          VARCHAR(255) NULL,
-    CONSTRAINT fk_user_challenge_history_user_id FOREIGN KEY (user_id) REFERENCES users (user_id)
+    CONSTRAINT fk_user_challenge_history_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT uq_user_challenge_history_user_id UNIQUE (user_id)
 );
 
 CREATE TABLE report
@@ -92,6 +92,7 @@ CREATE TABLE challenge
     created_by              VARCHAR(255) NULL,
     last_modified_by        VARCHAR(255) NULL
 );
+CREATE INDEX idx_challenge_status ON challenge (status);
 CREATE INDEX idx_challenge_name_trgm ON challenge USING GIN (name gin_trgm_ops);
 
 CREATE TABLE challenge_rule
@@ -151,7 +152,8 @@ CREATE TABLE challenge_history
     last_modified_date_time TIMESTAMP(6) NULL,
     created_by              VARCHAR(255) NULL,
     last_modified_by        VARCHAR(255) NULL,
-    CONSTRAINT fk_challenge_history_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id)
+    CONSTRAINT fk_challenge_history_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
+    CONSTRAINT uq_challenge_history_challenge_id UNIQUE (challenge_id)
 );
 
 CREATE TABLE feed
@@ -186,6 +188,7 @@ CREATE TABLE feed_comment
     CONSTRAINT fk_feed_comment_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
     CONSTRAINT fk_feed_comment_challenge_member_id FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
 );
+CREATE INDEX idx_feed_comment_feed_id ON feed_comment (feed_id);
 
 CREATE TABLE feed_like
 (
@@ -211,7 +214,8 @@ CREATE TABLE feed_history
     last_modified_date_time TIMESTAMP(6) NULL,
     created_by              VARCHAR(255) NULL,
     last_modified_by        VARCHAR(255) NULL,
-    CONSTRAINT fk_feed_history_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id)
+    CONSTRAINT fk_feed_history_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
+    CONSTRAINT uq_feed_history_feed_id UNIQUE (feed_id)
 );
 
 CREATE TABLE app_version
@@ -311,30 +315,30 @@ CREATE SEQUENCE BATCH_JOB_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 
 -- user 테이블
 INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
-                   is_temporary_password, role, deleted_date, created_date_time,
+                   role, deleted_date, created_date_time,
                    last_modified_date_time)
 VALUES ('user1@example.com', 1234, true, 'user1',
         '$2a$10$KcNHY41JcvJd2OGnWmC0bek8qT6XiEE11LeHsOfElgj6bFLYOgGay',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        false, 'USER', null, NOW(), NOW()),
+        'USER', null, NOW(), NOW()),
        ('user2@example.com', 1234, true, 'user2',
         '$2a$10$rnp2AMAt4gsvcdxGlGH4UeXLLE2chDTX4aSptgILLUBNaC1ZISGZK',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        false, 'USER', null, NOW(), NOW()),
+        'USER', null, NOW(), NOW()),
        ('user3@example.com', 1234, true, 'user3',
         '$2a$10$VOCyMnl8u5sXLJDfgDGlvOoxcUesiULBDOkzebTRavhGXlY63B3qi',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_photo.jpg',
-        false, 'USER', null, NOW(), NOW()),
+        'USER', null, NOW(), NOW()),
        ('user4@example.com', 1234, true, 'user4',
         '$2a$10$ttevy3H13u6UEbYCDjWOjOImZJKA6SDzNb1rcWcdc.CmQlY4qy8R.',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        false, 'USER', null, NOW(), NOW()),
+        'USER', null, NOW(), NOW()),
        ('user5@example.com', 1234, true, 'user5',
         '$2a$10$TMgFmiij5j0NfpOcUyUjtOrbQmBrdKwI/dfzXWI2haHnVcvMD8Vfq',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        false, 'USER', null, NOW(), NOW());
+        'USER', null, NOW(), NOW());
 INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
-                   is_temporary_password, role, deleted_date, created_date_time,
+                   role, deleted_date, created_date_time,
                    last_modified_date_time)
 SELECT 'user' || gs.i || '@example.com',
        1234,
@@ -342,7 +346,6 @@ SELECT 'user' || gs.i || '@example.com',
        'user' || gs.i,
        '$2a$10$' || substr(md5(random()::TEXT), 1, 53),
        image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT],
-       false,
        'USER',
        null,
        NOW(),
@@ -360,16 +363,16 @@ FROM generate_series(6, 30) AS gs(i)
     ) img_array;
 
 INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
-                   is_temporary_password, role, deleted_date, created_date_time,
+                   role, deleted_date, created_date_time,
                    last_modified_date_time)
 VALUES ('photi.aos@gmail.com', 1234, true, 'photi_aos',
         '$2a$10$IyhRXXoibA7zeoq5IMYWMea1kRnt7BX2qzRmQ8Sn0iQosmSyBTjWa',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        false, 'ADMIN', null, NOW(), NOW()),
+        'ADMIN', null, NOW(), NOW()),
        ('photi.ios@gmail.com', 1234, true, 'photi_ios',
         '$2a$10$QyNEaU1.Dkj.dZ34rUzZIuGbOMpi5IV3pddCBraW.3ERu0eOPYHS6',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        false, 'ADMIN', null, NOW(), NOW());
+        'ADMIN', null, NOW(), NOW());
 
 -- user_challenge_history 테이블
 INSERT INTO user_challenge_history (user_id,
