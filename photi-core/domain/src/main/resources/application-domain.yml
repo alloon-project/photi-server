@@ -11,7 +11,7 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        default_batch_fetch_size: 1000
+        default_batch_fetch_size: 100
         show_sql: true
         format_sql: true
         use_sql_comments: true
@@ -32,13 +32,18 @@ spring:
     url: ${RDS_URL}
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 10
+      connection-timeout: 30000
+      max-lifetime: 297000
+      keepalive-time: 200000
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
     properties:
       hibernate:
-        default_batch_fetch_size: 1000
+        default_batch_fetch_size: 100
         show_sql: true
         format_sql: true
     open-in-view: false
@@ -48,8 +53,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: debug # TODO 수정 필요
-    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.SQL: debug
 ---
 spring:
   config:
@@ -64,7 +68,7 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        default_batch_fetch_size: 1000
+        default_batch_fetch_size: 100
     open-in-view: false
   flyway:
     enabled: true

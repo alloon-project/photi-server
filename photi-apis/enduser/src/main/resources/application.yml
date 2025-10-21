@@ -4,8 +4,11 @@ spring:
     include:
       - domain
       - infra
-  config:
-    import: optional:file:.env[.properties]
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      access-exp: ${JWT_ACCESS}
+      refresh-exp: ${JWT_REFRESH}
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
@@ -17,64 +20,33 @@ spring:
           starttls:
             enable: true
           auth: true
-  servlet:
-    multipart:
-      max-request-size: 8MB
-      max-file-size: 8MB
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 ---
 spring:
   config:
     activate:
       on-profile: local
-  security:
-    jwt:
-      secret-key: ${JWT_SECRET}
-      access-exp: ${JWT_ACCESS}
-      refresh-exp: ${JWT_REFRESH}
-
-springdoc: # TODO 수정 필요
-  swagger-ui:
-    groups-order: desc
-    tags-sorter: alpha
-    operations-sorter: method
-    disable-swagger-default-url: true
-    display-request-duration: true
-  api-docs:
-    path: /api-docs
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
+    import: optional:file:.env[.properties]
 ---
 spring:
   config:
     activate:
       on-profile: dev
-  security:
-    jwt:
-      secret-key: ${JWT_SECRET}
-      access-exp: ${JWT_ACCESS}
-      refresh-exp: ${JWT_REFRESH}
-
-springdoc: # TODO 수정 필요
-  swagger-ui:
-    groups-order: desc
-    tags-sorter: alpha
-    operations-sorter: method
-    disable-swagger-default-url: true
-    display-request-duration: true
-  api-docs:
-    path: /api-docs
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
 ---
 spring:
   config:
     activate:
       on-profile: prod
-  security:
-    jwt:
-      secret-key: ${JWT_SECRET}
-      access-exp: ${JWT_ACCESS}
-      refresh-exp: ${JWT_REFRESH}
 
 springdoc:
   swagger-ui:
