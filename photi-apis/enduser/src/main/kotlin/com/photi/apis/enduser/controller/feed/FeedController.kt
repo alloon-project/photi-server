@@ -46,7 +46,11 @@ class FeedController(
     }
 
     @PostMapping("/{challengeId}")
-    @Operation(summary = "피드 인증", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @Operation(
+        summary = "피드 인증",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+        description = "[이미지 PresignedURL 조회] API를 호출해 응답으로 받은 PresignedURL에 PUT 요청으로 실제 이미지 파일을 업로드하시면 됩니다. 이후 피드 인증 요청 객체의 preSignedUrl 필드에 해당 PresignedURL을 넣어주시면 됩니다.",
+    )
     @ApiResponse(responseCode = "201")
     @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @UserApiErrorResponses([USER_NOT_FOUND])

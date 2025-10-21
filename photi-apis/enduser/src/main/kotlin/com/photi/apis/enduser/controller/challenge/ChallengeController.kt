@@ -53,7 +53,7 @@ class ChallengeController(
     @Operation(
         summary = "챌린지 개최",
         security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
-        description = "'이미지 PresignedURL 조회' API 호출한 후, PUT 요청으로 해당 PresignedURL에 실제 이미지 파일을 업로드합니다. 이후 '챌린지 개최 요청 객체'의 preSignedUrl 필드에 PresignedURL을 넣어주시면 됩니다.",
+        description = "[이미지 PresignedURL 조회] API를 호출해 응답으로 받은 PresignedURL에 PUT 요청으로 실제 이미지 파일을 업로드하시면 됩니다. 이후 챌린지 개최 요청 객체의 preSignedUrl 필드에 해당 PresignedURL을 넣어주시면 됩니다.",
     )
     @ApiResponse(responseCode = "201")
     @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
@@ -128,7 +128,7 @@ class ChallengeController(
     @Operation(
         summary = "챌린지 수정",
         security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
-        description = "'이미지 PresignedURL 조회' API 호출한 후, PUT 요청으로 해당 PresignedURL에 실제 이미지 파일을 업로드합니다. 이후 '챌린지 수정 요청 객체'의 preSignedUrl 필드에 PresignedURL을 넣어주시면 됩니다.",
+        description = "[이미지 PresignedURL 조회] API를 호출해 응답으로 받은 PresignedURL에 PUT 요청으로 실제 이미지 파일을 업로드하시면 됩니다. 이후 챌린지 수정 요청 객체의 preSignedUrl 필드에 해당 PresignedURL을 넣어주시면 됩니다.",
     )
     @ApiResponse(responseCode = "200")
     @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
