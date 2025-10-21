@@ -14,7 +14,7 @@ class FeedHistory(
     var id: Long? = null
         protected set
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var feedId: Long = feedId
         protected set
 

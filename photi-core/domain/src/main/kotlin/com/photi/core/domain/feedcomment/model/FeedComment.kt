@@ -4,6 +4,7 @@ import com.photi.core.domain.common.model.BaseEntity
 import jakarta.persistence.*
 
 @Entity
+@Table(indexes = [Index(name = "idx_feed_comment_feed_id", columnList = "feed_id")])
 class FeedComment(
     userId: Long,
     challengeMemberId: Long,

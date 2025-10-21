@@ -16,6 +16,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
+@Table(indexes = [Index(name = "idx_challenge_status", columnList = "status")])
 class Challenge(
     name: String,
     isPublic: Boolean,

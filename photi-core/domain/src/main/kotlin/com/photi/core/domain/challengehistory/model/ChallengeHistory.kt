@@ -14,7 +14,7 @@ class ChallengeHistory(
     var id: Long? = null
         protected set
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var challengeId: Long = challengeId
         protected set
 

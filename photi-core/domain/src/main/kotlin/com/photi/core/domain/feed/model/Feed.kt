@@ -10,9 +10,10 @@ import jakarta.persistence.*
 
 @Entity
 @Table(
-    indexes = [
-        Index(columnList = "challenge_id, created_date_time"),
-    ]
+    indexes = [Index(
+        name = "idx_feed_challenge_id_created_date_time",
+        columnList = "challenge_id, created_date_time",
+    )]
 )
 class Feed(
     userId: Long,

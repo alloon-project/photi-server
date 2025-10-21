@@ -5,9 +5,10 @@ import jakarta.persistence.*
 
 @Entity
 @Table(
-    uniqueConstraints = [
-        UniqueConstraint(columnNames = ["challenge_member_id", "feed_id"]),
-    ]
+    uniqueConstraints = [UniqueConstraint(
+        name = "uq_feed_like_challenge_member_id_feed_id",
+        columnNames = ["challenge_member_id", "feed_id"],
+    )]
 )
 class FeedLike(
     challengeMemberId: Long,
