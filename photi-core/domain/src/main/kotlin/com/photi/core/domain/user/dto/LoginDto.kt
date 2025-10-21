@@ -11,7 +11,6 @@ data class LoginDto(
     val id: Long,
     val username: String,
     val imageUrl: String?,
-    val isTemporaryPassword: Boolean,
 ) {
 
     companion object {
@@ -20,7 +19,6 @@ data class LoginDto(
             user.id!!,
             user.username!!,
             user.imageUrl,
-            user.isTemporaryPassword,
         )
     }
 }

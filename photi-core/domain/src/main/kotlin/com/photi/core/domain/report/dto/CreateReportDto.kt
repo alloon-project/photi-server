@@ -11,10 +11,10 @@ data class CreateReportDto(
 ) {
 
     fun toEntity(reporterId: Long, targetId: Long) = Report(
-        reporterId = reporterId,
-        targetId = targetId,
-        category = CategoryType.valueOf(category),
-        reason = ReasonType.valueOf(reason),
-        content = content,
+        reporterId,
+        targetId,
+        CategoryType.valueOf(category),
+        ReasonType.valueOf(reason),
+        content,
     )
 }

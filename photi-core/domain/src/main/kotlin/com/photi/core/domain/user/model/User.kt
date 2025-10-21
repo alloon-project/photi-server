@@ -47,10 +47,6 @@ class User(
     var imageUrl: String? = null
         protected set
 
-    @Column(nullable = false)
-    var isTemporaryPassword: Boolean = false
-        protected set
-
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 25)
     var role: RoleType = RoleType.UNAUTHENTICATED_USER
@@ -88,7 +84,6 @@ class User(
 
     fun resetPasswordTo(passwordPort: PasswordPort, temporaryPassword: String) {
         password = passwordPort.encode(temporaryPassword)
-        isTemporaryPassword = true
     }
 
     fun changePasswordTo(
@@ -98,7 +93,6 @@ class User(
     ) {
         userValidator.validateNewPassword(this, dto)
         password = passwordPort.encode(dto.newPassword)
-        isTemporaryPassword = false
     }
 
     fun withdraw(passwordPort: PasswordPort, password: String) {

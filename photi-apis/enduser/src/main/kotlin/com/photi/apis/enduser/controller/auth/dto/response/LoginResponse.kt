@@ -14,9 +14,6 @@ data class LoginResponse(
 
     @Schema(description = "사용자 프로필 이미지 url", example = "https://url.kr/5MhHhD")
     val imageUrl: String?,
-
-    @Schema(description = "임시 비밀번호 여부", example = "true")
-    val temporaryPasswordYn: Boolean,
 ) {
 
     companion object {
@@ -25,7 +22,6 @@ data class LoginResponse(
             loginUser.id,
             loginUser.username,
             loginUser.imageUrl,
-            loginUser.isTemporaryPassword,
         )
     }
 }

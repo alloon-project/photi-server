@@ -9,8 +9,8 @@ data class CreateInquiryDto(
 ) {
 
     fun toEntity(userId: Long) = Inquiry(
-        userId = userId,
-        category = CategoryType.valueOf(category),
-        content = content,
+        userId,
+        CategoryType.valueOf(category),
+        content,
     )
 }
