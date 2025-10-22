@@ -11,7 +11,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
     implementation("org.postgresql:postgresql:42.7.7")
-    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql:10.20.1")
     implementation(project(":photi-utils"))
 
     kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
