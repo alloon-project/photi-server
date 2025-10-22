@@ -58,18 +58,18 @@ DROP TABLE inquiry_category;
 DROP TABLE report_category;
 DROP TABLE user_template_image;
 DROP TABLE user_role;
-DROP TABLE contact;
 DROP TABLE app_version_old;
-DROP TABLE users_old;
-DROP TABLE challenge_old;
+DROP TABLE feed_comment_old;
+DROP TABLE feed_like_old;
+DROP TABLE feed_old;
 DROP TABLE challenge_rule_old;
 DROP TABLE challenge_hashtag_old;
 DROP TABLE challenge_member_old;
-DROP TABLE feed_old;
-DROP TABLE feed_comment_old;
-DROP TABLE feed_like_old;
+DROP TABLE challenge_old;
 DROP TABLE inquiry_old;
 DROP TABLE report_old;
+DROP TABLE users_old;
+DROP TABLE contact;
 
 ANALYZE;
 
