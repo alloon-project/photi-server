@@ -108,7 +108,7 @@ CREATE TABLE challenge_member_new
     last_modified_by        VARCHAR(255) NULL
 );
 
-CREATE TABLE challenge_example_image_new
+CREATE TABLE challenge_example_image
 (
     challenge_example_image_id BIGSERIAL PRIMARY KEY,
     image_url                  VARCHAR(500) NOT NULL
