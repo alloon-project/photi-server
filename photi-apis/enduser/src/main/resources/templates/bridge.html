@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>포티로 이동 중...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      color: #333;
+      text-align: center;
+      margin: 80px 20px;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 23px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .desc {
+      color: #666;
+      margin-bottom: 50px;
+    }
+
+    .btn {
+      display: block;
+      margin: 10px auto;
+      padding: 12px 18px;
+      width: 80%;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background-color: #5F6BFF;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<img
+    src="/static/logo.jpg"
+    alt="Photi" class="logo">
+<div class="title">포티로 이동 중</div>
+<div class="desc">더 이상 이동하지 않으면 직접 이동할 수 있어요</div>
+<a th:href="@{${deepLink}}" class="btn btn-primary">포티로 바로가기</a>
+</body>
+</html>
