@@ -27,13 +27,23 @@ class UserCustomRepositoryImpl(
 ) : UserCustomRepository {
 
     override fun findChallengeHistoryById(userId: Long): FindChallengeHistoryDto? {
+        val endedChallengeCount = queryFactory
+            .select(challengeMember.count())
+            .from(challengeMember)
+            .join(challenge).on(challenge.id.eq(challengeMember.challengeId))
+            .where(
+                challengeMember.userId.eq(userId),
+                challengeMember.status.eq(PROGRESS),
+                challenge.status.eq(END),
+            )
+            .fetchOne() ?: 0L
         return queryFactory
             .select(
                 QFindChallengeHistoryDto(
                     user.username,
                     user.imageUrl,
                     userChallengeHistory.feedCount,
-                    userChallengeHistory.endedChallengeCount,
+                    Expressions.constant(endedChallengeCount),
                     user.createdDateTime,
                 )
             )

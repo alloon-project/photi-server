@@ -31,7 +31,7 @@ data class FindChallengeHistoryResponse(
             challengeHistory.username,
             challengeHistory.imageUrl,
             challengeHistory.feedCount,
-            challengeHistory.endedChallengeCount,
+            challengeHistory.endedChallengeCount.toInt(),
             challengeHistory.signInDate.toLocalDate(),
         )
     }
