@@ -7,6 +7,6 @@ data class FindChallengeHistoryDto @QueryProjection constructor(
     val username: String,
     val imageUrl: String,
     val feedCount: Int,
-    val endedChallengeCount: Int,
+    val endedChallengeCount: Long,
     val signInDate: LocalDateTime,
 )
