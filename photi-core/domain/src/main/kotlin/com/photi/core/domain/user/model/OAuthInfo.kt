@@ -18,6 +18,6 @@ class OAuthInfo(
 
     companion object {
 
-        fun of(provider: OAuthProviderType, sub: String) = OAuthInfo(provider, sub)
+        fun ofKakao(sub: String) = OAuthInfo(OAuthProviderType.KAKAO, sub)
     }
 }
