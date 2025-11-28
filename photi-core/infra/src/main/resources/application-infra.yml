@@ -17,6 +17,11 @@ cloud:
       bucket: ${AWS_BUCKET}
     stack:
       auto: false
+
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    rest-api-key: ${KAKAO_REST_API_KEY}
 ---
 spring:
   config:
@@ -37,6 +42,11 @@ cloud:
       bucket: ${AWS_BUCKET}
     stack:
       auto: false
+
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    rest-api-key: ${KAKAO_REST_API_KEY}
 ---
 spring:
   config:
