@@ -1,6 +1,7 @@
 package com.photi.core.domain.user.model.repository
 
 import com.photi.core.domain.user.dto.FindInfoDto
+import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -11,6 +12,8 @@ interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
     fun existsByEmailAndRole(email: String, role: RoleType): Boolean
 
     fun existsByUsername(username: String): Boolean
+
+    fun existsByOAuthInfo(oAuthInfo: OAuthInfo): Boolean
 
     fun findByEmailAndRole(email: String, role: RoleType): User?
 
