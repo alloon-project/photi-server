@@ -25,6 +25,8 @@ interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
 
     fun findByEmailAndUsernameAndIsAuthenticatedTrue(email: String, username: String): User?
 
+    fun findByOAuthInfo(oAuthInfo: OAuthInfo): User?
+
     @Query("select new com.photi.core.domain.user.dto.FindInfoDto(u.imageUrl, u.username, u.email) from User u where u.id = :id")
     fun findInfoById(id: Long): FindInfoDto?
 }

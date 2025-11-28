@@ -23,6 +23,8 @@ class UserQueryService(
 
     fun getLoginUserBy(username: String) = userRepository.findByUsername(username)
 
+    fun getLoginUserBy(oAuthInfo: OAuthInfo) = userRepository.findByOAuthInfo(oAuthInfo)
+
     fun getAuthenticatedUserBy(email: String) =
         userRepository.findByEmailAndIsAuthenticatedTrue(email)
 
