@@ -128,5 +128,9 @@ class User(
         deletedDate = null
     }
 
+    fun login(userValidator: UserValidator) {
+        userValidator.validateDeletedUser(this)
+    }
+
     private fun isImageNullOrEmpty() = this.imageUrl.isNullOrEmpty()
 }
