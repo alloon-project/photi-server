@@ -10,11 +10,21 @@ import com.photi.core.domain.user.validator.UserValidator
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
-@Table(name = "users")
+@Table(
+    name = "users",
+    uniqueConstraints = [UniqueConstraint(
+        name = "uq_user_provider_sub",
+        columnNames = ["provider", "sub"]
+    )]
+)
 @Entity
 class User(
     email: String,
-    authenticationCode: String,
+    authenticationCode: String? = null,
+    isAuthenticated: Boolean = false,
+    username: String? = null,
+    oAuthInfo: OAuthInfo? = null,
+    role: RoleType = RoleType.UNAUTHENTICATED_USER,
 ) : BaseTimeEntity() {
 
     @Id
@@ -23,20 +33,24 @@ class User(
     var id: Long? = null
         protected set
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Embedded
+    var oAuthInfo: OAuthInfo? = oAuthInfo
+        protected set
+
+    @Column(nullable = false, length = 100)
     var email: String = email
         protected set
 
-    @Column(nullable = false, length = 6)
-    var authenticationCode: String = authenticationCode
+    @Column(nullable = true, length = 6)
+    var authenticationCode: String? = authenticationCode
         protected set
 
     @Column(nullable = false)
-    var isAuthenticated: Boolean = false
+    var isAuthenticated: Boolean = isAuthenticated
         protected set
 
     @Column(nullable = true, unique = true, length = 20)
-    var username: String? = null
+    var username: String? = username
         protected set
 
     @Column(nullable = true, length = 255)
@@ -49,7 +63,7 @@ class User(
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false, length = 25)
-    var role: RoleType = RoleType.UNAUTHENTICATED_USER
+    var role: RoleType = role
         protected set
 
     @Column(nullable = true)
