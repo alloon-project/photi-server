@@ -5,10 +5,10 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 
-@FeignClient(name = "KakaoOAuthClient", url = "https://kauth.kakao.com")
-interface KakaoOAuthClient : OAuthClient {
+@FeignClient(name = "GoogleOAuthClient", url = "https://www.googleapis.com")
+interface GoogleOAuthClient : OAuthClient {
 
-    @Cacheable(cacheNames = ["KakaoOidc"], cacheManager = "oidcCacheManager")
-    @GetMapping("/.well-known/jwks.json")
+    @Cacheable(cacheNames = ["GoogleOidc"], cacheManager = "oidcCacheManager")
+    @GetMapping("/oauth2/v3/certs")
     override fun getOidcPublicKeys(): OidcPublicKeysResponse
 }
