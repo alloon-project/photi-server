@@ -25,6 +25,9 @@ oauth:
   google:
     base-url: ${GOOGLE_BASE_URL}
     rest-api-key: ${GOOGLE_REST_API_KEY}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    rest-api-key: ${APPLE_REST_API_KEY}
 ---
 spring:
   config:
@@ -53,6 +56,9 @@ oauth:
   google:
     base-url: ${GOOGLE_BASE_URL}
     rest-api-key: ${GOOGLE_REST_API_KEY}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    rest-api-key: ${APPLE_REST_API_KEY}
 ---
 spring:
   config:
