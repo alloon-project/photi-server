@@ -6,6 +6,7 @@ import com.photi.apis.enduser.controller.auth.dto.response.LoginResponse
 import com.photi.apis.enduser.controller.auth.dto.response.SignUpResponse
 import com.photi.apis.enduser.controller.oauth.request.OAuthSignUpRequest
 import com.photi.core.domain.user.exception.UserErrorCode.*
+import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.RoleType.Companion.getRole
 import com.photi.core.domain.user.service.OAuthService
@@ -29,26 +30,30 @@ class OAuthController(
     private val jwtTokenProvider: JwtTokenProvider,
 ) {
 
-    @PostMapping("/kakao/signup")
-    @Operation(summary = "카카오 회원가입")
+    @PostMapping("/{provider}/signup")
+    @Operation(summary = "OAuth 회원가입")
     @ApiResponse(responseCode = "201")
     @UserApiErrorResponses([EXISTING_USER])
-    fun kakaoSignUp(
+    fun signUp(
+        @PathVariable provider: OAuthProviderType,
         @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
         @RequestBody @Valid request: OAuthSignUpRequest,
     ): ResponseEntity<SignUpResponse> {
-        val signUpUser = oAuthService.kakaoSignUp(idToken, request.toServiceDto())
+        val signUpUser = oAuthService.signUp(provider, idToken, request.toServiceDto())
         val response = SignUpResponse.of(signUpUser)
         val headers = jwtTokenProvider.createToken(response.userId, RoleType.USER)
         return ResponseEntity.status(CREATED).headers(headers).body(response)
     }
 
-    @GetMapping("/kakao/login")
-    @Operation(summary = "카카오 로그인")
+    @GetMapping("/{provider}/login")
+    @Operation(summary = "OAuth 로그인")
     @ApiResponse(responseCode = "200")
     @UserApiErrorResponses([USER_NOT_FOUND, DELETED_USER])
-    fun kakaoLogin(@RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String): ResponseEntity<LoginResponse> {
-        val loginUser = oAuthService.kakaoLogin(idToken)
+    fun login(
+        @PathVariable provider: OAuthProviderType,
+        @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
+    ): ResponseEntity<LoginResponse> {
+        val loginUser = oAuthService.login(provider, idToken)
         val response = LoginResponse.of(loginUser)
         val headers = jwtTokenProvider.createToken(response.userId, getRole(response.username))
         return ResponseEntity.status(OK).headers(headers).body(response)
