@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component
 class OAuthFactoryAdapter(
     private val kakaoOAuthAdapter: KakaoOAuthAdapter,
     private val googleOAuthAdapter: GoogleOAuthAdapter,
+    private val appleOAuthAdapter: AppleOAuthAdapter,
 ) : OAuthFactoryPort {
 
     override fun getOAuthAdapter(provider: OAuthProviderType) = when (provider) {
         OAuthProviderType.KAKAO -> kakaoOAuthAdapter
         OAuthProviderType.GOOGLE -> googleOAuthAdapter
-        OAuthProviderType.APPLE -> TODO()
+        OAuthProviderType.APPLE -> appleOAuthAdapter
     }
 }

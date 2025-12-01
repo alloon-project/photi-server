@@ -21,5 +21,7 @@ class OAuthInfo(
         fun ofKakao(sub: String) = OAuthInfo(OAuthProviderType.KAKAO, sub)
 
         fun ofGoogle(sub: String) = OAuthInfo(OAuthProviderType.GOOGLE, sub)
+
+        fun ofApple(sub: String) = OAuthInfo(OAuthProviderType.APPLE, sub)
     }
 }
