@@ -10,7 +10,7 @@ class OAuthProviderConverter : Converter<String, OAuthProviderType> {
 
     override fun convert(source: String): OAuthProviderType? {
         return try {
-            OAuthProviderType.valueOf(source.lowercase())
+            OAuthProviderType.valueOf(source.uppercase())
         } catch (e: IllegalArgumentException) {
             throw UserException.InvalidOAuthProviderException()
         }
