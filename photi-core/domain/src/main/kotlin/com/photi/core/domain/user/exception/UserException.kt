@@ -24,4 +24,6 @@ sealed class UserException(errorCode: UserErrorCode) : PhotiException(errorCode)
     class ExistsUsernameException : UserException(UserErrorCode.EXISTING_USERNAME)
 
     class NotAvailableUsernameException : UserException(UserErrorCode.UNAVAILABLE_USERNAME)
+
+    class InvalidOAuthProviderException : UserException(UserErrorCode.OAUTH_PROVIDER_INVALID)
 }
