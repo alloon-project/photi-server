@@ -20,16 +20,20 @@ class JwtOidcProvider : JwtOidcPort {
         aud: String,
         nonce: String,
     ) = getUnsignedIdTokenClaims(idToken, iss, aud, nonce)
-        .header["kid"]
+        .header[KID]
         .toString()
 
-    override fun getIdTokenPayload(idToken: String, modulus: String, exponent: String): OidcPayload {
+    override fun getIdTokenPayload(
+        idToken: String,
+        modulus: String,
+        exponent: String,
+    ): OidcPayload {
         val claims = getIdTokenClaims(idToken, modulus, exponent)
         return OidcPayload(
             claims.issuer,
             claims.audience.first(),
             claims.subject,
-            claims["email"].toString(),
+            claims[EMAIL].toString(),
         )
     }
 
@@ -43,7 +47,7 @@ class JwtOidcProvider : JwtOidcPort {
             Jwts.parser()
                 .requireIssuer(iss)
                 .requireAudience(aud)
-                .require("nonce", nonce)
+                .require(NONCE, nonce)
                 .build()
                 .parseUnsecuredClaims(getUnsignedIdToken(idToken))
         } catch (e: ExpiredJwtException) {
@@ -76,12 +80,19 @@ class JwtOidcProvider : JwtOidcPort {
     }
 
     private fun getRsaPublicKey(modulus: String, exponent: String): PublicKey {
-        val keyFactory = KeyFactory.getInstance("RSA")
+        val keyFactory = KeyFactory.getInstance(ALGORITHM)
         val decodeN = Base64.getUrlDecoder().decode(modulus)
         val decodeE = Base64.getUrlDecoder().decode(exponent)
         val n = BigInteger(1, decodeN)
         val e = BigInteger(1, decodeE)
         val keySpec = RSAPublicKeySpec(n, e)
         return keyFactory.generatePublic(keySpec)
+    }
+
+    companion object {
+        private const val KID = "kid"
+        private const val EMAIL = "email"
+        private const val NONCE = "nonce"
+        private const val ALGORITHM = "RSA"
     }
 }
