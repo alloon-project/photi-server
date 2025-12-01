@@ -22,6 +22,9 @@ oauth:
   kakao:
     base-url: ${KAKAO_BASE_URL}
     rest-api-key: ${KAKAO_REST_API_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
 ---
 spring:
   config:
@@ -47,6 +50,9 @@ oauth:
   kakao:
     base-url: ${KAKAO_BASE_URL}
     rest-api-key: ${KAKAO_REST_API_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
 ---
 spring:
   config:
