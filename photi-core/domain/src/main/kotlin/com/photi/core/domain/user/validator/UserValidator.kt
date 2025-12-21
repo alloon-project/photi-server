@@ -48,7 +48,7 @@ class UserValidator(
         validateUsername(username)
     }
 
-    private fun validateDeletedUser(user: User) {
+    fun validateDeletedUser(user: User) {
         if (user.role == RoleType.DELETED_USER) {
             throw UserException.ExistsDeletedUserException()
         }

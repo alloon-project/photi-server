@@ -20,7 +20,9 @@ CREATE TABLE users
 (
     user_id                 BIGSERIAL PRIMARY KEY,
     email                   VARCHAR(100) NOT NULL,
-    authentication_code     VARCHAR(6)   NOT NULL,
+    provider                VARCHAR(15)  NULL,
+    sub                     VARCHAR(255) NULL,
+    authentication_code     VARCHAR(6)   NULL,
     is_authenticated        BOOLEAN      NOT NULL,
     username                VARCHAR(20)  NULL,
     password                VARCHAR(255) NULL,
@@ -29,7 +31,7 @@ CREATE TABLE users
     deleted_date            TIMESTAMP(6) NULL,
     created_date_time       TIMESTAMP(6) NULL,
     last_modified_date_time TIMESTAMP(6) NULL,
-    CONSTRAINT uq_email UNIQUE (email),
+    CONSTRAINT uq_user_provider_sub UNIQUE (provider, sub),
     CONSTRAINT uq_username UNIQUE (username)
 );
 

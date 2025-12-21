@@ -1,5 +1,6 @@
 package com.photi.core.domain.user.service.query
 
+import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.repository.UserRepository
 import org.springframework.data.domain.PageRequest
@@ -21,6 +22,8 @@ class UserQueryService(
         userRepository.findByEmailAndRole(email, RoleType.UNAUTHENTICATED_USER)
 
     fun getLoginUserBy(username: String) = userRepository.findByUsername(username)
+
+    fun getLoginUserBy(oAuthInfo: OAuthInfo) = userRepository.findByOAuthInfo(oAuthInfo)
 
     fun getAuthenticatedUserBy(email: String) =
         userRepository.findByEmailAndIsAuthenticatedTrue(email)
@@ -53,4 +56,6 @@ class UserQueryService(
     fun existsEmail(email: String) = userRepository.existsByEmailAndRole(email, RoleType.USER)
 
     fun existsUsername(username: String) = userRepository.existsByUsername(username)
+
+    fun existsBy(oAuthInfo: OAuthInfo) = userRepository.existsByOAuthInfo(oAuthInfo)
 }

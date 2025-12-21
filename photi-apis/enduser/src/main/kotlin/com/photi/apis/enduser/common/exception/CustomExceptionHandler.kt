@@ -3,6 +3,7 @@ package com.photi.apis.enduser.common.exception
 import com.photi.apis.enduser.common.exception.dto.ErrorResponse
 import com.photi.core.domain.common.exception.GlobalErrorCode
 import com.photi.core.domain.common.exception.PhotiException
+import com.photi.core.domain.user.exception.UserErrorCode
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import org.springframework.beans.TypeMismatchException
@@ -71,10 +72,18 @@ class CustomExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatusCode,
         request: WebRequest
     ): ResponseEntity<Any>? {
-        val response = ErrorResponse(
-            GlobalErrorCode.DATE_FORMAT_INVALID.name,
-            GlobalErrorCode.DATE_FORMAT_INVALID.message,
-        )
+        val isEnum = ex.requiredType?.isEnum == true
+        val response = if (isEnum) {
+            ErrorResponse(
+                UserErrorCode.OAUTH_PROVIDER_INVALID.name,
+                UserErrorCode.OAUTH_PROVIDER_INVALID.message,
+            )
+        } else {
+            ErrorResponse(
+                GlobalErrorCode.DATE_FORMAT_INVALID.name,
+                GlobalErrorCode.DATE_FORMAT_INVALID.message,
+            )
+        }
         return ResponseEntity.status(BAD_REQUEST).body(response)
     }
 

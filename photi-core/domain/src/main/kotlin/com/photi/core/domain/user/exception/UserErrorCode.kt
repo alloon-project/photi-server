@@ -31,5 +31,6 @@ enum class UserErrorCode(
         "USERNAME_FORMAT_INVALID",
         "아이디는 소문자 영어, 숫자, 특수문자(_)의 조합으로 입력해 주세요.",
         "아이디는 5~20자만 가능하고, 정규식은 ^[a-z0-9_]+$ 입니다.",
-    );
+    ),
+    OAUTH_PROVIDER_INVALID(BAD_REQUEST, "OAUTH_PROVIDER_INVALID", "지원하지 않는 OAuth Provider 입니다."),
 }

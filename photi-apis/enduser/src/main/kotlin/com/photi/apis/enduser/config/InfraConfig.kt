@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration
         PhotiConfigGroup.REDIS,
         PhotiConfigGroup.S3,
         PhotiConfigGroup.ASYNC,
+        PhotiConfigGroup.REDIS_CACHE,
+        PhotiConfigGroup.FEIGN,
+        PhotiConfigGroup.CONFIGURATION_PROPERTIES,
     ]
 )
 class InfraConfig
