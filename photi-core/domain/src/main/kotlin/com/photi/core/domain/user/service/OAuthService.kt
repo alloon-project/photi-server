@@ -53,7 +53,7 @@ class OAuthService(
         return oAuthPort.getIdTokenPayload(
             idToken,
             properties.baseUrl,
-            properties.restApiKey,
+            properties.nativeAppKey,
             "nonce", // todo '인가 코드 요청 api' 요청 시 전달한 nonce 값과 동일한 값
         )
     }
