@@ -8,12 +8,13 @@ data class OAuthSignUpDto(
     val username: String,
 ) {
 
-    fun toEntity(oAuthInfo: OAuthInfo, email: String) =
+    fun toEntity(oAuthInfo: OAuthInfo, email: String, image: String) =
         User(
             email = email,
             oAuthInfo = oAuthInfo,
             username = username,
             role = RoleType.USER,
             isAuthenticated = true,
+            imageUrl = image,
         )
 }

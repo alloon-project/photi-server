@@ -17,6 +17,6 @@ class UserCommandService(
         userRepository.save(dto.toEntity(authenticationCode))
     }
 
-    fun createUser(dto: OAuthSignUpDto, oAuthInfo: OAuthInfo, email: String) =
-        userRepository.save(dto.toEntity(oAuthInfo, email))
+    fun createUser(dto: OAuthSignUpDto, oAuthInfo: OAuthInfo, email: String, image: String) =
+        userRepository.save(dto.toEntity(oAuthInfo, email, image))
 }

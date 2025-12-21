@@ -25,6 +25,7 @@ class User(
     username: String? = null,
     oAuthInfo: OAuthInfo? = null,
     role: RoleType = RoleType.UNAUTHENTICATED_USER,
+    imageUrl: String? = null,
 ) : BaseTimeEntity() {
 
     @Id
@@ -58,7 +59,7 @@ class User(
         protected set
 
     @Column(nullable = true, length = 500)
-    var imageUrl: String? = null
+    var imageUrl: String? = imageUrl
         protected set
 
     @Enumerated(value = EnumType.STRING)

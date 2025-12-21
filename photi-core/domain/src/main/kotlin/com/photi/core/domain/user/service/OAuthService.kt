@@ -29,7 +29,12 @@ class OAuthService(
         val idTokenPayload = getOidcPayload(idToken, oAuthPort)
         val oAuthInfo = oAuthPort.createOAuthInfo(idTokenPayload.sub)
         if (userQueryService.existsBy(oAuthInfo)) throw UserException.ExistsUserException()
-        val user = userCommandService.createUser(dto, oAuthInfo, idTokenPayload.email)
+        val user = userCommandService.createUser(
+            dto,
+            oAuthInfo,
+            idTokenPayload.email,
+            idTokenPayload.image,
+        )
         return SignUpDto.of(user)
     }
 
