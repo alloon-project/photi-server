@@ -26,20 +26,6 @@ services:
     restart: always
     networks:
       - server-network
-  batch:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JAR_FILE: photi-batch-0.0.1-SNAPSHOT.jar
-    environment:
-      - TZ=Asia/Seoul
-    depends_on:
-      - redis
-    networks:
-      - server-network
 
 networks:
   server-network:
