@@ -1,5 +1,6 @@
 package com.photi.apis.enduser.config.oidc
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.photi.core.domain.common.exception.GlobalException
 import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.infra.oauth.port.JwtOidcPort
@@ -12,16 +13,22 @@ import java.security.spec.RSAPublicKeySpec
 import java.util.*
 
 @Component
-class JwtOidcProvider : JwtOidcPort {
+class JwtOidcProvider(
+    private val objectMapper: ObjectMapper,
+) : JwtOidcPort {
 
     override fun getKidFromUnsignedIdToken(
         idToken: String,
         iss: String,
         aud: String,
         nonce: String,
-    ) = getUnsignedIdTokenClaims(idToken, iss, aud, nonce)
-        .header[KID]
-        .toString()
+    ): String {
+        val splitIdToken = getSplitIdToken(idToken)
+        validatePayload(splitIdToken[1], iss, aud, nonce)
+        val headerJson = String(Base64.getUrlDecoder().decode(splitIdToken[0]))
+        val headerMap = objectMapper.readValue(headerJson, Map::class.java)
+        return headerMap[KID].toString()
+    }
 
     override fun getIdTokenPayload(
         idToken: String,
@@ -34,35 +41,27 @@ class JwtOidcProvider : JwtOidcPort {
             claims.audience.first(),
             claims.subject,
             claims[EMAIL].toString(),
+            claims[PICTURE].toString(),
         )
     }
 
-    private fun getUnsignedIdTokenClaims(
-        idToken: String,
-        iss: String,
-        aud: String,
-        nonce: String,
-    ): Jwt<Header, Claims> {
-        return try {
-            Jwts.parser()
-                .requireIssuer(iss)
-                .requireAudience(aud)
-                .require(NONCE, nonce)
-                .build()
-                .parseUnsecuredClaims(getUnsignedIdToken(idToken))
-        } catch (e: ExpiredJwtException) {
-            throw GlobalException.ExpiredTokenException()
-        } catch (e: Exception) {
-            throw GlobalException.InvalidTokenException()
-        }
-    }
-
-    private fun getUnsignedIdToken(idToken: String): String {
-        val splitToken = idToken.split("\\.")
+    private fun getSplitIdToken(idToken: String): List<String> {
+        val splitToken = idToken.split(".")
         if (splitToken.size != 3) {
             throw GlobalException.InvalidTokenException()
         }
-        return "${splitToken[0]}.${splitToken[1]}."
+        return splitToken
+    }
+
+    private fun validatePayload(payload: String, iss: String, aud: String, nonce: String) {
+        val payloadJson = String(Base64.getUrlDecoder().decode(payload))
+        val payloadMap = objectMapper.readValue(payloadJson, Map::class.java)
+        if (payloadMap[ISS] != iss || payloadMap[AUD] != aud || payloadMap[NONCE] != nonce) {
+            throw GlobalException.InvalidTokenException()
+        }
+        val exp = (payloadMap[EXP] as? Number)?.toLong()
+            ?: throw GlobalException.InvalidTokenException()
+        if (Date().time / 1000 > exp) throw GlobalException.ExpiredTokenException()
     }
 
     private fun getIdTokenClaims(idToken: String, modulus: String, exponent: String): Claims {
@@ -91,7 +90,11 @@ class JwtOidcProvider : JwtOidcPort {
 
     companion object {
         private const val KID = "kid"
+        private const val ISS = "iss"
+        private const val AUD = "aud"
+        private const val EXP = "exp"
         private const val EMAIL = "email"
+        private const val PICTURE = "picture"
         private const val NONCE = "nonce"
         private const val ALGORITHM = "RSA"
     }
