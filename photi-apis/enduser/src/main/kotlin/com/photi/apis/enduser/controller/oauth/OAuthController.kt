@@ -1,10 +1,13 @@
 package com.photi.apis.enduser.controller.oauth
 
+import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.exception.UserApiErrorResponses
 import com.photi.apis.enduser.config.security.JwtTokenProvider
 import com.photi.apis.enduser.controller.auth.dto.response.LoginResponse
 import com.photi.apis.enduser.controller.auth.dto.response.SignUpResponse
 import com.photi.apis.enduser.controller.oauth.request.OAuthSignUpRequest
+import com.photi.core.domain.common.exception.GlobalErrorCode.EXPIRED_TOKEN
+import com.photi.core.domain.common.exception.GlobalErrorCode.INVALID_TOKEN
 import com.photi.core.domain.user.exception.UserErrorCode.*
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.model.RoleType
@@ -34,6 +37,7 @@ class OAuthController(
     @Operation(summary = "OAuth 회원가입")
     @ApiResponse(responseCode = "201")
     @UserApiErrorResponses([EXISTING_USER])
+    @GlobalApiErrorResponses([INVALID_TOKEN, EXPIRED_TOKEN])
     fun signUp(
         @PathVariable provider: OAuthProviderType,
         @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
@@ -49,6 +53,7 @@ class OAuthController(
     @Operation(summary = "OAuth 로그인")
     @ApiResponse(responseCode = "200")
     @UserApiErrorResponses([USER_NOT_FOUND, DELETED_USER])
+    @GlobalApiErrorResponses([INVALID_TOKEN, EXPIRED_TOKEN])
     fun login(
         @PathVariable provider: OAuthProviderType,
         @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
