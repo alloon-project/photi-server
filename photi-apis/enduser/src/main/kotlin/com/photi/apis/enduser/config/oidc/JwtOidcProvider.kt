@@ -17,14 +17,9 @@ class JwtOidcProvider(
     private val objectMapper: ObjectMapper,
 ) : JwtOidcPort {
 
-    override fun getKidFromUnsignedIdToken(
-        idToken: String,
-        iss: String,
-        aud: String,
-        nonce: String,
-    ): String {
+    override fun getKidFromUnsignedIdToken(idToken: String, iss: String, aud: String): String {
         val splitIdToken = getSplitIdToken(idToken)
-        validatePayload(splitIdToken[1], iss, aud, nonce)
+        validatePayload(splitIdToken[1], iss, aud)
         val headerJson = String(Base64.getUrlDecoder().decode(splitIdToken[0]))
         val headerMap = objectMapper.readValue(headerJson, Map::class.java)
         return headerMap[KID].toString()
@@ -53,10 +48,10 @@ class JwtOidcProvider(
         return splitToken
     }
 
-    private fun validatePayload(payload: String, iss: String, aud: String, nonce: String) {
+    private fun validatePayload(payload: String, iss: String, aud: String) {
         val payloadJson = String(Base64.getUrlDecoder().decode(payload))
         val payloadMap = objectMapper.readValue(payloadJson, Map::class.java)
-        if (payloadMap[ISS] != iss || payloadMap[AUD] != aud || payloadMap[NONCE] != nonce) {
+        if (payloadMap[ISS] != iss || payloadMap[AUD] != aud) {
             throw GlobalException.InvalidTokenException()
         }
         val exp = (payloadMap[EXP] as? Number)?.toLong()
@@ -95,7 +90,6 @@ class JwtOidcProvider(
         private const val EXP = "exp"
         private const val EMAIL = "email"
         private const val PICTURE = "picture"
-        private const val NONCE = "nonce"
         private const val ALGORITHM = "RSA"
     }
 }

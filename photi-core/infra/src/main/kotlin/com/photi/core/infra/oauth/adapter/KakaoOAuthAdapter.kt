@@ -15,14 +15,9 @@ class KakaoOAuthAdapter(
     private val jwtOidcPort: JwtOidcPort,
 ) : OAuthPort {
 
-    override fun getIdTokenPayload(
-        idToken: String,
-        iss: String,
-        aud: String,
-        nonce: String,
-    ): OidcPayload {
+    override fun getIdTokenPayload(idToken: String, iss: String, aud: String): OidcPayload {
         val publicKeys = kakaoOAuthClient.getOidcPublicKeys()
-        val kid = jwtOidcPort.getKidFromUnsignedIdToken(idToken, iss, aud, nonce)
+        val kid = jwtOidcPort.getKidFromUnsignedIdToken(idToken, iss, aud)
         val jwk = publicKeys.keys.first { it.kid == kid }
         return jwtOidcPort.getIdTokenPayload(idToken, jwk.n, jwk.e)
     }

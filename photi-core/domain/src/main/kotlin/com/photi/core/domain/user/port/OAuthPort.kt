@@ -6,7 +6,7 @@ import com.photi.core.domain.user.model.OAuthInfo
 
 interface OAuthPort {
 
-    fun getIdTokenPayload(idToken: String, iss: String, aud: String, nonce: String): OidcPayload
+    fun getIdTokenPayload(idToken: String, iss: String, aud: String): OidcPayload
 
     fun getProperties(): OAuthProperties
 
