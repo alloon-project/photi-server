@@ -1,6 +1,6 @@
 package com.photi.apis.enduser.controller.feed.dto.request
 
-import com.photi.core.domain.feed.dto.RegisterFeedDto
+import com.photi.core.domain.feed.dto.RegisterFeedRequestDto
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "피드 등록 요청 객체")
@@ -10,7 +10,7 @@ data class RegisterFeedRequest(
     val preSignedUrl: String,
 ) {
 
-    fun toServiceDto() = RegisterFeedDto(preSignedUrl.substringBefore(SUFFIX))
+    fun toServiceDto() = RegisterFeedRequestDto(preSignedUrl.substringBefore(SUFFIX))
 
     companion object {
         private const val SUFFIX = "?"
