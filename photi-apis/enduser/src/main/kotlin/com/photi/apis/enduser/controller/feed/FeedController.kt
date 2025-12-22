@@ -60,10 +60,10 @@ class FeedController(
         @AuthUser user: CustomUserDetails,
         @PathVariable @Parameter(description = "챌린지 id", example = "1") challengeId: Long,
         @RequestBody @Valid request: RegisterFeedRequest,
-    ): ResponseEntity<StringSuccessResponse> {
-        feedService.registerFeed(user.getUserId(), challengeId, request.toServiceDto())
-        return ResponseEntity.status(CREATED)
-            .body(StringSuccessResponse("피드 인증이 완료되었습니다."))
+    ): ResponseEntity<RegisterFeedResponse> {
+        val feed = feedService.registerFeed(user.getUserId(), challengeId, request.toServiceDto())
+        val response = RegisterFeedResponse.of(feed)
+        return ResponseEntity.status(CREATED).body(response)
     }
 
     @DeleteMapping("/{challengeId}/{feedId}")
