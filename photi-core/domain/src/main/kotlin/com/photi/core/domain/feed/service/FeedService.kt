@@ -5,6 +5,7 @@ import com.photi.core.domain.common.consts.DirectoryType
 import com.photi.core.domain.feed.dto.FindImagePreSignedUrlDto
 import com.photi.core.domain.feed.dto.FindTodayFeedMemberCountDto
 import com.photi.core.domain.feed.dto.RegisterFeedDto
+import com.photi.core.domain.feed.dto.RegisterFeedRequestDto
 import com.photi.core.domain.feed.exception.FeedException
 import com.photi.core.domain.feed.model.SortType
 import com.photi.core.domain.feed.port.*
@@ -32,12 +33,17 @@ class FeedService(
         s3Port.getPreSignedUrl(dto.imageName, DirectoryType.FEEDS)
 
     @Transactional
-    fun registerFeed(userId: Long, challengeId: Long, dto: RegisterFeedDto) {
+    fun registerFeed(
+        userId: Long,
+        challengeId: Long,
+        dto: RegisterFeedRequestDto,
+    ): RegisterFeedDto {
         val challengeMemberId = getChallengeMemberIdBy(userId, challengeId)
         feedValidator.validateExistsTodayFeedBy(challengeMemberId)
         userChallengeHistoryPort.increaseFeed(userId)
-        val feedId = feedCommandService.createFeed(dto, userId, challengeMemberId, challengeId)
-        feedHistoryPort.createFeedHistory(feedId)
+        val feed = feedCommandService.createFeed(dto, userId, challengeMemberId, challengeId)
+        feedHistoryPort.createFeedHistory(feed.id)
+        return feed
     }
 
     @Transactional
