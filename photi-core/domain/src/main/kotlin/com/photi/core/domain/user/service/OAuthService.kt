@@ -23,6 +23,7 @@ class OAuthService(
     private val userValidator: UserValidator,
 ) {
 
+    @Transactional
     fun login(provider: OAuthProviderType, idToken: String): OAuthLoginDto {
         val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
         val idTokenPayload = getOidcPayload(idToken, oAuthPort)
