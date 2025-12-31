@@ -24,10 +24,12 @@ oauth:
     native-app-key: ${KAKAO_NATIVE_APP_KEY}
   google:
     base-url: ${GOOGLE_BASE_URL}
-    native-app-key: ${GOOGLE_NATIVE_APP_KEY}
+    aos-client-id: ${GOOGLE_AOS_NATIVE_APP_KEY}
+    ios-client-id: ${GOOGLE_IOS_NATIVE_APP_KEY}
   apple:
     base-url: ${APPLE_BASE_URL}
-    native-app-key: ${APPLE_NATIVE_APP_KEY}
+    aos-client-id: ${APPLE_AOS_NATIVE_APP_KEY}
+    ios-client-id: ${APPLE_IOS_NATIVE_APP_KEY}
 ---
 spring:
   config:
@@ -55,10 +57,12 @@ oauth:
     native-app-key: ${KAKAO_NATIVE_APP_KEY}
   google:
     base-url: ${GOOGLE_BASE_URL}
-    native-app-key: ${GOOGLE_NATIVE_APP_KEY}
+    aos-client-id: ${GOOGLE_AOS_NATIVE_APP_KEY}
+    ios-client-id: ${GOOGLE_IOS_NATIVE_APP_KEY}
   apple:
     base-url: ${APPLE_BASE_URL}
-    native-app-key: ${APPLE_NATIVE_APP_KEY}
+    aos-client-id: ${APPLE_AOS_NATIVE_APP_KEY}
+    ios-client-id: ${APPLE_IOS_NATIVE_APP_KEY}
 ---
 spring:
   config:
