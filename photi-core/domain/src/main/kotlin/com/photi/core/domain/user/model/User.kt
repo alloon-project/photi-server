@@ -133,5 +133,9 @@ class User(
         userValidator.validateDeletedUser(this)
     }
 
+    fun changeUsername(username: String) {
+        this.username = username
+    }
+
     private fun isImageNullOrEmpty() = this.imageUrl.isNullOrEmpty()
 }
