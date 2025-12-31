@@ -1,10 +1,10 @@
 package com.photi.core.domain.user.service
 
-import com.photi.core.domain.user.dto.LoginDto
-import com.photi.core.domain.user.dto.OAuthSignUpDto
+import com.photi.core.domain.user.dto.OAuthLoginDto
+import com.photi.core.domain.user.dto.OAuthUpdateUsernameDto
 import com.photi.core.domain.user.dto.OidcPayload
-import com.photi.core.domain.user.dto.SignUpDto
 import com.photi.core.domain.user.exception.UserException
+import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.port.OAuthFactoryPort
 import com.photi.core.domain.user.port.OAuthPort
@@ -23,33 +23,34 @@ class OAuthService(
     private val userValidator: UserValidator,
 ) {
 
-    @Transactional
-    fun signUp(provider: OAuthProviderType, idToken: String, dto: OAuthSignUpDto): SignUpDto {
+    fun login(provider: OAuthProviderType, idToken: String): OAuthLoginDto {
         val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
         val idTokenPayload = getOidcPayload(idToken, oAuthPort)
         val oAuthInfo = oAuthPort.createOAuthInfo(idTokenPayload.sub)
-        if (userQueryService.existsBy(oAuthInfo)) throw UserException.ExistsUserException()
-        val user = userCommandService.createUser(
-            dto,
-            oAuthInfo,
-            idTokenPayload.email,
-            idTokenPayload.image,
-        )
-        return SignUpDto.of(user)
+        val user =
+            userQueryService.getLoginUserBy(oAuthInfo) ?: return newUser(oAuthInfo, idTokenPayload)
+        user.login(userValidator)
+        return OAuthLoginDto.of(user)
     }
 
-    fun login(provider: OAuthProviderType, idToken: String): LoginDto {
-        val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
-        val idTokenPayload = getOidcPayload(idToken, oAuthPort)
-        val oAuthInfo = oAuthPort.createOAuthInfo(idTokenPayload.sub)
-        val user = userQueryService.getLoginUserBy(oAuthInfo)
-            ?: throw UserException.NotFoundUserException()
-        user.login(userValidator)
-        return LoginDto.of(user)
+    @Transactional
+    fun updateUsername(id: Long, dto: OAuthUpdateUsernameDto) {
+        val user = userQueryService.getUserBy(id)
+            .orElseThrow { throw UserException.NotFoundUserException() }
+        user.changeUsername(dto.username)
     }
 
     private fun getOidcPayload(idToken: String, oAuthPort: OAuthPort): OidcPayload {
         val properties = oAuthPort.getProperties()
         return oAuthPort.getIdTokenPayload(idToken, properties.baseUrl, properties.nativeAppKey)
     }
+
+    private fun newUser(oAuthInfo: OAuthInfo, idTokenPayload: OidcPayload) =
+        userCommandService.createUser(
+            oAuthInfo,
+            idTokenPayload.email,
+            idTokenPayload.image,
+        ).run {
+            OAuthLoginDto.of(this)
+        }
 }
