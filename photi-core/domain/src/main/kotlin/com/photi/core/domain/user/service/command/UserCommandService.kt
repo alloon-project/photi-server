@@ -1,8 +1,9 @@
 package com.photi.core.domain.user.service.command
 
-import com.photi.core.domain.user.dto.OAuthSignUpDto
 import com.photi.core.domain.user.dto.SendEmailAuthenticationCodeDto
 import com.photi.core.domain.user.model.OAuthInfo
+import com.photi.core.domain.user.model.RoleType
+import com.photi.core.domain.user.model.User
 import com.photi.core.domain.user.model.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,6 +18,15 @@ class UserCommandService(
         userRepository.save(dto.toEntity(authenticationCode))
     }
 
-    fun createUser(dto: OAuthSignUpDto, oAuthInfo: OAuthInfo, email: String, image: String) =
-        userRepository.save(dto.toEntity(oAuthInfo, email, image))
+    fun createUser(oAuthInfo: OAuthInfo, email: String, image: String) =
+        userRepository.save(toUserEntity(oAuthInfo, email, image))
+
+    private fun toUserEntity(oAuthInfo: OAuthInfo, email: String, image: String) =
+        User(
+            email = email,
+            oAuthInfo = oAuthInfo,
+            role = RoleType.USER,
+            isAuthenticated = true,
+            imageUrl = image,
+        )
 }

@@ -50,6 +50,7 @@ class SecurityConfig(
                     POST,
                     "/api/v2/challenges",
                     "/api/v2/challenges/{challengeId}/join",
+                    "/api/v2/oauth/username",
                 ).authenticated()
                 it.requestMatchers(DELETE, "/api/v2/challenges/{challengeId}").authenticated()
                 it.requestMatchers(

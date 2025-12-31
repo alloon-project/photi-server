@@ -2,23 +2,26 @@ package com.photi.apis.enduser.controller.oauth
 
 import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.exception.UserApiErrorResponses
+import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
+import com.photi.apis.enduser.config.security.AuthUser
+import com.photi.apis.enduser.config.security.CustomUserDetails
 import com.photi.apis.enduser.config.security.JwtTokenProvider
-import com.photi.apis.enduser.controller.auth.dto.response.LoginResponse
-import com.photi.apis.enduser.controller.auth.dto.response.SignUpResponse
-import com.photi.apis.enduser.controller.oauth.request.OAuthSignUpRequest
-import com.photi.core.domain.common.exception.GlobalErrorCode.EXPIRED_TOKEN
-import com.photi.core.domain.common.exception.GlobalErrorCode.INVALID_TOKEN
-import com.photi.core.domain.user.exception.UserErrorCode.*
+import com.photi.apis.enduser.config.security.getUserId
+import com.photi.apis.enduser.controller.oauth.request.OAuthUpdateUsernameRequest
+import com.photi.apis.enduser.controller.oauth.response.OAuthLoginResponse
+import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
+import com.photi.core.domain.common.exception.GlobalErrorCode.*
+import com.photi.core.domain.user.exception.UserErrorCode.DELETED_USER
+import com.photi.core.domain.user.exception.UserErrorCode.USER_NOT_FOUND
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.model.RoleType
-import com.photi.core.domain.user.model.RoleType.Companion.getRole
 import com.photi.core.domain.user.service.OAuthService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -33,34 +36,31 @@ class OAuthController(
     private val jwtTokenProvider: JwtTokenProvider,
 ) {
 
-    @PostMapping("/{provider}/signup")
-    @Operation(summary = "OAuth 회원가입")
-    @ApiResponse(responseCode = "201")
-    @UserApiErrorResponses([EXISTING_USER])
-    @GlobalApiErrorResponses([INVALID_TOKEN, EXPIRED_TOKEN])
-    fun signUp(
-        @PathVariable provider: OAuthProviderType,
-        @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
-        @RequestBody @Valid request: OAuthSignUpRequest,
-    ): ResponseEntity<SignUpResponse> {
-        val signUpUser = oAuthService.signUp(provider, idToken, request.toServiceDto())
-        val response = SignUpResponse.of(signUpUser)
-        val headers = jwtTokenProvider.createToken(response.userId, RoleType.USER)
-        return ResponseEntity.status(CREATED).headers(headers).body(response)
-    }
-
     @GetMapping("/{provider}/login")
     @Operation(summary = "OAuth 로그인")
     @ApiResponse(responseCode = "200")
-    @UserApiErrorResponses([USER_NOT_FOUND, DELETED_USER])
+    @UserApiErrorResponses([DELETED_USER])
     @GlobalApiErrorResponses([INVALID_TOKEN, EXPIRED_TOKEN])
     fun login(
         @PathVariable provider: OAuthProviderType,
         @RequestParam("id_token") @Parameter(description = "ID 토큰") idToken: String,
-    ): ResponseEntity<LoginResponse> {
+    ): ResponseEntity<OAuthLoginResponse> {
         val loginUser = oAuthService.login(provider, idToken)
-        val response = LoginResponse.of(loginUser)
-        val headers = jwtTokenProvider.createToken(response.userId, getRole(response.username))
+        val response = OAuthLoginResponse.of(loginUser)
+        val headers = jwtTokenProvider.createToken(loginUser.userId, RoleType.USER)
         return ResponseEntity.status(OK).headers(headers).body(response)
+    }
+
+    @PostMapping("/username")
+    @Operation(summary = "OAuth 아이디 설정", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @UserApiErrorResponses([USER_NOT_FOUND])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, INVALID_TOKEN, EXPIRED_TOKEN])
+    fun updateUsername(
+        @AuthUser user: CustomUserDetails,
+        @RequestBody @Valid request: OAuthUpdateUsernameRequest,
+    ): ResponseEntity<StringSuccessResponse> {
+        oAuthService.updateUsername(user.getUserId(), request.toServiceDto())
+        return ResponseEntity.ok(StringSuccessResponse("OAuth 아이디 설정이 완료되었습니다."))
     }
 }
