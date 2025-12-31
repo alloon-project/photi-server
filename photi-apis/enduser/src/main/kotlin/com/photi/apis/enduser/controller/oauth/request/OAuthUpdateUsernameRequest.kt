@@ -1,14 +1,14 @@
 package com.photi.apis.enduser.controller.oauth.request
 
 import com.photi.core.domain.common.consts.RegexPattern.LOWERCASE_NUMBER_UNDERSCORE
-import com.photi.core.domain.user.dto.OAuthSignUpDto
+import com.photi.core.domain.user.dto.OAuthUpdateUsernameDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
-@Schema(description = "OAuth 회원가입 요청 객체")
-data class OAuthSignUpRequest(
+@Schema(description = "OAuth 아이디 설정 요청 객체")
+data class OAuthUpdateUsernameRequest(
 
     @Schema(description = "아이디", example = "photi")
     @field:NotBlank(message = "아이디는 필수 입력입니다.")
@@ -20,5 +20,5 @@ data class OAuthSignUpRequest(
     val username: String,
 ) {
 
-    fun toServiceDto() = OAuthSignUpDto(username)
+    fun toServiceDto() = OAuthUpdateUsernameDto(username)
 }
