@@ -17,6 +17,13 @@ class JwtOidcProvider(
     private val objectMapper: ObjectMapper,
 ) : JwtOidcPort {
 
+    override fun getAudFromUnsignedIdToken(idToken: String): String {
+        val splitIdToken = getSplitIdToken(idToken)
+        val payloadJson = String(Base64.getUrlDecoder().decode(splitIdToken[1]))
+        val payloadMap = objectMapper.readValue(payloadJson, Map::class.java)
+        return payloadMap[AUD].toString()
+    }
+
     override fun getKidFromUnsignedIdToken(idToken: String, iss: String, aud: String): String {
         val splitIdToken = getSplitIdToken(idToken)
         validatePayload(splitIdToken[1], iss, aud)

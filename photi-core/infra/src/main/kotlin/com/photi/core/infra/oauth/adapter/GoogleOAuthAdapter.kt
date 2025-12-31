@@ -15,14 +15,22 @@ class GoogleOAuthAdapter(
     private val jwtOidcPort: JwtOidcPort,
 ) : OAuthPort {
 
-    override fun getIdTokenPayload(idToken: String, iss: String, aud: String): OidcPayload {
+    override fun getIdTokenPayload(idToken: String): OidcPayload {
         val publicKeys = googleOAuthClient.getOidcPublicKeys()
-        val kid = jwtOidcPort.getKidFromUnsignedIdToken(idToken, iss, aud)
+        val kid = jwtOidcPort.getKidFromUnsignedIdToken(
+            idToken,
+            googleOAuthProperties.baseUrl,
+            getClientId(idToken),
+        )
         val jwk = publicKeys.keys.first { it.kid == kid }
         return jwtOidcPort.getIdTokenPayload(idToken, jwk.n, jwk.e)
     }
 
-    override fun getProperties() = googleOAuthProperties
-
     override fun createOAuthInfo(sub: String) = OAuthInfo.ofGoogle(sub)
+
+    private fun getClientId(idToken: String): String {
+        val aud = jwtOidcPort.getAudFromUnsignedIdToken(idToken)
+        val aosClientId = googleOAuthProperties.aosClientId
+        return if (aud == aosClientId) aosClientId else googleOAuthProperties.iosClientId
+    }
 }

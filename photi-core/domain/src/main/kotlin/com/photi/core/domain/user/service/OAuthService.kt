@@ -7,7 +7,6 @@ import com.photi.core.domain.user.exception.UserException
 import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.port.OAuthFactoryPort
-import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.domain.user.service.command.UserCommandService
 import com.photi.core.domain.user.service.query.UserQueryService
 import com.photi.core.domain.user.validator.UserValidator
@@ -26,7 +25,7 @@ class OAuthService(
     @Transactional
     fun login(provider: OAuthProviderType, idToken: String): OAuthLoginDto {
         val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
-        val idTokenPayload = getOidcPayload(idToken, oAuthPort)
+        val idTokenPayload = oAuthPort.getIdTokenPayload(idToken)
         val oAuthInfo = oAuthPort.createOAuthInfo(idTokenPayload.sub)
         val user =
             userQueryService.getLoginUserBy(oAuthInfo) ?: return newUser(oAuthInfo, idTokenPayload)
@@ -39,11 +38,6 @@ class OAuthService(
         val user = userQueryService.getUserBy(id)
             .orElseThrow { throw UserException.NotFoundUserException() }
         user.changeUsername(dto.username)
-    }
-
-    private fun getOidcPayload(idToken: String, oAuthPort: OAuthPort): OidcPayload {
-        val properties = oAuthPort.getProperties()
-        return oAuthPort.getIdTokenPayload(idToken, properties.baseUrl, properties.nativeAppKey)
     }
 
     private fun newUser(oAuthInfo: OAuthInfo, idTokenPayload: OidcPayload) =
