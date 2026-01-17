@@ -5,6 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties("oauth.apple")
 data class AppleOAuthProperties(
     val baseUrl: String,
-    val aosClientId: String,
-    val iosClientId: String,
+    val restApiKey: String,
 )

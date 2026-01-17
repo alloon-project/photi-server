@@ -21,15 +21,13 @@ cloud:
 oauth:
   kakao:
     base-url: ${KAKAO_BASE_URL}
-    native-app-key: ${KAKAO_NATIVE_APP_KEY}
+    rest-api-key: ${KAKAO_REST_API_KEY}
   google:
     base-url: ${GOOGLE_BASE_URL}
-    aos-client-id: ${GOOGLE_AOS_NATIVE_APP_KEY}
-    ios-client-id: ${GOOGLE_IOS_NATIVE_APP_KEY}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
   apple:
     base-url: ${APPLE_BASE_URL}
-    aos-client-id: ${APPLE_AOS_NATIVE_APP_KEY}
-    ios-client-id: ${APPLE_IOS_NATIVE_APP_KEY}
+    rest-api-key: ${APPLE_REST_API_KEY}
 ---
 spring:
   config:
@@ -54,15 +52,13 @@ cloud:
 oauth:
   kakao:
     base-url: ${KAKAO_BASE_URL}
-    native-app-key: ${KAKAO_NATIVE_APP_KEY}
+    rest-api-key: ${KAKAO_REST_API_KEY}
   google:
     base-url: ${GOOGLE_BASE_URL}
-    aos-client-id: ${GOOGLE_AOS_NATIVE_APP_KEY}
-    ios-client-id: ${GOOGLE_IOS_NATIVE_APP_KEY}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
   apple:
     base-url: ${APPLE_BASE_URL}
-    aos-client-id: ${APPLE_AOS_NATIVE_APP_KEY}
-    ios-client-id: ${APPLE_IOS_NATIVE_APP_KEY}
+    rest-api-key: ${APPLE_REST_API_KEY}
 ---
 spring:
   config:

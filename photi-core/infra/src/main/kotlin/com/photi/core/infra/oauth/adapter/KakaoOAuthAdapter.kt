@@ -20,7 +20,7 @@ class KakaoOAuthAdapter(
         val kid = jwtOidcPort.getKidFromUnsignedIdToken(
             idToken,
             kakaoOAuthProperties.baseUrl,
-            kakaoOAuthProperties.nativeAppKey,
+            kakaoOAuthProperties.restApiKey,
         )
         val jwk = publicKeys.keys.first { it.kid == kid }
         return jwtOidcPort.getIdTokenPayload(idToken, jwk.n, jwk.e)

@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties("oauth.kakao")
 data class KakaoOAuthProperties(
     val baseUrl: String,
-    val nativeAppKey: String,
+    val restApiKey: String,
 )

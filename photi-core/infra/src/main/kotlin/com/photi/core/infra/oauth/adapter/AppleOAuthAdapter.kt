@@ -20,17 +20,11 @@ class AppleOAuthAdapter(
         val kid = jwtOidcPort.getKidFromUnsignedIdToken(
             idToken,
             appleOAuthProperties.baseUrl,
-            getClientId(idToken),
+            appleOAuthProperties.restApiKey,
         )
         val jwk = publicKeys.keys.first { it.kid == kid }
         return jwtOidcPort.getIdTokenPayload(idToken, jwk.n, jwk.e)
     }
 
     override fun createOAuthInfo(sub: String) = OAuthInfo.ofApple(sub)
-
-    private fun getClientId(idToken: String): String {
-        val aud = jwtOidcPort.getAudFromUnsignedIdToken(idToken)
-        val aosClientId = appleOAuthProperties.aosClientId
-        return if (aud == aosClientId) aosClientId else appleOAuthProperties.iosClientId
-    }
 }
