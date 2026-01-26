@@ -40,6 +40,15 @@ class OAuthService(
         user.changeUsername(dto.username)
     }
 
+    @Transactional
+    fun withdraw(id: Long, provider: OAuthProviderType, accessToken: String) {
+        val user = userQueryService.getUserBy(id)
+            .orElseThrow { throw UserException.NotFoundUserException() }
+        val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
+        oAuthPort.withdraw(accessToken)
+        user.oAuthWithdraw()
+    }
+
     private fun newUser(oAuthInfo: OAuthInfo, idTokenPayload: OidcPayload) =
         userCommandService.createUser(
             oAuthInfo,
