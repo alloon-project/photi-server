@@ -5,6 +5,7 @@ import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.AppleOAuthClient
+import com.photi.core.infra.oauth.client.AppleUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
 import org.springframework.stereotype.Component
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 class AppleOAuthAdapter(
     private val appleOAuthProperties: AppleOAuthProperties,
     private val appleOAuthClient: AppleOAuthClient,
+    private val appleUserClient: AppleUserClient,
     private val jwtOidcPort: JwtOidcPort,
 ) : OAuthPort {
 
@@ -27,4 +29,12 @@ class AppleOAuthAdapter(
     }
 
     override fun createOAuthInfo(sub: String) = OAuthInfo.ofApple(sub)
+
+    override fun withdraw(accessToken: String) {
+        appleUserClient.unlink(
+            appleOAuthProperties.clientId,
+            appleOAuthProperties.clientSecret,
+            accessToken,
+        )
+    }
 }

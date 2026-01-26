@@ -8,4 +8,6 @@ interface OAuthPort {
     fun getIdTokenPayload(idToken: String): OidcPayload
 
     fun createOAuthInfo(sub: String): OAuthInfo
+
+    fun withdraw(accessToken: String)
 }
