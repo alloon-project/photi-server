@@ -23,5 +23,7 @@ class OAuthInfo(
         fun ofGoogle(sub: String) = OAuthInfo(OAuthProviderType.GOOGLE, sub)
 
         fun ofApple(sub: String) = OAuthInfo(OAuthProviderType.APPLE, sub)
+
+        fun ofNone() = OAuthInfo(null, null)
     }
 }
