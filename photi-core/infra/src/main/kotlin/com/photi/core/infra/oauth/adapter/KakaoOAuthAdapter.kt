@@ -5,6 +5,7 @@ import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.KakaoOAuthClient
+import com.photi.core.infra.oauth.client.KakaoUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
 import org.springframework.stereotype.Component
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 class KakaoOAuthAdapter(
     private val kakaoOAuthProperties: KakaoOAuthProperties,
     private val kakaoOAuthClient: KakaoOAuthClient,
+    private val kakaoUserClient: KakaoUserClient,
     private val jwtOidcPort: JwtOidcPort,
 ) : OAuthPort {
 
@@ -27,4 +29,12 @@ class KakaoOAuthAdapter(
     }
 
     override fun createOAuthInfo(sub: String) = OAuthInfo.ofKakao(sub)
+
+    override fun withdraw(accessToken: String) {
+        kakaoUserClient.unlink(BEARER + accessToken)
+    }
+
+    companion object {
+        private const val BEARER = "Bearer "
+    }
 }

@@ -5,6 +5,7 @@ import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.domain.user.model.OAuthInfo
 import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.GoogleOAuthClient
+import com.photi.core.infra.oauth.client.GoogleUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
 import org.springframework.stereotype.Component
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 class GoogleOAuthAdapter(
     private val googleOAuthProperties: GoogleOAuthProperties,
     private val googleOAuthClient: GoogleOAuthClient,
+    private val googleUserClient: GoogleUserClient,
     private val jwtOidcPort: JwtOidcPort,
 ) : OAuthPort {
 
@@ -27,4 +29,8 @@ class GoogleOAuthAdapter(
     }
 
     override fun createOAuthInfo(sub: String) = OAuthInfo.ofGoogle(sub)
+
+    override fun withdraw(accessToken: String) {
+        googleUserClient.unlink(accessToken)
+    }
 }

@@ -28,6 +28,8 @@ oauth:
   apple:
     base-url: ${APPLE_BASE_URL}
     rest-api-key: ${APPLE_REST_API_KEY}
+    client-id: ${APPLE_CLIENT_ID}
+    client-secret: ${APPLE_CLIENT_SECRET}
 ---
 spring:
   config:
@@ -59,6 +61,8 @@ oauth:
   apple:
     base-url: ${APPLE_BASE_URL}
     rest-api-key: ${APPLE_REST_API_KEY}
+    client-id: ${APPLE_CLIENT_ID}
+    client-secret: ${APPLE_CLIENT_SECRET}
 ---
 spring:
   config:

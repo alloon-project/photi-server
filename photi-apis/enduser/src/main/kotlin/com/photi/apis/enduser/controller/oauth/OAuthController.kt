@@ -11,8 +11,7 @@ import com.photi.apis.enduser.controller.oauth.request.OAuthUpdateUsernameReques
 import com.photi.apis.enduser.controller.oauth.response.OAuthLoginResponse
 import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.GlobalErrorCode.*
-import com.photi.core.domain.user.exception.UserErrorCode.DELETED_USER
-import com.photi.core.domain.user.exception.UserErrorCode.USER_NOT_FOUND
+import com.photi.core.domain.user.exception.UserErrorCode.*
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.service.OAuthService
@@ -62,5 +61,19 @@ class OAuthController(
     ): ResponseEntity<StringSuccessResponse> {
         oAuthService.updateUsername(user.getUserId(), request.toServiceDto())
         return ResponseEntity.ok(StringSuccessResponse("OAuth 아이디 설정이 완료되었습니다."))
+    }
+
+    @PatchMapping("/{provider}/withdraw")
+    @Operation(summary = "OAuth 회원 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @ApiResponse(responseCode = "200")
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
+    @UserApiErrorResponses([USER_NOT_FOUND])
+    fun withdraw(
+        @AuthUser user: CustomUserDetails,
+        @PathVariable provider: OAuthProviderType,
+        @RequestParam("access_token") @Parameter(description = "OAuth 액세스 토큰(포티 jwt의 액세스 토큰이 아닌, 각 oauth에서 발급받은 액세스 토큰입니다!)") accessToken: String,
+    ): ResponseEntity<StringSuccessResponse> {
+        oAuthService.withdraw(user.getUserId(), provider, accessToken)
+        return ResponseEntity.ok(StringSuccessResponse("OAuth 회원 탈퇴가 완료되었습니다."))
     }
 }

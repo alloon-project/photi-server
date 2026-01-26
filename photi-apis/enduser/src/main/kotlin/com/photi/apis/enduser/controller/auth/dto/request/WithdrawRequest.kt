@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank
 data class WithdrawRequest(
 
     @Schema(description = "기존 비밀번호", example = "password1!")
-    @field:NotBlank(message = "비밀번호는 필수 업력입니다.")
+    @field:NotBlank(message = "비밀번호는 필수 입력입니다.")
     val password: String,
 ) {
 

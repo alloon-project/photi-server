@@ -116,6 +116,12 @@ class User(
         deletedDate = LocalDateTime.now()
     }
 
+    fun oAuthWithdraw() {
+        oAuthInfo = OAuthInfo.ofNone()
+        role = RoleType.DELETED_USER
+        deletedDate = LocalDateTime.now()
+    }
+
     fun changeImageUrl(s3Port: UserS3Port, imageUrl: String) {
         if (!isImageNullOrEmpty()) {
             s3Port.deleteImage(this.imageUrl!!, DirectoryType.USERS)
