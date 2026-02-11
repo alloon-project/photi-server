@@ -66,9 +66,11 @@ class UserController(
     fun updateProfileImage(
         @AuthUser user: CustomUserDetails,
         @RequestBody @Valid request: UpdateProfileImageRequest,
-    ): ResponseEntity<StringSuccessResponse> {
-        userService.updateProfileImage(user.getUserId(), request.toServiceDto())
-        return ResponseEntity.ok(StringSuccessResponse("사용자 프로필 이미지 업데이트가 완료되었습니다."))
+    ): ResponseEntity<UpdateProfileImageResponse> {
+        val profileImage = request.toServiceDto()
+        userService.updateProfileImage(user.getUserId(), profileImage)
+        val response = UpdateProfileImageResponse.of(profileImage)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping("/challenge-history")
