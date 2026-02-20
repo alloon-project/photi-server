@@ -63,6 +63,12 @@ spring:
     url: ${RDS_URL}
     username: ${RDS_USERNAME}
     password: ${RDS_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 10
+      connection-timeout: 30000
+      max-lifetime: 297000
+      keepalive-time: 200000
   jpa:
     hibernate:
       ddl-auto: validate

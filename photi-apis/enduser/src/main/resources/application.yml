@@ -52,7 +52,7 @@ springdoc:
   swagger-ui:
     enabled: false
 
-management: # TODO 수정 필요
+management:
   endpoints:
     enabled-by-default: false
     jmx:
