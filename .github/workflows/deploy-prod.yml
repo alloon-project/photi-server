@@ -24,7 +24,7 @@ jobs:
           script: mkdir -p ~/srv/ubuntu
 
       - name: Copy source via ssh key
-        uses: burnett01/rsync-deployments@7.0.2
+        uses: burnett01/rsync-deployments@v8
         with:
           switches: -avzr --delete
           remote_path: ~/srv/ubuntu/
