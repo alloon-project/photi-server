@@ -1,6 +1,6 @@
 services:
   backend:
-    image: yugyeong390/photi-server:1.1.4
+    image: yugyeong390/photi-server:1.2.0
     env_file:
       - .env
     ports:
@@ -10,6 +10,7 @@ services:
     environment:
       - TZ=Asia/Seoul
       - LOGGING_FILE_PATH=/logs
+    restart: always
     networks:
       - server-network
   redis:

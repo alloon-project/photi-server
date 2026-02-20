@@ -1,266 +1,234 @@
 DROP TABLE IF EXISTS app_version;
-DROP TABLE IF EXISTS block;
-DROP TABLE IF EXISTS suspension;
 DROP TABLE IF EXISTS report;
-DROP TABLE IF EXISTS report_category;
 DROP TABLE IF EXISTS inquiry;
-DROP TABLE IF EXISTS inquiry_category;
+DROP TABLE IF EXISTS feed_history;
 DROP TABLE IF EXISTS feed_like;
 DROP TABLE IF EXISTS feed_comment;
 DROP TABLE IF EXISTS feed;
+DROP TABLE IF EXISTS challenge_history;
 DROP TABLE IF EXISTS challenge_member;
-DROP TABLE IF EXISTS challenge_template_image;
+DROP TABLE IF EXISTS challenge_example_image;
 DROP TABLE IF EXISTS challenge_hashtag;
 DROP TABLE IF EXISTS challenge_rule;
 DROP TABLE IF EXISTS challenge;
-DROP TABLE IF EXISTS user_template_image;
-DROP TABLE IF EXISTS user_role;
+DROP TABLE IF EXISTS user_challenge_history;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS contact;
 
-CREATE TABLE contact
-(
-    contact_id        BIGSERIAL PRIMARY KEY,
-    email             VARCHAR(100) NOT NULL,
-    verification_code VARCHAR(6)   NOT NULL,
-    verify_yn         BOOLEAN      NOT NULL,
-    is_deleted        BOOLEAN      NOT NULL,
-    create_date_time  TIMESTAMP(6) NOT NULL,
-    update_date_time  TIMESTAMP(6) NOT NULL,
-    deleted_date      TIMESTAMP(6) NULL,
-    CONSTRAINT uq_contact UNIQUE (email)
-);
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE TABLE users
 (
-    user_id               BIGSERIAL PRIMARY KEY,
-    username              VARCHAR(20)  NOT NULL,
-    password              VARCHAR(255) NOT NULL,
-    image_url             VARCHAR(500) NOT NULL,
-    temporary_password_yn BOOLEAN      NOT NULL,
-    create_date_time      TIMESTAMP(6) NOT NULL,
-    update_date_time      TIMESTAMP(6) NOT NULL,
-    contact_id            BIGINT       NOT NULL,
-    feed_cnt              INT          NOT NULL,
-    challenge_cnt         INT          NOT NULL,
-    is_deleted            BOOLEAN      NOT NULL,
-    deleted_date          TIMESTAMP(6) NULL,
-    CONSTRAINT fk_user_contact FOREIGN KEY (contact_id) REFERENCES contact (contact_id),
-    CONSTRAINT uq_users UNIQUE (username)
+    user_id                 BIGSERIAL PRIMARY KEY,
+    email                   VARCHAR(100) NOT NULL,
+    provider                VARCHAR(15)  NULL,
+    sub                     VARCHAR(255) NULL,
+    authentication_code     VARCHAR(6)   NULL,
+    is_authenticated        BOOLEAN      NOT NULL,
+    username                VARCHAR(20)  NULL,
+    password                VARCHAR(255) NULL,
+    image_url               VARCHAR(500) NULL,
+    role                    VARCHAR(25)  NOT NULL,
+    deleted_date            TIMESTAMP(6) NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    CONSTRAINT uq_user_provider_sub UNIQUE (provider, sub),
+    CONSTRAINT uq_username UNIQUE (username)
 );
 
-CREATE TABLE user_role
+CREATE TABLE user_challenge_history
 (
-    user_role_id     BIGSERIAL PRIMARY KEY,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL,
-    role             VARCHAR(6)   NOT NULL,
-    user_id          BIGINT       NOT NULL,
-    CONSTRAINT fk_user_role_user FOREIGN KEY (user_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE user_template_image
-(
-    user_template_image_id SERIAL PRIMARY KEY,
-    image_url              VARCHAR(500) NOT NULL,
-    start_date_time        TIMESTAMP(6) NOT NULL,
-    end_date_time          TIMESTAMP(6) NOT NULL,
-    create_date_time       TIMESTAMP(6) NOT NULL,
-    update_date_time       TIMESTAMP(6) NOT NULL,
-    service_status         VARCHAR(10)  NOT NULL,
-    admin_id               BIGINT,
-    CONSTRAINT fk_user_template_image_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE challenge
-(
-    challenge_id       BIGSERIAL PRIMARY KEY,
-    name               VARCHAR(16)  NOT NULL,
-    goal               VARCHAR(120) NOT NULL,
-    prove_time         TIME         NOT NULL,
-    end_date           DATE         NOT NULL,
-    image_url          VARCHAR(500) NOT NULL,
-    is_public          BOOLEAN      NOT NULL,
-    start_date         DATE         NOT NULL,
-    current_member_cnt INT          NOT NULL,
-    visit_cnt          INT          NOT NULL,
-    invitation_code    VARCHAR(5)   NOT NULL,
-    create_date_time   TIMESTAMP(6) NOT NULL,
-    update_date_time   TIMESTAMP(6) NOT NULL,
-    service_status     VARCHAR(10)  NOT NULL
-);
-
-CREATE TABLE challenge_rule
-(
-    challenge_rule_id BIGSERIAL PRIMARY KEY,
-    rule              VARCHAR(30)  NOT NULL,
-    create_date_time  TIMESTAMP(6) NOT NULL,
-    update_date_time  TIMESTAMP(6) NOT NULL,
-    service_status    VARCHAR(10)  NOT NULL,
-    challenge_id      BIGINT       NOT NULL,
-    CONSTRAINT fk_challenge_rule_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
-);
-
-CREATE TABLE challenge_hashtag
-(
-    challenge_hashtag_id BIGSERIAL PRIMARY KEY,
-    hashtag              VARCHAR(6)   NOT NULL,
-    create_date_time     TIMESTAMP(6) NOT NULL,
-    update_date_time     TIMESTAMP(6) NOT NULL,
-    service_status       VARCHAR(10)  NOT NULL,
-    challenge_id         BIGINT       NOT NULL,
-    CONSTRAINT fk_challenge_hashtag_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
-);
-
-CREATE TABLE challenge_template_image
-(
-    challenge_template_image_id BIGSERIAL PRIMARY KEY,
-    image_url                   VARCHAR(500) NOT NULL,
-    start_date_time             TIMESTAMP(6) NOT NULL,
-    end_date_time               TIMESTAMP(6) NOT NULL,
-    create_date_time            TIMESTAMP(6) NOT NULL,
-    update_date_time            TIMESTAMP(6) NOT NULL,
-    service_status              VARCHAR(10)  NOT NULL,
-    admin_id                    BIGINT,
-    CONSTRAINT fk_challenge_image_template_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE challenge_member
-(
-    challenge_member_id BIGSERIAL PRIMARY KEY,
-    is_creator          BOOLEAN      NOT NULL,
-    status              VARCHAR(15)  NOT NULL,
-    create_date_time    TIMESTAMP(6) NOT NULL,
-    update_date_time    TIMESTAMP(6) NOT NULL,
-    service_status      VARCHAR(10)  NOT NULL,
-    challenge_id        BIGINT       NOT NULL,
-    user_id             BIGINT       NOT NULL,
-    goal                VARCHAR(16),
-    CONSTRAINT fk_challenge_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
-    CONSTRAINT fk_challenge_member_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id)
-);
-
-CREATE TABLE feed
-(
-    feed_id             BIGSERIAL PRIMARY KEY,
-    like_cnt            INT          NOT NULL,
-    comment_cnt         INT          NOT NULL,
-    image_url           VARCHAR(500) NOT NULL,
-    create_date_time    TIMESTAMP(6) NOT NULL,
-    update_date_time    TIMESTAMP(6) NOT NULL,
-    service_status      VARCHAR(10)  NOT NULL,
-    challenge_id        BIGINT       NOT NULL,
-    challenge_member_id BIGINT       NOT NULL,
-    CONSTRAINT fk_feed_challenge FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
-    CONSTRAINT fk_feed_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
-);
-
-CREATE TABLE feed_comment
-(
-    feed_comment_id     BIGSERIAL PRIMARY KEY,
-    comment             VARCHAR(300),
-    create_date_time    TIMESTAMP(6) NOT NULL,
-    update_date_time    TIMESTAMP(6) NOT NULL,
-    service_status      VARCHAR(10)  NOT NULL,
-    feed_id             BIGINT       NOT NULL,
-    challenge_member_id BIGINT       NOT NULL,
-    CONSTRAINT fk_feed_comment_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_feed_comment_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
-);
-
-CREATE TABLE feed_like
-(
-    feed_like_id        BIGSERIAL PRIMARY KEY,
-    create_date_time    TIMESTAMP(6) NOT NULL,
-    update_date_time    TIMESTAMP(6) NOT NULL,
-    service_status      VARCHAR(10)  NOT NULL,
-    feed_id             BIGINT       NOT NULL,
-    challenge_member_id BIGINT       NOT NULL,
-    CONSTRAINT fk_feed_like_feed FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
-    CONSTRAINT fk_feed_like_challenge_member FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id),
-    CONSTRAINT uq_feed_like_challenge_member_feed UNIQUE (challenge_member_id, feed_id)
-);
-
-CREATE TABLE inquiry_category
-(
-    inquiry_category_id SERIAL PRIMARY KEY,
-    description         VARCHAR(30)  NOT NULL,
-    sort                INT          NOT NULL,
-    create_date_time    TIMESTAMP(6) NOT NULL,
-    update_date_time    TIMESTAMP(6) NOT NULL,
-    service_status      VARCHAR(10)  NOT NULL,
-    admin_id            BIGINT,
-    CONSTRAINT fk_inquiry_category_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE inquiry
-(
-    inquiry_id       BIGSERIAL PRIMARY KEY,
-    type             VARCHAR(15)  NOT NULL,
-    content          VARCHAR(120) NOT NULL,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL,
-    user_id          BIGINT,
-    CONSTRAINT fk_inquiry_category_user FOREIGN KEY (user_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE report_category
-(
-    report_category_id SERIAL PRIMARY KEY,
-    type               VARCHAR(16)  NOT NULL,
-    description        VARCHAR(30)  NOT NULL,
-    sort               INT          NOT NULL,
-    create_date_time   TIMESTAMP(6) NOT NULL,
-    update_date_time   TIMESTAMP(6) NOT NULL,
-    service_status     VARCHAR(10)  NOT NULL,
-    admin_id           BIGINT,
-    CONSTRAINT fk_report_category_admin FOREIGN KEY (admin_id) REFERENCES users (user_id)
+    user_challenge_history_id BIGSERIAL PRIMARY KEY,
+    user_id                   BIGINT       NOT NULL,
+    challenge_count           INT          NOT NULL,
+    ended_challenge_count     INT          NOT NULL,
+    feed_count                INT          NOT NULL,
+    created_date_time         TIMESTAMP(6) NULL,
+    last_modified_date_time   TIMESTAMP(6) NULL,
+    created_by                VARCHAR(255) NULL,
+    last_modified_by          VARCHAR(255) NULL,
+    CONSTRAINT fk_user_challenge_history_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT uq_user_challenge_history_user_id UNIQUE (user_id)
 );
 
 CREATE TABLE report
 (
-    report_id        BIGSERIAL PRIMARY KEY,
-    reporter_id      BIGINT       NOT NULL,
-    target_id        BIGINT       NOT NULL,
-    category         VARCHAR(20)  NOT NULL,
-    reason           VARCHAR(15)  NOT NULL,
-    content          VARCHAR(120) NULL,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL
+    report_id               BIGSERIAL PRIMARY KEY,
+    reporter_id             BIGINT       NOT NULL,
+    target_id               BIGINT       NOT NULL,
+    category                VARCHAR(20)  NOT NULL,
+    reason                  VARCHAR(15)  NOT NULL,
+    content                 VARCHAR(120) NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL
 );
 
-CREATE TABLE suspension
+CREATE TABLE inquiry
 (
-    suspend_id       BIGSERIAL PRIMARY KEY,
-    start_date       DATE         NOT NULL,
-    end_date         DATE         NOT NULL,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL,
-    user_id          BIGINT,
-    admin_id         BIGINT,
-    CONSTRAINT fk_suspension_admin FOREIGN KEY (admin_id) REFERENCES users (user_id),
-    CONSTRAINT fk_suspension_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+    inquiry_id              BIGSERIAL PRIMARY KEY,
+    user_id                 BIGINT       NOT NULL,
+    category                VARCHAR(15)  NOT NULL,
+    content                 VARCHAR(120) NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_inquiry_user_id FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
-CREATE TABLE block
+CREATE TABLE challenge
 (
-    block_id         BIGSERIAL PRIMARY KEY,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL,
-    service_status   VARCHAR(10)  NOT NULL,
-    user_id          BIGINT,
-    blocker_id       BIGINT,
-    CONSTRAINT fk_bock_blocker FOREIGN KEY (blocker_id) REFERENCES users (user_id),
-    CONSTRAINT fk_bock_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+    challenge_id            BIGSERIAL PRIMARY KEY,
+    name                    VARCHAR(16)  NOT NULL,
+    is_public               BOOLEAN      NOT NULL,
+    goal                    VARCHAR(120) NOT NULL,
+    prove_time              TIME         NOT NULL,
+    end_date                DATE         NOT NULL,
+    image_url               VARCHAR(500) NOT NULL,
+    invitation_code         VARCHAR(5)   NOT NULL,
+    start_date              DATE         NOT NULL,
+    status                  VARCHAR(15)  NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL
+);
+CREATE INDEX idx_challenge_status ON challenge (status);
+CREATE INDEX idx_challenge_name_trgm ON challenge USING GIN (name gin_trgm_ops);
+
+CREATE TABLE challenge_rule
+(
+    challenge_rule_id       BIGSERIAL PRIMARY KEY,
+    challenge_id            BIGINT       NOT NULL,
+    rule                    VARCHAR(30)  NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_challenge_rule_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
+);
+
+CREATE TABLE challenge_hashtag
+(
+    challenge_hashtag_id    BIGSERIAL PRIMARY KEY,
+    challenge_id            BIGINT       NOT NULL,
+    hashtag                 VARCHAR(6)   NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_challenge_hashtag_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id) ON DELETE CASCADE
+);
+CREATE INDEX idx_challenge_hashtag_trgm ON challenge_hashtag USING GIN (hashtag gin_trgm_ops);
+
+CREATE TABLE challenge_member
+(
+    challenge_member_id     BIGSERIAL PRIMARY KEY,
+    user_id                 BIGINT       NOT NULL,
+    challenge_id            BIGINT       NOT NULL,
+    goal                    VARCHAR(16)  NULL,
+    is_creator              BOOLEAN      NOT NULL,
+    status                  VARCHAR(15)  NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_challenge_member_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_challenge_member_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id)
+);
+
+CREATE TABLE challenge_example_image
+(
+    challenge_example_image_id BIGSERIAL PRIMARY KEY,
+    image_url                  VARCHAR(500) NOT NULL
+);
+
+CREATE TABLE challenge_history
+(
+    challenge_history_id    BIGSERIAL PRIMARY KEY,
+    challenge_id            BIGINT       NOT NULL,
+    challenge_member_count  INT          NOT NULL,
+    visit_count             INT          NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_challenge_history_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
+    CONSTRAINT uq_challenge_history_challenge_id UNIQUE (challenge_id)
+);
+
+CREATE TABLE feed
+(
+    feed_id                 BIGSERIAL PRIMARY KEY,
+    user_id                 BIGINT       NOT NULL,
+    challenge_member_id     BIGINT       NOT NULL,
+    challenge_id            BIGINT       NOT NULL,
+    image_url               VARCHAR(500) NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_feed_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_feed_challenge_id FOREIGN KEY (challenge_id) REFERENCES challenge (challenge_id),
+    CONSTRAINT fk_feed_challenge_member_id FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
+);
+CREATE INDEX idx_feed_challenge_id_created_date_time ON feed (challenge_id, created_date_time);
+
+CREATE TABLE feed_comment
+(
+    feed_comment_id         BIGSERIAL PRIMARY KEY,
+    user_id                 BIGINT       NOT NULL,
+    challenge_member_id     BIGINT       NOT NULL,
+    feed_id                 BIGINT       NOT NULL,
+    comment                 VARCHAR(300) NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_feed_comment_user_id FOREIGN KEY (user_id) REFERENCES users (user_id),
+    CONSTRAINT fk_feed_comment_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
+    CONSTRAINT fk_feed_comment_challenge_member_id FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id)
+);
+CREATE INDEX idx_feed_comment_feed_id ON feed_comment (feed_id);
+
+CREATE TABLE feed_like
+(
+    feed_like_id            BIGSERIAL PRIMARY KEY,
+    challenge_member_id     BIGINT       NOT NULL,
+    feed_id                 BIGINT       NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_feed_like_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
+    CONSTRAINT fk_feed_like_challenge_member_id FOREIGN KEY (challenge_member_id) REFERENCES challenge_member (challenge_member_id),
+    CONSTRAINT uq_feed_like_challenge_member_id_feed_id UNIQUE (challenge_member_id, feed_id)
+);
+
+CREATE TABLE feed_history
+(
+    feed_history_id         BIGSERIAL PRIMARY KEY,
+    feed_id                 BIGINT       NOT NULL,
+    like_count              INT          NOT NULL,
+    comment_count           INT          NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL,
+    CONSTRAINT fk_feed_history_feed_id FOREIGN KEY (feed_id) REFERENCES feed (feed_id),
+    CONSTRAINT uq_feed_history_feed_id UNIQUE (feed_id)
 );
 
 CREATE TABLE app_version
 (
-    app_version_id   BIGSERIAL PRIMARY KEY,
-    os               VARCHAR(15)  NOT NULL,
-    min_version      VARCHAR(10)  NOT NULL,
-    create_date_time TIMESTAMP(6) NOT NULL,
-    update_date_time TIMESTAMP(6) NOT NULL
+    app_version_id          BIGSERIAL PRIMARY KEY,
+    os                      VARCHAR(15)  NOT NULL,
+    min_version             VARCHAR(10)  NOT NULL,
+    created_date_time       TIMESTAMP(6) NULL,
+    last_modified_date_time TIMESTAMP(6) NULL,
+    created_by              VARCHAR(255) NULL,
+    last_modified_by        VARCHAR(255) NULL
 );
 
 -- Autogenerated: do not edit this file
@@ -347,54 +315,43 @@ CREATE SEQUENCE BATCH_STEP_EXECUTION_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 CREATE SEQUENCE BATCH_JOB_EXECUTION_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 CREATE SEQUENCE BATCH_JOB_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 
--- contact 테이블
-INSERT INTO contact(email, verification_code, verify_yn, is_deleted, create_date_time,
-                    update_date_time, deleted_date)
-SELECT 'user' || gs.i || '@example.com'              AS email,
-       LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0') AS verification_code,
-       TRUE                                          AS verify_yn,
-       FALSE                                         AS is_deleted,
-       NOW()                                         AS create_date_time,
-       NOW()                                         AS update_date_time,
-       NULL                                          AS deleted_date
-FROM generate_series(1, 30) AS gs(i);
-
-INSERT INTO contact (email, verification_code, verify_yn, is_deleted, create_date_time,
-                     update_date_time, deleted_date)
-VALUES ('photi.aos@gmail.com', 1234, true, false, NOW(), NOW(), null),
-       ('photi.ios@gmail.com', 5678, true, false, NOW(), NOW(), null);
-
 -- user 테이블
-INSERT INTO users (username, password, image_url, temporary_password_yn, create_date_time,
-                   update_date_time, contact_id, feed_cnt, challenge_cnt, is_deleted, deleted_date)
-VALUES ('user1', '$2a$10$KcNHY41JcvJd2OGnWmC0bek8qT6XiEE11LeHsOfElgj6bFLYOgGay',
+INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
+                   role, deleted_date, created_date_time,
+                   last_modified_date_time)
+VALUES ('user1@example.com', 1234, true, 'user1',
+        '$2a$10$KcNHY41JcvJd2OGnWmC0bek8qT6XiEE11LeHsOfElgj6bFLYOgGay',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        FALSE, NOW(), NOW(), 1, 16, 20, false, null),
-       ('user2', '$2a$10$rnp2AMAt4gsvcdxGlGH4UeXLLE2chDTX4aSptgILLUBNaC1ZISGZK',
+        'USER', null, NOW(), NOW()),
+       ('user2@example.com', 1234, true, 'user2',
+        '$2a$10$rnp2AMAt4gsvcdxGlGH4UeXLLE2chDTX4aSptgILLUBNaC1ZISGZK',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        FALSE, NOW(), NOW(), 2, 2, 20, false, null),
-       ('user3', '$2a$10$VOCyMnl8u5sXLJDfgDGlvOoxcUesiULBDOkzebTRavhGXlY63B3qi',
+        'USER', null, NOW(), NOW()),
+       ('user3@example.com', 1234, true, 'user3',
+        '$2a$10$VOCyMnl8u5sXLJDfgDGlvOoxcUesiULBDOkzebTRavhGXlY63B3qi',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_photo.jpg',
-        FALSE, NOW(), NOW(), 3, 10, 10, false, null),
-       ('user4', '$2a$10$ttevy3H13u6UEbYCDjWOjOImZJKA6SDzNb1rcWcdc.CmQlY4qy8R.',
+        'USER', null, NOW(), NOW()),
+       ('user4@example.com', 1234, true, 'user4',
+        '$2a$10$ttevy3H13u6UEbYCDjWOjOImZJKA6SDzNb1rcWcdc.CmQlY4qy8R.',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        FALSE, NOW(), NOW(), 4, 0, 15, false, null),
-       ('user5', '$2a$10$TMgFmiij5j0NfpOcUyUjtOrbQmBrdKwI/dfzXWI2haHnVcvMD8Vfq',
+        'USER', null, NOW(), NOW()),
+       ('user5@example.com', 1234, true, 'user5',
+        '$2a$10$TMgFmiij5j0NfpOcUyUjtOrbQmBrdKwI/dfzXWI2haHnVcvMD8Vfq',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        FALSE, NOW(), NOW(), 5, 8, 10, false, null);
-INSERT INTO users (username, password, image_url, temporary_password_yn, create_date_time,
-                   update_date_time, contact_id, feed_cnt, challenge_cnt, is_deleted, deleted_date)
-SELECT 'user' || gs.i                                                AS username,
-       '$2a$10$' || substr(md5(random()::TEXT), 1, 53)               AS password,
-       image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url,
-       FALSE                                                         AS temporary_password_yn,
-       NOW()                                                         AS create_date_time,
-       NOW()                                                         AS update_date_time,
-       gs.i                                                          AS contact_id,
-       FLOOR(RANDOM() * 20)                                          AS feed_cnt,
-       FLOOR(RANDOM() * 20)                                          AS challenge_cnt,
-       false                                                         AS is_deleted,
-       null                                                          AS deleted_date
+        'USER', null, NOW(), NOW());
+INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
+                   role, deleted_date, created_date_time,
+                   last_modified_date_time)
+SELECT 'user' || gs.i || '@example.com',
+       1234,
+       true,
+       'user' || gs.i,
+       '$2a$10$' || substr(md5(random()::TEXT), 1, 53),
+       image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT],
+       'USER',
+       null,
+       NOW(),
+       NOW()
 FROM generate_series(6, 30) AS gs(i)
          CROSS JOIN LATERAL (
     SELECT ARRAY [
@@ -407,46 +364,52 @@ FROM generate_series(6, 30) AS gs(i)
                ] AS image_urls
     ) img_array;
 
-INSERT INTO users (username, password, image_url, temporary_password_yn, create_date_time,
-                   update_date_time, contact_id, feed_cnt, challenge_cnt, is_deleted, deleted_date)
-VALUES ('photi_aos', '$2a$10$IyhRXXoibA7zeoq5IMYWMea1kRnt7BX2qzRmQ8Sn0iQosmSyBTjWa',
+INSERT INTO users (email, authentication_code, is_authenticated, username, password, image_url,
+                   role, deleted_date, created_date_time,
+                   last_modified_date_time)
+VALUES ('photi.aos@gmail.com', 1234, true, 'photi_aos',
+        '$2a$10$IyhRXXoibA7zeoq5IMYWMea1kRnt7BX2qzRmQ8Sn0iQosmSyBTjWa',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        FALSE, NOW(), NOW(), 31, 0, 0, false, null),
-       ('photi_ios', '$2a$10$QyNEaU1.Dkj.dZ34rUzZIuGbOMpi5IV3pddCBraW.3ERu0eOPYHS6',
+        'ADMIN', null, NOW(), NOW()),
+       ('photi.ios@gmail.com', 1234, true, 'photi_ios',
+        '$2a$10$QyNEaU1.Dkj.dZ34rUzZIuGbOMpi5IV3pddCBraW.3ERu0eOPYHS6',
         'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        FALSE, NOW(), NOW(), 32, 0, 0, false, null);
+        'ADMIN', null, NOW(), NOW());
 
--- user_role 테이블
-INSERT INTO user_role (create_date_time, update_date_time, role, user_id)
-SELECT NOW()  AS create_date_time,
-       NOW()  AS update_date_time,
-       'USER' AS role,
-       gs.i   AS user_id
-FROM generate_series(1, 30) AS gs(i);
-
-INSERT INTO user_role (create_date_time, update_date_time, role, user_id)
-VALUES (NOW(), NOW(), 'MASTER', 31),
-       (NOW(), NOW(), 'MASTER', 32);
+-- user_challenge_history 테이블
+INSERT INTO user_challenge_history (user_id,
+                                    challenge_count,
+                                    ended_challenge_count,
+                                    feed_count,
+                                    created_date_time,
+                                    last_modified_date_time)
+SELECT u.user_id,
+       FLOOR(RANDOM() * 10 + 1)::INT AS challenge_count,
+       FLOOR(RANDOM() * 3)::INT      AS ended_challenge_count,
+       FLOOR(RANDOM() * 30)::INT     AS feed_count,
+       NOW(),
+       NOW()
+FROM users u;
 
 -- challenge 테이블
-INSERT INTO challenge (name, goal, prove_time, end_date, image_url, is_public,
-                       start_date, current_member_cnt, visit_cnt, invitation_code,
-                       create_date_time, update_date_time, service_status)
+INSERT INTO challenge (name, is_public, goal, prove_time, end_date, image_url, invitation_code,
+                       start_date, status, created_date_time, last_modified_date_time, created_by,
+                       last_modified_by)
 SELECT '챌린지 이름 ' || gs.i,
+       is_public_statuses[ceil(random() * array_length(is_public_statuses, 1))::INT],
        '챌린지 목표 ' || gs.i,
        MAKE_TIME(FLOOR(RANDOM() * 24)::INTEGER, 0, 0),
        start_date + (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL,
        image_urls[ceil(random() * array_length(image_urls, 1))::INT],
-       is_public_statuses[ceil(random() * array_length(is_public_statuses, 1))::INT],
-       start_date,
-       FLOOR(RANDOM() * 50),
-       FLOOR(RANDOM() * 500),
        'ABC12',
+       start_date,
+       statuses[ceil(random() * array_length(statuses, 1))::INT],
        '2025-01-01 00:00:00'::TIMESTAMP + (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL,
        '2025-01-01 00:00:00'::TIMESTAMP
            + (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL
            + (FLOOR(RANDOM() * 7)::INTEGER || ' hours')::INTERVAL,
-       service_statuses[ceil(random() * array_length(service_statuses, 1))::INT]
+       null,
+       null
 FROM generate_series(1, 500) AS gs(i),
      LATERAL (
          SELECT ARRAY [
@@ -457,36 +420,39 @@ FROM generate_series(1, 500) AS gs(i),
                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg'
                     ]                                                 AS image_urls,
-                ARRAY ['ACTIVE', 'END']                               AS service_statuses,
+                ARRAY ['ACTIVE', 'END']                               AS statuses,
                 ARRAY [TRUE, FALSE]                                   AS is_public_statuses,
                 '2025-01-01'::DATE +
                 (FLOOR(RANDOM() * 365)::INTEGER || ' days')::INTERVAL AS start_date
          ) AS arrays;
 
 -- challenge_rule 테이블
-INSERT INTO challenge_rule (rule, create_date_time, update_date_time, service_status, challenge_id)
-SELECT '규칙 ' || gs.i,
+INSERT INTO challenge_rule (challenge_id, rule, created_date_time, last_modified_date_time,
+                            created_by, last_modified_by)
+SELECT challenge_id,
+       '규칙 ' || gs.i,
        NOW(),
        NOW(),
-       'ACTIVE',
-       challenge_id
+       null,
+       null
 FROM challenge,
      LATERAL generate_series(1, 5) AS gs(i);
 
 -- challenge_hashtag 테이블
-INSERT INTO challenge_hashtag (hashtag, create_date_time, update_date_time, service_status,
-                               challenge_id)
-SELECT unnest(array(
-        SELECT ARRAY [
-                   hashtags[ceil(random() * array_length(hashtags, 1))::INT],
-                   hashtags[ceil(random() * array_length(hashtags, 1))::INT],
-                   hashtags[ceil(random() * array_length(hashtags, 1))::INT]
-                   ]
+INSERT INTO challenge_hashtag (challenge_id, hashtag, created_date_time, last_modified_date_time,
+                               created_by, last_modified_by)
+SELECT challenge_id,
+       unnest(array(
+               SELECT ARRAY [
+                          hashtags[ceil(random() * array_length(hashtags, 1))::INT],
+                          hashtags[ceil(random() * array_length(hashtags, 1))::INT],
+                          hashtags[ceil(random() * array_length(hashtags, 1))::INT]
+                          ]
               )),
        NOW(),
        NOW(),
-       'ACTIVE',
-       challenge_id
+       null,
+       null
 FROM challenge,
      LATERAL (SELECT ARRAY ['러닝', '건강식', '게임', '챌린지', '개발', '코틀린', 'iOS', '안드로이드', '스프링', '디자인'] AS hashtags);
 
@@ -498,24 +464,26 @@ WITH challenge_data AS (SELECT generate_series(1, 100) AS challenge_id),
                             ROW_NUMBER()
                             OVER (PARTITION BY cd.challenge_id ORDER BY RANDOM()) AS rn,
                             'PROGRESS'                                            AS status,
-                            NOW()                                                 AS create_date_time,
-                            NOW()                                                 AS update_date_time,
-                            'ACTIVE'                                              AS service_status,
+                            NOW()                                                 AS created_date_time,
+                            NOW()                                                 AS last_modified_date_time,
+                            'ACTIVE'                                              AS challenge_status,
                             '매일 ' || cd.challenge_id || 'km 달리기'                  AS goal
                      FROM challenge_data cd
                               CROSS JOIN user_data ud
                      WHERE RANDOM() < 0.4)
+
 INSERT
-INTO challenge_member (is_creator, status, create_date_time, update_date_time, service_status,
-                       challenge_id, user_id, goal)
-SELECT CASE WHEN rn = 1 THEN TRUE ELSE FALSE END AS is_creator,
-       status,
-       create_date_time,
-       update_date_time,
-       service_status,
+INTO challenge_member (user_id, challenge_id, goal, is_creator, status,
+                       created_date_time, last_modified_date_time, created_by, last_modified_by)
+SELECT user_id,
        challenge_id,
-       user_id,
-       goal
+       goal,
+       CASE WHEN rn = 1 THEN TRUE ELSE FALSE END AS is_creator,
+       status,
+       created_date_time,
+       last_modified_date_time,
+       null,
+       null
 FROM ranked_data
 WHERE rn <= 20;
 
@@ -527,137 +495,78 @@ UPDATE challenge_member
 SET challenge_id = challenge_member_id
 WHERE challenge_member_id BETWEEN 1 AND 20;
 
+-- challenge_example_image 테이블
+INSERT INTO challenge_example_image
+VALUES (1,
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg'),
+       (2,
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_photo.jpg'),
+       (3,
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg'),
+       (4,
+        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg');
+
+-- challenge_history 테이블
+INSERT INTO challenge_history (challenge_id, challenge_member_count, visit_count,
+                               created_date_time, last_modified_date_time, created_by,
+                               last_modified_by)
+SELECT c.challenge_id,
+       FLOOR(RANDOM() * 100)::INT + 1,
+       FLOOR(RANDOM() * 1000)::INT + 1,
+       NOW() - (INTERVAL '1 day' * FLOOR(RANDOM() * 365)),
+       NOW(),
+       NULL,
+       NULL
+FROM challenge c;
+
 -- feed 테이블
-INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
-                  service_status, challenge_id, challenge_member_id)
-SELECT FLOOR(RANDOM() * 101)                                         AS like_cnt,
-       FLOOR(RANDOM() * 101)                                         AS comment_cnt,
-       image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url,
-       '2025-02-24 12:00:00'::TIMESTAMP + INTERVAL '1 minute' *
-                                          (challenge_member_id - 1)  AS create_date_time,
-       '2025-02-24 12:00:00'::TIMESTAMP + INTERVAL '1 minute' *
-                                          (challenge_member_id - 1)  AS update_date_time,
-       'ACTIVE'                                                      AS service_status,
-       challenge_member_id                                           AS challenge_id,
-       challenge_member_id                                           AS challenge_member_id
-FROM generate_series(1, 20) AS challenge_member_id
+INSERT INTO feed (user_id, challenge_member_id, challenge_id, image_url, created_date_time,
+                  last_modified_date_time)
+SELECT 1 AS user_id,
+       1 AS challenge_member_id,
+       1 AS challenge_id,
+       img.image_url,
+       NOW() - (INTERVAL '1 day' * FLOOR(RANDOM() * 30)),
+       NOW()
+FROM generate_series(1, 20) AS gs(i)
          CROSS JOIN LATERAL (
-    SELECT ARRAY [
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg'
-               ] AS image_urls
-    ) img_array;
+    SELECT image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url
+    FROM (SELECT ARRAY [
+                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
+                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
+                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
+                     'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg'
+                     ] AS image_urls) a
+    ) img;
 
-INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
-                  service_status, challenge_id, challenge_member_id)
-VALUES (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-29 12:00:00', '2025-01-29 12:00:00', 'ACTIVE', 1, 1),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        '2025-01-29 12:01:00', '2025-01-29 12:01:00', 'ACTIVE', 2, 2),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        '2025-01-29 12:02:00', '2025-01-29 12:02:00', 'ACTIVE', 3, 3),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        '2025-01-29 12:03:00', '2025-01-29 12:03:00', 'ACTIVE', 4, 4),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-29 12:04:00', '2025-01-29 12:04:00', 'ACTIVE', 5, 5),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        '2025-01-29 12:05:00', '2025-01-29 12:05:00', 'ACTIVE', 6, 6),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        '2025-01-29 12:06:00', '2025-01-29 12:06:00', 'ACTIVE', 7, 7),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        '2025-01-29 12:07:00', '2025-01-29 12:07:00', 'ACTIVE', 8, 8),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-29 12:08:00', '2025-01-29 12:08:00', 'ACTIVE', 9, 9),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        '2025-01-29 12:09:00', '2025-01-29 12:09:00', 'ACTIVE', 10, 10),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        '2025-01-29 12:10:00', '2025-01-29 12:10:00', 'ACTIVE', 11, 11),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        '2025-01-29 12:11:00', '2025-01-29 12:11:00', 'ACTIVE', 12, 12),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-29 12:12:00', '2025-01-29 12:12:00', 'ACTIVE', 13, 13),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        '2025-01-29 12:13:00', '2025-01-29 12:13:00', 'ACTIVE', 14, 14);
-
-INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
-                  service_status, challenge_id, challenge_member_id)
-VALUES (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-02 12:00:00', '2025-01-02 12:00:00', 'ACTIVE', 1, 1),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-        '2025-01-02 12:01:00', '2025-01-02 12:01:00', 'ACTIVE', 2, 2),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg',
-        '2025-01-02 12:02:00', '2025-01-02 12:02:00', 'ACTIVE', 3, 3),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-        '2025-01-02 12:03:00', '2025-01-02 12:03:00', 'ACTIVE', 4, 4),
-       (FLOOR(RANDOM() * 101), FLOOR(RANDOM() * 101),
-        'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-        '2025-01-02 12:04:00', '2025-01-02 12:04:00', 'ACTIVE', 5, 5);
-
-INSERT INTO feed (like_cnt, comment_cnt, image_url, create_date_time, update_date_time,
-                  service_status, challenge_id, challenge_member_id)
-SELECT FLOOR(RANDOM() * 101)                                         AS like_cnt,
-       FLOOR(RANDOM() * 101)                                         AS comment_cnt,
-       image_urls[CEIL(RANDOM() * ARRAY_LENGTH(image_urls, 1))::INT] AS image_url,
-       '2025-02-24 12:00:00'::TIMESTAMP + INTERVAL '1 minute' *
-                                          (challenge_member_id - 1)  AS create_date_time,
-       '2025-02-24 12:00:00'::TIMESTAMP + INTERVAL '1 minute' *
-                                          (challenge_member_id - 1)  AS update_date_time,
-       'ACTIVE'                                                      AS service_status,
-       1                                                             AS challenge_id,
-       challenge_member_id
-FROM generate_series(2, 35) AS challenge_member_id
-         CROSS JOIN LATERAL (
-    SELECT ARRAY [
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_lucky.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_study.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_cover_health.jpg',
-               'https://photi-bucket-1.s3.ap-northeast-2.amazonaws.com/challenges/examples/img_running.jpg'
-               ] AS image_urls
-    ) img_array;
+-- feed_history 테이블
+INSERT INTO feed_history (feed_id, like_count, comment_count, created_date_time,
+                          last_modified_date_time)
+SELECT f.feed_id,
+       FLOOR(RANDOM() * 100)::INT AS like_count,
+       FLOOR(RANDOM() * 30)::INT  AS comment_count,
+       f.created_date_time,
+       f.last_modified_date_time
+FROM feed f;
 
 -- feed_comment 테이블
-WITH feed_data AS (SELECT f.feed_id, f.challenge_member_id
-                   FROM feed f),
-     comment_data AS (SELECT fd.feed_id,
-                             (SELECT challenge_member_id
-                              FROM feed
-                              ORDER BY RANDOM()
-                              LIMIT 1)                                                 AS challenge_member_id,
-                             comments[CEIL(RANDOM() * ARRAY_LENGTH(comments, 1))::INT] AS comment,
-                             NOW()                                                     AS create_date_time,
-                             NOW()                                                     AS update_date_time,
-                             'ACTIVE'                                                  AS service_status
-                      FROM feed_data fd
-                               CROSS JOIN (SELECT generate_series(1, 30) AS n) AS count_series
-                               CROSS JOIN LATERAL (
-                          SELECT ARRAY [
-                                     '와우', '와우와', '멋져요', '굳굳', '화이팅!', '짱짱', '최고!', '대단해요',
-                                     '굳굳굳', '짱짱짱', '와아아아', '멋져요멋져요', '화이팅화이팅', '짱짱짱짱', '와우!',
-                                     '굳굳굳굳', '와아아아!!~~', '최고최고!', '대박!', '굿굿!', '화이팅화이팅화이팅'
-                                     ] AS comments
-                          ) AS comment_array)
+WITH comment_texts AS (SELECT ARRAY [
+                                  '와우', '멋져요', '굿굿', '짱짱', '최고!',
+                                  '대단해요', '화이팅!', '좋아요', '굿굿굿', '대박!'
+                                  ] AS comments),
+     feed_with_member AS (SELECT f.feed_id, f.challenge_member_id, cm.user_id
+                          FROM feed f
+                                   JOIN challenge_member cm
+                                        ON f.challenge_member_id = cm.challenge_member_id
+                          WHERE f.challenge_id IN (1, 2))
 INSERT
-INTO feed_comment (comment, create_date_time, update_date_time, service_status, feed_id,
-                   challenge_member_id)
-SELECT comment, create_date_time, update_date_time, service_status, feed_id, challenge_member_id
-FROM comment_data;
+INTO feed_comment (user_id, challenge_member_id, feed_id, comment, created_date_time,
+                   last_modified_date_time)
+SELECT fm.user_id,
+       fm.challenge_member_id,
+       fm.feed_id,
+       (SELECT comments[CEIL(RANDOM() * ARRAY_LENGTH(comments, 1))::INT] FROM comment_texts),
+       NOW() - (INTERVAL '1 minute' * gs.i),
+       NOW()
+FROM feed_with_member fm,
+     generate_series(1, 20) AS gs(i);

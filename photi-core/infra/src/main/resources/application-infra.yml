@@ -1,0 +1,98 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false
+
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    rest-api-key: ${KAKAO_REST_API_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    rest-api-key: ${APPLE_REST_API_KEY}
+    client-id: ${APPLE_CLIENT_ID}
+    client-secret: ${APPLE_CLIENT_SECRET}
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    redis:
+      host: redis
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false
+
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    rest-api-key: ${KAKAO_REST_API_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    rest-api-key: ${APPLE_REST_API_KEY}
+    client-id: ${APPLE_CLIENT_ID}
+    client-secret: ${APPLE_CLIENT_SECRET}
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    redis:
+      host: redis
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${AWS_BUCKET}
+    stack:
+      auto: false
+
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    rest-api-key: ${KAKAO_REST_API_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    rest-api-key: ${GOOGLE_REST_API_KEY}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    rest-api-key: ${APPLE_REST_API_KEY}
+    client-id: ${APPLE_CLIENT_ID}
+    client-secret: ${APPLE_CLIENT_SECRET}

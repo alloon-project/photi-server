@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: local
+    include:
+      - domain
+  batch:
+    job:
+      name: ${job.name:NONE}
+    enabled: false
+    chunk-size: 1000
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+---
+spring:
+  config:
+    activate:
+      on-profile: prod

@@ -1,0 +1,18 @@
+package com.photi.apis.enduser.controller.challenge.dto.response
+
+import io.swagger.v3.oas.annotations.media.Schema
+
+@Schema(description = "챌린지 파티원 이미지 응답 객체")
+data class ChallengeMemberImageResponse(
+
+    @Schema(description = "챌린지 파티원 이미지")
+    val memberImage: String,
+) {
+
+    companion object {
+
+        fun of(memberImages: List<String>) = memberImages.map { of(it) }
+
+        private fun of(memberImage: String) = ChallengeMemberImageResponse(memberImage)
+    }
+}
