@@ -4,7 +4,6 @@ import com.photi.apis.enduser.common.exception.GlobalApiErrorResponses
 import com.photi.apis.enduser.common.exception.UserApiErrorResponses
 import com.photi.apis.enduser.common.success.dto.CollectionSuccessResponse
 import com.photi.apis.enduser.common.success.dto.SliceResponse
-import com.photi.apis.enduser.common.success.dto.StringSuccessResponse
 import com.photi.apis.enduser.config.security.AuthUser
 import com.photi.apis.enduser.config.security.CustomUserDetails
 import com.photi.apis.enduser.config.security.getUserId

@@ -1,6 +1,7 @@
 package com.photi.apis.enduser.controller.user.dto.response
 
 import com.photi.core.domain.user.dto.FindInfoDto
+import com.photi.core.domain.user.model.OAuthProviderType
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "사용자 정보 응답 객체")
@@ -14,6 +15,9 @@ data class FindInfoResponse(
 
     @Schema(description = "사용자 이메일", example = "photi@photi.com")
     val email: String,
+
+    @Schema(description = "OAuth provider", example = "GOOGLE")
+    val provider: OAuthProviderType?,
 ) {
 
     companion object {
@@ -22,6 +26,7 @@ data class FindInfoResponse(
             info.imageUrl,
             info.username,
             info.email,
+            info.provider,
         )
     }
 }
