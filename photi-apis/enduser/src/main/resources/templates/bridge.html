@@ -48,6 +48,6 @@
 <img src="/logo.jpg" alt="Photi" class="logo">
 <div class="title">포티로 이동 중</div>
 <div class="desc">더 이상 이동하지 않으면 직접 이동할 수 있어요</div>
-<a th:href="@{${deepLink}}" class="btn btn-primary">포티로 바로가기</a>
+<a th:href="@{/open(challenge_id=${challengeId})}" class="btn btn-primary">포티로 바로가기</a>
 </body>
 </html>
