@@ -2,6 +2,7 @@ package com.photi.core.domain.user.service
 
 import com.photi.core.domain.user.dto.OAuthLoginDto
 import com.photi.core.domain.user.dto.OAuthUpdateUsernameDto
+import com.photi.core.domain.user.dto.OAuthWithdrawDto
 import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.domain.user.exception.UserException
 import com.photi.core.domain.user.model.OAuthInfo
@@ -41,11 +42,10 @@ class OAuthService(
     }
 
     @Transactional
-    fun withdraw(id: Long, provider: OAuthProviderType, accessToken: String) {
-        val user = userQueryService.getUserBy(id)
-            .orElseThrow { throw UserException.NotFoundUserException() }
-        val oAuthPort = oAuthFactory.getOAuthAdapter(provider)
-        oAuthPort.withdraw(accessToken)
+    fun withdraw(dto: OAuthWithdrawDto) {
+        val oAuthInfo = OAuthInfo(dto.provider, dto.sub)
+        val user = userQueryService.getLoginUserBy(oAuthInfo)
+            ?: throw UserException.NotFoundUserException()
         user.oAuthWithdraw()
     }
 
