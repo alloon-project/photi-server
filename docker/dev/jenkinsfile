@@ -9,15 +9,16 @@ pipeline {
    stages {
        stage('Build') {
            steps {
-                sh "./gradlew clean photi-apis:enduser:bootJar"
+                sh "./gradlew clean photi-apis:enduser:bootJar photi-batch:bootJar"
            }
        }
        stage('Deploy') {
            steps {
                sshagent(credentials: ["$EC2_CREDENTIALS_ID"]) {
                   sh '''
-                     ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "sudo mkdir -p $PROJECT_PATH && sudo chown -R ubuntu:ubuntu $PROJECT_PATH"
+                     ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "sudo mkdir -p $PROJECT_PATH $PROJECT_PATH/batch && sudo chown -R ubuntu:ubuntu $PROJECT_PATH"
                      scp -o StrictHostKeyChecking=no photi-apis/enduser/build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
+                     scp -o StrictHostKeyChecking=no photi-batch/build/libs/*.jar ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH/batch
                      scp -o StrictHostKeyChecking=no docker/dev/* ubuntu@$EC2_DEV_PRIVATE_IP:$PROJECT_PATH
                      ssh -o StrictHostKeyChecking=no ubuntu@$EC2_DEV_PRIVATE_IP "bash $PROJECT_PATH/deploy.sh"
                   '''
