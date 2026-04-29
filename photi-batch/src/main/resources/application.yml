@@ -3,6 +3,7 @@ spring:
     active: local
     include:
       - domain
+      - infra
   batch:
     job:
       name: ${job.name:NONE}

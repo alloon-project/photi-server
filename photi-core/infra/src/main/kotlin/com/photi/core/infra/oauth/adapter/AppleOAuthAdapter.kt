@@ -7,9 +7,11 @@ import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.AppleOAuthClient
 import com.photi.core.infra.oauth.client.AppleUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.stereotype.Component
 
 @Component
+@ConditionalOnBean(JwtOidcPort::class)
 class AppleOAuthAdapter(
     private val appleOAuthProperties: AppleOAuthProperties,
     private val appleOAuthClient: AppleOAuthClient,
