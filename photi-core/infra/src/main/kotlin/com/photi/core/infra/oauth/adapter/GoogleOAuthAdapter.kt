@@ -7,11 +7,9 @@ import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.GoogleOAuthClient
 import com.photi.core.infra.oauth.client.GoogleUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.stereotype.Component
 
 @Component
-@ConditionalOnBean(JwtOidcPort::class)
 class GoogleOAuthAdapter(
     private val googleOAuthProperties: GoogleOAuthProperties,
     private val googleOAuthClient: GoogleOAuthClient,

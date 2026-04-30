@@ -7,11 +7,9 @@ import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.User
 import com.photi.core.domain.user.port.PasswordPort
 import com.photi.core.domain.user.service.query.UserQueryService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.stereotype.Component
 
 @Component
-@ConditionalOnBean(PasswordPort::class)
 class UserValidator(
     private val userQueryService: UserQueryService,
     private val passwordPort: PasswordPort,
