@@ -7,9 +7,11 @@ import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.model.User
 import com.photi.core.domain.user.port.PasswordPort
 import com.photi.core.domain.user.service.query.UserQueryService
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("!batch")
 class UserValidator(
     private val userQueryService: UserQueryService,
     private val passwordPort: PasswordPort,
