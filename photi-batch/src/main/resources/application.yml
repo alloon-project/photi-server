@@ -7,7 +7,7 @@ spring:
   batch:
     job:
       name: ${job.name:NONE}
-    enabled: false
+      enabled: false
     chunk-size: 1000
 ---
 spring:
