@@ -49,6 +49,15 @@ class OAuthService(
         user.oAuthWithdraw()
     }
 
+    @Transactional
+    fun appleWithdraw(id: Long, accessToken: String) {
+        val user = userQueryService.getUserBy(id)
+            .orElseThrow { throw UserException.NotFoundUserException() }
+        val oAuthPort = oAuthFactory.getOAuthAdapter(OAuthProviderType.APPLE)
+        oAuthPort.withdraw(accessToken)
+        user.oAuthWithdraw()
+    }
+
     private fun newUser(oAuthInfo: OAuthInfo, idTokenPayload: OidcPayload) =
         userCommandService.createUser(
             oAuthInfo,
