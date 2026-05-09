@@ -35,7 +35,7 @@ class AppleOAuthAdapter(
     override fun withdraw(accessToken: String) {
         appleUserClient.unlink(
             appleOAuthProperties.clientId,
-            appleOAuthProperties.clientSecret,
+            jwtOidcPort.getClientSecret(),
             accessToken,
         )
     }

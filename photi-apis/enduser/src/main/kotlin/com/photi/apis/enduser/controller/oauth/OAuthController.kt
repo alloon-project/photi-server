@@ -8,10 +8,12 @@ import com.photi.apis.enduser.config.security.CustomUserDetails
 import com.photi.apis.enduser.config.security.JwtTokenProvider
 import com.photi.apis.enduser.config.security.getUserId
 import com.photi.apis.enduser.controller.oauth.request.OAuthUpdateUsernameRequest
+import com.photi.apis.enduser.controller.oauth.request.OAuthWithdrawRequest
 import com.photi.apis.enduser.controller.oauth.response.OAuthLoginResponse
 import com.photi.core.domain.common.consts.SwaggerKey.ACCESS_TOKEN_KEY
 import com.photi.core.domain.common.exception.GlobalErrorCode.*
-import com.photi.core.domain.user.exception.UserErrorCode.*
+import com.photi.core.domain.user.exception.UserErrorCode.DELETED_USER
+import com.photi.core.domain.user.exception.UserErrorCode.USER_NOT_FOUND
 import com.photi.core.domain.user.model.OAuthProviderType
 import com.photi.core.domain.user.model.RoleType
 import com.photi.core.domain.user.service.OAuthService
@@ -63,17 +65,28 @@ class OAuthController(
         return ResponseEntity.ok(StringSuccessResponse("OAuth 아이디 설정이 완료되었습니다."))
     }
 
-    @PatchMapping("/{provider}/withdraw")
-    @Operation(summary = "OAuth 회원 탈퇴", security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)])
+    @PatchMapping("/withdraw")
+    @Operation(summary = "OAuth 회원 탈퇴 - 카카오, 구글")
     @ApiResponse(responseCode = "200")
-    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, EXPIRED_TOKEN, INVALID_TOKEN])
     @UserApiErrorResponses([USER_NOT_FOUND])
-    fun withdraw(
+    fun withdraw(@RequestBody @Valid request: OAuthWithdrawRequest): ResponseEntity<StringSuccessResponse> {
+        oAuthService.withdraw(request.toServiceDto())
+        return ResponseEntity.ok(StringSuccessResponse("OAuth 회원 탈퇴가 완료되었습니다."))
+    }
+
+    @PatchMapping("/apple/withdraw")
+    @Operation(
+        summary = "OAuth 회원 탈퇴 - 애플",
+        security = [SecurityRequirement(name = ACCESS_TOKEN_KEY)],
+    )
+    @ApiResponse(responseCode = "200")
+    @UserApiErrorResponses([USER_NOT_FOUND])
+    @GlobalApiErrorResponses([TOKEN_UNAUTHENTICATED, INVALID_TOKEN, EXPIRED_TOKEN])
+    fun appleWithdraw(
         @AuthUser user: CustomUserDetails,
-        @PathVariable provider: OAuthProviderType,
-        @RequestParam("access_token") @Parameter(description = "OAuth 액세스 토큰(포티 jwt의 액세스 토큰이 아닌, 각 oauth에서 발급받은 액세스 토큰입니다!)") accessToken: String,
+        @RequestParam("access_token") @Parameter(description = "애플 OAuth 액세스 토큰(포티 jwt의 액세스 토큰이 아닌, 애플 oauth에서 발급받은 액세스 토큰입니다!)") accessToken: String,
     ): ResponseEntity<StringSuccessResponse> {
-        oAuthService.withdraw(user.getUserId(), provider, accessToken)
+        oAuthService.appleWithdraw(user.getUserId(), accessToken)
         return ResponseEntity.ok(StringSuccessResponse("OAuth 회원 탈퇴가 완료되었습니다."))
     }
 }

@@ -7,5 +7,7 @@ data class AppleOAuthProperties(
     val baseUrl: String,
     val restApiKey: String,
     val clientId: String,
-    val clientSecret: String,
+    val kid: String,
+    val iss: String,
+    val privateKey: String,
 )
