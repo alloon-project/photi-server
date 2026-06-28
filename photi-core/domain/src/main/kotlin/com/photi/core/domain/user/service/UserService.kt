@@ -1,6 +1,8 @@
 package com.photi.core.domain.user.service
 
 import com.photi.core.domain.common.consts.DirectoryType
+import com.photi.core.domain.user.dto.FindChallengeCountDto
+import com.photi.core.domain.user.dto.FindChallengeHistoryDto
 import com.photi.core.domain.user.dto.FindImagePreSignedUrlDto
 import com.photi.core.domain.user.dto.UpdateProfileImageDto
 import com.photi.core.domain.user.exception.UserException
@@ -31,13 +33,21 @@ class UserService(
         user.changeImageUrl(s3Port, dto.imageUrl)
     }
 
-    fun findChallengeHistory(userId: Long) = userQueryService.getChallengeHistoryBy(userId)
-        ?: throw UserException.NotFoundUserException()
+    fun findChallengeHistory(userId: Long): FindChallengeHistoryDto {
+        val user = userQueryService.getUserBy(userId).orElseThrow {
+            throw UserException.NotFoundUserException()
+        }
+        return userQueryService.getChallengeHistoryBy(userId) ?: FindChallengeHistoryDto.of(user)
+    }
 
     fun findFeedDates(userId: Long) = userQueryService.getFeedDatesBy(userId)
 
-    fun findChallengeCount(userId: Long) = userQueryService.getChallengeCountBy(userId)
-        ?: throw UserException.NotFoundUserException()
+    fun findChallengeCount(userId: Long): FindChallengeCountDto {
+        val user = userQueryService.getUserBy(userId).orElseThrow {
+            throw UserException.NotFoundUserException()
+        }
+        return userQueryService.getChallengeCountBy(userId) ?: FindChallengeCountDto.of(user)
+    }
 
     fun findFeedsByDate(userId: Long, date: LocalDate) = userQueryService.getFeedsBy(userId, date)
 

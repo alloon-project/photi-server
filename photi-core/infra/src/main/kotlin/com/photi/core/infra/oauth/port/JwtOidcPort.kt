@@ -9,4 +9,6 @@ interface JwtOidcPort {
     fun getKidFromUnsignedIdToken(idToken: String, iss: String, aud: String): String
 
     fun getIdTokenPayload(idToken: String, modulus: String, exponent: String): OidcPayload
+
+    fun getClientSecret(): String
 }

@@ -1,6 +1,6 @@
 services:
   backend:
-    image: yugyeong390/photi-server:1.2.0
+    image: yugyeong390/photi-server:1.2.1
     env_file:
       - .env
     ports:
@@ -19,6 +19,15 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    restart: always
+    networks:
+      - server-network
+  batch:
+    image: yugyeong390/photi-server-batch:1.2.1
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
     restart: always
     networks:
       - server-network

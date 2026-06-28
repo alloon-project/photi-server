@@ -1,12 +1,13 @@
 spring:
   profiles:
-    active: local
+    active: local, batch
     include:
       - domain
+      - infra
   batch:
     job:
       name: ${job.name:NONE}
-    enabled: false
+      enabled: false
     chunk-size: 1000
 ---
 spring:

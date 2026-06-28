@@ -14,7 +14,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13")
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-    implementation("io.micrometer:micrometer-registry-prometheus")
     implementation(project(":photi-core:domain"))
     implementation(project(":photi-core:infra"))
     implementation(project(":photi-utils"))

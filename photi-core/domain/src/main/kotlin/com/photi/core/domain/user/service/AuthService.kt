@@ -10,11 +10,13 @@ import com.photi.core.domain.user.service.query.UserQueryService
 import com.photi.core.domain.user.validator.UserValidator
 import com.photi.utils.CodeUtil.getAuthenticationCode
 import com.photi.utils.PasswordUtil.getTemporaryPassword
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional(readOnly = true)
+@Profile("!batch")
 class AuthService(
     private val userValidator: UserValidator,
     private val userQueryService: UserQueryService,

@@ -7,9 +7,11 @@ import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.KakaoOAuthClient
 import com.photi.core.infra.oauth.client.KakaoUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("!batch")
 class KakaoOAuthAdapter(
     private val kakaoOAuthProperties: KakaoOAuthProperties,
     private val kakaoOAuthClient: KakaoOAuthClient,

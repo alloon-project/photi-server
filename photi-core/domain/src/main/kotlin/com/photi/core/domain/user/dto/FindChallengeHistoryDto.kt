@@ -1,5 +1,6 @@
 package com.photi.core.domain.user.dto
 
+import com.photi.core.domain.user.model.User
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDateTime
 
@@ -9,4 +10,16 @@ data class FindChallengeHistoryDto @QueryProjection constructor(
     val feedCount: Int,
     val endedChallengeCount: Long,
     val signInDate: LocalDateTime,
-)
+) {
+
+    companion object {
+
+        fun of(user: User) = FindChallengeHistoryDto(
+            user.username ?: "",
+            user.imageUrl ?: "",
+            0,
+            0,
+            user.createdDateTime!!,
+        )
+    }
+}

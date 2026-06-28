@@ -7,9 +7,11 @@ import com.photi.core.domain.user.port.OAuthPort
 import com.photi.core.infra.oauth.client.AppleOAuthClient
 import com.photi.core.infra.oauth.client.AppleUserClient
 import com.photi.core.infra.oauth.port.JwtOidcPort
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Component
+@Profile("!batch")
 class AppleOAuthAdapter(
     private val appleOAuthProperties: AppleOAuthProperties,
     private val appleOAuthClient: AppleOAuthClient,
@@ -33,7 +35,7 @@ class AppleOAuthAdapter(
     override fun withdraw(accessToken: String) {
         appleUserClient.unlink(
             appleOAuthProperties.clientId,
-            appleOAuthProperties.clientSecret,
+            jwtOidcPort.getClientSecret(),
             accessToken,
         )
     }

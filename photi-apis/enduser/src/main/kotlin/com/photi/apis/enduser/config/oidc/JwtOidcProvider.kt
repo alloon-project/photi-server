@@ -2,18 +2,27 @@ package com.photi.apis.enduser.config.oidc
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.photi.core.domain.common.exception.GlobalException
+import com.photi.core.domain.common.properties.AppleOAuthProperties
 import com.photi.core.domain.user.dto.OidcPayload
 import com.photi.core.infra.oauth.port.JwtOidcPort
 import io.jsonwebtoken.*
+import io.jsonwebtoken.io.Decoders
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.math.BigInteger
 import java.security.KeyFactory
+import java.security.PrivateKey
 import java.security.PublicKey
+import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.RSAPublicKeySpec
+import java.time.Instant
 import java.util.*
 
 @Component
 class JwtOidcProvider(
+    @Value("\${spring.security.jwt.access-exp}")
+    private val accessExp: Long,
+    private val appleOAuthProperties: AppleOAuthProperties,
     private val objectMapper: ObjectMapper,
 ) : JwtOidcPort {
 
@@ -45,6 +54,33 @@ class JwtOidcProvider(
             claims[EMAIL].toString(),
             claims[PICTURE].toString(),
         )
+    }
+
+    override fun getClientSecret(): String {
+        val now = Instant.now()
+        return Jwts.builder()
+            .header()
+            .add(ALG, "ES256")
+            .add(KID, appleOAuthProperties.kid).and()
+            .issuer(appleOAuthProperties.iss)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(now.plusMillis(accessExp)))
+            .audience()
+            .add(appleOAuthProperties.baseUrl).and()
+            .subject(appleOAuthProperties.clientId)
+            .signWith(getPrivateKey())
+            .compact()
+    }
+
+    private fun getPrivateKey(): PrivateKey {
+        try {
+            val privateKeyBytes = Decoders.BASE64.decode(appleOAuthProperties.privateKey)
+            val keySpec = PKCS8EncodedKeySpec(privateKeyBytes)
+            val keyFactory = KeyFactory.getInstance("EC")
+            return keyFactory.generatePrivate(keySpec)
+        } catch (e: Exception) {
+            throw GlobalException.PrivateKeyException()
+        }
     }
 
     private fun getSplitIdToken(idToken: String): List<String> {
@@ -91,6 +127,7 @@ class JwtOidcProvider(
     }
 
     companion object {
+        private const val ALG = "alg"
         private const val KID = "kid"
         private const val ISS = "iss"
         private const val AUD = "aud"
